@@ -6,7 +6,11 @@ from StringIO import StringIO
 start_time = time.time()
 round_ix = 0
 
-def spawner():
+def cback(data): 
+  global round_ix, start_time
+
+  round_ix += 1
+  print str(float(round_ix) / (time.time() - start_time))
 
 def dospawn(callsign, url):
   c = pycurl.Curl()
@@ -15,10 +19,11 @@ def dospawn(callsign, url):
   c.perform()
   c.close()
 
-def cback(data): 
-  global round_ix, start_time
+def spawner():
+  p = Process(target=dospawn, args=('kpcc', 'http://live.scpr.org/kpcclive/',))
+  p.start()
+  p.join()
 
-  round_ix += 1
-  print str(float(round_ix) / (time.time() - start_time))
+  
        
-
+spawner()
