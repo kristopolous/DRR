@@ -5,14 +5,18 @@ from multiprocessing import Process, Queue
 from StringIO import StringIO
 start_time = time.time()
 round_ix = 0
-
-def cback(data): 
-  global round_ix, start_time
-
-  round_ix += 1
-  print str(float(round_ix) / (time.time() - start_time))
+q = Queue()
 
 def dospawn(callsign, url):
+
+  def cback(data): 
+    global round_ix, start_time
+    q.put(callsign)
+    round_ix += 1
+    print str(float(round_ix) / (time.time() - start_time))
+
+  print "Spawning - " + callsign
+
   c = pycurl.Curl()
   c.setopt(c.URL, url)
   c.setopt(pycurl.WRITEFUNCTION, cback)
@@ -20,23 +24,35 @@ def dospawn(callsign, url):
   c.close()
 
 def spawner():
-  q = Queue()
+  global q
   stationMap = {
     'kpcc': {
       'url':'http://live.scpr.org/kpcclive/',
-      'ts': time.time(),
+      'flag': False,
       'process': False
     }
   }
 
-  while not q.empty():
-    q.get(False)
-  
-  for callsign,station in stationMap.items():
-    if station['process'] == False:
-      station['process'] = p = Process(target=dospawn, args=(callsign, station['url'],))
-      p.start()
-      p.join()
+  while True:
+    
+    while not q.empty():
+      callsign = q.get(False)
+      stationMap[callsign]['flag'] = True
+    
+    for callsign,station in stationMap.items():
+      # didn't respond in 3 seconds so we respawn
+      if station['flag'] == False:
+        if station['process'] != False and station['process'].is_alive():
+          station['process'].terminate()
+        station['process'] = False
+
+      if station['process'] == False:
+        station['process'] = p = Process(target=dospawn, args=(callsign, station['url'],))
+        p.start()
+
+      station['flag'] = False
+
+    time.sleep(3)
   
        
 spawner()
