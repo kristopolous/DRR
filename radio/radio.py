@@ -14,16 +14,29 @@ def cback(data):
 
 def dospawn(callsign, url):
   c = pycurl.Curl()
-  c.setopt(c.URL, 'http://live.scpr.org/kpcclive/')
+  c.setopt(c.URL, url)
   c.setopt(pycurl.WRITEFUNCTION, cback)
   c.perform()
   c.close()
 
 def spawner():
-  p = Process(target=dospawn, args=('kpcc', 'http://live.scpr.org/kpcclive/',))
-  p.start()
-  p.join()
+  q = Queue()
+  stationMap = {
+    'kpcc': {
+      'url':'http://live.scpr.org/kpcclive/',
+      'ts': time.time(),
+      'process': False
+    }
+  }
 
+  while not q.empty():
+    q.get(False)
+  
+  for callsign,station in stationMap.items():
+    if station['process'] == False:
+      station['process'] = p = Process(target=dospawn, args=(callsign, station['url'],))
+      p.start()
+      p.join()
   
        
 spawner()
