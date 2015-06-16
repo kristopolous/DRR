@@ -6,6 +6,7 @@ from StringIO import StringIO
 start_time = time.time()
 round_ix = 0
 q = Queue()
+storage_dir = "/var/radio/"
 
 def dospawn(callsign, url):
 
@@ -13,15 +14,20 @@ def dospawn(callsign, url):
     global round_ix, start_time
     q.put(callsign)
     round_ix += 1
+    stream.write(data)
     print str(float(round_ix) / (time.time() - start_time))
 
   print "Spawning - " + callsign
+
+  stream = open(storage_dir + callsign + "-" + str(int(time.time())) + ".mp3", 'w')
 
   c = pycurl.Curl()
   c.setopt(c.URL, url)
   c.setopt(pycurl.WRITEFUNCTION, cback)
   c.perform()
   c.close()
+
+  stream.close()
 
 def spawner():
   global q
