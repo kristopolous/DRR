@@ -48,6 +48,8 @@
                 <li><a class="button">KDVS</a></li>
                 <li><a class="button">KUSF</a></li>
                 <li><a class="button">WXYC</a></li>
+                <li><a class="button">WCBN</a></li>
+                <li><a class="button">WFMU</a></li>
                 <li><a class="button">KZSU</a></li>
                 <li><a class="button">KVRX</a></li>
               </ul>
@@ -56,16 +58,34 @@
 					<section class="feature right">
 						<a href="#" class="image icon fa-code"><img src="images/pic02.jpg" alt="" /></a>
 						<div class="content">
-							<h3>Pick a day and time</h3>
-							<p>Vitae natoque dictum etiam semper magnis enim feugiat amet curabitur tempor orci penatibus. Tellus erat mauris ipsum fermentum etiam vivamus eget. Nunc nibh morbi quis fusce lacus.</p>
+
+              <label for="date-start">day of week to record on</label>
+              <ul class="week-group">
+                <li><a class="button">Sun</a></li>
+                <li><a class="button">Mon</a></li>
+                <li><a class="button">Tue</a></li>
+                <li><a class="button">Wed</a></li>
+                <li><a class="button">Thu</a></li>
+                <li><a class="button">Fri</a></li>
+                <li><a class="button">Sat</a></li>
+              </ul>
+              <label for="time-start">Starting at</label>
+              <input class="text" type="text" name="time-start" id="time-start" value="" placeholder="ex: 3:30 PM" />
+              <label for="time-duration">For how long</label>
+              <ul class="week-group">
+                <li><a class="button">30 min</a></li>
+                <li><a class="button">1 hr</a></li>
+                <li><a class="button">1&frac12; hrs</a></li>
+                <li><a class="button">2 hrs</a></li>
+              </ul>
 						</div>
 					</section>
 					<section class="feature left">
 						<a href="#" class="image icon fa-mobile"><img src="images/pic03.jpg" alt="" /></a>
 						<div class="content">
 							<h3>Give it a name</h3>
-							<p>Vitae natoque dictum etiam semper magnis enim feugiat amet curabitur tempor orci penatibus. Tellus erat mauris ipsum fermentum etiam vivamus eget. Nunc nibh morbi quis fusce lacus.</p>
-						</div>
+              <label for="name">Show Name</label>
+              <input class="text" type="text" name="name" id="name" value="" placeholder="ex. Alien Air Music" />
 					</section>
 				</div>
 
@@ -219,11 +239,9 @@
 				-->
 
 				<footer class="major container 75%">
-					<h3>Get shady with science</h3>
-					<p>Vitae natoque dictum etiam semper magnis enim feugiat amet curabitur tempor orci penatibus. Tellus erat mauris ipsum fermentum etiam vivamus.</p>
-					<ul class="actions">
-						<li><a href="#" class="button">Join our crew</a></li>
-					</ul>
+          <h3>Your podcast is ready</h3>
+          <p>You can subscribe with the link below:</p>
+          <h3 id="podcast-url"></h3>
 				</footer>
 
 			</div>
@@ -233,11 +251,33 @@
 				<div class="container 75%">
 
 					<header class="major last">
-						<h2>Questions or comments?</h2>
+						<h2>About</h2>
+					</header>
+          <div style="text-align: left">
+            <p>Due to their limited resources, much of independent radio is not syndicated or available after broadcast.  We want to enjoy the benefits of time-shifted programming on these stations.</p>
+
+            <h3>How it works</h3>
+            <p>The web stream of the station is recorded and then saved for personal use.  Because of networking and storage overhead, we can support a limited number of stations simultaneously.</p>
+
+            <h3>Who are we</h3>
+            <p>I wish it was a "we", but it's just <a href="//github.com/kristopolous/DRR">me</a>.
+          I <b>Accept Donations</b> of VPS nodes (use the contact form below) and traditional money. Thanks for supporting indy radio in the 21st century.
+    <form action="https://www.paypal.com/cgi-bin/webscr" method="post" id="donate">
+      <input type="hidden" name="cmd" value="_s-xclick">
+      <input type="hidden" name="hosted_button_id" value="X4J4BD86VTXWS">
+      <input class="button" type="button" value="Donate via PayPal" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+      <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+    </form>
+          </div>
+
+					<header class="major last">
+						<h2>Questions or comments</h2>
 					</header>
 
-					<p>Vitae natoque dictum etiam semper magnis enim feugiat amet curabitur tempor
-					orci penatibus. Tellus erat mauris ipsum fermentum etiam vivamus.</p>
+          <p>If you know of a station with independent unique programming that you'd like to see added, please tell us about it!</p>
+
+
+          </p>
 
 					<form method="post" action="#">
 						<div class="row">

@@ -2343,13 +2343,34 @@
 		text-decoration: none;
 		text-transform: uppercase;
 	}
-  .radio-group li{ 
+  .week-group { 
+    font-size: 4px;
+    border-radius: 6px;
+    display:inline-block;
+    border: 1px solid white;
+    overflow:hidden;
+  }
+  .week-group li, .radio-group li{ 
     display: inline-block;
     margin-bottom: 0.25em;
   }
+  .week-group .button,
   .radio-group .button {
-		min-width: 5em;
+		font-size: 14px;
+		min-width: 6em;
+		padding: 0 0.75em;
   }
+#donate .button {
+  line-height: 1.5em;
+  padding: 0.5em;
+  min-width: 6em;
+  margin-top: 0
+}
+  .week-group .button {
+		border-radius: 0;
+		min-width: 2em;
+  }
+    
 
 		input[type="submit"]:hover,
 		input[type="reset"]:hover,
@@ -2609,7 +2630,7 @@
 		background-position: top center;
 		background-repeat: repeat-x;
 		background-size: 3200px 460px;
-		color: rgba(255, 255, 255, 0.8);
+		color: rgba(255, 255, 255, 1);
 		/*
 			Since the SVG background occupies a lot of vertical space, we'll
 			add additional top padding (to move our content out of its way)
@@ -3133,3 +3154,7 @@
 				}
 
 	}
+form#donate {
+text-align:center;
+margin-top: 0;
+}
