@@ -2343,6 +2343,13 @@
 		text-decoration: none;
 		text-transform: uppercase;
 	}
+  .radio-group li{ 
+    display: inline-block;
+    margin-bottom: 0.25em;
+  }
+  .radio-group .button {
+		min-width: 5em;
+  }
 
 		input[type="submit"]:hover,
 		input[type="reset"]:hover,
