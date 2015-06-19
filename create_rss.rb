@@ -22,12 +22,20 @@ def product_xml
         "type" => "application/rss+xml", 
         "href" => "http://feeds.feedburner.com/AgainstTheGrainHighQualityPodcast"
       }                    
-      
-      channel.node do | l |
-        l.name "Hi"
-      end
-      channel.name "Test"
 
+      2.times do
+        channel.item do | episode |
+          episode.title "Some Title"
+          episode.link "some linke"
+          episode.description "some description"
+          episode.pubDate "some date"
+          episode.media :content, {
+            "url" => "someurl",
+            "fileSize" => 123,
+            "type" => "audio/mpeg"
+          } 
+        end
+      end
     end
   end
 end
