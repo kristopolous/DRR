@@ -16,7 +16,13 @@ def product_xml
       channel.link "http://somelink"
       channel.description "Some desc"
       channel.language "en"
-    
+      channel.atom10 :link, {
+        "xmlns:atom10" => "http://www.w3.org/2005/Atom",
+        "rel" =>  "self",
+        "type" => "application/rss+xml", 
+        "href" => "http://feeds.feedburner.com/AgainstTheGrainHighQualityPodcast"
+      }                    
+      
       channel.node do | l |
         l.name "Hi"
       end
