@@ -165,18 +165,24 @@
 			<script src="assets/js/jquery.min.js"></script>
 			<script src="assets/js/skel.min.js"></script>
 			<script src="assets/js/util.js"></script>
-			<script src="assets/js/evda.min.js"></script>
+			<script src="assets/js/evda.js"></script>
 			<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
 			<script src="assets/js/main.js"></script>
 
       <script>
       var ev = EvDa();
 
+      ev('', function(map) {
+        for(var key in map) {
+          $("#" + key + " a").removeClass("selected");
+          $("#" + key + " a:contains(" + map[key] + ")").addClass("selected");
+        }
+      });
+
       $(function() {
         $(".group a").click(function(){
-          $(this).addClass('selected').siblings().removeClass('selected');
           var node = $(this).parentsUntil("div").last();
-          console.log(node[0].id);
+          ev(node[0].id, this.innerHTML);
         });
       });
       </script>
