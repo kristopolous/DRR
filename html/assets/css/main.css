@@ -2155,6 +2155,7 @@
 				z-index: 1;
 			}
 
+      /*
 			.image.icon:hover:before {
 				-moz-transform: translateZ(1em);
 				-webkit-transform: translateZ(1em);
@@ -2165,6 +2166,7 @@
 			.image.icon:hover:after {
 				opacity: 1;
 			}
+      */
 
 	span.image.icon {
 		cursor: default;
@@ -2378,6 +2380,11 @@
 		.button:hover {
 			background: #6e6570;
 		}
+    .selected:hover,
+    .selected {
+		  color: #544d55;
+			background: #D0D3CE; 
+    }
 
 		input[type="submit"]:active,
 		input[type="reset"]:active,
