@@ -762,7 +762,8 @@ function EvDa (imported) {
               callback, 
               pub.context, 
               hasvalue ? _opts['value'] : meta.value, 
-              meta );
+              meta,
+              meta.meta);
           });
         },
         // Invoke will also get done
@@ -803,7 +804,7 @@ function EvDa (imported) {
               testIx++;
 
               if (coroutine(meta, false)) {
-                res = eventMap[ testKey ][ testIx ].call ( pub.context, (hasvalue ? _opts['value'] : meta.value), meta );
+                res = eventMap[ testKey ][ testIx ].call ( pub.context, (hasvalue ? _opts['value'] : meta.value), meta, meta.meta );
 
                 if(res === true || res === false) {
                   meta(res);
@@ -839,7 +840,8 @@ function EvDa (imported) {
             res = eventMap[ testKey ][ testIx ].call ( 
               pub.context, 
               (hasvalue ? _opts['value'] : meta.value), 
-              meta
+              meta,
+              meta.meta
             );
 
             if(res === true || res === false) {
