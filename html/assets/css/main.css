@@ -2402,6 +2402,10 @@
 			color: #544d55;
 		}
 
+	  input[type="text"].error {
+      border-color: red;
+    }
+
 			input[type="submit"].alt:hover,
 			input[type="reset"].alt:hover,
 			input[type="button"].alt:hover,
