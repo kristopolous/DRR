@@ -18,6 +18,10 @@ def server():
     def hello():
           return "Hello World!"
 
+    @app.route('/<weekday>/<start>/<duration>/<name>')
+    def stream():
+        return weekday + start + duration + name
+
     app.run()
 
 def dospawn(callsign, url):
