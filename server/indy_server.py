@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import pycurl
 import time
+import ConfigParser
+
 from multiprocessing import Process, Queue
 from StringIO import StringIO
 start_time = time.time()
