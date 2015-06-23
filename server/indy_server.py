@@ -2,6 +2,7 @@
 import pycurl
 import time
 import ConfigParser
+from flask import Flask
 
 from multiprocessing import Process, Queue
 from StringIO import StringIO
@@ -9,6 +10,15 @@ start_time = time.time()
 round_ix = 0
 q = Queue()
 storage_dir = "/var/radio/"
+
+def server():
+    app = Flask(__name__)
+
+    @app.route("/")
+    def hello():
+          return "Hello World!"
+
+    app.run()
 
 def dospawn(callsign, url):
 
@@ -40,6 +50,8 @@ def spawner():
       'process': False
     }
   }
+
+  server_pid = Process(target=server)
 
   while True:
     
