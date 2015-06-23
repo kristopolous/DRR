@@ -2362,10 +2362,19 @@
 		min-width: 6em;
 		padding: 0 0.75em;
   }
-#donate .button {
+#donate { 
+  display: inline-block;
+}
+.active-list {
+  text-align: center
+}
+.active-list .button {
   line-height: 1.5em;
   padding: 0.5em;
   min-width: 6em;
+  font-size:18px;
+  margin: 0 0.5em;
+  font-weight: normal; 
   margin-top: 0
 }
   .week-group .button {
