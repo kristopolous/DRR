@@ -3,7 +3,7 @@ import pycurl
 import time
 import ConfigParser
 from flask import Flask
-
+import sys
 from multiprocessing import Process, Queue
 from StringIO import StringIO
 start_time = time.time()
@@ -23,7 +23,7 @@ def server():
 def dospawn(callsign, url):
 
   def cback(data): 
-    global round_ix, start_time
+    global round_ix, storage_dir, start_time
     q.put(callsign)
     round_ix += 1
     stream.write(data)
@@ -31,7 +31,11 @@ def dospawn(callsign, url):
 
   print "Spawning - " + callsign
 
-  stream = open(storage_dir + callsign + "-" + str(int(time.time())) + ".mp3", 'w')
+  try:
+      stream = open(storage_dir + callsign + "-" + str(int(time.time())) + ".mp3", 'w')
+  except:
+      print "Unable to open " + storage_dir + ". Maybe sudo mkdir it?"
+      sys.exit(-1)
 
   c = pycurl.Curl()
   c.setopt(c.URL, url)
