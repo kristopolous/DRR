@@ -7,6 +7,17 @@ import shutil
 import sqlite3
 import sys
 import time
+import socket
+
+origGetAddrInfo = socket.getaddrinfo
+
+def getAddrInfoWrapper(host, port, family=0, socktype=0, proto=0, flags=0):
+    return origGetAddrInfo(host, port, socket.AF_INET, socktype, proto, flags)
+
+# replace the original socket.getaddrinfo by our version
+socket.getaddrinfo = getAddrInfoWrapper
+
+import urllib2
 
 from flask import Flask, request, jsonify
 from multiprocessing import Process, Queue
@@ -33,10 +44,19 @@ def prune():
 
   print "Found %d files older than %s days." % (count, g_config['archivedays'])
 
-def get_time_offset(long, lat, when):
+def get_time_offset():
+  global g_config
+  when = int(time.time())
+
   api_key='AIzaSyBkyEMoXrSYTtIi8bevEIrSxh1Iig5V_to'
-  url = "https://maps.googleapis.com/maps/api/timezone/json?location=%s,%s&timestamp=%d&key=%s" % (long, lat, when, api_key)
+  url = "https://maps.googleapis.com/maps/api/timezone/json?location=%s,%s&timestamp=%d&key=%s" % (g_config['lat'], g_config['long'], when, api_key)
  
+  print url
+  f = urllib2.urlopen(url)
+  print "here"
+  myfile = f.read()
+  print myfile
+
   return 0
 
 def server():
@@ -145,9 +165,11 @@ def ConfigSectionMap(section, Config):
       dict1[option] = Config.get(section, option)
       if dict1[option] == -1:
         DebugPrint("skip: %s" % option)
+
     except:
       print("exception on %s!" % option)
       dict1[option] = None
+
   return dict1  
 
 def startup():
@@ -161,6 +183,8 @@ def startup():
   Config = ConfigParser.ConfigParser()
   Config.read(args.config)
   g_config = ConfigSectionMap('Main', Config)
+  get_time_offset()
+  sys.exit(0)
 
 startup()      
 spawner()
