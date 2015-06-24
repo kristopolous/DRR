@@ -17,6 +17,15 @@ g_round_ix = 0
 g_queue = Queue()
 g_config = {}
 
+def prune():
+  global g_config
+
+def get_time_offset(long, lat, when):
+  api_key='AIzaSyBkyEMoXrSYTtIi8bevEIrSxh1Iig5V_to'
+  url = "https://maps.googleapis.com/maps/api/timezone/json?location=%s,%s&timestamp=%d&key=%s" % (long, lat, when, api_key)
+ 
+  return 0
+
 def server():
     app = Flask(__name__)
 
