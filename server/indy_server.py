@@ -14,13 +14,15 @@ storage_dir = "/var/radio/"
 def server():
     app = Flask(__name__)
 
-    @app.route("/")
-    def hello():
-          return "Hello World!"
+    @app.route('/heartbeat')
+    def heartbeat():
+        return "hi" + request.remote_addr
 
+    
     @app.route('/<weekday>/<start>/<duration>/<name>')
-    def stream():
+    def stream(weekday, start, duration, name):
         return weekday + start + duration + name
+    
 
     app.run()
 
@@ -60,6 +62,7 @@ def spawner():
   }
 
   server_pid = Process(target=server)
+  server_pid.start()
 
   while True:
     
