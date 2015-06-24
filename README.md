@@ -2,7 +2,7 @@
 
 Indycast **Radio** Recorder
 
-This is the source code for [indycast.net](indycast.net).  
+This is the source code for [indycast.net](http://indycast.net).  
 
 Indycast is a federation of servers which records radio streams for later listening on a per-person basis through the use of custom-generated podcasts.
 
