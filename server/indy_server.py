@@ -9,10 +9,11 @@ from flask import Flask, request, jsonify
 from multiprocessing import Process, Queue
 from StringIO import StringIO
 
-start_time = time.time()
+g_start_time = time.time()
 round_ix = 0
 q = Queue()
-storage_dir = "/var/radio/"
+g_storage_dir = "/var/radio/"
+g_config
 
 def server():
     app = Flask(__name__)
@@ -35,18 +36,18 @@ def server():
 def dospawn(callsign, url):
 
   def cback(data): 
-    global round_ix, storage_dir, start_time
+    global round_ix, g_storage_dir, g_start_time
     q.put(callsign)
     round_ix += 1
     stream.write(data)
-    print str(float(round_ix) / (time.time() - start_time))
+    print str(float(round_ix) / (time.time() - g_start_time))
 
   print "Spawning - " + callsign
 
   try:
-      stream = open(storage_dir + callsign + "-" + str(int(time.time())) + ".mp3", 'w')
+      stream = open(g_storage_dir + callsign + "-" + str(int(time.time())) + ".mp3", 'w')
   except:
-      print "Unable to open " + storage_dir + ". Maybe sudo mkdir it?"
+      print "Unable to open " + g_storage_dir + ". Maybe sudo mkdir it?"
       sys.exit(-1)
 
   c = pycurl.Curl()
@@ -90,7 +91,21 @@ def spawner():
       station['flag'] = False
 
     time.sleep(3)
-  
+
+# From https://wiki.python.org/moin/ConfigParserExamples
+def ConfigSectionMap(section, Config):
+    dict1 = {}
+    options = Config.options(section)
+    for option in options:
+        try:
+            dict1[option] = Config.get(section, option)
+            if dict1[option] == -1:
+                DebugPrint("skip: %s" % option)
+        except:
+            print("exception on %s!" % option)
+            dict1[option] = None
+    return dict1  
+
 def startup():
   parser = argparse.ArgumentParser()
   parser.add_argument("-c", "--config", default="./indy_config.txt", help="Configuration file (default ./indy_config.txt)")
@@ -99,6 +114,7 @@ def startup():
 
   Config = ConfigParser.ConfigParser()
   Config.read(args.config)
+  g_config = ConfigSectionMap('Main', Config)
 
 startup()      
 spawner()
