@@ -12,7 +12,7 @@ import socket
 origGetAddrInfo = socket.getaddrinfo
 
 def getAddrInfoWrapper(host, port, family=0, socktype=0, proto=0, flags=0):
-    return origGetAddrInfo(host, port, socket.AF_INET, socktype, proto, flags)
+  return origGetAddrInfo(host, port, socket.AF_INET, socktype, proto, flags)
 
 # replace the original socket.getaddrinfo by our version
 socket.getaddrinfo = getAddrInfoWrapper
@@ -27,6 +27,7 @@ g_start_time = time.time()
 g_round_ix = 0
 g_queue = Queue()
 g_config = {}
+g_last = {}
 
 def prune():
   global g_config
@@ -53,7 +54,6 @@ def get_time_offset():
  
   print url
   f = urllib2.urlopen(url)
-  print "here"
   myfile = f.read()
   print myfile
 
@@ -111,7 +111,7 @@ def ago(duration):
   return time.time() - duration
 
 def spawner():
-  global g_queue, g_config
+  global g_queue, g_config, g_last
 
   station = {
     'callsign': g_config['callsign'],
@@ -120,8 +120,9 @@ def spawner():
     'process': False
   }
 
-  last = {
-    'prune': 0
+  g_last = {
+    'prune': 0,
+    'offset': 0
   }
 
   minute = 60
@@ -149,9 +150,13 @@ def spawner():
 
     station['flag'] = False
 
-    if last['prune'] < ago(1 * day):
+    if g_last['prune'] < ago(1 * day):
       prune()
-      last['prune'] = time.time()
+      g_last['prune'] = time.time()
+
+    if g_last['offset'] < ago(1 * day):
+      get_time_offset()
+      g_last['prune'] = time.time()
 
     time.sleep(3)
 
