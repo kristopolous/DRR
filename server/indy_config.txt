@@ -1,3 +1,4 @@
+[Main]
 callsign=kpcc
 long=-118.397920
 lat=33.955766
