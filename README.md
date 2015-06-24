@@ -1,8 +1,12 @@
-# DRR
+# indycast.net
 
-Digital **Radio** Recorder
+Indycast **Radio** Recorder
 
-I enjoy listening to some radio programs which I often forget to tune into or are at inappropriate times.
+This is the source code for [indycast.net](indycast.net).  
+
+Indycast is a federation of servers which records radio streams for later listening on a per-person basis through the use of custom-generated podcasts.
+
+The servers for indycast are independently maintained by volunteers.
 
 ## Notes
 
