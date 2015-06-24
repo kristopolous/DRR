@@ -3,10 +3,12 @@ import pycurl
 import time
 import ConfigParser
 import sys
+import argparse
 
 from flask import Flask, request, jsonify
 from multiprocessing import Process, Queue
 from StringIO import StringIO
+
 start_time = time.time()
 round_ix = 0
 q = Queue()
@@ -89,5 +91,11 @@ def spawner():
 
     time.sleep(3)
   
-       
+def startup():
+  parser = argparse.ArgumentParser()
+  parser.add_argument("-c", "--config", help="Configuration file (default ./indy_config.txt)")
+  parser.add_argument("-v", "--version", help="Version info")
+  args = parser.parse_args()
+
+startup()      
 spawner()
