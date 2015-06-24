@@ -93,9 +93,12 @@ def spawner():
   
 def startup():
   parser = argparse.ArgumentParser()
-  parser.add_argument("-c", "--config", help="Configuration file (default ./indy_config.txt)")
+  parser.add_argument("-c", "--config", default="./indy_config.txt", help="Configuration file (default ./indy_config.txt)")
   parser.add_argument("-v", "--version", help="Version info")
   args = parser.parse_args()
+
+  Config = ConfigParser.ConfigParser()
+  Config.read(args.config)
 
 startup()      
 spawner()
