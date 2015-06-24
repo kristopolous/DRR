@@ -20,6 +20,7 @@ socket.getaddrinfo = getAddrInfoWrapper
 
 import urllib2
 
+from datetime import datetime
 from flask import Flask, request, jsonify
 from multiprocessing import Process, Queue
 from StringIO import StringIO
@@ -33,12 +34,19 @@ g_last = {}
 """
 schema
 
-  start minute (1 - 10080) on a weekly basis starting 1 minute after 11:59PM saturday
-  duration (in minutes)
+  start minute (1 - 10080) on a weekly basis starting 1 minute after 11:59PM sunday
+  end minute 
   created_at
   accessed_at
 
 """
+
+def now():
+  ts = datetime.datetime.utcnow()
+  return ts.weekday() * (24 * 60 * 60) + ts.utcnow().hour * 60 + ts.utcnow().minute
+
+def should_be_recording():
+  
 def prune():
   global g_config
 
