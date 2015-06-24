@@ -2,8 +2,9 @@
 import pycurl
 import time
 import ConfigParser
-from flask import Flask
 import sys
+
+from flask import Flask, request, jsonify
 from multiprocessing import Process, Queue
 from StringIO import StringIO
 start_time = time.time()
@@ -16,7 +17,10 @@ def server():
 
     @app.route('/heartbeat')
     def heartbeat():
-        return "hi" + request.remote_addr
+        print type(request.remote_addr)
+        if request.remote_addr != '127.0.0.1':
+            return '', 403
+        return 'ok', 200
 
     
     @app.route('/<weekday>/<start>/<duration>/<name>')
