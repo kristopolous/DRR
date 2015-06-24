@@ -13,7 +13,7 @@ g_start_time = time.time()
 g_round_ix = 0
 g_queue = Queue()
 g_storage_dir = "/var/radio/"
-g_config
+g_config = {}
 
 def server():
     app = Flask(__name__)
@@ -61,14 +61,12 @@ def dospawn(callsign, url):
 
 def spawner():
   global g_queue, g_config
+
   stationMap = {}
-  stationMap[g_conf
-    g_config[
-    'kpcc': {
-      'url':'http://live.scpr.org/kpcclive/',
-      'flag': False,
-      'process': False
-    }
+  stationMap[g_config['callsign']] = {
+    'url': g_config['stream'],
+    'flag': False,
+    'process': False
   }
 
   server_pid = Process(target=server)
