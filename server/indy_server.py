@@ -27,28 +27,28 @@ def get_time_offset(long, lat, when):
   return 0
 
 def server():
-    app = Flask(__name__)
+  app = Flask(__name__)
 
-    @app.route('/heartbeat')
-    def heartbeat():
-        global g_config
+  @app.route('/heartbeat')
+  def heartbeat():
+    global g_config
 
-        if request.remote_addr != '127.0.0.1':
-            return '', 403
+    if request.remote_addr != '127.0.0.1':
+      return '', 403
 
-        stats = {
-          'disk': sum(os.path.getsize(g_config['storage'] + f) for f in os.listdir(g_config['storage']) if os.path.isfile(g_config['storage'] + f))
-        }
+    stats = {
+      'disk': sum(os.path.getsize(g_config['storage'] + f) for f in os.listdir(g_config['storage']) if os.path.isfile(g_config['storage'] + f))
+    }
 
-        return jsonify(stats), 200
-    
-    @app.route('/<weekday>/<start>/<duration>/<name>')
-    def stream(weekday, start, duration, name):
-        return weekday + start + duration + name
+    return jsonify(stats), 200
+  
+  @app.route('/<weekday>/<start>/<duration>/<name>')
+  def stream(weekday, start, duration, name):
+    return weekday + start + duration + name
 
-    app.run(debug=True)
+  app.run(debug=True)
 
-def dospawn(callsign, url):
+def download(callsign, url):
 
   def cback(data): 
     global g_round_ix, g_config, g_start_time
@@ -77,8 +77,8 @@ def dospawn(callsign, url):
 def spawner():
   global g_queue, g_config
 
-  stationMap = {}
-  stationMap[g_config['callsign']] = {
+  station = {
+    'callsign': g_config['callsign'],
     'url': g_config['stream'],
     'flag': False,
     'process': False
@@ -91,36 +91,36 @@ def spawner():
     
     while not g_queue.empty():
       callsign = g_queue.get(False)
-      stationMap[callsign]['flag'] = True
+      station['flag'] = True
     
-    for callsign,station in stationMap.items():
-      # didn't respond in 3 seconds so we respawn
-      if station['flag'] == False:
-        if station['process'] != False and station['process'].is_alive():
-          station['process'].terminate()
-        station['process'] = False
+    # didn't respond in 3 seconds so we respawn
+    if station['flag'] == False:
+      if station['process'] != False and station['process'].is_alive():
+        station['process'].terminate()
+      station['process'] = False
 
-      if station['process'] == False:
-        station['process'] = p = Process(target=dospawn, args=(callsign, station['url'],))
-        p.start()
+    if station['process'] == False:
+      station['process'] = p = Process(target=download, args=(callsign, station['url'],))
+      p.start()
 
-      station['flag'] = False
+    station['flag'] = False
 
     time.sleep(3)
 
 # From https://wiki.python.org/moin/ConfigParserExamples
 def ConfigSectionMap(section, Config):
-    dict1 = {}
-    options = Config.options(section)
-    for option in options:
-        try:
-            dict1[option] = Config.get(section, option)
-            if dict1[option] == -1:
-                DebugPrint("skip: %s" % option)
-        except:
-            print("exception on %s!" % option)
-            dict1[option] = None
-    return dict1  
+  dict1 = {}
+  options = Config.options(section)
+
+  for option in options:
+    try:
+      dict1[option] = Config.get(section, option)
+      if dict1[option] == -1:
+        DebugPrint("skip: %s" % option)
+    except:
+      print("exception on %s!" % option)
+      dict1[option] = None
+  return dict1  
 
 def startup():
   global g_config
