@@ -10,8 +10,8 @@ from multiprocessing import Process, Queue
 from StringIO import StringIO
 
 g_start_time = time.time()
-round_ix = 0
-q = Queue()
+g_round_ix = 0
+g_queue = Queue()
 g_storage_dir = "/var/radio/"
 g_config
 
@@ -36,11 +36,12 @@ def server():
 def dospawn(callsign, url):
 
   def cback(data): 
-    global round_ix, g_storage_dir, g_start_time
-    q.put(callsign)
-    round_ix += 1
+    global g_round_ix, g_storage_dir, g_start_time
+
+    g_queue.put(callsign)
+    g_round_ix += 1
     stream.write(data)
-    print str(float(round_ix) / (time.time() - g_start_time))
+    print str(float(g_round_ix) / (time.time() - g_start_time))
 
   print "Spawning - " + callsign
 
@@ -59,8 +60,10 @@ def dospawn(callsign, url):
   stream.close()
 
 def spawner():
-  global q
-  stationMap = {
+  global g_queue, g_config
+  stationMap = {}
+  stationMap[g_conf
+    g_config[
     'kpcc': {
       'url':'http://live.scpr.org/kpcclive/',
       'flag': False,
@@ -73,8 +76,8 @@ def spawner():
 
   while True:
     
-    while not q.empty():
-      callsign = q.get(False)
+    while not g_queue.empty():
+      callsign = g_queue.get(False)
       stationMap[callsign]['flag'] = True
     
     for callsign,station in stationMap.items():
@@ -107,6 +110,8 @@ def ConfigSectionMap(section, Config):
     return dict1  
 
 def startup():
+  global g_config
+
   parser = argparse.ArgumentParser()
   parser.add_argument("-c", "--config", default="./indy_config.txt", help="Configuration file (default ./indy_config.txt)")
   parser.add_argument("-v", "--version", help="Version info")
