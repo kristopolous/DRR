@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import argparse
 import ConfigParser
+import json
 import os
 import pycurl
 import shutil
@@ -29,8 +30,18 @@ g_queue = Queue()
 g_config = {}
 g_last = {}
 
+"""
+schema
+
+  start minute (1 - 10080) on a weekly basis starting 1 minute after 11:59PM saturday
+  duration (in minutes)
+  created_at
+  accessed_at
+
+"""
 def prune():
   global g_config
+
   duration = int(g_config['archivedays']) * 60 * 60 * 24
   cutoff = time.time() - duration
 
@@ -52,12 +63,15 @@ def get_time_offset():
   api_key='AIzaSyBkyEMoXrSYTtIi8bevEIrSxh1Iig5V_to'
   url = "https://maps.googleapis.com/maps/api/timezone/json?location=%s,%s&timestamp=%d&key=%s" % (g_config['lat'], g_config['long'], when, api_key)
  
-  print url
   f = urllib2.urlopen(url)
   myfile = f.read()
-  print myfile
+  opts = json.loads(myfile)
 
-  return 0
+  if opts['status'] == 'OK': 
+    g_config['offset'] = opts['rawOffset']
+    return True
+
+  return False
 
 def server():
   app = Flask(__name__)
@@ -133,7 +147,15 @@ def spawner():
   server_pid.start()
 
   while True:
-    
+
+    if g_last['prune'] < ago(1 * day):
+      prune()
+      g_last['prune'] = time.time()
+
+    if g_last['offset'] < ago(1 * day):
+      get_time_offset()
+      g_last['offset'] = time.time()
+
     while not g_queue.empty():
       b = g_queue.get(False)
       station['flag'] = True
@@ -149,14 +171,6 @@ def spawner():
       p.start()
 
     station['flag'] = False
-
-    if g_last['prune'] < ago(1 * day):
-      prune()
-      g_last['prune'] = time.time()
-
-    if g_last['offset'] < ago(1 * day):
-      get_time_offset()
-      g_last['prune'] = time.time()
 
     time.sleep(3)
 
