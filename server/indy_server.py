@@ -19,6 +19,19 @@ g_config = {}
 
 def prune():
   global g_config
+  duration = int(g_config['archivedays']) * 60 * 60 * 24
+  cutoff = time.time() - duration
+
+  count = 0
+  for f in os.listdir(g_config['storage']): 
+    entry = g_config['storage'] + f
+  
+    if os.path.isfile(entry) and os.path.getctime(entry) < cutoff:
+      print "Prune: %s" % (entry)
+      os.unlink(entry)
+      count += 1 
+
+  print "Found %d files older than %s days." % (count, g_config['archivedays'])
 
 def get_time_offset(long, lat, when):
   api_key='AIzaSyBkyEMoXrSYTtIi8bevEIrSxh1Iig5V_to'
@@ -53,7 +66,7 @@ def download(callsign, url):
   def cback(data): 
     global g_round_ix, g_config, g_start_time
 
-    g_queue.put(callsign)
+    g_queue.put(True)
     g_round_ix += 1
     stream.write(data)
     print str(float(g_round_ix) / (time.time() - g_start_time))
@@ -61,10 +74,10 @@ def download(callsign, url):
   print "Spawning - " + callsign
 
   try:
-      stream = open(g_config['storage'] + callsign + "-" + str(int(time.time())) + ".mp3", 'w')
+    stream = open(g_config['storage'] + callsign + "-" + str(int(time.time())) + ".mp3", 'w')
   except:
-      print "Unable to open " + g_config['storage'] + ". Maybe sudo mkdir it?"
-      sys.exit(-1)
+    print "Unable to open " + g_config['storage'] + ". Maybe sudo mkdir it?"
+    sys.exit(-1)
 
   c = pycurl.Curl()
   c.setopt(c.URL, url)
@@ -73,6 +86,9 @@ def download(callsign, url):
   c.close()
 
   stream.close()
+
+def ago(duration):
+  return time.time() - duration
 
 def spawner():
   global g_queue, g_config
@@ -84,13 +100,21 @@ def spawner():
     'process': False
   }
 
+  last = {
+    'prune': 0
+  }
+
+  minute = 60
+  hour = 60 * minute
+  day = 24 * hour
+
   server_pid = Process(target=server)
   server_pid.start()
 
   while True:
     
     while not g_queue.empty():
-      callsign = g_queue.get(False)
+      b = g_queue.get(False)
       station['flag'] = True
     
     # didn't respond in 3 seconds so we respawn
@@ -100,10 +124,14 @@ def spawner():
       station['process'] = False
 
     if station['process'] == False:
-      station['process'] = p = Process(target=download, args=(callsign, station['url'],))
+      station['process'] = p = Process(target=download, args=(g_config['callsign'], station['url'],))
       p.start()
 
     station['flag'] = False
+
+    if last['prune'] < ago(1 * day):
+      prune()
+      last['prune'] = time.time()
 
     time.sleep(3)
 
