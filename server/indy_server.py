@@ -1,9 +1,12 @@
 #!/usr/bin/env python
-import pycurl
-import time
-import ConfigParser
-import sys
 import argparse
+import ConfigParser
+import os
+import pycurl
+import shutil
+import sqlite3
+import sys
+import time
 
 from flask import Flask, request, jsonify
 from multiprocessing import Process, Queue
@@ -12,7 +15,6 @@ from StringIO import StringIO
 g_start_time = time.time()
 g_round_ix = 0
 g_queue = Queue()
-g_storage_dir = "/var/radio/"
 g_config = {}
 
 def server():
@@ -20,23 +22,27 @@ def server():
 
     @app.route('/heartbeat')
     def heartbeat():
-        print type(request.remote_addr)
+        global g_config
+
         if request.remote_addr != '127.0.0.1':
             return '', 403
-        return 'ok', 200
 
+        stats = {
+          'disk': sum(os.path.getsize(g_config['storage'] + f) for f in os.listdir(g_config['storage']) if os.path.isfile(g_config['storage'] + f))
+        }
+
+        return jsonify(stats), 200
     
     @app.route('/<weekday>/<start>/<duration>/<name>')
     def stream(weekday, start, duration, name):
         return weekday + start + duration + name
-    
 
-    app.run()
+    app.run(debug=True)
 
 def dospawn(callsign, url):
 
   def cback(data): 
-    global g_round_ix, g_storage_dir, g_start_time
+    global g_round_ix, g_config, g_start_time
 
     g_queue.put(callsign)
     g_round_ix += 1
@@ -46,9 +52,9 @@ def dospawn(callsign, url):
   print "Spawning - " + callsign
 
   try:
-      stream = open(g_storage_dir + callsign + "-" + str(int(time.time())) + ".mp3", 'w')
+      stream = open(g_config['storage'] + callsign + "-" + str(int(time.time())) + ".mp3", 'w')
   except:
-      print "Unable to open " + g_storage_dir + ". Maybe sudo mkdir it?"
+      print "Unable to open " + g_config['storage'] + ". Maybe sudo mkdir it?"
       sys.exit(-1)
 
   c = pycurl.Curl()
