@@ -44,7 +44,7 @@ schema
 """
 
 def now():
-  ts = datetime.datetime.utcnow()
+  ts = datetime.utcnow()
   return ts.weekday() * (24 * 60 * 60) + ts.utcnow().hour * 60 + ts.utcnow().minute
 
 def db_connect():
@@ -73,7 +73,7 @@ def register_intent(minute, duration):
   res = c.execute('select id from intents where key = %s' % key).fetchone()
 
   if res == None:
-    c.execute('insert into intents(key, start, end) values(%s, %d, %d)' % (key, minute, duration))
+    c.execute('insert into intents(key, start, end) values(%s, %d, %d)' % (key, minute, minute + duration))
 
   else:
     c.execute('update intents set accessed_at=(current_timestamp) where id=%d' % res[0]) 
@@ -82,15 +82,22 @@ def register_intent(minute, duration):
   return True
   
 def should_be_recording():
-  return True
+  global g_db
+
+  current_minute = now()
+
+  intent_count = g_db['c'].execute(
+    'select count(*) from intents where start >= %d and end <= %d' % (current_minute, current_minute)).fetchone()[0]
+
+  return intent_count != 0
   
 def prune():
-  global g_config
+  global g_config, g_db
 
   duration = int(g_config['archivedays']) * 60 * 60 * 24
   cutoff = time.time() - duration
 
-  ## Dumping old streams
+  # Dumping old streams
   count = 0
   for f in os.listdir('.'): 
     entry = g_config['storage'] + f
@@ -100,6 +107,7 @@ def prune():
       os.unlink(entry)
       count += 1 
 
+  # Dump old intents (TODO)
   logging.info("Found %d files older than %s days." % (count, g_config['archivedays']))
 
 def get_time_offset():
@@ -154,9 +162,9 @@ def download(callsign, url):
     g_queue.put(True)
     g_round_ix += 1
     stream.write(data)
-    print str(float(g_round_ix) / (time.time() - g_start_time))
+    logging.debug(str(float(g_round_ix) / (time.time() - g_start_time)))
 
-  print "Spawning - " + callsign
+  logging.info("Spawning - %s" % callsign)
 
   fname = callsign + "-" + str(int(time.time())) + ".mp3"
   try:
@@ -295,19 +303,21 @@ def startup():
 
   if os.path.isdir(g_config['storage']):
     os.chdir(g_config['storage'])
+
   else:
     logging.warning("Can't find %s. Using current directory." % g_config['storage'])
 
   db_connect()
   register_intent(123,321)
+  print should_be_recording()
   sys.exit(0)
 
   get_time_offset()
+  shutdown()
   sys.exit(0)
 
 def shutdown():
   global g_db, g_queue
-  g_db['c'].commit()
   g_db['conn'].close()
   g_queue.put('shutdown')
 
