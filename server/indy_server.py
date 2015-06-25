@@ -30,6 +30,7 @@ g_round_ix = 0
 g_queue = Queue()
 g_config = {}
 g_last = {}
+g_conn = False
 
 """
 schema
@@ -46,6 +47,7 @@ def now():
   return ts.weekday() * (24 * 60 * 60) + ts.utcnow().hour * 60 + ts.utcnow().minute
 
 def register_intent(minute, duration):
+  
 
 def should_be_recording():
   
@@ -236,7 +238,7 @@ def ConfigSectionMap(section, Config):
   return dict1  
 
 def startup():
-  global g_config
+  global g_config, g_conn
 
   parser = argparse.ArgumentParser()
   parser.add_argument("-c", "--config", default="./indy_config.txt", help="Configuration file (default ./indy_config.txt)")
@@ -246,6 +248,12 @@ def startup():
   Config = ConfigParser.ConfigParser()
   Config.read(args.config)
   g_config = ConfigSectionMap('Main', Config)
+
+  if os.path.isdir(g_config['storage']):
+    os.chdir(g_config['storage'])
+
+  g_conn = sqlite3.connect('config.db')
+
   get_time_offset()
   sys.exit(0)
 
