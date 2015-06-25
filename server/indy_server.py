@@ -2,6 +2,7 @@
 import argparse
 import ConfigParser
 import json
+import logging
 import os
 import pycurl
 import shutil
@@ -46,10 +47,14 @@ def now():
   ts = datetime.datetime.utcnow()
   return ts.weekday() * (24 * 60 * 60) + ts.utcnow().hour * 60 + ts.utcnow().minute
 
-def db_schema():
+def db_connect():
   global g_db
 
-  g_db.execute("create table if not exist intents(start integer, end integer, created_at timestamp default current_timestamp, accessed_at timestamp default current_timestamp)");
+  conn = sqlite3.connect('config.db')
+  g_db = {'conn': conn, 'c': conn.cursor()}
+
+  g_db.c.execute("create table if not exist intents(start integer, end integer, created_at timestamp default current_timestamp, accessed_at timestamp default current_timestamp)");
+  g_db.conn.commit()
 
 
 def register_intent(minute, duration):
@@ -267,9 +272,10 @@ def startup():
 
   if os.path.isdir(g_config['storage']):
     os.chdir(g_config['storage'])
+  else:
+    logging.warning("Can't find %s. Using current directory" % g_config['storage'])
 
-  conn = sqlite3.connect('config.db')
-  g_db = {'conn': conn, 'c': conn.cursor()}
+  db_connect()
 
   get_time_offset()
   sys.exit(0)
