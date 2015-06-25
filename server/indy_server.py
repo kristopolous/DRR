@@ -53,11 +53,22 @@ def db_connect():
   conn = sqlite3.connect('config.db')
   g_db = {'conn': conn, 'c': conn.cursor()}
 
-  g_db['c'].execute("create table if not exists intents(start integer, end integer, created_at timestamp default current_timestamp, accessed_at timestamp default current_timestamp)");
+  g_db['c'].execute("""create table if not exists intents(
+    id    INTEGER PRIMARY KEY, 
+    key   text unique, 
+    start integer, 
+    end   integer, 
+    created_at  timestamp default current_timestamp, 
+    accessed_at timestamp default current_timestamp
+  )""");
+
   g_db['conn'].commit()
 
 
 def register_intent(minute, duration):
+  global g_db
+
+  key = str(minute) + str(duration)
   return True
   
 def should_be_recording():
@@ -87,9 +98,9 @@ def get_time_offset():
   api_key='AIzaSyBkyEMoXrSYTtIi8bevEIrSxh1Iig5V_to'
   url = "https://maps.googleapis.com/maps/api/timezone/json?location=%s,%s&timestamp=%d&key=%s" % (g_config['lat'], g_config['long'], when, api_key)
  
-  f = urllib2.urlopen(url)
-  myfile = f.read()
-  opts = json.loads(myfile)
+  stream = urllib2.urlopen(url)
+  data = stream.read()
+  opts = json.loads(data)
 
   if opts['status'] == 'OK': 
     g_config['offset'] = int(opts['rawOffset']) / 60
@@ -251,10 +262,10 @@ def ConfigSectionMap(section, Config):
     try:
       dict1[option] = Config.get(section, option)
       if dict1[option] == -1:
-        DebugPrint("skip: %s" % option)
+        logging.info("skip: %s" % option)
 
     except:
-      print("exception on %s!" % option)
+      logging.warning("exception on %s!" % option)
       dict1[option] = None
 
   return dict1  
