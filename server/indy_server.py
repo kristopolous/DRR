@@ -135,7 +135,19 @@ def ago(duration):
 # This takes the nominal weekday (sun, mon, tue, wed, thu, fri, sat)
 # and a 12 hour time hh:mm [ap]m and converts it to our absolute units
 # with respect to the timestamp in the configuration file
-def toutc(day, hour):
+def toutc(day_str, hour):
+  try:
+    day_number = ['sun','mon','tue','wed','thu','fri','sat','sun'].index(day_str.lower())
+  except e:
+    return False
+
+  time_re = re.compile('(\d{1,2}):(\d{2})([ap])m')
+
+  time = time_re.findall(hour)
+
+  if len(time) == 0:
+    return False
+
 
 def spawner():
   global g_queue, g_config, g_last
