@@ -79,6 +79,10 @@ def get_time_offset():
     g_config['offset'] = opts['rawOffset']
     return True
 
+    # Let's do something at least
+  else:
+    g_config['offset'] = 0
+
   return False
 
 def server():
