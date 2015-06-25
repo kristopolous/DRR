@@ -70,14 +70,15 @@ def register_intent(minute, duration):
 
   key = str(minute) + str(duration)
   c = g_db['c']
-  res = c.execute('select id from intents where key = %s' % key)
+  res = c.execute('select id from intents where key = %s' % key).fetchone()
 
-  if res.fetchone() == None:
+  if res == None:
     c.execute('insert into intents(key, start, end) values(%s, %d, %d)' % (key, minute, duration))
-    g_db['conn'].commit()
 
   else:
-  
+    c.execute('update intents set accessed_at=(current_timestamp) where id=%d' % res[0]) 
+
+  g_db['conn'].commit()
   return True
   
 def should_be_recording():
@@ -89,16 +90,17 @@ def prune():
   duration = int(g_config['archivedays']) * 60 * 60 * 24
   cutoff = time.time() - duration
 
+  ## Dumping old streams
   count = 0
-  for f in os.listdir(g_config['storage']): 
+  for f in os.listdir('.'): 
     entry = g_config['storage'] + f
   
     if os.path.isfile(entry) and os.path.getctime(entry) < cutoff:
-      print "Prune: %s" % (entry)
+      logging.debug("Prune: %s" % entry)
       os.unlink(entry)
       count += 1 
 
-  print "Found %d files older than %s days." % (count, g_config['archivedays'])
+  logging.info("Found %d files older than %s days." % (count, g_config['archivedays']))
 
 def get_time_offset():
   global g_config
