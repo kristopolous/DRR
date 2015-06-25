@@ -53,8 +53,8 @@ def db_connect():
   conn = sqlite3.connect('config.db')
   g_db = {'conn': conn, 'c': conn.cursor()}
 
-  g_db.c.execute("create table if not exist intents(start integer, end integer, created_at timestamp default current_timestamp, accessed_at timestamp default current_timestamp)");
-  g_db.conn.commit()
+  g_db['c'].execute("create table if not exists intents(start integer, end integer, created_at timestamp default current_timestamp, accessed_at timestamp default current_timestamp)");
+  g_db['conn'].commit()
 
 
 def register_intent(minute, duration):
@@ -140,7 +140,7 @@ def download(callsign, url):
   try:
     stream = open(fname, 'w')
   except:
-    logging.critical("Unable to open %s. Can't record. Must exit". % (fname))
+    logging.critical("Unable to open %s. Can't record. Must exit." % (fname))
     sys.exit(-1)
 
   c = pycurl.Curl()
@@ -283,8 +283,8 @@ def startup():
 
 def shutdown():
   global g_db, g_queue
-  g_db.c.commit()
-  g_db.conn.close()
+  g_db['c'].commit()
+  g_db['conn'].close()
   g_queue.put('shutdown')
 
 startup()      
