@@ -132,6 +132,11 @@ def download(callsign, url):
 def ago(duration):
   return time.time() - duration
 
+# This takes the nominal weekday (sun, mon, tue, wed, thu, fri, sat)
+# and a 12 hour time hh:mm [ap]m and converts it to our absolute units
+# with respect to the timestamp in the configuration file
+def toutc(day, hour):
+
 def spawner():
   global g_queue, g_config, g_last
 
