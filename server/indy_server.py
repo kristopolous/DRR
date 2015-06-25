@@ -46,6 +46,12 @@ def now():
   ts = datetime.datetime.utcnow()
   return ts.weekday() * (24 * 60 * 60) + ts.utcnow().hour * 60 + ts.utcnow().minute
 
+def db_schema():
+  global g_db
+
+  g_db.execute("create table if not exist intents(start integer, end integer, created_at timestamp default current_timestamp, accessed_at timestamp default current_timestamp)");
+
+
 def register_intent(minute, duration):
   return True
   
@@ -108,7 +114,7 @@ def server():
   
   @app.route('/<weekday>/<start>/<duration>/<name>')
   def stream(weekday, start, duration, name):
-    register_intent(toutc(weekday, start), duration)
+    register_intent(to_utc(weekday, start), duration)
     return weekday + start + duration + name
 
   app.run(debug=True)
@@ -145,7 +151,7 @@ def ago(duration):
 # This takes the nominal weekday (sun, mon, tue, wed, thu, fri, sat)
 # and a 12 hour time hh:mm [ap]m and converts it to our absolute units
 # with respect to the timestamp in the configuration file
-def toutc(day_str, hour):
+def to_utc(day_str, hour):
   global g_config
 
   try:
