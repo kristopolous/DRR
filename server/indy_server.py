@@ -42,7 +42,7 @@ def to_minute(unix_time):
   if type(unix_time) is int:
     unix_time = datetime.utcfromtimestamp(unix_time)
 
-  return unix_time.weekday() * (24 * 60 * 60) + unix_time.hour * 60 + unix_time.minute
+  return unix_time.weekday() * (24 * 60) + unix_time.hour * 60 + unix_time.minute
 
 def now():
   return to_minute(datetime.utcnow())
@@ -150,8 +150,7 @@ def find_streams(minute, duration):
     except:
       logging.warning("Unable to read file %s as an mp3 file" % f)
 
-    print duration
-    print ts[0]
+    print to_minute(int(ts[0]))
 
   return True
 
