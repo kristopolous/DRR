@@ -327,12 +327,22 @@ def startup():
   Config = ConfigParser.ConfigParser()
   Config.read(args.config)
   g_config = ConfigSectionMap('Main', Config)
+  
+  if 'loglevel' not in g_config:
+    g_config['loglevel'] = 'WARN'
 
   if os.path.isdir(g_config['storage']):
     os.chdir(g_config['storage'])
 
   else:
     logging.warning("Can't find %s. Using current directory." % g_config['storage'])
+
+   
+  # from https://docs.python.org/2/howto/logging.html
+  numeric_level = getattr(logging, g_config['loglevel'].upper(), None)
+  if not isinstance(numeric_level, int):
+    raise ValueError('Invalid log level: %s' % loglevel)
+  logging.basicConfig(level=numeric_level, filename='indycast.log')
 
   register_intent(123,321)
   print should_be_recording()

@@ -7,3 +7,4 @@ stream=http://live.scpr.org/kpcclive/
 port=3499
 storage=/var/radio/
 archivedays=7
+loglevel=debug
