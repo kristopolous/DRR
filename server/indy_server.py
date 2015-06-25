@@ -31,17 +31,7 @@ g_round_ix = 0
 g_queue = Queue()
 g_config = {}
 g_last = {}
-g_db = False
-
-"""
-schema
-
-  start minute (1 - 10080) on a weekly basis starting 1 minute after 11:59PM sunday
-  end minute 
-  created_at
-  accessed_at
-
-"""
+g_db = {}
 
 def now():
   ts = datetime.utcnow()
@@ -50,49 +40,54 @@ def now():
 def db_connect():
   global g_db
 
-  conn = sqlite3.connect('config.db')
-  g_db = {'conn': conn, 'c': conn.cursor()}
+  if 'conn' not in g_db:
+    conn = sqlite3.connect('config.db')
+    g_db = {'conn': conn, 'c': conn.cursor()}
 
-  g_db['c'].execute("""create table if not exists intents(
-    id    INTEGER PRIMARY KEY, 
-    key   text unique, 
-    start integer, 
-    end   integer, 
-    created_at  timestamp default current_timestamp, 
-    accessed_at timestamp default current_timestamp
-  )""");
+    g_db['c'].execute("""create table if not exists intents(
+      id    INTEGER PRIMARY KEY, 
+      key   text unique, 
+      start integer, 
+      end   integer, 
+      created_at  timestamp default current_timestamp, 
+      accessed_at timestamp default current_timestamp
+    )""");
 
-  g_db['conn'].commit()
+    g_db['conn'].commit()
+
+  return g_db
 
 
 def register_intent(minute, duration):
-  global g_db
+  db = db_connect()
 
   key = str(minute) + str(duration)
-  c = g_db['c']
-  res = c.execute('select id from intents where key = %s' % key).fetchone()
+  c = db['c']
+  res = c.execute('select id from intents where key = ?', (key, )).fetchone()
 
   if res == None:
-    c.execute('insert into intents(key, start, end) values(%s, %d, %d)' % (key, minute, minute + duration))
+    c.execute('insert into intents(key, start, end) values(?, ?, ?)', (key, minute, minute + duration))
 
   else:
-    c.execute('update intents set accessed_at=(current_timestamp) where id=%d' % res[0]) 
+    c.execute('update intents set accessed_at=(current_timestamp) where id= ?', (res[0], )) 
 
-  g_db['conn'].commit()
+  db['conn'].commit()
   return True
   
 def should_be_recording():
-  global g_db
+  db = db_connect()
 
   current_minute = now()
 
-  intent_count = g_db['c'].execute(
-    'select count(*) from intents where start >= %d and end <= %d' % (current_minute, current_minute)).fetchone()[0]
+  intent_count = db['c'].execute(
+    'select count(*) from intents where start >= ? and end <= ?', (current_minute, current_minute)).fetchone()[0]
 
   return intent_count != 0
   
 def prune():
-  global g_config, g_db
+  global g_config
+
+  db = db_connect()
 
   duration = int(g_config['archivedays']) * 60 * 60 * 24
   cutoff = time.time() - duration
@@ -290,7 +285,7 @@ def ConfigSectionMap(section, Config):
   return dict1  
 
 def startup():
-  global g_config, g_conn
+  global g_config
 
   parser = argparse.ArgumentParser()
   parser.add_argument("-c", "--config", default="./indy_config.txt", help="Configuration file (default ./indy_config.txt)")
@@ -307,7 +302,6 @@ def startup():
   else:
     logging.warning("Can't find %s. Using current directory." % g_config['storage'])
 
-  db_connect()
   register_intent(123,321)
   print should_be_recording()
   sys.exit(0)
