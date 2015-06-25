@@ -3,6 +3,7 @@ import argparse
 import ConfigParser
 import json
 import logging
+import mad
 import os
 import pycurl
 import shutil
@@ -44,13 +45,14 @@ def db_connect():
     conn = sqlite3.connect('config.db')
     g_db = {'conn': conn, 'c': conn.cursor()}
 
-    g_db['c'].execute("""create table if not exists intents(
+    g_db['c'].execute("""CREATE TABLE IF NOT EXISTS intents(
       id    INTEGER PRIMARY KEY, 
-      key   text unique, 
-      start integer, 
-      end   integer, 
-      created_at  timestamp default current_timestamp, 
-      accessed_at timestamp default current_timestamp
+      key   TEXT UNIQUE,
+      start INTEGER, 
+      end   INTEGER, 
+      read_count  INTEGER DEFAULT 0,
+      created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+      accessed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )""");
 
     g_db['conn'].commit()
@@ -69,10 +71,10 @@ def register_intent(minute, duration):
     c.execute('insert into intents(key, start, end) values(?, ?, ?)', (key, minute, minute + duration))
 
   else:
-    c.execute('update intents set accessed_at=(current_timestamp) where id= ?', (res[0], )) 
+    c.execute('update intents set read_count = read_count + 1, accessed_at = (current_timestamp) where id = ?', (res[0], )) 
 
   db['conn'].commit()
-  return True
+  return db['conn'].lastrowid
   
 def should_be_recording():
   db = db_connect()
@@ -126,6 +128,9 @@ def get_time_offset():
 
   return False
 
+def find_streams(minute, duration):
+  return True
+
 def server():
   app = Flask(__name__)
 
@@ -144,7 +149,9 @@ def server():
   
   @app.route('/<weekday>/<start>/<duration>/<name>')
   def stream(weekday, start, duration, name):
-    register_intent(to_utc(weekday, start), duration)
+    ts = to_utc(weekday, start)
+    # This will register the intent if needed
+    register_intent(ts, duration)
     return weekday + start + duration + name
 
   app.run(debug=True)
@@ -162,8 +169,10 @@ def download(callsign, url):
   logging.info("Spawning - %s" % callsign)
 
   fname = callsign + "-" + str(int(time.time())) + ".mp3"
+
   try:
     stream = open(fname, 'w')
+
   except:
     logging.critical("Unable to open %s. Can't record. Must exit." % (fname))
     sys.exit(-1)
