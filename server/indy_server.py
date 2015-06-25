@@ -30,7 +30,7 @@ g_round_ix = 0
 g_queue = Queue()
 g_config = {}
 g_last = {}
-g_conn = False
+g_db = False
 
 """
 schema
@@ -47,9 +47,10 @@ def now():
   return ts.weekday() * (24 * 60 * 60) + ts.utcnow().hour * 60 + ts.utcnow().minute
 
 def register_intent(minute, duration):
+  return True
   
-
 def should_be_recording():
+  return True
   
 def prune():
   global g_config
@@ -188,6 +189,7 @@ def spawner():
   minute = 60
   hour = 60 * minute
   day = 24 * hour
+  b_shutdown = False
 
   server_pid = Process(target=server)
   server_pid.start()
@@ -204,7 +206,11 @@ def spawner():
 
     while not g_queue.empty():
       b = g_queue.get(False)
-      station['flag'] = True
+
+      if b == 'shutdown':
+        b_shutdown = True
+      else:
+        station['flag'] = True
     
     # didn't respond in 3 seconds so we respawn
     if station['flag'] == False:
@@ -212,9 +218,13 @@ def spawner():
         station['process'].terminate()
       station['process'] = False
 
-    if station['process'] == False:
+    if station['process'] == False and b_shutdown == False:
       station['process'] = p = Process(target=download, args=(g_config['callsign'], station['url'],))
       p.start()
+
+    # If there is still no process then we should definitely bail.
+    if station['process'] == False:
+      return False
 
     station['flag'] = False
 
@@ -252,10 +262,17 @@ def startup():
   if os.path.isdir(g_config['storage']):
     os.chdir(g_config['storage'])
 
-  g_conn = sqlite3.connect('config.db')
+  conn = sqlite3.connect('config.db')
+  g_db = {'conn': conn, 'c': conn.cursor()}
 
   get_time_offset()
   sys.exit(0)
+
+def shutdown():
+  global g_db, g_queue
+  g_db.c.commit()
+  g_db.conn.close()
+  g_queue.put('shutdown')
 
 startup()      
 spawner()
