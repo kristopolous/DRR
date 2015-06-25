@@ -45,6 +45,8 @@ def now():
   ts = datetime.datetime.utcnow()
   return ts.weekday() * (24 * 60 * 60) + ts.utcnow().hour * 60 + ts.utcnow().minute
 
+def register_intent(minute, duration):
+
 def should_be_recording():
   
 def prune():
@@ -76,7 +78,7 @@ def get_time_offset():
   opts = json.loads(myfile)
 
   if opts['status'] == 'OK': 
-    g_config['offset'] = opts['rawOffset']
+    g_config['offset'] = int(opts['rawOffset']) / 60
     return True
 
     # Let's do something at least
@@ -103,6 +105,7 @@ def server():
   
   @app.route('/<weekday>/<start>/<duration>/<name>')
   def stream(weekday, start, duration, name):
+    register_intent(toutc(weekday, start), duration)
     return weekday + start + duration + name
 
   app.run(debug=True)
@@ -140,6 +143,8 @@ def ago(duration):
 # and a 12 hour time hh:mm [ap]m and converts it to our absolute units
 # with respect to the timestamp in the configuration file
 def toutc(day_str, hour):
+  global g_config
+
   try:
     day_number = ['sun','mon','tue','wed','thu','fri','sat','sun'].index(day_str.lower())
   except e:
@@ -159,7 +164,9 @@ def toutc(day_str, hour):
   if time[2] == 'p':
     local += (12 * 60)
 
+  utc = local + g_config['offset']
 
+  return utc
 
 def spawner():
   global g_queue, g_config, g_last
