@@ -5,6 +5,7 @@ import json
 import logging
 import mad
 import os
+import re
 import pycurl
 import shutil
 import sqlite3
@@ -23,6 +24,7 @@ socket.getaddrinfo = getAddrInfoWrapper
 import urllib2
 
 from datetime import datetime
+from glob import glob
 from flask import Flask, request, jsonify
 from multiprocessing import Process, Queue
 from StringIO import StringIO
@@ -33,6 +35,7 @@ g_queue = Queue()
 g_config = {}
 g_last = {}
 g_db = {}
+g_streams = []
 
 def now():
   ts = datetime.utcnow()
@@ -74,7 +77,7 @@ def register_intent(minute, duration):
     c.execute('update intents set read_count = read_count + 1, accessed_at = (current_timestamp) where id = ?', (res[0], )) 
 
   db['conn'].commit()
-  return db['conn'].lastrowid
+  return db['c'].lastrowid
   
 def should_be_recording():
   db = db_connect()
@@ -129,6 +132,20 @@ def get_time_offset():
   return False
 
 def find_streams(minute, duration):
+  global g_streams
+  ts_re = re.compile('(\d*).mp3')
+
+  for f in glob('*.mp3'): 
+    ts = ts_re.findall(f)
+
+    try:
+      duration = mad.MadFile(f).total_time
+
+    except:
+      logging.warning("Unable to read file %s as an mp3 file" % f)
+
+    print ts[0]
+
   return True
 
 def server():
@@ -313,6 +330,7 @@ def startup():
 
   register_intent(123,321)
   print should_be_recording()
+  find_streams(0,0)
   sys.exit(0)
 
   get_time_offset()
