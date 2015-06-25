@@ -148,6 +148,14 @@ def toutc(day_str, hour):
   if len(time) == 0:
     return False
 
+  local = day_number * (60 * 60 * 24);
+  local += int(time[0]) * 60
+  local += int(time[1])
+
+  if time[2] == 'p':
+    local += (12 * 60)
+
+
 
 def spawner():
   global g_queue, g_config, g_last
