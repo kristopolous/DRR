@@ -112,7 +112,7 @@ def server():
       return '', 403
 
     stats = {
-      'disk': sum(os.path.getsize(g_config['storage'] + f) for f in os.listdir(g_config['storage']) if os.path.isfile(g_config['storage'] + f))
+      'disk': sum(os.path.getsize(f) for f in os.listdir('.') if os.path.isfile(f))
     }
 
     return jsonify(stats), 200
@@ -136,10 +136,11 @@ def download(callsign, url):
 
   print "Spawning - " + callsign
 
+  fname = callsign + "-" + str(int(time.time())) + ".mp3"
   try:
-    stream = open(g_config['storage'] + callsign + "-" + str(int(time.time())) + ".mp3", 'w')
+    stream = open(fname, 'w')
   except:
-    print "Unable to open " + g_config['storage'] + ". Maybe sudo mkdir it?"
+    logging.critical("Unable to open %s. Can't record. Must exit". % (fname))
     sys.exit(-1)
 
   c = pycurl.Curl()
@@ -273,7 +274,7 @@ def startup():
   if os.path.isdir(g_config['storage']):
     os.chdir(g_config['storage'])
   else:
-    logging.warning("Can't find %s. Using current directory" % g_config['storage'])
+    logging.warning("Can't find %s. Using current directory." % g_config['storage'])
 
   db_connect()
 
