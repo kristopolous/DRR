@@ -69,6 +69,15 @@ def register_intent(minute, duration):
   global g_db
 
   key = str(minute) + str(duration)
+  c = g_db['c']
+  res = c.execute('select id from intents where key = %s' % key)
+
+  if res.fetchone() == None:
+    c.execute('insert into intents(key, start, end) values(%s, %d, %d)' % (key, minute, duration))
+    g_db['conn'].commit()
+
+  else:
+  
   return True
   
 def should_be_recording():
@@ -288,6 +297,8 @@ def startup():
     logging.warning("Can't find %s. Using current directory." % g_config['storage'])
 
   db_connect()
+  register_intent(123,321)
+  sys.exit(0)
 
   get_time_offset()
   sys.exit(0)
