@@ -144,12 +144,14 @@ def register_intent(minute, duration):
   return db['c'].lastrowid
   
 def should_be_recording():
+  global g_config
+
   db = db_connect()
 
   current_minute = now()
 
   intent_count = db['c'].execute(
-    'select count(*) from intents where start >= ? and end <= ?', (current_minute, current_minute)).fetchone()[0]
+    'select count(*) from intents where start >= ? and end <= ? and accessed_at > (current_timestamp - ?)', (current_minute, current_minute, g_config['expire_sec'])).fetchone()[0]
 
   return intent_count != 0
   
@@ -192,10 +194,18 @@ def find_streams(minute, duration):
 
   return True
 
+#
 # This takes a number of params:
 # 
 #  showname - from the incoming request url
+#  feedList - this is a list of tuples in the form
+#       (date, file)
+#
+#       corresponding to the, um, date of recording
+#       and filename
 #   
+# It obviously returns an xml file ... I mean duh.
+#
 def generate_xml(showname):
   return True
 
@@ -349,6 +359,11 @@ def startup():
   
   if 'loglevel' not in g_config:
     g_config['loglevel'] = 'WARN'
+
+  if 'expireafter' not in g_config:
+    g_config['expireafter'] = 45
+
+  g_config['expire_ms'] = int(g_config['expireafter']) * (60 * 60 * 24 * 1000)
 
   if os.path.isdir(g_config['storage']):
     os.chdir(g_config['storage'])

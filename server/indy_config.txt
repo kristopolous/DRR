@@ -8,3 +8,4 @@ port=3499
 storage=/var/radio/
 archivedays=7
 loglevel=debug
+expireafter=45
