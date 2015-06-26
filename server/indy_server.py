@@ -45,7 +45,6 @@ def shutdown():
 
 # Time related 
 def to_minute(unix_time):
-
   if type(unix_time) is int:
     unix_time = datetime.utcfromtimestamp(unix_time)
 
@@ -193,11 +192,20 @@ def find_streams(minute, duration):
 
   return True
 
-def generate_xml():
+# This takes a number of params:
+# 
+#  showname - from the incoming request url
+#   
+def generate_xml(showname):
   return True
 
 def server():
   app = Flask(__name__)
+
+  @app.route('/stream/<path:path>')
+  def send_stream(path):
+    global g_config
+    return send_from_directory(g_config['storage'], path)
 
   @app.route('/heartbeat')
   def heartbeat():
