@@ -150,7 +150,13 @@ def should_be_recording():
   current_minute = now()
 
   intent_count = db['c'].execute(
-    'select count(*) from intents where start >= ? and end <= ? and accessed_at > (current_timestamp - ?)', (current_minute, current_minute, g_config['expire_sec'])).fetchone()[0]
+    """select count(*) from intents where 
+        start >= ? and 
+        end <= ? and 
+        accessed_at > datetime('now','-%s days')
+    """ % g_config['expireafter'], 
+    (current_minute, current_minute)
+  ).fetchone()[0]
 
   return intent_count != 0
   
@@ -358,9 +364,7 @@ def startup():
     g_config['loglevel'] = 'WARN'
 
   if 'expireafter' not in g_config:
-    g_config['expireafter'] = 45
-
-  g_config['expire_ms'] = int(g_config['expireafter']) * (60 * 60 * 24 * 1000)
+    g_config['expireafter'] = '45'
 
   if os.path.isdir(g_config['storage']):
     os.chdir(g_config['storage'])
