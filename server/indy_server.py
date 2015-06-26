@@ -12,6 +12,7 @@ import sqlite3
 import sys
 import time
 import socket
+import xml.etree.cElementTree as ET
 
 origGetAddrInfo = socket.getaddrinfo
 
@@ -37,6 +38,12 @@ g_last = {}
 g_db = {}
 g_streams = []
 
+def shutdown():
+  global g_db, g_queue
+  g_db['conn'].close()
+  g_queue.put('shutdown')
+
+# Time related 
 def to_minute(unix_time):
 
   if type(unix_time) is int:
@@ -46,6 +53,59 @@ def to_minute(unix_time):
 
 def now():
   return to_minute(datetime.utcnow())
+
+def ago(duration):
+  return time.time() - duration
+
+# This takes the nominal weekday (sun, mon, tue, wed, thu, fri, sat)
+# and a 12 hour time hh:mm [ap]m and converts it to our absolute units
+# with respect to the timestamp in the configuration file
+def to_utc(day_str, hour):
+  global g_config
+
+  try:
+    day_number = ['sun','mon','tue','wed','thu','fri','sat','sun'].index(day_str.lower())
+  except e:
+    return False
+
+  time_re = re.compile('(\d{1,2}):(\d{2})([ap])m')
+
+  time = time_re.findall(hour)
+
+  if len(time) == 0:
+    return False
+
+  local = day_number * (60 * 60 * 24);
+  local += int(time[0]) * 60
+  local += int(time[1])
+
+  if time[2] == 'p':
+    local += (12 * 60)
+
+  utc = local + g_config['offset']
+
+  return utc
+
+def get_time_offset():
+  global g_config
+  when = int(time.time())
+
+  api_key='AIzaSyBkyEMoXrSYTtIi8bevEIrSxh1Iig5V_to'
+  url = "https://maps.googleapis.com/maps/api/timezone/json?location=%s,%s&timestamp=%d&key=%s" % (g_config['lat'], g_config['long'], when, api_key)
+ 
+  stream = urllib2.urlopen(url)
+  data = stream.read()
+  opts = json.loads(data)
+
+  if opts['status'] == 'OK': 
+    g_config['offset'] = int(opts['rawOffset']) / 60
+    return True
+
+    # Let's do something at least
+  else:
+    g_config['offset'] = 0
+
+  return False
 
 def db_connect():
   global g_db
@@ -68,7 +128,6 @@ def db_connect():
 
   return g_db
 
-
 def register_intent(minute, duration):
   db = db_connect()
 
@@ -85,9 +144,6 @@ def register_intent(minute, duration):
   db['conn'].commit()
   return db['c'].lastrowid
   
-def generate_xml():
-  return True
-
 def should_be_recording():
   db = db_connect()
 
@@ -119,26 +175,6 @@ def prune():
   # Dump old intents (TODO)
   logging.info("Found %d files older than %s days." % (count, g_config['archivedays']))
 
-def get_time_offset():
-  global g_config
-  when = int(time.time())
-
-  api_key='AIzaSyBkyEMoXrSYTtIi8bevEIrSxh1Iig5V_to'
-  url = "https://maps.googleapis.com/maps/api/timezone/json?location=%s,%s&timestamp=%d&key=%s" % (g_config['lat'], g_config['long'], when, api_key)
- 
-  stream = urllib2.urlopen(url)
-  data = stream.read()
-  opts = json.loads(data)
-
-  if opts['status'] == 'OK': 
-    g_config['offset'] = int(opts['rawOffset']) / 60
-    return True
-
-    # Let's do something at least
-  else:
-    g_config['offset'] = 0
-
-  return False
 
 def find_streams(minute, duration):
   global g_streams
@@ -155,6 +191,9 @@ def find_streams(minute, duration):
 
     print to_minute(int(ts[0]))
 
+  return True
+
+def generate_xml():
   return True
 
 def server():
@@ -211,37 +250,6 @@ def download(callsign, url):
 
   stream.close()
 
-def ago(duration):
-  return time.time() - duration
-
-# This takes the nominal weekday (sun, mon, tue, wed, thu, fri, sat)
-# and a 12 hour time hh:mm [ap]m and converts it to our absolute units
-# with respect to the timestamp in the configuration file
-def to_utc(day_str, hour):
-  global g_config
-
-  try:
-    day_number = ['sun','mon','tue','wed','thu','fri','sat','sun'].index(day_str.lower())
-  except e:
-    return False
-
-  time_re = re.compile('(\d{1,2}):(\d{2})([ap])m')
-
-  time = time_re.findall(hour)
-
-  if len(time) == 0:
-    return False
-
-  local = day_number * (60 * 60 * 24);
-  local += int(time[0]) * 60
-  local += int(time[1])
-
-  if time[2] == 'p':
-    local += (12 * 60)
-
-  utc = local + g_config['offset']
-
-  return utc
 
 def spawner():
   global g_queue, g_config, g_last
@@ -355,11 +363,6 @@ def startup():
   get_time_offset()
   shutdown()
   sys.exit(0)
-
-def shutdown():
-  global g_db, g_queue
-  g_db['conn'].close()
-  g_queue.put('shutdown')
 
 startup()      
 spawner()
