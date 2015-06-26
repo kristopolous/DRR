@@ -34,7 +34,6 @@ g_start_time = time.time()
 g_round_ix = 0
 g_queue = Queue()
 g_config = {}
-g_last = {}
 g_db = {}
 g_streams = []
 
@@ -270,61 +269,59 @@ def download(callsign, url):
 
 
 def spawner():
-  global g_queue, g_config, g_last
+  global g_queue, g_config
 
   station = {
     'callsign': g_config['callsign'],
-    'url': g_config['stream'],
-    'flag': False,
-    'process': False
+    'url': g_config['stream']
   }
 
-  g_last = {
+  last = {
     'prune': 0,
     'offset': 0
   }
 
-  minute = 60
-  hour = 60 * minute
-  day = 24 * hour
+  day = 24 * 60 * 60
   b_shutdown = False
+  b_flag = False
+  process = False
 
   server_pid = Process(target=server)
   server_pid.start()
 
   while True:
 
-    if g_last['prune'] < ago(1 * day):
+    if last['prune'] < ago(1 * day):
       prune()
-      g_last['prune'] = time.time()
+      last['prune'] = time.time()
 
-    if g_last['offset'] < ago(1 * day):
+    if last['offset'] < ago(1 * day):
       get_time_offset()
-      g_last['offset'] = time.time()
+      last['offset'] = time.time()
 
     while not g_queue.empty():
-      b = g_queue.get(False)
+      data = g_queue.get(False)
 
-      if b == 'shutdown':
+      if data == 'shutdown':
         b_shutdown = True
       else:
-        station['flag'] = True
+        b_flag = True
     
     # didn't respond in 3 seconds so we respawn
-    if station['flag'] == False:
-      if station['process'] != False and station['process'].is_alive():
-        station['process'].terminate()
-      station['process'] = False
+    if b_flag == False:
+      if process != False and process.is_alive():
+        process.terminate()
+      process = False
 
-    if station['process'] == False and b_shutdown == False:
-      station['process'] = p = Process(target=download, args=(g_config['callsign'], station['url'],))
-      p.start()
+    if process == False and b_shutdown == False:
+      process = Process(target=download, args=(g_config['callsign'], station['url'],))
+      process.start()
 
     # If there is still no process then we should definitely bail.
-    if station['process'] == False:
+    if process == False:
       return False
 
-    station['flag'] = False
+    b_flag = False
 
     time.sleep(3)
 
