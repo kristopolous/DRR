@@ -178,25 +178,41 @@ def prune():
       os.unlink(entry)
       count += 1 
 
-  # Dump old intents (TODO)
   logging.info("Found %d files older than %s days." % (count, g_config['archivedays']))
 
 
-def find_streams(minute, duration):
+def find_streams(start_query, duration):
   global g_streams
   ts_re = re.compile('(\d*).mp3')
+  file_list = []
+  
+  end_query = start_query + duration
 
-  for f in glob('*.mp3'): 
-    ts = ts_re.findall(f)
+  for filename in glob('*.mp3'): 
+    ts = ts_re.findall(filename)
 
     try:
-      duration = mad.MadFile(f).total_time() / (60.0 * 1000)
+      duration = mad.MadFile(filename).total_time() / (60.0 * 1000)
 
     except:
-      logging.warning("Unable to read file %s as an mp3 file" % f)
+      logging.warning("Unable to read file %s as an mp3 file" % filename)
 
-    print to_minute(int(ts[0]))
+    start_test = to_minute(int(ts[0]))
+    end_test = start_test + duration
 
+    # If we started recording before this is fine
+    # as long as we ended recording after our start
+    if start_test < start_query and end_test > start_query:
+      file_list.append((start_minute, start_minute + duration, filename))
+      next
+
+    # If we started recording after the query time, this is fine
+    # so long as it's before the end
+    if start_test > start_query and start_test < end_query:
+      file_list.append((start_minute, start_minute + duration, filename))
+      next
+
+  print file_list
   return True
 
 #
