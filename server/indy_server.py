@@ -85,6 +85,9 @@ def register_intent(minute, duration):
   db['conn'].commit()
   return db['c'].lastrowid
   
+def generate_xml():
+  return True
+
 def should_be_recording():
   db = db_connect()
 
