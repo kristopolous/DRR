@@ -190,7 +190,7 @@
             map.day.toLowerCase(),
             map.start.replace(/\s+/,'').toLowerCase(),
             map['duration'],
-            encodeURI(map['name'])
+            encodeURI(map['name'] || '')
           ].join('/');
 
           $("#podcast-url").html('<a href="' + url +'">' + url + '</a>');
