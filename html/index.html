@@ -181,18 +181,19 @@
         for(var key in map) {
           $("#" + key + " a").removeClass("selected");
           $("#" + key + " a:contains(" + map[key] + ")").addClass("selected");
+          $("#" + key + " a[data='" + map[key] + "']").addClass("selected");
         }
 
         if(map.station && map.day && map.start && map.duration) {
           url = 'http://' + [
-            map.station + '.indycast.net',
-            (map['day'] || '').toLowerCase(),
-            (map['start'] || '').replace(/\s+/,'').toLowerCase(),
+            map.station.toLowerCase() + '.indycast.net',
+            map.day.toLowerCase(),
+            map.start.replace(/\s+/,'').toLowerCase(),
             map['duration'],
             encodeURI(map['name'])
           ].join('/');
 
-          $("#podcast-url").html(url);
+          $("#podcast-url").html('<a href="' + url +'">' + url + '</a>');
         } else {
           $("#podcast-url").html("Please select options above");
         }
@@ -214,6 +215,9 @@
         $("#start,#name").bind('blur focus change keyup',function(){
           ev(this.id, this.value, {node: this});
         });
+
+        ev.fire('start');
+        ev.fire('name');
       });
       </script>
 	</body>
