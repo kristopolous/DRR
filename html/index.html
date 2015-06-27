@@ -190,8 +190,8 @@
             map.day.toLowerCase(),
             map.start.replace(/\s+/,'').toLowerCase(),
             map['duration'],
-            encodeURI(map['name'] || '')
-          ].join('/');
+            encodeURI(map['name'] || 'stream')
+          ].join('/') + '.xml';
 
           $("#podcast-url").html('<a href="' + url +'">' + url + '</a>');
         } else {
