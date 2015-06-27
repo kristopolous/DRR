@@ -250,7 +250,7 @@ def find_streams(start_query, duration):
 #   
 # It obviously returns an xml file ... I mean duh.
 #
-def generate_xml(showname):
+def generate_xml(showname, feed_list):
   return True
 
 
