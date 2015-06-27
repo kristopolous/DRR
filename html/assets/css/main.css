@@ -3178,3 +3178,6 @@ form#donate {
 text-align:center;
 margin-top: 0;
 }
+#podcast-url {
+  text-transform: none;
+}

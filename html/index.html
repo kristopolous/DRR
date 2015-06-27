@@ -48,8 +48,8 @@
 						<a href="#" class="image icon fa-clock-o"><img src="images/pic02.jpg" alt="" /></a>
 						<div class="content">
 
-              <label for="day-start">day of week to record on</label>
-              <ul class="week-group group" id="day-start">
+              <label for="day">day of week to record on</label>
+              <ul class="week-group group" id="day">
                 <li><a class="button">Sun</a></li>
                 <li><a class="button">Mon</a></li>
                 <li><a class="button">Tue</a></li>
@@ -58,14 +58,14 @@
                 <li><a class="button">Fri</a></li>
                 <li><a class="button">Sat</a></li>
               </ul>
-              <label for="time-start">Starting at</label>
-              <input class="text" type="text" name="time-start" id="time-start" value="" placeholder="ex: 3:30 PM" />
-              <label for="time-duration">For how long</label>
+              <label for="start">Starting at</label>
+              <input class="text" type="text" name="start" id="start" value="" placeholder="ex: 3:30 PM" />
+              <label for="duration">For how long</label>
               <ul class="week-group group" id="duration">
-                <li><a class="button">30 min</a></li>
-                <li><a class="button">1 hr</a></li>
-                <li><a class="button">1&frac12; hrs</a></li>
-                <li><a class="button">2 hrs</a></li>
+                <li><a data="30" class="button">30 min</a></li>
+                <li><a data="60" class="button">1 hr</a></li>
+                <li><a data="90" class="button">1&frac12; hrs</a></li>
+                <li><a data="120" class="button">2 hrs</a></li>
               </ul>
 						</div>
 					</section>
@@ -174,7 +174,7 @@
 
       <script>
       var 
-        ev = EvDa(),
+        ev = EvDa({start: '', name: '', station: ''}),
         time_re = /^\s*(1[0-2]|[1-9])(:[0-5][0-9])?\s*[ap]m\s*$/i;
 
       ev('', function(map) {
@@ -182,9 +182,24 @@
           $("#" + key + " a").removeClass("selected");
           $("#" + key + " a:contains(" + map[key] + ")").addClass("selected");
         }
+
+        if(map.station && map.day && map.start && map.duration) {
+          url = 'http://' + [
+            map.station + '.indycast.net',
+            (map['day'] || '').toLowerCase(),
+            (map['start'] || '').replace(/\s+/,'').toLowerCase(),
+            map['duration'],
+            encodeURI(map['name'])
+          ].join('/');
+
+          $("#podcast-url").html(url);
+        } else {
+          $("#podcast-url").html("Please select options above");
+        }
+
       });
 
-      ev.test('time-start', function(v, cb, meta) {
+      ev.test('start', function(v, cb, meta) {
         var res = time_re.test(v);
         $(meta.node)[(res ? 'remove' : 'add') + 'Class']('error');
         cb(res);
@@ -193,10 +208,10 @@
       $(function() {
         $(".group a").click(function(){
           var node = $(this).parentsUntil("div").last();
-          ev(node[0].id, this.innerHTML);
+          ev(node[0].id, this.getAttribute('data') || this.innerHTML);
         });
 
-        $("#time-start").bind('change keyup',function(){
+        $("#start,#name").bind('blur focus change keyup',function(){
           ev(this.id, this.value, {node: this});
         });
       });
