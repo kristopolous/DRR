@@ -430,9 +430,13 @@ def startup():
     raise ValueError('Invalid log level: %s' % loglevel)
   logging.basicConfig(level=numeric_level, filename='indycast.log')
 
-  register_intent(123,321)
-  print should_be_recording()
-  find_streams(0,0)
+  # register_intent(123,321)
+  # print should_be_recording()
+  generate_xml('anyname', [
+    ('d1', 'f1'),
+    ('d2', 'f2'),
+    ('d3', 'f3')
+  ])
   sys.exit(0)
 
   get_time_offset()
