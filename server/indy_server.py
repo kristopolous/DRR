@@ -251,7 +251,15 @@ def find_streams(start_query, duration):
 # It obviously returns an xml file ... I mean duh.
 #
 def generate_xml(showname, feed_list):
-  return True
+  root = ET.Element("root")
+  doc = ET.SubElement(root, "doc")
+
+  ET.SubElement(doc, "field1", name="blah").text = "some value1"
+  ET.SubElement(doc, "field2", name="asdfasd").text = "some vlaue2"
+
+  tree = ET.ElementTree(root)
+
+  return ET.dump(tree)
 
 
 def server():
