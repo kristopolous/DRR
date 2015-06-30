@@ -234,18 +234,17 @@ def find_streams(start_query, duration):
 
     # If we started recording before this is fine
     # as long as we ended recording after our start
-    if start_test < start_query and end_test > start_query:
-      file_list.append((start_minute, start_minute + duration, filename))
+    if start_test < start_query and end_test > start_query or start_query == -1:
+      file_list.append((start_test, start_test + duration, filename))
       next
 
     # If we started recording after the query time, this is fine
     # so long as it's before the end
     if start_test > start_query and start_test < end_query:
-      file_list.append((start_minute, start_minute + duration, filename))
+      file_list.append((start_test, start_test + duration, filename))
       next
 
-  print file_list
-  return True
+  return file_list
 
 #
 # This takes a number of params:
@@ -355,7 +354,8 @@ def server():
       return '', 403
 
     stats = {
-      'disk': sum(os.path.getsize(f) for f in os.listdir('.') if os.path.isfile(f))
+      'disk': sum(os.path.getsize(f) for f in os.listdir('.') if os.path.isfile(f)),
+      'streams': find_streams(-1, 0)
     }
 
     return jsonify(stats), 200
@@ -520,7 +520,11 @@ def indy_start():
     g_config['expireafter'] = '45'
 
   if os.path.isdir(g_config['storage']):
-
+    #
+    # There's a bug after we chdir, where the multiprocessing is trying to
+    # grab the same invocation as the initial argv[0] ... so we need to make
+    # sure that if a user did ./blah this will be maintained.
+    #
     if not os.path.isfile(g_config['storage'] + __file__):
       os.symlink(os.path.abspath(__file__), g_config['storage'] + __file__)
 
@@ -539,8 +543,6 @@ def indy_start():
   # register_intent(123,321)
   # print should_be_recording()
   get_time_offset()
-  #shutdown()
-  #sys.exit(0)
   signal.signal(signal.SIGINT, shutdown)
 
 if __name__ == "__main__":
