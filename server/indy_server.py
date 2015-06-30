@@ -251,11 +251,17 @@ def find_streams(start_query, duration):
 # It obviously returns an xml file ... I mean duh.
 #
 def generate_xml(showname, feed_list):
-  root = ET.Element("root")
-  doc = ET.SubElement(root, "doc")
+  root = ET.Element("rss")
+  root.attrib['xmlns:dc'] = 'http://purl.org/dc/elements/1.1/'
+  root.attrib['xmlns:media'] = 'http://search.yahoo.com/mrss/' 
+  root.attrib['xmlns:itunes'] = 'http://www.itunes.com/dtds/podcast-1.0.dtd' 
+  root.attrib['xmlns:feedburner'] = 'http://rssnamespace.org/feedburner/ext/1.0' 
+  root.attrib['version'] = '2.0'
 
-  ET.SubElement(doc, "field1", name="blah").text = "some value1"
-  ET.SubElement(doc, "field2", name="asdfasd").text = "some vlaue2"
+  channel = ET.SubElement(root, "channel")
+
+  ET.SubElement(channel, "field1", name="blah").text = "some value1"
+  ET.SubElement(channel, "field2", name="asdfasd").text = "some vlaue2"
 
   tree = ET.ElementTree(root)
 
