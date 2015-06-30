@@ -12,6 +12,7 @@ import sqlite3
 import sys
 import time
 import socket
+import setproctitle as SP
 import lxml.etree as ET
 
 origGetAddrInfo = socket.getaddrinfo
@@ -317,7 +318,6 @@ def generate_xml(showname, feed_list):
 
 
 def server():
-  print "HI"
   app = Flask(__name__)
 
   #
@@ -368,10 +368,13 @@ def server():
     return generate_xml(showname, feed_list)
 
   if __name__ == '__main__':
+    SP.setproctitle("ic-webserver")
     app.run(debug=True)
 
 
 def download(callsign, url):
+
+  SP.setproctitle("ic-download")
 
   def cback(data): 
     global g_round_ix, g_config, g_start_time
@@ -379,7 +382,7 @@ def download(callsign, url):
     g_queue.put(True)
     g_round_ix += 1
     stream.write(data)
-    logging.debug(str(float(g_round_ix) / (time.time() - g_start_time)))
+    #logging.debug(str(float(g_round_ix) / (time.time() - g_start_time)))
 
   logging.info("Spawning - %s" % callsign)
 
@@ -403,6 +406,8 @@ def download(callsign, url):
 
 def spawner():
   global g_queue, g_config
+
+  SP.setproctitle("ic-dlmanager")
 
   last = {
     'prune': 0,
@@ -490,8 +495,7 @@ def spawner():
     time.sleep(cycle_time)
 
 
-
-def startup():
+def indy_start():
   global g_config
 
   parser = argparse.ArgumentParser()
@@ -529,5 +533,12 @@ def startup():
   #sys.exit(0)
 
 if __name__ == "__main__":
-  startup()      
-  spawner()
+
+  # From http://stackoverflow.com/questions/25504149/why-does-running-the-flask-dev-server-run-itself-twice
+  if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+    SP.setproctitle("ic-main")
+    server()
+
+  else: 
+    indy_start()      
+    spawner()
