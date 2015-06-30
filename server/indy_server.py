@@ -252,11 +252,14 @@ def find_streams(start_query, duration):
 #
 def generate_xml(showname, feed_list):
   global g_config
-  root = ET.Element("rss")
-  root.attrib['xmlns:dc'] = 'http://purl.org/dc/elements/1.1/'
-  root.attrib['xmlns:media'] = 'http://search.yahoo.com/mrss/' 
-  root.attrib['xmlns:itunes'] = 'http://www.itunes.com/dtds/podcast-1.0.dtd' 
-  root.attrib['xmlns:feedburner'] = 'http://rssnamespace.org/feedburner/ext/1.0' 
+
+  nsmap = {
+    'dc': 'http://purl.org/dc/elements/1.1/',
+    'media': 'http://search.yahoo.com/mrss/', 
+    'itunes': 'http://www.itunes.com/dtds/podcast-1.0.dtd',
+    'feedburner': 'http://rssnamespace.org/feedburner/ext/1.0'
+  }
+  root = ET.Element("rss", nsmap = nsmap)
   root.attrib['version'] = '2.0'
 
   channel = ET.SubElement(root, "channel")
@@ -269,26 +272,20 @@ def generate_xml(showname, feed_list):
   for feed in feed_list:
     item = ET.SubElement(channel, 'item')
     for k,v in {
-        'itunes:explicit': 'no', 
+        '{%s}explicit' % nsmap['itunes']: 'no', 
         'pubDate': feed[0], 'title': feed[0], 
         'link': feed[1]
     }.items():
       ET.SubElement(item, k).text = v
 
-    content = ET.SubElement(item, 'media:content')
+    content = ET.SubElement(item, '{%s}content' % nsmap['media'])
     content.attrib['url'] = feed[1]
     content.attrib['fileSize'] = 'TODO'
     content.attrib['type'] = 'TODO'
 
-
   tree = ET.ElementTree(root)
 
-  xml = ET.XML("<root><test/><a>whatever</a><end_test/></root>")
-  root = tree.getroot()
-  root[:] = xml
-  root.text, root.tail = xml.text, xml.tail
-  print ET.tostring(tree, xml_declaration=True, encoding="utf-8")
-  return ET.dump(tree)
+  return ET.tostring(tree, xml_declaration=True, encoding="utf-8")
 
 
 def server():
@@ -469,7 +466,7 @@ def startup():
 
   # register_intent(123,321)
   # print should_be_recording()
-  generate_xml('anyname', [
+  print generate_xml('anyname', [
     ('d1', 'f1'),
     ('d2', 'f2'),
     ('d3', 'f3')
