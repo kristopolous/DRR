@@ -253,6 +253,8 @@ def find_streams(start_query, duration):
 def generate_xml(showname, feed_list):
   global g_config
 
+  base_url = 'http://%s.indycast.net/' % g_config['callsign']
+
   nsmap = {
     'dc': 'http://purl.org/dc/elements/1.1/',
     'media': 'http://search.yahoo.com/mrss/', 
@@ -264,22 +266,35 @@ def generate_xml(showname, feed_list):
 
   channel = ET.SubElement(root, "channel")
 
-  ET.SubElement(channel, "title").text = showname
-  ET.SubElement(channel, "link").text = 'http://%s.indycast.net' % g_config['callsign']
-  ET.SubElement(channel, "description")
-  ET.SubElement(channel, "language").text = 'en'
+  for k,v in {
+    '{%s}summary' % nsmap['itunes']: showname,
+    '{%s}subtitle' % nsmap['itunes']: showname,
+    '{%s}category' % nsmap['itunes']: 'podcast',
+    'title': showname,
+    'link': base_url,
+    'copyright': g_config['callsign'],
+    'description': showname,
+    'language': 'en'
+  }.items():
+    ET.SubElement(channel, k).text = v
 
   for feed in feed_list:
     item = ET.SubElement(channel, 'item')
     for k,v in {
         '{%s}explicit' % nsmap['itunes']: 'no', 
-        'pubDate': feed[0], 'title': feed[0], 
-        'link': feed[1]
+        '{%s}author' % nsmap['itunes']: g_config['callsign'],
+        '{%s}duration' % nsmap['itunes']: 'TODO', 
+        'description': feed[0],
+        'pubDate': feed[0], 
+        'title': feed[0], 
+        'link': feed[1],
+        'copyright': g_config['callsign'],
+        'guid': g_config['callsign'] + feed[0]
     }.items():
       ET.SubElement(item, k).text = v
 
     content = ET.SubElement(item, '{%s}content' % nsmap['media'])
-    content.attrib['url'] = feed[1]
+    content.attrib['url'] = base_url + '/stream/' + feed[1]
     content.attrib['fileSize'] = 'TODO'
     content.attrib['type'] = 'TODO'
 
