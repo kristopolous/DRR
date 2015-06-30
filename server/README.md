@@ -2,7 +2,9 @@
 
 You need pip, python2, and pymad. In debian you can do
  
-  sudo apt-get -f install python-pip python python-pymad python-dev
+  sudo apt-get -y -f install \
+    python-pip python python-pymad \
+    python-dev libxml2-dev libxslt1-dev
 
 Then you need the requirements here. You can install them with
 
