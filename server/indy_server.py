@@ -286,16 +286,19 @@ def generate_xml(showname, feed_list):
         '{%s}author' % nsmap['itunes']: g_config['callsign'],
         '{%s}duration' % nsmap['itunes']: 'TODO', 
         '{%s}summary' % nsmap['itunes']: feed[0],
+        '{%s}creator' % nsmap['dc']: g_config['callsign'],
+        '{%s}origEnclosureLink' % nsmap['feedburner']: link,
+        '{%s}origLink' % nsmap['feedburner']: base_url,
         'description': feed[0],
         'pubDate': feed[0], 
         'title': feed[0], 
         'link': feed[1],
-        '{%s}origEnclosureLink' % nsmap['feedburner']: link,
-        '{%s}origLink' % nsmap['feedburner']: base_url,
         'copyright': g_config['callsign'],
         'guid': g_config['callsign'] + feed[0]
     }.items():
       ET.SubElement(item, k).text = v
+
+    ET.SubElement(item, 'guid', isPermaLink="false").text = base_url
 
     content = ET.SubElement(item, '{%s}content' % nsmap['media'])
     content.attrib['url'] = link
