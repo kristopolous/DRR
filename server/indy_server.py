@@ -282,19 +282,19 @@ def generate_xml(showname, feed_list):
     link = base_url + 'stream/' + feed[1]
     item = ET.SubElement(channel, 'item')
     for k,v in {
-        '{%s}explicit' % nsmap['itunes']: 'no', 
-        '{%s}author' % nsmap['itunes']: g_config['callsign'],
-        '{%s}duration' % nsmap['itunes']: 'TODO', 
-        '{%s}summary' % nsmap['itunes']: feed[0],
-        '{%s}creator' % nsmap['dc']: g_config['callsign'],
-        '{%s}origEnclosureLink' % nsmap['feedburner']: link,
-        '{%s}origLink' % nsmap['feedburner']: base_url,
-        'description': feed[0],
-        'pubDate': feed[0], 
-        'title': feed[0], 
-        'link': feed[1],
-        'copyright': g_config['callsign'],
-        'guid': g_config['callsign'] + feed[0]
+      '{%s}explicit' % nsmap['itunes']: 'no', 
+      '{%s}author' % nsmap['itunes']: g_config['callsign'],
+      '{%s}duration' % nsmap['itunes']: 'TODO', 
+      '{%s}summary' % nsmap['itunes']: feed[0],
+      '{%s}creator' % nsmap['dc']: g_config['callsign'],
+      '{%s}origEnclosureLink' % nsmap['feedburner']: link,
+      '{%s}origLink' % nsmap['feedburner']: base_url,
+      'description': feed[0],
+      'pubDate': feed[0], 
+      'title': feed[0], 
+      'link': feed[1],
+      'copyright': g_config['callsign'],
+      'guid': g_config['callsign'] + feed[0]
     }.items():
       ET.SubElement(item, k).text = v
 
@@ -337,11 +337,18 @@ def server():
     return jsonify(stats), 200
   
   @app.route('/<weekday>/<start>/<duration>/<name>')
-  def stream(weekday, start, duration, name):
+  def stream(weekday, start, duration, showname):
     ts = to_utc(weekday, start)
+
     # This will register the intent if needed
     register_intent(ts, duration)
-    return weekday + start + duration + name
+
+    # Look for streams that we have which match this query
+    # and duration
+    feed_list = find_streams(start_query, duration)
+
+    # Then, taking those two things, make a feed list from them
+    return generate_xml(showname, feed_list)
 
   app.run(debug=True)
 
@@ -401,6 +408,7 @@ def spawner():
 
   while True:
 
+    #
     # We cycle this to off for every run.
     # By the time we go throug the queue
     # so long as we aren't supposed to be
@@ -485,7 +493,7 @@ def startup():
     logging.warning("Can't find %s. Using current directory." % g_config['storage'])
 
    
-  # from https://docs.python.org/2/howto/logging.html
+  # From https://docs.python.org/2/howto/logging.html
   numeric_level = getattr(logging, g_config['loglevel'].upper(), None)
   if not isinstance(numeric_level, int):
     raise ValueError('Invalid log level: %s' % loglevel)
