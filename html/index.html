@@ -62,10 +62,10 @@
               <input class="text" type="text" name="start" id="start" value="" placeholder="ex: 3:30 PM" />
               <label for="duration">For how long</label>
               <ul class="week-group group" id="duration">
-                <li><a data="30" class="button">30 min</a></li>
-                <li><a data="60" class="button">1 hr</a></li>
-                <li><a data="90" class="button">1&frac12; hrs</a></li>
-                <li><a data="120" class="button">2 hrs</a></li>
+                <li><a data="30min" class="button">30 min</a></li>
+                <li><a data="1hr" class="button">1 hr</a></li>
+                <li><a data="1hr30" class="button">1&frac12; hrs</a></li>
+                <li><a data="2hr" class="button">2 hrs</a></li>
               </ul>
 						</div>
 					</section>
@@ -174,6 +174,16 @@
 
       <script>
       var 
+        ports = {
+          kxlu: 8890,
+          kdvs: 9030,
+          kusf: 9030,
+          wxyc: 8930
+          wcbn: 8830,
+          wfmu: 9110,
+          kzsu: 9010,
+          kvrx: 9170
+        },
         ev = EvDa({start: '', name: '', station: ''}),
         time_re = /^\s*(1[0-2]|[1-9])(:[0-5][0-9])?\s*[ap]m\s*$/i;
 
