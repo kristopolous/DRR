@@ -251,6 +251,7 @@ def find_streams(start_query, duration):
 # It obviously returns an xml file ... I mean duh.
 #
 def generate_xml(showname, feed_list):
+  global g_config
   root = ET.Element("rss")
   root.attrib['xmlns:dc'] = 'http://purl.org/dc/elements/1.1/'
   root.attrib['xmlns:media'] = 'http://search.yahoo.com/mrss/' 
@@ -260,8 +261,25 @@ def generate_xml(showname, feed_list):
 
   channel = ET.SubElement(root, "channel")
 
-  ET.SubElement(channel, "field1", name="blah").text = "some value1"
-  ET.SubElement(channel, "field2", name="asdfasd").text = "some vlaue2"
+  ET.SubElement(channel, "title").text = showname
+  ET.SubElement(channel, "link").text = 'http://%s.indycast.net' % g_config['callsign']
+  ET.SubElement(channel, "description")
+  ET.SubElement(channel, "language").text = 'en'
+
+  for feed in feed_list:
+    item = ET.SubElement(channel, 'item')
+    for k,v in {
+        'itunes:explicit': 'no', 
+        'pubDate': feed[0], 'title': feed[0], 
+        link: feed[1]
+    }.items():
+      ET.SubElement(item, k).text = v
+
+    content = ET.SubElement(item, 'media:content')
+    content.attrib['url'] = feed[1]
+    content.attrib['fileSize'] = 'TODO'
+    content.attrib['type'] = 'TODO'
+
 
   tree = ET.ElementTree(root)
 
