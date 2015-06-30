@@ -39,6 +39,7 @@ g_queue = Queue()
 g_config = {}
 g_db = {}
 g_streams = []
+my_pid = 0
 
 def proc_name(what):
   SP.setproctitle("ic-dlmanager")
@@ -422,10 +423,16 @@ def spawner():
 
   callsign = g_config['callsign']
   url = g_config['stream']
-  day = 24 * 60 * 60
+
+  cascade_time = int(g_config['cascadetime'])
+  cascade_buffer = int(g_config['cascadebuffer'])
+  cascade_margin = cascade_time - cascade_buffer
+  last_success = 0
+
   mode_full = (g_config['mode'].lower() == 'full')
   b_shutdown = False
   should_record = mode_full
+
 
   # Number of seconds to be cycling
   cycle_time = 5
@@ -434,6 +441,14 @@ def spawner():
 
   server_pid = Process(target=server, args=(g_config,))
   server_pid.start()
+
+  def process_start():
+    global my_pid
+    my_pid += 1
+    logging.info("Starting cascaded downloader #%d" % my_pid)
+    process = Process(target=download, args=(callsign, url,))
+    process.start()
+    return process
 
   while True:
 
@@ -446,11 +461,11 @@ def spawner():
     #
     flag = False
 
-    if last['prune'] < ago(1 * day):
+    if last['prune'] < ago(24 * 60 * 60):
       prune()
       last['prune'] = time.time()
 
-    if last['offset'] < ago(1 * day):
+    if last['offset'] < ago(24 * 60 * 60):
       get_time_offset()
       last['offset'] = time.time()
 
@@ -479,9 +494,30 @@ def spawner():
         process = False
 
       if not process and not b_shutdown:
-        process = Process(target=download, args=(callsign, url,))
-        process.start()
+        process = process_start()
         last_success = time.time()
+
+      # If we've hit the time when we ought to cascade
+      elif time.time() - last_success > cascade_margin:
+        # And we haven't created the next process yet, then we start
+        # it now.
+        if process_next == False:
+          process_next = process_start()
+
+        # if we are past the cascade_time and we have a process_next, then
+        # we should shutdown our previous process and move the pointers around
+        if time.time() - last_success > cascade_time and process_next:
+          process.stop()
+
+          # if the process_next is running then we move
+          # our last_success forward to the present
+          last_success = time.time()
+
+          # we rename our process_next AS OUR process
+          process = process_next
+
+          # And then clear out the old process_next pointer
+          process_next = False 
 
       # If our last_success stream was more than cascade_time - cascade_buffer
       # then we start our process_next
