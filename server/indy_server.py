@@ -393,8 +393,6 @@ def download(callsign, url):
     stream.write(data)
     #logging.debug(str(float(g_round_ix) / (time.time() - g_start_time)))
 
-  logging.info("Spawning - %s" % callsign)
-
   fname = callsign + "-" + str(int(time.time())) + ".mp3"
 
   try:
@@ -433,7 +431,6 @@ def spawner():
   b_shutdown = False
   should_record = mode_full
 
-
   # Number of seconds to be cycling
   cycle_time = 5
 
@@ -446,7 +443,7 @@ def spawner():
   def process_start():
     global my_pid
     my_pid += 1
-    logging.info("Starting cascaded downloader #%d" % my_pid)
+    logging.info("Starting cascaded downloader #%d. Next up in %ds" % (my_pid, cascade_margin))
     process = Process(target=download, args=(callsign, url,))
     process.start()
     return process
@@ -508,7 +505,8 @@ def spawner():
         # if we are past the cascade_time and we have a process_next, then
         # we should shutdown our previous process and move the pointers around
         if time.time() - last_success > cascade_time and process_next:
-          process.stop()
+          logging.info("Stopping cascaded downloader")
+          process.shutdown()
 
           # if the process_next is running then we move
           # our last_success forward to the present
@@ -557,7 +555,7 @@ def readconfig():
     'loglevel': 'WARN',
     'expireafter': '45',
     'cascadebuffer': 15,
-    'cascadetime': 60 * 5
+    'cascadetime': 60 * 2
   }.items():
     if k not in g_config:
       g_config[k] = v
