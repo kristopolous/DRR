@@ -28,7 +28,7 @@ origGetAddrInfo = socket.getaddrinfo
 def getAddrInfoWrapper(host, port, family=0, socktype=0, proto=0, flags=0):
   return origGetAddrInfo(host, port, socket.AF_INET, socktype, proto, flags)
 
-# replace the original socket.getaddrinfo by our version
+# Replace the original socket.getaddrinfo by our version
 socket.getaddrinfo = getAddrInfoWrapper
 
 import urllib2
@@ -54,7 +54,7 @@ def proc_name(what):
   print "[%s:%d] Starting" % (what, os.getpid())
 
 
-# This is hit on the keyboard interrupt
+# shutdown is hit on the keyboard interrupt
 def shutdown(signal, frame):
   global g_db, g_queue, g_start_time
   title = SP.getproctitle()
@@ -98,9 +98,11 @@ def ConfigSectionMap(section, Config):
 
   return dict1  
 
+#
 # This takes the nominal weekday (sun, mon, tue, wed, thu, fri, sat)
 # and a 12 hour time hh:mm [ap]m and converts it to our absolute units
 # with respect to the timestamp in the configuration file
+#
 def to_utc(day_str, hour):
   global g_config
 
@@ -145,8 +147,8 @@ def get_time_offset():
     g_config['offset'] = int(opts['rawOffset']) / 60
     return True
 
-    # Let's do something at least
   else:
+    # Let's do something at least
     g_config['offset'] = 0
 
   return False
@@ -231,6 +233,9 @@ def prune():
   logging.info("Found %d files older than %s days." % (count, g_config['archivedays']))
 
 
+# Given a start week minute and a duration, this
+# looks for streams in the storage directory that 
+# match it
 def find_streams(start_query, duration):
   global g_streams
   ts_re = re.compile('(\d*).mp3')

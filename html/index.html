@@ -79,9 +79,15 @@
 				</div>
 
 				<footer class="major container 75%">
-          <h3>Your podcast is ready</h3>
-          <p>You can subscribe with the link below:</p>
-          <h3 id="podcast-url"></h3>
+          <div id="podcast-done">
+            <h3>Your podcast link</h3>
+            <p>You can subscribe with the link below:</p>
+            <h3 id="podcast-url"></h3>
+          </div>
+          <div id="podcast-notdone">
+            <h3>The podcast will appear here</h3>
+            <p>Please select desired day, station, and time above</p>
+          </div>
 				</footer>
 
 			</div>
@@ -174,11 +180,11 @@
 
       <script>
       var 
-        ports = {
+        portMap = {
           kxlu: 8890,
           kdvs: 9030,
           kusf: 9030,
-          wxyc: 8930
+          wxyc: 8930,
           wcbn: 8830,
           wfmu: 9110,
           kzsu: 9010,
@@ -195,17 +201,22 @@
         }
 
         if(map.station && map.day && map.start && map.duration) {
+          map.station = map.station.toLowerCase();
           url = 'http://' + [
-            map.station.toLowerCase() + '.indycast.net',
-            map.day.toLowerCase(),
+            map.station + '.indycast.net:' + portMap[map.station],
+            " " + map.day.toLowerCase(),
             map.start.replace(/\s+/,'').toLowerCase(),
             map['duration'],
             encodeURI(map['name'] || 'stream')
           ].join('/') + '.xml';
 
-          $("#podcast-url").html('<a href="' + url +'">' + url + '</a>');
+          $("#podcast-url").html('<a href="' + url.replace(/\s/,'') +'">' + url.replace(/\s/, '<br>') + '</a>');
+          $("#podcast-notdone").hide();
+          $("#podcast-done").show();
         } else {
           $("#podcast-url").html("Please select options above");
+          $("#podcast-notdone").show();
+          $("#podcast-done").hide();
         }
 
       });

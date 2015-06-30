@@ -3174,6 +3174,9 @@
 				}
 
 	}
+#podcast-done {
+  display: none;
+}
 form#donate {
   text-align:center;
   margin-top: 0;
