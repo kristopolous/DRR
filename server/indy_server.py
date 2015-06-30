@@ -51,8 +51,8 @@ def shutdown(signal, frame):
   if 'conn' in g_db:
     g_db['conn'].close()
 
+  logging.info("[%s] Shutting down through keyboard interrupt" % SP.getproctitle())
   g_queue.put('shutdown')
-  logging.info("Shutting down through keyboard interrupt")
   sys.exit(0)
 
 # Time related 
@@ -327,7 +327,7 @@ def generate_xml(showname, feed_list):
   return ET.tostring(tree, xml_declaration=True, encoding="utf-8")
 
 
-def server():
+def server(config):
   app = Flask(__name__)
 
   #
@@ -338,28 +338,25 @@ def server():
   #
   @app.route('/stream/<path:path>')
   def send_stream(path):
-    global g_config
-
     # If the file doesn't exist, then we need to slice
     # it and create it based on our query.
-    if not os.path.isfile(g_config['storage'], path):
+    if not os.path.isfile(config['storage'], path):
       # find the closest timestamp
       # slice if needed
       # add up the timestamp
       return True
 
-    return send_from_directory(g_config['storage'], path)
+    return send_from_directory(config['storage'], path)
 
   @app.route('/heartbeat')
   def heartbeat():
-    global g_config
-
     if request.remote_addr != '127.0.0.1':
       return '', 403
 
     stats = {
       'disk': sum(os.path.getsize(f) for f in os.listdir('.') if os.path.isfile(f)),
-      'streams': find_streams(-1, 0)
+      'streams': find_streams(-1, 0),
+      'config': config
     }
 
     return jsonify(stats), 200
@@ -380,7 +377,7 @@ def server():
 
   if __name__ == '__main__':
     proc_name("ic-webserver")
-    app.run(debug=True)
+    app.run()
 
 
 def download(callsign, url):
@@ -418,7 +415,6 @@ def download(callsign, url):
 def spawner():
   global g_queue, g_config
 
-
   last = {
     'prune': 0,
     'offset': 0
@@ -436,7 +432,7 @@ def spawner():
 
   process = False
 
-  server_pid = Process(target=server)
+  server_pid = Process(target=server, args=(g_config,))
   server_pid.start()
 
   while True:
@@ -548,7 +544,7 @@ def readconfig():
   numeric_level = getattr(logging, g_config['loglevel'].upper(), None)
   if not isinstance(numeric_level, int):
     raise ValueError('Invalid log level: %s' % loglevel)
-  logging.basicConfig(level=numeric_level, filename='indycast.log')
+  logging.basicConfig(level=numeric_level, filename='indycast.log', datefmt='%Y-%m-%d %H:%M:%S',format='%(asctime)s %(message)s')
 
   # register_intent(123,321)
   # print should_be_recording()
@@ -560,7 +556,7 @@ if __name__ == "__main__":
   # From http://stackoverflow.com/questions/25504149/why-does-running-the-flask-dev-server-run-itself-twice
   if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
     proc_name("ic-main")
-    server()
+    server(g_config)
 
   else: 
     readconfig()      
