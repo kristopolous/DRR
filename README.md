@@ -1,12 +1,20 @@
 # indycast.net
 
-Indycast **Radio** Recorder
+[Indycast](http://indycast.net) is a DVR for independent radio. 
 
-This is the source code for [indycast.net](http://indycast.net).  
+You can use it to transform a broadcast into a podcast for later listening.
 
-Indycast is a federation of servers which records radio streams for later listening on a per-person basis through the use of custom-generated podcasts.
+Stations are supported through the generosity of a volunteer network of servers around the world.
 
-The servers for indycast are independently maintained by volunteers.
+You can help by
+
+ * [Fixing bugs in the software](https://github.com/kristopolous/DRR/issues)
+ * [Giving us money](https://github.com/kristopolous/DRR/wiki/Donating-Money)
+ * [Running a server](https://github.com/kristopolous/DRR/wiki/Join-the-Federation)
+ * [Giving us an account on an existing server](https://github.com/kristopolous/DRR/wiki/Donating-Servers).
+
+Thanks for your interest!
+
 
 ## Notes
 
