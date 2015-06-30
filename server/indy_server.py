@@ -271,7 +271,7 @@ def generate_xml(showname, feed_list):
     for k,v in {
         'itunes:explicit': 'no', 
         'pubDate': feed[0], 'title': feed[0], 
-        link: feed[1]
+        'link': feed[1]
     }.items():
       ET.SubElement(item, k).text = v
 

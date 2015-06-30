@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:npr="http://www.npr.org/rss/" xmlns:nprml="http://api.npr.org/nprml" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <channel>
+    <title>Car Talk</title>
+    <link>http://www.cartalk.com</link>
+    <description><![CDATA[America's funniest auto mechanics take calls from weary car owners all over the country, and crack wise while they diagnose Dodges and dismiss Diahatsus. You don't have to know anything about cars to love this one hour weekly laugh fest.]]></description>
+    <copyright>2001 Dewey, Cheetham and Howe</copyright>
+    <generator>NPR API RSS Generator 0.94</generator>
+    <language>en</language>
+    <itunes:summary><![CDATA[America's funniest auto mechanics take calls from weary car owners all over the country, and crack wise while they diagnose Dodges and dismiss Diahatsus. You don't have to know anything about cars to love this one hour weekly laugh fest.]]></itunes:summary>
+    <itunes:subtitle><![CDATA[America's funniest auto mechanics take calls from weary car owners all over the country, and crack wise while they diagnose Dodges and dismiss Diahatsus. You don't have to know anything about cars to love this one hour weekly laugh fest.]]></itunes:subtitle>
+    <itunes:author>NPR</itunes:author>
+    <itunes:block>no</itunes:block>
+    <itunes:owner>
+      <itunes:email/>
+      <itunes:name/>
+    </itunes:owner>
+    <itunes:category text="Games &amp; Hobbies"/>
+    <itunes:category text="Comedy"/>
+    <itunes:category text="Automotive"/>
+    <itunes:image href="http://media.npr.org/images/podcasts/primary/icon_510208-d265115dff4c0c53bbe2ad8b5201feb26d1fcb03.jpg?s=1400"/>
+    <image>
+      <url>http://media.npr.org/images/podcasts/primary/icon_510208-d265115dff4c0c53bbe2ad8b5201feb26d1fcb03.jpg?s=200</url>
+      <title>Car Talk</title>
+      <link>http://www.cartalk.com</link>
+    </image>
+    <lastBuildDate>Sat, 27 Jun 2015 14:00:00 -0400</lastBuildDate>
+    <item>
+      <title>#1526: Mama Was a Race Car Driver</title>
+      <description><![CDATA[This week on The Best of Car Talk, Ben is scared to death to ride with his mom. She used to drive race cars, and still likes to treat Main Street as if it was Le Mans. Can Tom and Ray help Ben slow Mom down, or does he need to start hiding her keys? Elsewhere, Aaron thinks his Toyota is haunted by the spirit of Maurice Chevalier; Jamie wants to achieve his life's ambition of owning a vehicle with power steering; and, Kristina's truck is backfiring so loudly, everyone in 500-foot radius ducks and covers. Also, how could three drops of soda burn an Accord's leather seat? All this and more, this week on The Best of Car Talk.]]></description>
+      <pubDate>Sat, 27 Jun 2015 14:00:00 -0400</pubDate>
+      <copyright>2001 Dewey, Cheetham and Howe</copyright>
+      <guid>599906da-e1df-4d43-a199-5267f55de185</guid>
+      <itunes:author>NPR</itunes:author>
+      <itunes:summary><![CDATA[This week on The Best of Car Talk, Ben is scared to death to ride with his mom. She used to drive race cars, and still likes to treat Main Street as if it was Le Mans. Can Tom and Ray help Ben slow Mom down, or does he need to start hiding her keys? Elsewhere, Aaron thinks his Toyota is haunted by the spirit of Maurice Chevalier; Jamie wants to achieve his life's ambition of owning a vehicle with power steering; and, Kristina's truck is backfiring so loudly, everyone in 500-foot radius ducks and covers. Also, how could three drops of soda burn an Accord's leather seat? All this and more, this week on The Best of Car Talk.]]></itunes:summary>
+      <itunes:subtitle><![CDATA[This week on The Best of Car Talk, Ben is scared to death to ride with his mom. She used to drive race cars, and still likes to treat Main Street as if it was Le Mans. Can Tom and Ray help Ben slow Mom down, or does he need to start hiding her keys? Elsewhere, Aaron thinks his Toyota is haunted by the spirit of Maurice Chevalier; Jamie wants to achieve his life's ambition of owning a vehicle with power steering; and, Kristina's truck is backfiring so loudly, everyone in 500-foot radius ducks and covers. Also, how could three drops of soda burn an Accord's leather seat? All this and more, this week on The Best of Car Talk.]]></itunes:subtitle>
+      <itunes:duration>3209</itunes:duration>
+      <itunes:explicit>no</itunes:explicit>
+      <enclosure url="http://podcastdownload.npr.org/anon.npr-podcasts/podcast/510208/418088265/npr_418088265.mp3?orgId=1&amp;d=3209&amp;p=510208&amp;story=418088265&amp;t=podcast&amp;e=418088265&amp;ft=pod&amp;f=510208" length="26194214" type="audio/mpeg"/>
+    </item>
+    <item>
+      <title>#1525: While Mom's Away</title>
+      <description><![CDATA[This week on The Best of Car Talk, Sarah thinks her husband and kids might have held a peeing contest in her minivan while she was away for the weekend. Will Tom and Ray find them innocent or guilty, and what was Sarah thinking by leaving them alone in the first place? Elsewhere, can three totaled Subarus combine to make one drivable one for Karen? Will John's radiator hang on until he finishes grad school? And, why does Mike's car die only on Sunday mornings? All this and more, this week on The Best of Car Talk.]]></description>
+      <pubDate>Sat, 20 Jun 2015 14:00:00 -0400</pubDate>
+      <copyright>2001 Dewey, Cheetham and Howe</copyright>
+      <guid>d3dfc6c3-385d-4d81-96cc-ba1366b0f61b</guid>
+      <itunes:author>NPR</itunes:author>
+      <itunes:summary><![CDATA[This week on The Best of Car Talk, Sarah thinks her husband and kids might have held a peeing contest in her minivan while she was away for the weekend. Will Tom and Ray find them innocent or guilty, and what was Sarah thinking by leaving them alone in the first place? Elsewhere, can three totaled Subarus combine to make one drivable one for Karen? Will John's radiator hang on until he finishes grad school? And, why does Mike's car die only on Sunday mornings? All this and more, this week on The Best of Car Talk.]]></itunes:summary>
+      <itunes:subtitle><![CDATA[This week on The Best of Car Talk, Sarah thinks her husband and kids might have held a peeing contest in her minivan while she was away for the weekend. Will Tom and Ray find them innocent or guilty, and what was Sarah thinking by leaving them alone in the first place? Elsewhere, can three totaled Subarus combine to make one drivable one for Karen? Will John's radiator hang on until he finishes grad school? And, why does Mike's car die only on Sunday mornings? All this and more, this week on The Best of Car Talk.]]></itunes:subtitle>
+      <itunes:duration>3234</itunes:duration>
+      <itunes:explicit>no</itunes:explicit>
+      <enclosure url="http://podcastdownload.npr.org/anon.npr-podcasts/podcast/510208/416029936/npr_416029936.mp3?orgId=1&amp;d=3234&amp;p=510208&amp;story=416029936&amp;t=podcast&amp;e=416029936&amp;ft=pod&amp;f=510208" length="26394207" type="audio/mpeg"/>
+    </item>
+  </channel>
+</rss>
