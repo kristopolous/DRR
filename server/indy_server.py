@@ -12,7 +12,7 @@ import sqlite3
 import sys
 import time
 import socket
-import xml.etree.cElementTree as ET
+import lxml.etree as ET
 
 origGetAddrInfo = socket.getaddrinfo
 
@@ -283,6 +283,11 @@ def generate_xml(showname, feed_list):
 
   tree = ET.ElementTree(root)
 
+  xml = ET.XML("<root><test/><a>whatever</a><end_test/></root>")
+  root = tree.getroot()
+  root[:] = xml
+  root.text, root.tail = xml.text, xml.tail
+  print ET.tostring(tree, xml_declaration=True, encoding="utf-8")
   return ET.dump(tree)
 
 
