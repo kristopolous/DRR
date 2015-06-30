@@ -438,6 +438,7 @@ def spawner():
   cycle_time = 5
 
   process = False
+  process_next = False
 
   server_pid = Process(target=server, args=(g_config,))
   server_pid.start()
@@ -555,8 +556,8 @@ def readconfig():
   for k,v in {
     'loglevel': 'WARN',
     'expireafter': '45',
-    'cascadebuffer': 120,
-    'cascadetime': 60 * 15
+    'cascadebuffer': 15,
+    'cascadetime': 60 * 5
   }.items():
     if k not in g_config:
       g_config[k] = v
