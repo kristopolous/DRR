@@ -12,11 +12,8 @@ The servers for indycast are independently maintained by volunteers.
 
 Here's just some notes for my own purpose:
 
-endpoint
-
-  callsign/ISO8601_UTC/duration_in_minutes
-
-ex:
-  kxlu/2015-06-16T20:00:00/60
-
-  And you'll get the appropriate content-type and file.
+ * add_station 
+ * find_station 
+ * generate_rss 
+ * manage_download 
+ * stitch_audio
