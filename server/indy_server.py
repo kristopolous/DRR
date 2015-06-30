@@ -34,9 +34,7 @@ from multiprocessing import Process, Queue
 from StringIO import StringIO
 
 g_start_time = time.time()
-g_round_ix = 0
 g_queue = Queue()
-g_queue_tochild = Queue()
 g_config = {}
 g_db = {}
 g_streams = []
@@ -44,11 +42,11 @@ my_pid = 0
 
 def proc_name(what):
   SP.setproctitle("ic-dlmanager")
-  print "[%s] Starting" % what
+  print "[%s:%d] Starting" % (what, os.getpid())
 
 def shutdown(signal, frame):
   global g_db, g_queue
-  print "[%s] Shutting down" % SP.getproctitle()
+  print "[%s:%d] Shutting down" % (SP.getproctitle(), os.getpid())
 
   if 'conn' in g_db:
     g_db['conn'].close()
@@ -385,12 +383,10 @@ def server(config):
 def download(callsign, url, my_pid):
 
   proc_name("ic-download")
-
   def cback(data): 
-    global g_round_ix, g_config, g_start_time, g_queue, g_queue_tochild
+    global g_config, g_start_time, g_queue
 
     g_queue.put(True)
-    g_round_ix += 1
     stream.write(data)
     #logging.debug(str(float(g_round_ix) / (time.time() - g_start_time)))
 
@@ -413,7 +409,7 @@ def download(callsign, url, my_pid):
 
 
 def spawner():
-  global g_queue, g_config, g_queue_tochild
+  global g_queue, g_config
 
   last = {
     'prune': 0,
@@ -507,7 +503,7 @@ def spawner():
         # we should shutdown our previous process and move the pointers around
         if time.time() - last_success > cascade_time and process_next:
           logging.info("Stopping cascaded downloader")
-          process.shutdown()
+          process.terminate()
 
           # if the process_next is running then we move
           # our last_success forward to the present
@@ -556,7 +552,7 @@ def readconfig():
     'loglevel': 'WARN',
     'expireafter': '45',
     'cascadebuffer': 15,
-    'cascadetime': 60 * 2
+    'cascadetime': 60 * 15
   }.items():
     if k not in g_config:
       g_config[k] = v
