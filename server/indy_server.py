@@ -24,6 +24,7 @@ socket.getaddrinfo = getAddrInfoWrapper
 
 import urllib2
 
+from pydub import AudioSegment
 from datetime import datetime
 from glob import glob
 from flask import Flask, request, jsonify
@@ -318,9 +319,20 @@ def generate_xml(showname, feed_list):
 def server():
   app = Flask(__name__)
 
+  #
+  # The path is (unix timestamp)_(duration in minutes)
+  # If it exists (as in we had previously generated it)
+  # then we can trivially send it.  Otherwise we need
+  # to create it.
+  #
   @app.route('/stream/<path:path>')
   def send_stream(path):
     global g_config
+
+    # If the file doesn't exist, then we need to slice
+    # it and create it based on our query.
+    if not os.path.isfile(g_config['storage'], path):
+
     return send_from_directory(g_config['storage'], path)
 
   @app.route('/heartbeat')
