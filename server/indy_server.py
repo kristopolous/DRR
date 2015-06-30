@@ -16,6 +16,13 @@ import socket
 import setproctitle as SP
 import lxml.etree as ET
 
+#
+# This is needed to force ipv4 on ipv6 devices.  It's sometimes needed
+# if there isn't a clean ipv6 route to get to the big wild internet.
+# In these cases, a pure ipv6 route simply will not work.  People aren't
+# always in full control of every hop ... so it's much safer to force
+# ipv4 then optimistically cross our fingers.
+#
 origGetAddrInfo = socket.getaddrinfo
 
 def getAddrInfoWrapper(host, port, family=0, socktype=0, proto=0, flags=0):
@@ -40,22 +47,31 @@ g_db = {}
 g_streams = []
 my_pid = 0
 
+# Sets a more human-readable process name for the various
+# parts of the system to be viewed in top/htop
 def proc_name(what):
   SP.setproctitle(what)
   print "[%s:%d] Starting" % (what, os.getpid())
 
+
+# This is hit on the keyboard interrupt
 def shutdown(signal, frame):
-  global g_db, g_queue
-  print "[%s:%d] Shutting down" % (SP.getproctitle(), os.getpid())
+  global g_db, g_queue, g_start_time
+  title = SP.getproctitle()
+  print "[%s:%d] Shutting down" % (title, os.getpid())
 
   if 'conn' in g_db:
     g_db['conn'].close()
 
-  logging.info("[%s] Shutting down through keyboard interrupt" % SP.getproctitle())
+  logging.info("[%s:%d] Shutting down through keyboard interrupt" % (title, os.getpid()))
+  if title == 'ic-manager':
+    logging.info("Uptime: %ds", time.time() - g_start_time)
+
   g_queue.put('shutdown')
   sys.exit(0)
 
-# Time related 
+
+# Time related functions
 def to_minute(unix_time):
   if type(unix_time) is int:
     unix_time = datetime.utcfromtimestamp(unix_time)
@@ -64,9 +80,6 @@ def to_minute(unix_time):
 
 def minute_now():
   return to_minute(datetime.utcnow())
-
-def ago(duration):
-  return time.time() - duration
 
 # From https://wiki.python.org/moin/ConfigParserExamples
 def ConfigSectionMap(section, Config):
@@ -351,10 +364,13 @@ def server(config):
 
   @app.route('/heartbeat')
   def heartbeat():
+    global g_start_time
+
     if request.remote_addr != '127.0.0.1':
       return '', 403
 
     stats = {
+      'uptime': int(time.time() - g_start_time),
       'disk': sum(os.path.getsize(f) for f in os.listdir('.') if os.path.isfile(f)),
       'streams': find_streams(-1, 0),
       'config': config
@@ -385,11 +401,10 @@ def download(callsign, url, my_pid):
 
   proc_name("ic-download")
   def cback(data): 
-    global g_config, g_start_time, g_queue
+    global g_config, g_queue
 
     g_queue.put(True)
     stream.write(data)
-    #logging.debug(str(float(g_round_ix) / (time.time() - g_start_time)))
 
   fname = callsign + "-" + str(int(time.time())) + ".mp3"
 
@@ -457,11 +472,12 @@ def spawner():
     #
     flag = False
 
-    if last['prune'] < ago(24 * 60 * 60):
+    yesterday = time.time() - 24 * 60 * 60
+    if last['prune'] < yesterday:
       prune()
       last['prune'] = time.time()
 
-    if last['offset'] < ago(24 * 60 * 60):
+    if last['offset'] < yesterday:
       get_time_offset()
       last['offset'] = time.time()
 
@@ -497,7 +513,7 @@ def spawner():
       elif time.time() - last_success > cascade_margin:
         # And we haven't created the next process yet, then we start
         # it now.
-        if process_next == False:
+        if not process_next:
           process_next = process_start()
 
       # If our last_success stream was more than cascade_time - cascade_buffer
@@ -527,7 +543,8 @@ def spawner():
     # outside of a full mode. In this case, we will need to shut things down
     #
     # if we are past the cascade_time and we have a process_next, then
-    # we should shutdown our previous process and move the pointers around
+    # we should shutdown our previous process and move the pointers around.
+    #
     if time.time() - last_success > cascade_time and process:
       logging.info("Stopping cascaded downloader")
       process.terminate()
