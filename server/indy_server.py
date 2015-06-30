@@ -133,6 +133,12 @@ def to_utc(day_str, hour):
 
 def get_time_offset():
   global g_config
+
+  offset = db_get('offset')
+  if offset:
+    g_config['offset'] = offset
+    return True
+
   when = int(time.time())
 
   api_key='AIzaSyBkyEMoXrSYTtIi8bevEIrSxh1Iig5V_to'
@@ -145,6 +151,7 @@ def get_time_offset():
   if opts['status'] == 'OK': 
     logging.info("Location: %s | offset: %s" % (opts['timeZoneId'], opts['rawOffset']))
     g_config['offset'] = int(opts['rawOffset']) / 60
+    db_set('offset', opts['rawOffset'])
     return True
 
   else:
@@ -153,6 +160,28 @@ def get_time_offset():
 
   return False
 
+
+def db_set(key, value):
+  db = db_connect()
+  
+  # from http://stackoverflow.com/questions/418898/sqlite-upsert-not-insert-or-replace
+  res = db['c'].execute(
+    '''INSERT OR REPLACE INTO kv (key, value) 
+      VALUES ( 
+        COALESCE((SELECT key FROM kv WHERE key = ?), ?),
+        ?
+    )''', (key, key, value))
+  g_db['conn'].commit()
+
+  return value
+
+def db_get(key):
+  db = db_connect()
+  res = db['c'].execute('select value from kv where key = ?', (key, )).fetchone()
+
+  if res:
+    return res[0]
+  return False
 
 def db_connect():
   global g_db
@@ -169,6 +198,12 @@ def db_connect():
       read_count  INTEGER DEFAULT 0,
       created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
       accessed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )""");
+
+    g_db['c'].execute("""CREATE TABLE IF NOT EXISTS kv(
+      id    INTEGER PRIMARY KEY, 
+      key   TEXT UNIQUE,
+      value TEXT
     )""");
 
     g_db['conn'].commit()
@@ -425,13 +460,13 @@ def download(callsign, url, my_pid):
     logging.critical("Unable to open %s. Can't record. Must exit." % (fname))
     sys.exit(-1)
 
+  #signal.signal(signal.SIGTERM, dl_stop)
   c = pycurl.Curl()
   c.setopt(c.URL, url)
   c.setopt(pycurl.WRITEFUNCTION, cback)
   c.perform()
   c.close()
 
-  signal.signal(signal.SIGINT, dl_stop)
   stream.close()
 
 
