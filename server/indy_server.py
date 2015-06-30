@@ -41,7 +41,7 @@ g_streams = []
 my_pid = 0
 
 def proc_name(what):
-  SP.setproctitle("ic-dlmanager")
+  SP.setproctitle(what)
   print "[%s:%d] Starting" % (what, os.getpid())
 
 def shutdown(signal, frame):
@@ -592,5 +592,5 @@ if __name__ == "__main__":
 
   else: 
     readconfig()      
-    proc_name("ic-dlmanager")
+    proc_name("ic-manager")
     spawner()
