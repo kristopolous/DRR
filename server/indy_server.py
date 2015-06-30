@@ -317,6 +317,7 @@ def generate_xml(showname, feed_list):
 
 
 def server():
+  print "HI"
   app = Flask(__name__)
 
   #
@@ -332,6 +333,10 @@ def server():
     # If the file doesn't exist, then we need to slice
     # it and create it based on our query.
     if not os.path.isfile(g_config['storage'], path):
+      # find the closest timestamp
+      # slice if needed
+      # add up the timestamp
+      return True
 
     return send_from_directory(g_config['storage'], path)
 
@@ -362,7 +367,8 @@ def server():
     # Then, taking those two things, make a feed list from them
     return generate_xml(showname, feed_list)
 
-  app.run(debug=True)
+  if __name__ == '__main__':
+    app.run(debug=True)
 
 
 def download(callsign, url):
@@ -417,6 +423,7 @@ def spawner():
 
   server_pid = Process(target=server)
   server_pid.start()
+  #server_pid.join()
 
   while True:
 
@@ -445,9 +452,11 @@ def spawner():
       else:
         flag = True
     
+    #
     # If we are not in full mode, then we should check
     # whether we should be recording right now according
     # to our intents.
+    #
     if not mode_full:
       should_record = should_be_recording()
 
@@ -467,10 +476,12 @@ def spawner():
       if not process:
         return False
 
+    #
     # The only way for the bool to be toggled off
     # is if we are not in full-mode ... we get here
     # if we should NOT be recording.  So we make sure
     # we aren't.
+    #  
     else:
       if process != False and process.is_alive():
         process.terminate()
@@ -513,16 +524,10 @@ def startup():
 
   # register_intent(123,321)
   # print should_be_recording()
-  print generate_xml('anyname', [
-    ('d1', 'f1'),
-    ('d2', 'f2'),
-    ('d3', 'f3')
-  ])
-  sys.exit(0)
-
   get_time_offset()
-  shutdown()
-  sys.exit(0)
+  #shutdown()
+  #sys.exit(0)
 
-startup()      
-spawner()
+if __name__ == "__main__":
+  startup()      
+  spawner()
