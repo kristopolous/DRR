@@ -36,6 +36,7 @@ from StringIO import StringIO
 g_start_time = time.time()
 g_round_ix = 0
 g_queue = Queue()
+g_queue_tochild = Queue()
 g_config = {}
 g_db = {}
 g_streams = []
@@ -381,12 +382,12 @@ def server(config):
     app.run()
 
 
-def download(callsign, url):
+def download(callsign, url, my_pid):
 
   proc_name("ic-download")
 
   def cback(data): 
-    global g_round_ix, g_config, g_start_time
+    global g_round_ix, g_config, g_start_time, g_queue, g_queue_tochild
 
     g_queue.put(True)
     g_round_ix += 1
@@ -412,7 +413,7 @@ def download(callsign, url):
 
 
 def spawner():
-  global g_queue, g_config
+  global g_queue, g_config, g_queue_tochild
 
   last = {
     'prune': 0,
@@ -444,7 +445,7 @@ def spawner():
     global my_pid
     my_pid += 1
     logging.info("Starting cascaded downloader #%d. Next up in %ds" % (my_pid, cascade_margin))
-    process = Process(target=download, args=(callsign, url,))
+    process = Process(target=download, args=(callsign, url, my_pid))
     process.start()
     return process
 
