@@ -128,6 +128,7 @@ def get_time_offset():
   opts = json.loads(data)
 
   if opts['status'] == 'OK': 
+    logging.info("Location: %s | offset: %s" % (opts['timeZoneId'], opts['rawOffset']))
     g_config['offset'] = int(opts['rawOffset']) / 60
     return True
 
@@ -484,7 +485,7 @@ def spawner():
 
       # Didn't respond in cycle_time seconds so we respawn
       if not flag:
-        if process != False and process.is_alive():
+        if process and process.is_alive():
           process.terminate()
         process = False
 
@@ -498,22 +499,6 @@ def spawner():
         # it now.
         if process_next == False:
           process_next = process_start()
-
-        # if we are past the cascade_time and we have a process_next, then
-        # we should shutdown our previous process and move the pointers around
-        if time.time() - last_success > cascade_time and process_next:
-          logging.info("Stopping cascaded downloader")
-          process.terminate()
-
-          # if the process_next is running then we move
-          # our last_success forward to the present
-          last_success = time.time()
-
-          # we rename our process_next AS OUR process
-          process = process_next
-
-          # And then clear out the old process_next pointer
-          process_next = False 
 
       # If our last_success stream was more than cascade_time - cascade_buffer
       # then we start our process_next
@@ -529,9 +514,34 @@ def spawner():
     # we aren't.
     #  
     else:
-      if process != False and process.is_alive():
+      if process and process.is_alive():
         process.terminate()
-      process = False
+
+      if process_next and process_next.is_alive():
+        process_next.terminate()
+
+      process_next = process = False
+
+    #
+    # This needs to be on the outside loop in case we are doing a cascade
+    # outside of a full mode. In this case, we will need to shut things down
+    #
+    # if we are past the cascade_time and we have a process_next, then
+    # we should shutdown our previous process and move the pointers around
+    if time.time() - last_success > cascade_time and process:
+      logging.info("Stopping cascaded downloader")
+      process.terminate()
+
+      # if the process_next is running then we move
+      # our last_success forward to the present
+      last_success = time.time()
+
+      # we rename our process_next AS OUR process
+      process = process_next
+
+      # And then clear out the old process_next pointer
+      process_next = False 
+
 
     time.sleep(cycle_time)
 
@@ -576,11 +586,9 @@ def readconfig():
   numeric_level = getattr(logging, g_config['loglevel'].upper(), None)
   if not isinstance(numeric_level, int):
     raise ValueError('Invalid log level: %s' % loglevel)
+
   logging.basicConfig(level=numeric_level, filename='indycast.log', datefmt='%Y-%m-%d %H:%M:%S',format='%(asctime)s %(message)s')
 
-  # register_intent(123,321)
-  # print should_be_recording()
-  get_time_offset()
   signal.signal(signal.SIGINT, shutdown)
 
 if __name__ == "__main__":
