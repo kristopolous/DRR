@@ -405,6 +405,11 @@ def server(config):
 def download(callsign, url, my_pid):
 
   proc_name("ic-download")
+
+  def dl_stop(signal, frame):
+    print fname
+    sys.exit(0)
+
   def cback(data): 
     global g_config, g_queue
 
@@ -426,6 +431,7 @@ def download(callsign, url, my_pid):
   c.perform()
   c.close()
 
+  signal.signal(signal.SIGINT, dl_stop)
   stream.close()
 
 
