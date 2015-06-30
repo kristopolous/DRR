@@ -10,6 +10,7 @@ import pycurl
 import shutil
 import sqlite3
 import sys
+import signal
 import time
 import socket
 import setproctitle as SP
@@ -39,10 +40,16 @@ g_config = {}
 g_db = {}
 g_streams = []
 
-def shutdown():
+def shutdown(signal, frame):
   global g_db, g_queue
-  g_db['conn'].close()
+  print "[%s] Shutting down" % SP.getproctitle()
+
+  if 'conn' in g_db:
+    g_db['conn'].close()
+
   g_queue.put('shutdown')
+  logging.info("Shutting down through keyboard interrupt")
+  sys.exit(0)
 
 # Time related 
 def to_minute(unix_time):
@@ -428,7 +435,6 @@ def spawner():
 
   server_pid = Process(target=server)
   server_pid.start()
-  #server_pid.join()
 
   while True:
 
@@ -514,6 +520,10 @@ def indy_start():
     g_config['expireafter'] = '45'
 
   if os.path.isdir(g_config['storage']):
+
+    if not os.path.isfile(g_config['storage'] + __file__):
+      os.symlink(os.path.abspath(__file__), g_config['storage'] + __file__)
+
     os.chdir(g_config['storage'])
 
   else:
@@ -531,6 +541,7 @@ def indy_start():
   get_time_offset()
   #shutdown()
   #sys.exit(0)
+  signal.signal(signal.SIGINT, shutdown)
 
 if __name__ == "__main__":
 
