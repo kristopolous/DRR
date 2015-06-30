@@ -40,6 +40,10 @@ g_config = {}
 g_db = {}
 g_streams = []
 
+def proc_name(what):
+  SP.setproctitle("ic-dlmanager")
+  print "[%s] Starting" % what
+
 def shutdown(signal, frame):
   global g_db, g_queue
   print "[%s] Shutting down" % SP.getproctitle()
@@ -375,13 +379,13 @@ def server():
     return generate_xml(showname, feed_list)
 
   if __name__ == '__main__':
-    SP.setproctitle("ic-webserver")
+    proc_name("ic-webserver")
     app.run(debug=True)
 
 
 def download(callsign, url):
 
-  SP.setproctitle("ic-download")
+  proc_name("ic-download")
 
   def cback(data): 
     global g_round_ix, g_config, g_start_time
@@ -414,7 +418,6 @@ def download(callsign, url):
 def spawner():
   global g_queue, g_config
 
-  SP.setproctitle("ic-dlmanager")
 
   last = {
     'prune': 0,
@@ -482,7 +485,11 @@ def spawner():
       if not process and not b_shutdown:
         process = Process(target=download, args=(callsign, url,))
         process.start()
+        last_success = time.time()
 
+      # If our last_success stream was more than cascade_time - cascade_buffer
+      # then we start our process_next
+      
       # If there is still no process then we should definitely bail.
       if not process:
         return False
@@ -501,7 +508,7 @@ def spawner():
     time.sleep(cycle_time)
 
 
-def indy_start():
+def readconfig():
   global g_config
 
   parser = argparse.ArgumentParser()
@@ -513,11 +520,14 @@ def indy_start():
   Config.read(args.config)
   g_config = ConfigSectionMap('Main', Config)
   
-  if 'loglevel' not in g_config:
-    g_config['loglevel'] = 'WARN'
-
-  if 'expireafter' not in g_config:
-    g_config['expireafter'] = '45'
+  for k,v in {
+    'loglevel': 'WARN',
+    'expireafter': '45',
+    'cascadebuffer': 120,
+    'cascadetime': 60 * 15
+  }.items():
+    if k not in g_config:
+      g_config[k] = v
 
   if os.path.isdir(g_config['storage']):
     #
@@ -549,9 +559,10 @@ if __name__ == "__main__":
 
   # From http://stackoverflow.com/questions/25504149/why-does-running-the-flask-dev-server-run-itself-twice
   if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
-    SP.setproctitle("ic-main")
+    proc_name("ic-main")
     server()
 
   else: 
-    indy_start()      
+    readconfig()      
+    proc_name("ic-dlmanager")
     spawner()
