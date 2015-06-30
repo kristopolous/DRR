@@ -279,23 +279,32 @@ def generate_xml(showname, feed_list):
     ET.SubElement(channel, k).text = v
 
   for feed in feed_list:
+    link = base_url + 'stream/' + feed[1]
     item = ET.SubElement(channel, 'item')
     for k,v in {
         '{%s}explicit' % nsmap['itunes']: 'no', 
         '{%s}author' % nsmap['itunes']: g_config['callsign'],
         '{%s}duration' % nsmap['itunes']: 'TODO', 
+        '{%s}summary' % nsmap['itunes']: feed[0],
         'description': feed[0],
         'pubDate': feed[0], 
         'title': feed[0], 
         'link': feed[1],
+        '{%s}origEnclosureLink' % nsmap['feedburner']: link,
+        '{%s}origLink' % nsmap['feedburner']: base_url,
         'copyright': g_config['callsign'],
         'guid': g_config['callsign'] + feed[0]
     }.items():
       ET.SubElement(item, k).text = v
 
     content = ET.SubElement(item, '{%s}content' % nsmap['media'])
-    content.attrib['url'] = base_url + '/stream/' + feed[1]
+    content.attrib['url'] = link
     content.attrib['fileSize'] = 'TODO'
+    content.attrib['type'] = 'TODO'
+
+    content = ET.SubElement(item, 'enclosure')
+    content.attrib['url'] = link
+    content.attrib['length'] = 'TODO'
     content.attrib['type'] = 'TODO'
 
   tree = ET.ElementTree(root)
