@@ -112,18 +112,26 @@ def to_utc(day_str, hour):
   except e:
     return False
 
-  time_re = re.compile('(\d{1,2}):(\d{2})([ap])m')
+  local = day_number * (60 * 60 * 24)
 
-  time = time_re.findall(hour)
+  time_re_solo = re.compile('(\d{1,2})([ap])m', re.I)
+  time_re_min = re.compile('(\d{1,2}):(\d{2})([ap])m', re.I)
 
-  if len(time) == 0:
+  time = time_re_solo.match(hour)
+  if time:
+    local += int(time.groups()[0]) * 60
+
+  else:
+    time = time_re_min.match(hour)
+
+    if time:
+      local += int(time.groups()[0]) * 60
+      local += int(time.groups()[1])
+
+  if not time:
     return False
 
-  local = day_number * (60 * 60 * 24);
-  local += int(time[0]) * 60
-  local += int(time[1])
-
-  if time[2] == 'p':
+  if time.groups()[-1] == 'p':
     local += (12 * 60)
 
   utc = local + g_config['offset']
