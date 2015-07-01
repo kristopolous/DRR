@@ -134,39 +134,34 @@ def to_utc(day_str, hour):
   if time.groups()[-1] == 'p':
     local += (12 * 60)
 
-  utc = local + g_config['offset']
+  utc = local + get_time_offset()
 
   return utc
 
 
 def get_time_offset():
-  global g_config
 
-  offset = db_get('offset', 60 * 60 * 24)
-  if offset:
-    g_config['offset'] = offset
-    return True
+  offset = db_get('offset', expiry = 60 * 60 * 24)
+  if not offset:
 
-  when = int(time.time())
+    when = int(time.time())
 
-  api_key='AIzaSyBkyEMoXrSYTtIi8bevEIrSxh1Iig5V_to'
-  url = "https://maps.googleapis.com/maps/api/timezone/json?location=%s,%s&timestamp=%d&key=%s" % (g_config['lat'], g_config['long'], when, api_key)
- 
-  stream = urllib2.urlopen(url)
-  data = stream.read()
-  opts = json.loads(data)
+    api_key='AIzaSyBkyEMoXrSYTtIi8bevEIrSxh1Iig5V_to'
+    url = "https://maps.googleapis.com/maps/api/timezone/json?location=%s,%s&timestamp=%d&key=%s" % (g_config['lat'], g_config['long'], when, api_key)
+   
+    stream = urllib2.urlopen(url)
+    data = stream.read()
+    opts = json.loads(data)
 
-  if opts['status'] == 'OK': 
-    logging.info("Location: %s | offset: %s" % (opts['timeZoneId'], opts['rawOffset']))
-    g_config['offset'] = int(opts['rawOffset']) / 60
-    db_set('offset', opts['rawOffset'])
-    return True
+    if opts['status'] == 'OK': 
+      logging.info("Location: %s | offset: %s" % (opts['timeZoneId'], opts['rawOffset']))
+      offset = int(opts['rawOffset']) / 60
+      db_set('offset', offset)
 
-  else:
-    # Let's do something at least
-    g_config['offset'] = 0
+    else:
+      offset = 0
 
-  return False
+  return int(offset)
 
 
 def db_set(key, value):
@@ -531,7 +526,6 @@ def spawner():
 
   last = {
     'prune': 0,
-    'offset': 0
   }
 
   callsign = g_config['callsign']
@@ -579,9 +573,7 @@ def spawner():
       prune()
       last['prune'] = time.time()
 
-    if last['offset'] < yesterday:
-      get_time_offset()
-      last['offset'] = time.time()
+    get_time_offset()
 
     while not g_queue.empty():
       data = g_queue.get(False)
