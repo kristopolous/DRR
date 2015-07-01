@@ -55,7 +55,7 @@ def proc_name(what):
 
 
 # shutdown is hit on the keyboard interrupt
-def shutdown(signal, frame):
+def shutdown(signal = 15, frame = False):
   global g_db, g_queue, g_start_time
   title = SP.getproctitle()
   print "[%s:%d] Shutting down" % (title, os.getpid())
@@ -360,23 +360,29 @@ def generate_xml(showname, feed_list):
   }.items():
     ET.SubElement(channel, k).text = v
 
+  print feed_list
   for feed in feed_list:
-    link = base_url + 'stream/' + feed[1]
+    start = str(feed[0])
+    duration = str(feed[1] - feed[0])
+    filename = feed[2]
+
+    link = base_url + 'stream/' + filename
     item = ET.SubElement(channel, 'item')
+
     for k,v in {
       '{%s}explicit' % nsmap['itunes']: 'no', 
       '{%s}author' % nsmap['itunes']: g_config['callsign'],
       '{%s}duration' % nsmap['itunes']: 'TODO', 
-      '{%s}summary' % nsmap['itunes']: feed[0],
+      '{%s}summary' % nsmap['itunes']: showname,
       '{%s}creator' % nsmap['dc']: g_config['callsign'],
       '{%s}origEnclosureLink' % nsmap['feedburner']: link,
       '{%s}origLink' % nsmap['feedburner']: base_url,
-      'description': feed[0],
-      'pubDate': feed[0], 
-      'title': feed[0], 
-      'link': feed[1],
+      'description': showname,
+      'pubDate': 'TODO',
+      'title': showname,
+      'link': link,
       'copyright': g_config['callsign'],
-      'guid': g_config['callsign'] + feed[0]
+      'guid': g_config['callsign'] + filename
     }.items():
       ET.SubElement(item, k).text = v
 
@@ -491,11 +497,14 @@ def server(config):
   if __name__ == '__main__':
     proc_name("ic-webserver")
 
+    start = time.time()
     try:
       app.run(port = int(config['port']))
 
     except:
-      print "Error, can't start server ... perhaps %s is already in use?" % config['port']
+      if time.time() - start < 5:
+        print "Error, can't start server ... perhaps %s is already in use?" % config['port']
+
       shutdown()
 
 def download(callsign, url, my_pid):
