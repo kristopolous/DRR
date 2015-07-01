@@ -462,9 +462,9 @@ def server(config):
     if type(duration) is str:
       return do_error('duration "%s" is not set correctly' % duration)
 
-    ts = to_utc(weekday, start)
+    start_time = to_utc(weekday, start)
     
-    if not ts:
+    if not start_time:
       return do_error('weekday and start times are not set correctly')
 
     # If we are here then it looks like our input is probably good.
@@ -473,12 +473,13 @@ def server(config):
     # in our xml 
     showname = re.sub('.xml$', '', showname)
 
-    # This will register the intent if needed
-    register_intent(ts, duration)
+    # This will register the intent if needed for future recordings
+    # (that is if we are in ondemand mode)
+    register_intent(start_time, duration)
 
     # Look for streams that we have which match this query
     # and duration
-    feed_list = find_streams(start_query, duration)
+    feed_list = find_streams(start_time, duration)
 
     # Then, taking those two things, make a feed list from them
     return generate_xml(showname, feed_list)
