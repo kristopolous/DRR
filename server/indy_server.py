@@ -438,15 +438,22 @@ def server(config):
   def stream(weekday, start, duration, showname):
     # duration is expressed either in minutes or in \d+hr\d+ minute
     re_minute = re.compile('^(\d+)$')
-    re_hr = re.compile('^(\d+)hr(\d+).*$', re.I)
+    re_hr_solo = re.compile('^(\d+)hr$', re.I)
+    re_hr_min = re.compile('^(\d+)hr(\d+).*$', re.I)
 
     res = re_minute.match(duration)
     if res:
       duration = int(res.groups()[0])
     else:
-      res = re_hr.match(duration)
+      res = re_hr_solo.match(duration)
+
       if res:
-        duration = int(res.groups()[0]) * 60 + int(res.groups()[1])
+        duration = int(res.groups()[0]) * 60
+      else:
+        res = re_hr_min.match(duration)
+
+        if res:
+          duration = int(res.groups()[0]) * 60 + int(res.groups()[1])
 
     # This means we failed to parse
     if type(duration) is str:
