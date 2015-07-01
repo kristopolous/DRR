@@ -107,7 +107,7 @@ def to_utc(day_str, hour):
   global g_config
 
   try:
-    day_number = ['sun','mon','tue','wed','thu','fri','sat','sun'].index(day_str.lower())
+    day_number = ['sun','mon','tue','wed','thu','fri','sat'].index(day_str.lower())
 
   except e:
     return False
@@ -394,6 +394,9 @@ def generate_xml(showname, feed_list):
   return ET.tostring(tree, xml_declaration=True, encoding="utf-8")
 
 
+def do_error(errstr):
+  return jsonify({'result': false, 'error':errstr}), 500
+    
 def server(config):
   app = Flask(__name__)
 
@@ -433,7 +436,26 @@ def server(config):
   
   @app.route('/<weekday>/<start>/<duration>/<name>')
   def stream(weekday, start, duration, showname):
+    # duration is expressed either in minutes or in \d+hr\d+ minute
+    re_minute = re.compile('^(\d+)$')
+    re_hr = re.compile('^(\d+)hr(\d+).*$', re.I)
+
+    res = re_minute.match(duration)
+    if res:
+      duration = int(res.groups()[0])
+    else:
+      res = re_hr.match(duration)
+      if res:
+        duration = int(res.groups()[0]) * 60 + int(res.groups()[1])
+
+    # This means we failed to parse
+    if type(duration) is str:
+      return do_error('duration "%s" is not set correctly' % duration)
+
     ts = to_utc(weekday, start)
+    
+    if not ts:
+      return do_error('weekday and start times are not set correctly')
 
     # This will register the intent if needed
     register_intent(ts, duration)
