@@ -166,16 +166,17 @@ def db_set(key, value):
   
   # from http://stackoverflow.com/questions/418898/sqlite-upsert-not-insert-or-replace
   res = db['c'].execute(
-    '''INSERT OR REPLACE INTO kv (key, value) 
+    '''INSERT OR REPLACE INTO kv (key, value, created_at) 
       VALUES ( 
         COALESCE((SELECT key FROM kv WHERE key = ?), ?),
-        ?
+        ?,
+        current_timestamp 
     )''', (key, key, value))
   g_db['conn'].commit()
 
   return value
 
-def db_get(key, expiry):
+def db_get(key, expiry=0):
   db = db_connect()
   res = db['c'].execute('select value from kv where key = ?', (key, )).fetchone()
 
