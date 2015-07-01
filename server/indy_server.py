@@ -469,7 +469,7 @@ def server(config):
 
   if __name__ == '__main__':
     proc_name("ic-webserver")
-    app.run()
+    app.run(port = int(config['port']))
 
 
 def download(callsign, url, my_pid):
@@ -660,6 +660,7 @@ def readconfig():
     'loglevel': 'WARN',
     'expireafter': '45',
     'cascadebuffer': 15,
+    'port': '5000',
     'cascadetime': 60 * 15
   }.items():
     if k not in g_config:
