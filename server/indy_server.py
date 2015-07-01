@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python -O
 import argparse
 import ConfigParser
 import json
@@ -175,7 +175,7 @@ def db_set(key, value):
 
   return value
 
-def db_get(key):
+def db_get(key, expiry):
   db = db_connect()
   res = db['c'].execute('select value from kv where key = ?', (key, )).fetchone()
 
@@ -203,7 +203,8 @@ def db_connect():
     g_db['c'].execute("""CREATE TABLE IF NOT EXISTS kv(
       id    INTEGER PRIMARY KEY, 
       key   TEXT UNIQUE,
-      value TEXT
+      value TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )""");
 
     g_db['conn'].commit()
