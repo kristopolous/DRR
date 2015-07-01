@@ -656,16 +656,31 @@ def readconfig():
   Config.read(args.config)
   g_config = ConfigSectionMap('Main', Config)
   
-  for k,v in {
+  defaults = {
     'loglevel': 'WARN',
+    'mode': 'full',
+    'storage': 'recording',
     'expireafter': '45',
-    'cascadebuffer': 15,
     'port': '5000',
+    'archivedays': '7',
+    'cascadebuffer': 15,
     'cascadetime': 60 * 15
-  }.items():
+  }
+
+  for k,v in defaults.items():
     if k not in g_config:
       g_config[k] = v
 
+  if not os.path.isdir(g_config['storage']):
+    try:
+      # If I can't do this, that's fine.
+      os.mkdir(g_config['storage'])
+    except:
+      # We make it from the current directory
+      g_config['storage'] = defaults['storage']
+      os.mkdir(g_config['storage'])
+
+  # Now we try to do all this stuff again
   if os.path.isdir(g_config['storage']):
     #
     # There's a bug after we chdir, where the multiprocessing is trying to
