@@ -112,7 +112,7 @@ def to_utc(day_str, hour):
   except e:
     return False
 
-  local = day_number * (60 * 60 * 24)
+  local = day_number * (60 * 24)
 
   time_re_solo = re.compile('(\d{1,2})([ap])m', re.I)
   time_re_min = re.compile('(\d{1,2}):(\d{2})([ap])m', re.I)
@@ -230,7 +230,7 @@ def db_connect():
 def register_intent(minute, duration):
   db = db_connect()
 
-  key = str(minute) + str(duration)
+  key = str(minute) + ':' + str(duration)
   c = db['c']
   res = c.execute('select id from intents where key = ?', (key, )).fetchone()
 
@@ -428,7 +428,11 @@ def server(config):
     if request.remote_addr != '127.0.0.1':
       return '', 403
 
+    db = db_connect()
+
     stats = {
+      'intents': [record for record in db['c'].execute('select * from intents').fetchall()],
+      'kv': [record for record in db['c'].execute('select * from kv').fetchall()],
       'uptime': int(time.time() - g_start_time),
       'disk': sum(os.path.getsize(f) for f in os.listdir('.') if os.path.isfile(f)),
       'streams': find_streams(-1, 0),
@@ -486,8 +490,13 @@ def server(config):
 
   if __name__ == '__main__':
     proc_name("ic-webserver")
-    app.run(port = int(config['port']))
 
+    try:
+      app.run(port = int(config['port']))
+
+    except:
+      print "Error, can't start server ... perhaps %s is already in use?" % config['port']
+      shutdown()
 
 def download(callsign, url, my_pid):
 
