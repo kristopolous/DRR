@@ -1,4 +1,4 @@
-#!/usr/bin/env python -O
+#!/usr/bin/env python
 import argparse
 import ConfigParser
 import json
@@ -134,7 +134,7 @@ def to_utc(day_str, hour):
 def get_time_offset():
   global g_config
 
-  offset = db_get('offset')
+  offset = db_get('offset', 60 * 60 * 24)
   if offset:
     g_config['offset'] = offset
     return True
@@ -172,17 +172,28 @@ def db_set(key, value):
         ?,
         current_timestamp 
     )''', (key, key, value))
-  g_db['conn'].commit()
+
+  db['conn'].commit()
 
   return value
 
+
+# Get's a value from the database, tentative on the expiry
 def db_get(key, expiry=0):
   db = db_connect()
-  res = db['c'].execute('select value from kv where key = ?', (key, )).fetchone()
+
+  if expiry > 0:
+    # If we let things expire, we first sweep for it
+    db['c'].execute('delete from kv where key = ? and created_at < (current_timestamp - ?)', (key, expiry))
+    db['conn'].commit()
+
+  res = db['c'].execute('select value, created_at from kv where key = ?', (key, )).fetchone()
 
   if res:
     return res[0]
+
   return False
+
 
 def db_connect():
   global g_db
