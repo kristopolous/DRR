@@ -395,7 +395,7 @@ def generate_xml(showname, feed_list):
 
 
 def do_error(errstr):
-  return jsonify({'result': false, 'error':errstr}), 500
+  return jsonify({'result': False, 'error':errstr}), 500
     
 def server(config):
   app = Flask(__name__)
@@ -434,7 +434,7 @@ def server(config):
 
     return jsonify(stats), 200
   
-  @app.route('/<weekday>/<start>/<duration>/<name>')
+  @app.route('/<weekday>/<start>/<duration>/<showname>')
   def stream(weekday, start, duration, showname):
     # duration is expressed either in minutes or in \d+hr\d+ minute
     re_minute = re.compile('^(\d+)$')
@@ -463,6 +463,12 @@ def server(config):
     
     if not ts:
       return do_error('weekday and start times are not set correctly')
+
+    # If we are here then it looks like our input is probably good.
+    
+    # Strip the .xml from the showname ... this will be used
+    # in our xml 
+    showname = re.sub('.xml$', '', showname)
 
     # This will register the intent if needed
     register_intent(ts, duration)
