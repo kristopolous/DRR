@@ -537,14 +537,20 @@ def download(callsign, url, my_pid):
     stream = open(fname, 'w')
 
   except:
-    logging.critical("Unable to open %s. Can't record. Must exit." % (fname))
+    logging.critical("Unable to open %s. Can't record. Must exit." % fname)
     sys.exit(-1)
 
   #signal.signal(signal.SIGTERM, dl_stop)
   c = pycurl.Curl()
   c.setopt(c.URL, url)
   c.setopt(pycurl.WRITEFUNCTION, cback)
-  c.perform()
+
+  try:
+    c.perform()
+
+  except:
+    logging.warning("Couldn't resolve or connect to %s." % url)
+
   c.close()
 
   stream.close()
