@@ -1,11 +1,14 @@
 # Installation
 
-You need pip, python2, and pymad. In debian you can do
+You need the following things in debian based systems:
  
   sudo apt-get -y -f install \
-    python-pip python python-pymad \
-    python-dev libxml2-dev libxslt1-dev \
-    python-pycurl
+    python-pip   python   python-pymad \
+    python-dev   ffmpeg   libxslt1-dev \
+    libxml2-dev  python-pycurl 
+
+Your OS of choice should have these in their own terms - remember
+this is intended to be run on a server somewhere.
 
 Then you need the requirements here. You can install them with
 
