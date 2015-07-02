@@ -698,14 +698,36 @@ def readconfig():
   g_config = ConfigSectionMap('Main', Config)
   
   defaults = {
+    # The log level to be put into the indycast.log file.
     'loglevel': 'WARN',
+
+    # The recording mode, either 'full' meaning to record
+    # everything, or != 'full' meaning to record only when
+    # an intent is matched.
     'mode': 'full',
+
+    # The relative, or absolute directory to put things
+    # in
     'storage': 'recording',
+
+    # The (day) time to expire an intent to record
     'expireafter': '45',
+
+    # The TCP port to run the server on
     'port': '5000',
+
+    # The (day) duration we should be archiving things.
     'archivedays': '7',
+
+    # The (second) time in looking to see if our stream
+    # is running
     'cycletime': '7',
+
+    # The (second) time to start a stream BEFORE the lapse
+    # of the cascade-time
     'cascadebuffer': 15,
+
+    # The (second) time between cascaded streams
     'cascadetime': 60 * 15
   }
 
