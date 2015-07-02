@@ -37,6 +37,7 @@ from pydub import AudioSegment
 from datetime import datetime
 from glob import glob
 from flask import Flask, request, jsonify
+import flask
 from multiprocessing import Process, Queue
 from StringIO import StringIO
 
@@ -163,6 +164,16 @@ def get_time_offset():
 
   return int(offset)
 
+
+def db_incr(key, value = 1):
+  db = db_connect()
+
+  try:
+    db['c'].execute('insert into kv(value, key) values(?, ?)', (value, key))
+  except:
+    db['c'].execute('update kv set value = value + ? where key = ?', (value, key))
+
+  db['conn'].commit()
 
 def db_set(key, value):
   db = db_connect()
@@ -360,7 +371,6 @@ def generate_xml(showname, feed_list):
   }.items():
     ET.SubElement(channel, k).text = v
 
-  print feed_list
   for feed in feed_list:
     start = str(feed[0])
     duration = str(feed[1] - feed[0])
@@ -419,13 +429,13 @@ def server(config):
   def send_stream(path):
     # If the file doesn't exist, then we need to slice
     # it and create it based on our query.
-    if not os.path.isfile(config['storage'], path):
+    if not os.path.isfile(config['storage'] + path):
       # find the closest timestamp
       # slice if needed
       # add up the timestamp
       return True
 
-    return send_from_directory(config['storage'], path)
+    return flask.send_from_directory(config['storage'], path)
 
   @app.route('/heartbeat')
   def heartbeat():
@@ -543,16 +553,14 @@ def download(callsign, url, my_pid):
 def spawner():
   global g_queue, g_config
 
-  last = {
-    'prune': 0,
-  }
-
   callsign = g_config['callsign']
   url = g_config['stream']
 
   cascade_time = int(g_config['cascadetime'])
   cascade_buffer = int(g_config['cascadebuffer'])
   cascade_margin = cascade_time - cascade_buffer
+
+  last_prune = 0
   last_success = 0
 
   mode_full = (g_config['mode'].lower() == 'full')
@@ -560,7 +568,7 @@ def spawner():
   should_record = mode_full
 
   # Number of seconds to be cycling
-  cycle_time = 5
+  cycle_time = int(g_config['cycletime'])
 
   process = False
   process_next = False
@@ -588,9 +596,9 @@ def spawner():
     flag = False
 
     yesterday = time.time() - 24 * 60 * 60
-    if last['prune'] < yesterday:
+    if last_prune < yesterday:
       prune()
-      last['prune'] = time.time()
+      last_prune = time.time()
 
     get_time_offset()
 
@@ -672,7 +680,8 @@ def spawner():
       # And then clear out the old process_next pointer
       process_next = False 
 
-
+    # Increment the amount of time this has been running
+    db_incr('uptime', cycle_time)
     time.sleep(cycle_time)
 
 
@@ -695,6 +704,7 @@ def readconfig():
     'expireafter': '45',
     'port': '5000',
     'archivedays': '7',
+    'cycletime': '7',
     'cascadebuffer': 15,
     'cascadetime': 60 * 15
   }
@@ -734,6 +744,12 @@ def readconfig():
     raise ValueError('Invalid log level: %s' % loglevel)
 
   logging.basicConfig(level=numeric_level, filename='indycast.log', datefmt='%Y-%m-%d %H:%M:%S',format='%(asctime)s %(message)s')
+
+  #
+  # increment the number of times this has been run so we 
+  # can track the stability of remote servers and instances
+  #
+  db_incr('runcount')
 
   signal.signal(signal.SIGINT, shutdown)
 
