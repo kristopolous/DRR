@@ -54,6 +54,7 @@ def stitch_attempt(first, second):
   crc32_first = mp3_crc(first)
   crc32_second = mp3_crc(second, 50)
 
-  print crc32_first, crc32_second
+  search = crc32_second[0].index(crc32_first[0][-1])
+  print search
 
 stitch_attempt('/var/radio/kpcc-1435799122.mp3', '/var/radio/kpcc-1435800025.mp3')
