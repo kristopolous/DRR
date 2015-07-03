@@ -27,6 +27,7 @@ def mp3_crc(fname, blockcount = -1):
         samp_rate = freqTable[(b & 0x0f) >> 2]
         bit_rate = brTable[b >> 4]
         pad_bit = (b & 0x3) >> 1
+
         # from http://id3.org/mp3Frame
         frame_size = (144000 * bit_rate / samp_rate) + pad_bit
 
@@ -34,7 +35,9 @@ def mp3_crc(fname, blockcount = -1):
         throw_away = f.read(1)
 
         # Get the signature
-        frame_sig.append(binascii.crc32(f.read(32)))
+        crc = binascii.crc32(f.read(32))
+        #print crc
+        frame_sig.append(crc)
         start_byte.append(frame_start)
 
         # Move forward the frame f.read size + 4 byte header
@@ -85,8 +88,10 @@ def stitch_attempt(first, second):
   # Since we end at the last block, we can safely pass in a file1_stop of 0
   if isFound:
     # And then we take the offset in the crc32_second where things began, + 1
-    serialize(first, 0, second, offset_second[last + 1])
+    serialize(first, offset_first[-1], second, offset_second[last])
 
   print isFound
 
-stitch_attempt('/var/radio/kpcc-1435669435.mp3', '/var/radio/kpcc-1435670339.mp3')
+print mp3_crc('/var/radio/kpcc-1435670339.mp3')
+print mp3_crc('/tmp/attempt.mp3')
+#stitch_attempt('/var/radio/kpcc-1435669435.mp3', '/var/radio/kpcc-1435670339.mp3')
