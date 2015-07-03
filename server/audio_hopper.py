@@ -3,6 +3,7 @@ import binascii
 
 def mp3_crc(fname, blockcount = -1):
   frame_sig = []
+  start_byte = []
 
   freqTable = [ 44100, 48000, 32000, 0 ]
 
@@ -35,9 +36,11 @@ def mp3_crc(fname, blockcount = -1):
 
         # Get the signature
         frame_sig.append(binascii.crc32(f.read(32)))
+        start_byte.append(frame_start)
 
         # Move forward the frame
         throw_away = f.read(frame_size - 36)
+
       else:
         print "WRONG"
 
@@ -45,7 +48,7 @@ def mp3_crc(fname, blockcount = -1):
       break
 
   f.close()
-  return frame_sig
+  return [frame_sig, start_byte]
 
 def stitch_attempt(first, second):
   crc32_first = mp3_crc(first)
@@ -53,7 +56,4 @@ def stitch_attempt(first, second):
 
   print crc32_first, crc32_second
 
-stitch_attempt('/var/radio/kpcc-1435799122.mp3' '/var/radio/kpcc-1435800025.mp3')
-with open('/var/radio/kpcc-1435799122.mp3', 'rb') as f:
-
-
+stitch_attempt('/var/radio/kpcc-1435799122.mp3', '/var/radio/kpcc-1435800025.mp3')
