@@ -1,7 +1,8 @@
 #!/usr/bin/python -O
 import binascii
 
-with open('../misc/test.mp3', 'rb') as f:
+def mp3_crc(fname, blockcount = -1):
+  frame_sig = []
 
   freqTable = [ 44100, 48000, 32000, 0 ]
 
@@ -12,26 +13,47 @@ with open('../misc/test.mp3', 'rb') as f:
     224, 256, 320, 0
   ]
 
-  while True:
+
+  f = open(fname, 'rb')
+  while blockcount != 0:
+    blockcount -= 1
+
     header = f.read(2)
     if header:
-      # print "candidate: %s" % binascii.b2a_hex(header)
 
-      if header == '\xff\xfb':
-        b_dat = f.read(1)
-        b = ord(b_dat)
+      if header == '\xff\xfb' or header == '\xff\xfa':
+        b = ord(f.read(1))
         samp_rate = freqTable[(b & 0x0f) >> 2]
         bit_rate = brTable[b >> 4]
         pad_bit = (b & 0x3) >> 1
-
+        frame_start = f.tell() - 3
         # from http://id3.org/mp3Frame
         frame_size = (144000 * bit_rate / samp_rate) + pad_bit
-        f.seek(frame_size + f.tell() - 3)
 
-        #print "framesize, pos: %d %d %d %s %d %d" % (frame_size, f.tell(), pad_bit, binascii.b2a_hex(b_dat), bit_rate, samp_rate)
-        #print "%s" % binascii.b2a_hex(chunk)
+        # Rest of the header
+        throw_away = f.read(1)
+
+        # Get the signature
+        frame_sig.append(binascii.crc32(f.read(32)))
+
+        # Move forward the frame
+        throw_away = f.read(frame_size - 36)
       else:
         print "WRONG"
+
     else:
       break
+
+  f.close()
+  return frame_sig
+
+def stitch_attempt(first, second):
+  crc32_first = mp3_crc(first)
+  crc32_second = mp3_crc(second, 50)
+
+  print crc32_first, crc32_second
+
+stitch_attempt('/var/radio/kpcc-1435799122.mp3' '/var/radio/kpcc-1435800025.mp3')
+with open('/var/radio/kpcc-1435799122.mp3', 'rb') as f:
+
 
