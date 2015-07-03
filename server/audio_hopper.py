@@ -75,7 +75,7 @@ def stitch_attempt(first, second):
   last = 0
   isFound = True
 
-  for i in xrange(5, 1, -1):
+  for i in xrange(4, 0, -1):
     pos = crc32_second.index(crc32_first[-i])
     if last != 0 and pos - last != 1:
       isFound = False
@@ -89,4 +89,4 @@ def stitch_attempt(first, second):
 
   print isFound
 
-stitch_attempt('/var/radio/kpcc-1435799122.mp3', '/var/radio/kpcc-1435800025.mp3')
+stitch_attempt('/var/radio/kpcc-1435669435.mp3', '/var/radio/kpcc-1435670339.mp3')
