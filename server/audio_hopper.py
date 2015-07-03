@@ -50,11 +50,46 @@ def mp3_crc(fname, blockcount = -1):
   f.close()
   return [frame_sig, start_byte]
 
+def serialize(file1, file1_stop, file2, file2_start):
+  out = open('/tmp/attempt.mp3', 'rb+')
+  f = open(file1, 'rb')
+
+  if file1_stop == 0:
+    part1 = f.read()
+  else:
+    part1 = f.read(file1_stop)
+
+  f.close()
+
+  f = open(file2, 'rb')
+  f.seek(file2_start)
+  part2 = f.read()
+
+  f.close()
+
+  out.write(part1 + part2)
+  return True
+
 def stitch_attempt(first, second):
   crc32_first = mp3_crc(first)
-  crc32_second = mp3_crc(second, 50)
+  crc32_second = mp3_crc(second, 2000)
 
-  search = crc32_second[0].index(crc32_first[0][-1])
-  print search
+  ordinal = []
+  last = 0
+  isFound = True
+
+  for i in xrange(5, 1, -1):
+    pos = crc32_second[0].index(crc32_first[0][-i])
+    if last != 0 and pos - last != 1:
+      isFound = False
+
+    last = pos
+
+  # Since we end at the last block, we can safely pass in a file1_stop of 0
+  if isFound:
+    # And then we take the offset in the crc32_second where things began, + 1
+    serialize(first, 0, second, crc32_second[1][last + 1])
+
+  print isFound
 
 stitch_attempt('/var/radio/kpcc-1435799122.mp3', '/var/radio/kpcc-1435800025.mp3')
