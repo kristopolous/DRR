@@ -1,5 +1,6 @@
 #!/usr/bin/python -O
 import binascii
+import struct
 
 def mp3_crc(fname, blockcount = -1):
   frame_sig = []
@@ -42,6 +43,17 @@ def mp3_crc(fname, blockcount = -1):
 
         # Move forward the frame f.read size + 4 byte header
         throw_away = f.read(frame_size - 36)
+
+      #ID3 tag for some reason
+      elif header == '\x49\x44':
+        # Rest of the header
+        throw_away = f.read(4)
+        size = f.read(4)
+        print binascii.b2a_hex(size)
+        size = struct.unpack('>I', size)[0]
+        f.read(size)
+        print binascii.b2a_hex(f.read(10))
+        exit(0)
 
       else:
         print "WRONG"
@@ -92,6 +104,13 @@ def stitch_attempt(first, second):
 
   print isFound
 
-print mp3_crc('/var/radio/kpcc-1435670339.mp3')
-print mp3_crc('/tmp/attempt.mp3')
+#p =  mp3_crc('/home/chris/Downloads/DE.mp3')
+#print len(p[0])
+
+p =  mp3_crc('/home/chris/Downloads/sub.mp3')
+print len(p[0])
+
+p =  mp3_crc('/home/chris/Downloads/Avenue-Red-Podcast-041-Verdant-Recordings.mp3')
+print len(p[0])
+#print mp3_crc('/tmp/attempt.mp3')
 #stitch_attempt('/var/radio/kpcc-1435669435.mp3', '/var/radio/kpcc-1435670339.mp3')
