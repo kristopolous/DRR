@@ -71,7 +71,7 @@ def mp3_crc(fname, blockcount = -1):
         f.read(126)
 
       else:
-        print "%s:%s:%s:%s %s" % (binascii.b2a_hex(header), header, f.read(5), fname, hex(f.tell()))
+        print "%s:%s:%s:%s %s %d" % (binascii.b2a_hex(header), header, f.read(5), fname, hex(f.tell()), len(start_byte) * (1152.0 / 44100) / 60)
         break
 
     else:
@@ -95,7 +95,7 @@ def serialize(file_list):
     if end == -1:
       out.write(f.read())
     else:
-      out.write(f.read(end))
+      out.write(f.read(end - start))
 
     f.close()
 
@@ -135,11 +135,7 @@ def stitch_attempt(file_list):
   for name in file_list[1:]:
     second = {'name': name}
 
-    # if we are at the end, we only need a few
-    if name == file_list[-1]:
-      crc32, offset = mp3_crc(name, 2000)
-    else:
-      crc32, offset = mp3_crc(name)
+    crc32, offset = mp3_crc(name)
 
     second['crc32'] = crc32
     second['offset'] = offset
@@ -147,20 +143,22 @@ def stitch_attempt(file_list):
     isFound = True
 
     try:
-      pos = second['crc32'].index(first['crc32'][-1])
+      pos = second['crc32'].index(first['crc32'][-2])
 
-      for i in xrange(4, 0, -1):
-        if second['crc32'][pos - i + 1] != first['crc32'][-i]:
+      for i in xrange(5, 1, -1):
+        if second['crc32'][pos - i + 2] != first['crc32'][-i]:
           isFound = False
+          print "Index doesn't match"
           break
 
     except: 
+      print "Can't find index"
       break
 
     if isFound:
-      args.append((second['name'], second['offset'][pos], second['offset'][-1]))
+      args.append((second['name'], second['offset'][pos], second['offset'][-2]))
       first = second
-      next
+      continue
 
     break
 
@@ -170,15 +168,13 @@ def stitch_attempt(file_list):
     # And then we take the offset in the crc32_second where things began, + 1
     serialize(args)
     return True
-    #serialize([(first, 0, offset_first[-1]), (second, offset_second[pos], -1)])
-
 
 #for f in glob.glob("*.mp3"):
 #    p =  mp3_crc(f)
     #print len(p[0])
 
 # success case
-stitch_attempt(['/var/radio/kpcc-1435669435.mp3', '/var/radio/kpcc-1435670339.mp3'])
+isSuccess = stitch_attempt(["/var/radio/kpcc-1435670339.mp3","/var/radio/kpcc-1435671243.mp3","/var/radio/kpcc-1435672147.mp3","/var/radio/kpcc-1435673051.mp3","/var/radio/kpcc-1435673955.mp3","/var/radio/kpcc-1435674859.mp3","/var/radio/kpcc-1435675763.mp3","/var/radio/kpcc-1435676667.mp3","/var/radio/kpcc-1435677571.mp3","/var/radio/kpcc-1435678475.mp3","/var/radio/kpcc-1435679379.mp3"])
 
 # failure case
 #stitch_attempt('/var/radio/kpcc-1435670339.mp3', '/var/radio/kpcc-1435669435.mp3')
