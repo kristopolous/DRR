@@ -37,7 +37,6 @@ socket.getaddrinfo = getAddrInfoWrapper
 
 import urllib2
 
-from pydub import AudioSegment
 from datetime import datetime
 from glob import glob
 from flask import Flask, request, jsonify
