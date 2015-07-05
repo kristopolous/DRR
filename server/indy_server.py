@@ -144,8 +144,17 @@ def audio_time(fname):
 # (fila_name, byte_start, byte_end) where byte_end == -1 
 # means "the whole file" 
 #
-def audio_serialize(file_list):
-  out = open('/tmp/serialize.mp3', 'wb+')
+def audio_serialize(file_list, duration):
+  global g_config
+
+  # Our file will be the first one_(second duration).mp3
+  name = "%s_%d.mp3" % (file_list[0][0:-4], duration)
+
+  # If the file exists, then we just return it
+  if os.path.isfile(name):
+    return name
+
+  out = open(name, 'wb+')
 
   for name, start, end in file_list:
     f = open(name, 'rb')
@@ -196,6 +205,8 @@ def audio_slice(fname, start, end):
 #
 def audio_stitch(file_list):
   first = {'name': file_list[0]}
+  duration = 0
+  frame_length = (1152.0 / 44100)
 
   crc32, offset = audio_crc(first['name'])
 
@@ -203,6 +214,7 @@ def audio_stitch(file_list):
   first['offset'] = offset
 
   args = [(first['name'], 0, first['offset'][-1])]
+  duration += len(first['offset']) * frame_length
 
   for name in file_list[1:]:
     second = {'name': name}
@@ -229,16 +241,16 @@ def audio_stitch(file_list):
 
     if isFound:
       args.append((second['name'], second['offset'][pos], second['offset'][-2]))
+      duration += (len(second['offset']) - pos - 1) * frame_length
       first = second
       continue
 
     break
 
-
   # Since we end at the last block, we can safely pass in a file1_stop of 0
   if len(args) > 1:
-    # And then we take the offset in the crc32_second where things began, + 1
-    audio_serialize(args)
+    # And then we take the offset in the second['crc32'] where things began, + 1
+    audio_serialize(args, duration = duration)
     return True
 
 
