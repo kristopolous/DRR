@@ -1,6 +1,7 @@
 #!/usr/bin/python -O
 import binascii
 import struct
+import math
 import glob, os, base64
 
 def mp3_crc(fname, blockcount = -1, skipcrc = False):
@@ -27,24 +28,20 @@ def mp3_crc(fname, blockcount = -1, skipcrc = False):
       if header == '\xff\xfb' or header == '\xff\xfa':
         b = ord(f.read(1))
 
-        if skipcrc:
-          f.read(32)
+        samp_rate = freqTable[(b & 0x0f) >> 2]
+        bit_rate = brTable[b >> 4]
+        pad_bit = (b & 0x3) >> 1
 
-        else:
-          samp_rate = freqTable[(b & 0x0f) >> 2]
-          bit_rate = brTable[b >> 4]
-          pad_bit = (b & 0x3) >> 1
+        # from http://id3.org/mp3Frame
+        frame_size = (144000 * bit_rate / samp_rate) + pad_bit
 
-          # from http://id3.org/mp3Frame
-          frame_size = (144000 * bit_rate / samp_rate) + pad_bit
+        # Rest of the header
+        throw_away = f.read(1)
 
-          # Rest of the header
-          throw_away = f.read(1)
+        # Get the signature
+        crc = binascii.crc32(f.read(32))
 
-          # Get the signature
-          crc = binascii.crc32(f.read(32))
-
-          frame_sig.append(crc)
+        frame_sig.append(crc)
 
         start_byte.append(frame_start)
 
@@ -105,8 +102,20 @@ def serialize(file1, file1_stop, file2, file2_start):
 def slice_audio(fname, start, end):
   # Most common frame-length ... in practice, I haven't 
   # seen other values in the real world
-  frame_length = (1152 / 44100)
-  crc32_first, offset_first = mp3_crc(fname)
+  frame_length = (1152.0 / 44100)
+  crc32, offset = mp3_crc(fname, skipcrc = True)
+
+  frame_start = int(math.floor(start / frame_length))
+  frame_end = int(math.ceil(end / frame_length))
+
+  out = open('/tmp/attempt.mp3', 'wb+')
+  f = open(fname, 'rb')
+
+  f.seek(offset[frame_start])
+  print offset[frame_end] - offset[frame_start], offset[frame_start]
+  out.write(f.read(offset[frame_end] - offset[frame_start]))
+  f.close()
+  out.close()
 
   return True
 
