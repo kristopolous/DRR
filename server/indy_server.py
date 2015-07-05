@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python -O
 import argparse
 import binascii
 import ConfigParser
@@ -18,7 +18,7 @@ import sys
 import time
 
 #
-# This is needed to force ipv4 on ipv6 devices.  It's sometimes needed
+# This is needed to force ipv4 on ipv6 devices. It's sometimes needed
 # if there isn't a clean ipv6 route to get to the big wild internet.
 # In these cases, a pure ipv6 route simply will not work.  People aren't
 # always in full control of every hop ... so it's much safer to force
@@ -163,6 +163,7 @@ def audio_serialize(file_list, duration):
     
     if end == -1:
       out.write(f.read())
+
     else:
       out.write(f.read(end - start))
 
@@ -170,7 +171,7 @@ def audio_serialize(file_list, duration):
 
   out.close()
 
-  return True
+  return name
 
 
 #
@@ -249,9 +250,8 @@ def audio_stitch(file_list):
 
   # Since we end at the last block, we can safely pass in a file1_stop of 0
   if len(args) > 1:
-    # And then we take the offset in the second['crc32'] where things began, + 1
-    audio_serialize(args, duration = duration)
-    return True
+    # And then we take the offset in the second['crc32'] where things began
+    return audio_serialize(args, duration = duration)
 
 
 # Sets a more human-readable process name for the various
@@ -306,6 +306,7 @@ def ConfigSectionMap(section, Config):
       dict1[option] = None
 
   return dict1  
+
 
 #
 # to_utc takes the nominal weekday (sun, mon, tue, wed, thu, fri, sat)
@@ -479,6 +480,7 @@ def register_intent(minute, duration):
   return db['c'].lastrowid
   
 
+# Query the database and see if we ought to be recording at this moment
 def should_be_recording():
   global g_config
 
@@ -498,6 +500,7 @@ def should_be_recording():
   return intent_count != 0
   
 
+# Get rid of files older than archivedays
 def prune():
   global g_config
 
@@ -519,9 +522,11 @@ def prune():
   logging.info("Found %d files older than %s days." % (count, g_config['archivedays']))
 
 
+#
 # Given a start week minute and a duration, this
 # looks for streams in the storage directory that 
-# match it
+# match it.
+#
 def find_streams(start_query, duration):
   global g_streams
   ts_re = re.compile('(\d*).mp3')
@@ -743,6 +748,7 @@ def server(config):
         print "Error, can't start server ... perhaps %s is already in use?" % config['port']
 
       shutdown()
+
 
 def download(callsign, url, my_pid):
 
