@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import argparse
-import base64
 import binascii
 import ConfigParser
 import json
@@ -11,7 +10,6 @@ import os
 import pycurl
 import re
 import setproctitle as SP
-import shutil
 import signal
 import socket
 import sqlite3
@@ -41,7 +39,6 @@ from glob import glob
 from flask import Flask, request, jsonify
 import flask
 from multiprocessing import Process, Queue
-from StringIO import StringIO
 
 g_start_time = time.time()
 g_queue = Queue()
@@ -358,6 +355,7 @@ def db_incr(key, value = 1):
 
   try:
     db['c'].execute('insert into kv(value, key) values(?, ?)', (value, key))
+
   except:
     db['c'].execute('update kv set value = value + ? where key = ?', (value, key))
 
@@ -542,6 +540,7 @@ def generate_xml(showname, feed_list):
     'itunes': 'http://www.itunes.com/dtds/podcast-1.0.dtd',
     'feedburner': 'http://rssnamespace.org/feedburner/ext/1.0'
   }
+
   root = ET.Element("rss", nsmap = nsmap)
   root.attrib['version'] = '2.0'
 
@@ -655,11 +654,13 @@ def server(config):
     res = re_minute.match(duration)
     if res:
       duration = int(res.groups()[0])
+
     else:
       res = re_hr_solo.match(duration)
 
       if res:
         duration = int(res.groups()[0]) * 60
+
       else:
         res = re_hr_min.match(duration)
 
