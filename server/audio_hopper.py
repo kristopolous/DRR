@@ -133,11 +133,11 @@ def stitch_attempt(first, second):
 
   try:
     pos = crc32_second.index(crc32_first[-1])
-    for i in xrange(4, 0, -1):
-      if last != 0 and pos - last != 1:
-        isFound = False
 
-      last = pos
+    for i in xrange(4, 0, -1):
+      if crc32_second[pos - i + 1] != crc32_first[-i]:
+        isFound = False
+        break
 
   except: 
     isFound = False
@@ -146,7 +146,7 @@ def stitch_attempt(first, second):
   # Since we end at the last block, we can safely pass in a file1_stop of 0
   if isFound:
     # And then we take the offset in the crc32_second where things began, + 1
-    serialize([(first, 0, offset_first[-1]), (second, offset_second[last], -1)])
+    serialize([(first, 0, offset_first[-1]), (second, offset_second[pos], -1)])
 
   return isFound
 
