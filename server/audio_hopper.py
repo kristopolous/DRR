@@ -134,7 +134,12 @@ def stitch_attempt(file_list):
 
   for name in file_list[1:]:
     second = {'name': name}
-    crc32, offset = mp3_crc(name)
+
+    # if we are at the end, we only need a few
+    if name == file_list[-1]:
+      crc32, offset = mp3_crc(name, 2000)
+    else:
+      crc32, offset = mp3_crc(name)
 
     second['crc32'] = crc32
     second['offset'] = offset
