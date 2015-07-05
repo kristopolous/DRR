@@ -6,7 +6,6 @@ import ConfigParser
 import json
 import logging
 import lxml.etree as ET
-import mad
 import math
 import os
 import pycurl
@@ -131,6 +130,10 @@ def audio_crc(fname, blockcount = -1):
 
   f.close()
   return [frame_sig, start_byte]
+
+def audio_time(fname):
+  crc32, offset = audio_crc(fname)
+  return (1152.0 / 44100) * len(offset)
 
 
 # serialize takes a list of ordinal tuples and makes
@@ -262,8 +265,10 @@ def to_minute(unix_time):
 
   return unix_time.weekday() * (24 * 60) + unix_time.hour * 60 + unix_time.minute
 
+
 def minute_now():
   return to_minute(datetime.utcnow())
+
 
 # From https://wiki.python.org/moin/ConfigParserExamples
 def ConfigSectionMap(section, Config):
@@ -492,7 +497,7 @@ def find_streams(start_query, duration):
     ts = ts_re.findall(filename)
 
     try:
-      duration = mad.MadFile(filename).total_time() / (60.0 * 1000)
+      duration = audio_time(filename) / 60.0
 
     except:
       logging.warning("Unable to read file %s as an mp3 file" % filename)
