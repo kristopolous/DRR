@@ -1,4 +1,3 @@
 flask
 lxml
-pydub
 setproctitle
