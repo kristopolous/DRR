@@ -1,6 +1,7 @@
 #!/usr/bin/python -O
 import binascii
 import struct
+import glob, os
 
 def mp3_crc(fname, blockcount = -1):
   frame_sig = []
@@ -62,7 +63,8 @@ def mp3_crc(fname, blockcount = -1):
         f.read(size)
 
       else:
-        print "WRONG"
+        print "Can't parse %s at %d" % (fname, f.tell())
+        break
 
     else:
       break
@@ -113,10 +115,12 @@ def stitch_attempt(first, second):
 #p =  mp3_crc('/home/chris/Downloads/DE.mp3')
 #print len(p[0])
 
-p =  mp3_crc('/home/chris/Downloads/sub.mp3')
-print len(p[0])
+os.chdir('/sd/mp3')
+for f in glob.glob("*.mp3"):
+    p =  mp3_crc(f)
+    print len(p[0])
 
-p =  mp3_crc('/home/chris/Downloads/Avenue-Red-Podcast-041-Verdant-Recordings.mp3')
-print len(p[0])
+#p =  mp3_crc('/home/chris/Downloads/Avenue-Red-Podcast-041-Verdant-Recordings.mp3')
+#print len(p[0])
 #print mp3_crc('/tmp/attempt.mp3')
 #stitch_attempt('/var/radio/kpcc-1435669435.mp3', '/var/radio/kpcc-1435670339.mp3')
