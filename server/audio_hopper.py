@@ -131,19 +131,24 @@ def stitch_attempt(first, second):
   last = 0
   isFound = True
 
-  for i in xrange(4, 0, -1):
-    pos = crc32_second.index(crc32_first[-i])
-    if last != 0 and pos - last != 1:
-      isFound = False
+  try:
+    pos = crc32_second.index(crc32_first[-1])
+    for i in xrange(4, 0, -1):
+      if last != 0 and pos - last != 1:
+        isFound = False
 
-    last = pos
+      last = pos
+
+  except: 
+    isFound = False
+    print "Failure"
 
   # Since we end at the last block, we can safely pass in a file1_stop of 0
   if isFound:
     # And then we take the offset in the crc32_second where things began, + 1
     serialize([(first, 0, offset_first[-1]), (second, offset_second[last], -1)])
 
-  print isFound
+  return isFound
 
 p =  mp3_crc('test.mp3')
 print len(p[0])
@@ -155,5 +160,11 @@ print len(p[0])
 #p =  mp3_crc('/home/chris/Downloads/Avenue-Red-Podcast-041-Verdant-Recordings.mp3')
 #print len(p[0])
 #print mp3_crc('/tmp/attempt.mp3')
+
+# success case
 stitch_attempt('/var/radio/kpcc-1435669435.mp3', '/var/radio/kpcc-1435670339.mp3')
+
+# failure case
+#stitch_attempt('/var/radio/kpcc-1435670339.mp3', '/var/radio/kpcc-1435669435.mp3')
+
 #slice_audio('/var/radio/kpcc-1435669435.mp3', 300, 360)
