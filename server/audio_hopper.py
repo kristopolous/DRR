@@ -4,7 +4,7 @@ import struct
 import math
 import base64
 
-def mp3_crc(fname, blockcount = -1, skipcrc = False):
+def mp3_crc(fname, blockcount = -1):
   frame_sig = []
   start_byte = []
 
@@ -85,7 +85,7 @@ def mp3_crc(fname, blockcount = -1, skipcrc = False):
 # (fila_name, byte_start, byte_end) where byte_end == -1 
 # means "the whole file" 
 def serialize(file_list):
-  out = open('/tmp/attempt.mp3', 'rb+')
+  out = open('/tmp/serialize.mp3', 'wb+')
 
   for name, start, end in file_list:
     f = open(name, 'rb')
@@ -107,7 +107,7 @@ def slice_audio(fname, start, end):
   # Most common frame-length ... in practice, I haven't 
   # seen other values in the real world
   frame_length = (1152.0 / 44100)
-  crc32, offset = mp3_crc(fname, skipcrc = True)
+  crc32, offset = mp3_crc(fname)
 
   frame_start = int(math.floor(start / frame_length))
   frame_end = int(math.ceil(end / frame_length))
@@ -116,55 +116,66 @@ def slice_audio(fname, start, end):
   f = open(fname, 'rb')
 
   f.seek(offset[frame_start])
-  print offset[frame_end] - offset[frame_start], offset[frame_start]
   out.write(f.read(offset[frame_end] - offset[frame_start]))
   f.close()
   out.close()
 
   return True
 
-# stitcth
-def stitch_attempt(first, second):
-  crc32_first, offset_first = mp3_crc(first)
-  crc32_second, offset_second = mp3_crc(second, 2000)
+def stitch_attempt(file_list):
+  first = {'name': file_list[0]}
 
-  last = 0
-  isFound = True
+  crc32, offset = mp3_crc(first['name'])
 
-  try:
-    pos = crc32_second.index(crc32_first[-1])
+  first['crc32'] = crc32
+  first['offset'] = offset
 
-    for i in xrange(4, 0, -1):
-      if crc32_second[pos - i + 1] != crc32_first[-i]:
-        isFound = False
-        break
+  args = [(first['name'], 0, first['offset'][-1])]
 
-  except: 
-    isFound = False
-    print "Failure"
+  for name in file_list[1:]:
+    second = {'name': name}
+    crc32, offset = mp3_crc(name)
+
+    second['crc32'] = crc32
+    second['offset'] = offset
+
+    isFound = True
+
+    try:
+      pos = second['crc32'].index(first['crc32'][-1])
+
+      for i in xrange(4, 0, -1):
+        if second['crc32'][pos - i + 1] != first['crc32'][-i]:
+          isFound = False
+          break
+
+    except: 
+      break
+
+    if isFound:
+      args.append((second['name'], second['offset'][pos], second['offset'][-1]))
+      first = second
+      next
+
+    break
+
 
   # Since we end at the last block, we can safely pass in a file1_stop of 0
-  if isFound:
+  if len(args) > 1:
     # And then we take the offset in the crc32_second where things began, + 1
-    serialize([(first, 0, offset_first[-1]), (second, offset_second[pos], -1)])
+    serialize(args)
+    return True
+    #serialize([(first, 0, offset_first[-1]), (second, offset_second[pos], -1)])
 
-  return isFound
-
-p =  mp3_crc('test.mp3')
-print len(p[0])
 
 #for f in glob.glob("*.mp3"):
 #    p =  mp3_crc(f)
     #print len(p[0])
 
-#p =  mp3_crc('/home/chris/Downloads/Avenue-Red-Podcast-041-Verdant-Recordings.mp3')
-#print len(p[0])
-#print mp3_crc('/tmp/attempt.mp3')
-
 # success case
-stitch_attempt('/var/radio/kpcc-1435669435.mp3', '/var/radio/kpcc-1435670339.mp3')
+stitch_attempt(['/var/radio/kpcc-1435669435.mp3', '/var/radio/kpcc-1435670339.mp3'])
 
 # failure case
 #stitch_attempt('/var/radio/kpcc-1435670339.mp3', '/var/radio/kpcc-1435669435.mp3')
 
-#slice_audio('/var/radio/kpcc-1435669435.mp3', 300, 360)
+slice_audio('/tmp/serialize.mp3', 14 * 60, 16 * 60)
