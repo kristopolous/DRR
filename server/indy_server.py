@@ -96,7 +96,7 @@ def audio_crc(fname, blockcount = -1):
         # Move forward the frame f.read size + 4 byte header
         throw_away = f.read(frame_size - 36)
 
-      #ID3 tag for some reason
+      # ID3 tag for some reason
       elif header == '\x49\x44':
         # Rest of the header
         throw_away = f.read(4)
@@ -123,6 +123,7 @@ def audio_crc(fname, blockcount = -1):
         next
 
       else:
+        # This helps me debug mp3 files that I'm not reading correctly.
         print "%s:%s:%s:%s %s %d" % (binascii.b2a_hex(header), header, f.read(5), fname, hex(f.tell()), len(start_byte) * (1152.0 / 44100) / 60)
         break
 
@@ -137,10 +138,12 @@ def audio_time(fname):
   return (1152.0 / 44100) * len(offset)
 
 
-# serialize takes a list of ordinal tuples and makes
+#
+# audio_serialize takes a list of ordinal tuples and makes
 # one larger mp3 out of it. The tuple format is
 # (fila_name, byte_start, byte_end) where byte_end == -1 
 # means "the whole file" 
+#
 def audio_serialize(file_list):
   out = open('/tmp/serialize.mp3', 'wb+')
 
@@ -161,9 +164,11 @@ def audio_serialize(file_list):
   return True
 
 
+#
 # Take some mp3 file fname and then create a new one based
 # on the start and end times by finding the closest frames
 # and just doing an extraction.
+#
 def audio_slice(fname, start, end):
   # Most common frame-length ... in practice, I haven't 
   # seen other values in the real world
@@ -184,9 +189,11 @@ def audio_slice(fname, start, end):
   return True
 
 
-# Take a list of files and then attempt to seamlessly
+#
+# audio_stitch takes a list of files and then attempt to seamlessly
 # stitch them togther by looking at their crc32 checksums
-# of the data payload in the blocks
+# of the data payload in the blocks.
+#
 def audio_stitch(file_list):
   first = {'name': file_list[0]}
 
@@ -289,7 +296,7 @@ def ConfigSectionMap(section, Config):
   return dict1  
 
 #
-# This takes the nominal weekday (sun, mon, tue, wed, thu, fri, sat)
+# to_utc takes the nominal weekday (sun, mon, tue, wed, thu, fri, sat)
 # and a 12 hour time hh:mm [ap]m and converts it to our absolute units
 # with respect to the timestamp in the configuration file
 #
@@ -329,6 +336,11 @@ def to_utc(day_str, hour):
   return utc
 
 
+#
+# get_time_offset contacts the goog, giving a longitude and lattitude and
+# gets the time offset with regard to the UTC.  There's a sqlite cache 
+# entry for the offset.
+#
 def get_time_offset():
 
   offset = db_get('offset', expiry = 60 * 60 * 24)
@@ -354,6 +366,10 @@ def get_time_offset():
   return int(offset)
 
 
+#
+# db_incr increments some key in the database by some value.  It is used
+# to maintain statistical counters.
+#
 def db_incr(key, value = 1):
   db = db_connect()
 
@@ -365,6 +381,8 @@ def db_incr(key, value = 1):
 
   db['conn'].commit()
 
+
+# db_set sets (or replaces) a given key to a specific value.
 def db_set(key, value):
   db = db_connect()
   
@@ -382,7 +400,7 @@ def db_set(key, value):
   return value
 
 
-# Get's a value from the database, tentative on the expiry
+# db_get retrieves a value from the database, tentative on the expiry
 def db_get(key, expiry=0):
   db = db_connect()
 
@@ -399,6 +417,10 @@ def db_get(key, expiry=0):
   return False
 
 
+#
+# db_connect is a "singleton pattern" or some other fancy $10-world style of
+# maintaining the database connection throughout the execution of the script.
+#
 def db_connect():
   global g_db
 
@@ -811,6 +833,7 @@ def spawner():
 
       if data == 'shutdown':
         b_shutdown = True
+
       else:
         flag = True
     
