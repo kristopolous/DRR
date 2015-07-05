@@ -118,6 +118,10 @@ def audio_crc(fname, blockcount = -1):
         # We've already read 2 so we can go 126 forward
         f.read(126)
 
+      elif len(header) == 1:
+        # we are at the end of file, but let's just continue.
+        next
+
       else:
         print "%s:%s:%s:%s %s %d" % (binascii.b2a_hex(header), header, f.read(5), fname, hex(f.tell()), len(start_byte) * (1152.0 / 44100) / 60)
         break
@@ -720,6 +724,11 @@ def download(callsign, url, my_pid):
     g_queue.put(True)
     stream.write(data)
 
+  #
+  # Although we are already in the callsign path, we want the file to
+  # be a self-contained description of the content - not relying on the
+  # path to complete part of the story of what it is.
+  #
   fname = callsign + "-" + str(int(time.time())) + ".mp3"
 
   try:
