@@ -48,12 +48,18 @@ def mp3_crc(fname, blockcount = -1):
       elif header == '\x49\x44':
         # Rest of the header
         throw_away = f.read(4)
-        size = f.read(4)
-        print binascii.b2a_hex(size)
-        size = struct.unpack('>I', size)[0]
+
+        # Quoting http://id3.org/d3v2.3.0
+        #
+        # The ID3v2 tag size is encoded with four bytes where the most
+        # significant bit (bit 7) is set to zero in every byte, making a total
+        # of 28 bits. The zeroed bits are ignored, so a 257 bytes long tag is
+        # represented as $00 00 02 01.
+        #
+        candidate = struct.unpack('>I', f.read(4))[0]
+        size = ((candidate & 0x007f0000) >> 2 ) | ((candidate & 0x00007f00) >> 1 ) | (candidate & 0x0000007f)
+        
         f.read(size)
-        print binascii.b2a_hex(f.read(10))
-        exit(0)
 
       else:
         print "WRONG"
