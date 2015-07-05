@@ -3,7 +3,7 @@ import binascii
 import struct
 import glob, os, base64
 
-def mp3_crc(fname, blockcount = -1):
+def mp3_crc(fname, blockcount = -1, skipcrc = False):
   frame_sig = []
   start_byte = []
 
@@ -26,20 +26,26 @@ def mp3_crc(fname, blockcount = -1):
 
       if header == '\xff\xfb' or header == '\xff\xfa':
         b = ord(f.read(1))
-        samp_rate = freqTable[(b & 0x0f) >> 2]
-        bit_rate = brTable[b >> 4]
-        pad_bit = (b & 0x3) >> 1
 
-        # from http://id3.org/mp3Frame
-        frame_size = (144000 * bit_rate / samp_rate) + pad_bit
+        if skipcrc:
+          f.read(32)
 
-        # Rest of the header
-        throw_away = f.read(1)
+        else:
+          samp_rate = freqTable[(b & 0x0f) >> 2]
+          bit_rate = brTable[b >> 4]
+          pad_bit = (b & 0x3) >> 1
 
-        # Get the signature
-        crc = binascii.crc32(f.read(32))
-        #print crc
-        frame_sig.append(crc)
+          # from http://id3.org/mp3Frame
+          frame_size = (144000 * bit_rate / samp_rate) + pad_bit
+
+          # Rest of the header
+          throw_away = f.read(1)
+
+          # Get the signature
+          crc = binascii.crc32(f.read(32))
+
+          frame_sig.append(crc)
+
         start_byte.append(frame_start)
 
         # Move forward the frame f.read size + 4 byte header
@@ -96,6 +102,14 @@ def serialize(file1, file1_stop, file2, file2_start):
   out.close()
   return True
 
+def slice_audio(fname, start, end):
+  # Most common frame-length ... in practice, I haven't 
+  # seen other values in the real world
+  frame_length = (1152 / 44100)
+  crc32_first, offset_first = mp3_crc(fname)
+
+  return True
+
 def stitch_attempt(first, second):
   crc32_first, offset_first = mp3_crc(first)
   crc32_second, offset_second = mp3_crc(second, 2000)
@@ -128,3 +142,4 @@ print len(p[0])
 #print len(p[0])
 #print mp3_crc('/tmp/attempt.mp3')
 #stitch_attempt('/var/radio/kpcc-1435669435.mp3', '/var/radio/kpcc-1435670339.mp3')
+slice_audio('/var/radio/kpcc-1435669435.mp3', 300, 360)
