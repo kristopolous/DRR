@@ -2,9 +2,9 @@
 
 You need the following things in debian based systems:
  
-  sudo apt-get -y -f install \
-    python-pip   python   python-pymad \
-    python-dev   ffmpeg   libxslt1-dev \
+  sudo apt-get -y -f install  \
+    python-pip   python       \
+    python-dev   libxslt1-dev \
     libxml2-dev  python-pycurl 
 
 Your OS of choice should have these in their own terms - remember
