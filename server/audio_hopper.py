@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 import binascii
 import struct
-import glob, os
+import glob, os, base64
 
 def mp3_crc(fname, blockcount = -1):
   frame_sig = []
@@ -62,8 +62,13 @@ def mp3_crc(fname, blockcount = -1):
         
         f.read(size)
 
+      # ID3 TAG -- 128 bytes long
+      elif header == '\x54\x41':
+        # We've already read 2 so we can go 126 forward
+        f.read(126)
+
       else:
-        print "Can't parse %s at %d" % (fname, f.tell())
+        print "%s:%s:%s:%s %s" % (binascii.b2a_hex(header), header, f.read(5), fname, hex(f.tell()))
         break
 
     else:
@@ -112,13 +117,12 @@ def stitch_attempt(first, second):
 
   print isFound
 
-#p =  mp3_crc('/home/chris/Downloads/DE.mp3')
-#print len(p[0])
+p =  mp3_crc('test.mp3')
+print len(p[0])
 
-os.chdir('/sd/mp3')
-for f in glob.glob("*.mp3"):
-    p =  mp3_crc(f)
-    print len(p[0])
+#for f in glob.glob("*.mp3"):
+#    p =  mp3_crc(f)
+    #print len(p[0])
 
 #p =  mp3_crc('/home/chris/Downloads/Avenue-Red-Podcast-041-Verdant-Recordings.mp3')
 #print len(p[0])
