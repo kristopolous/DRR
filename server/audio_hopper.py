@@ -2,7 +2,7 @@
 import binascii
 import struct
 import math
-import glob, os, base64
+import base64
 
 def mp3_crc(fname, blockcount = -1, skipcrc = False):
   frame_sig = []
@@ -80,23 +80,27 @@ def mp3_crc(fname, blockcount = -1, skipcrc = False):
   f.close()
   return [frame_sig, start_byte]
 
-def serialize(file1, file1_stop, file2, file2_start):
+# serialize takes a list of ordinal tuples and makes
+# one larger mp3 out of it. The tuple format is
+# (fila_name, byte_start, byte_end) where byte_end == -1 
+# means "the whole file" 
+def serialize(file_list):
   out = open('/tmp/attempt.mp3', 'rb+')
-  f = open(file1, 'rb')
 
-  if file1_stop == 0:
-    out.write(f.read())
-  else:
-    out.write(f.read(file1_stop))
+  for name, start, end in file_list:
+    f = open(name, 'rb')
 
-  f.close()
+    f.seek(start)
+    
+    if end == -1:
+      out.write(f.read())
+    else:
+      out.write(f.read(end))
 
-  f = open(file2, 'rb')
-  f.seek(file2_start)
-  out.write(f.read())
+    f.close()
 
-  f.close()
   out.close()
+
   return True
 
 def slice_audio(fname, start, end):
@@ -119,6 +123,7 @@ def slice_audio(fname, start, end):
 
   return True
 
+# stitcth
 def stitch_attempt(first, second):
   crc32_first, offset_first = mp3_crc(first)
   crc32_second, offset_second = mp3_crc(second, 2000)
@@ -136,7 +141,7 @@ def stitch_attempt(first, second):
   # Since we end at the last block, we can safely pass in a file1_stop of 0
   if isFound:
     # And then we take the offset in the crc32_second where things began, + 1
-    serialize(first, offset_first[-1], second, offset_second[last])
+    serialize([(first, 0, offset_first[-1]), (second, offset_second[last], -1)])
 
   print isFound
 
@@ -150,5 +155,5 @@ print len(p[0])
 #p =  mp3_crc('/home/chris/Downloads/Avenue-Red-Podcast-041-Verdant-Recordings.mp3')
 #print len(p[0])
 #print mp3_crc('/tmp/attempt.mp3')
-#stitch_attempt('/var/radio/kpcc-1435669435.mp3', '/var/radio/kpcc-1435670339.mp3')
-slice_audio('/var/radio/kpcc-1435669435.mp3', 300, 360)
+stitch_attempt('/var/radio/kpcc-1435669435.mp3', '/var/radio/kpcc-1435670339.mp3')
+#slice_audio('/var/radio/kpcc-1435669435.mp3', 300, 360)
