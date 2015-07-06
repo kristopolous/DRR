@@ -793,7 +793,9 @@ def download(callsign, url, my_pid):
   stream.close()
 
 
-def spawner():
+# The manager process that makes sure that the
+# streams are running appropriately
+def stream_manager():
   global g_queue, g_config
 
   callsign = g_config['callsign']
@@ -819,7 +821,8 @@ def spawner():
   server_pid = Process(target=server, args=(g_config,))
   server_pid.start()
 
-  def process_start():
+  # A wrapper function to start a donwnload process
+  def download_start():
     global g_pid
     g_pid += 1
     logging.info("Starting cascaded downloader #%d. Next up in %ds" % (g_pid, cascade_margin))
@@ -867,7 +870,7 @@ def spawner():
         process = False
 
       if not process and not b_shutdown:
-        process = process_start()
+        process = download_start()
         last_success = time.time()
 
       # If we've hit the time when we ought to cascade
@@ -875,7 +878,7 @@ def spawner():
 
         # And we haven't created the next process yet, then we start it now.
         if not process_next:
-          process_next = process_start()
+          process_next = download_start()
 
       # If our last_success stream was more than cascade_time - cascade_buffer
       # then we start our process_next
@@ -972,6 +975,7 @@ def read_config():
     try:
       # If I can't do this, that's fine.
       os.mkdir(g_config['storage'])
+
     except:
       # We make it from the current directory
       g_config['storage'] = defaults['storage']
@@ -1025,4 +1029,4 @@ if __name__ == "__main__":
   else: 
     read_config()      
     proc_name("ic-manager")
-    spawner()
+    stream_manager()
