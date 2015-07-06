@@ -44,6 +44,7 @@ g_start_time = time.time()
 g_queue = Queue()
 g_config = {}
 g_db = {}
+g_streams = []
 g_pid = 0
 
 # From https://wiki.python.org/moin/ConfigParserExamples
@@ -332,7 +333,15 @@ def audio_stream_info(fname):
   except:
     logging.warning("Unable to read file %s as an mp3 file" % filename)
 
-  return {'name': fname, 'start_minute': start_minute, 'start_date': start_date, 'end_minute': duration / 60.0 + start_minute, 'duration_sec': duration}
+  return {
+    # The week number 
+    'week': start_date.isocalendar()[1], 
+    'name': fname, 
+    'start_minute': start_minute, 
+    'start_date': start_date, 
+    'end_minute': (duration / 60.0 + start_minute) % 10080, 
+    'duration_sec': duration
+  }
 
 
 def time_to_minute(unix_time):
@@ -563,26 +572,38 @@ def prune():
 # directory that match it - regardless of duration ... so it may return
 # partial shows results.
 #
-def find_streams(start_query, duration):
-  file_list = []
+def find_streams(start, duration):
+  global g_streams
+  stream_list = []
   
-  end_query = start_query + duration
+  end = (start + duration) % 10080
 
-  for filename in glob('streams/*.mp3'): 
-    info = audio_stream_info(filename)
+  # We want to make sure we only get the edges so we need to have state
+  # between the iterations.
+  next_valid_start_minute = 0
+  current_week = 0
 
+  file_list = glob('streams/*.mp3')
+  # Sorting by date (see http://stackoverflow.com/questions/23430395/glob-search-files-in-date-order)
+  file_list.sort(key=os.path.getmtime)
+
+  for filename in file_list:
+    i = audio_stream_info(filename)
+
+    if i['start_minute'] < next_valid_start_minute and i['week'] == current_week:
+      continue
+
+    # We are only looking for starting edges of the stream
+    #
     # If we started recording before this is fine as long as we ended recording after our start
-    if info['start_minute'] < start_query and info['end_minute'] > start_query or start_query == -1:
-      file_list.append(info)
+    if start == -1 or (i['start_minute'] < start and i['end_minute'] > start) or (i['start_minute'] > start and i['start_minute'] < end):
+
+      next_valid_start_minute = (start + duration)
+      current_week = i['week']
+      stream_list.append(i)
       next
 
-    # If we started recording after the query time, this is fine
-    # so long as it's before the end
-    if info['start_minute'] > start_query and info['start_minute'] < end_query:
-      file_list.append(info)
-      next
-
-  return file_list
+  return stream_list
 
 
 #
@@ -753,7 +774,6 @@ def server(config):
 
     # Look for streams that we have which match this query and duration.
     feed_list = find_streams(start_time, duration)
-    print feed_list
 
     # Then, taking those two things, make a feed list from them.
     return generate_xml(showname, feed_list, duration)
