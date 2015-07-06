@@ -34,9 +34,8 @@ socket.getaddrinfo = getAddrInfoWrapper
 
 import urllib2
 
-from datetime import datetime
+from datetime import datetime, timedelta, date
 from glob import glob
-from isoweek import Week
 from flask import Flask, request, jsonify
 import flask
 from multiprocessing import Process, Queue
@@ -351,6 +350,15 @@ def time_to_minute(unix_time):
 
   return unix_time.weekday() * (24 * 60) + unix_time.hour * 60 + unix_time.minute
 
+# from http://code.activestate.com/recipes/521915-start-date-and-end-date-of-given-week/
+def time_week_to_iso(year, week):
+  d = date(year, 1, 1)
+  if d.weekday() > 3:
+    d = d + timedelta(7 - d.weekday())
+  else:
+    d = d - timedelta(d.weekday())
+  dlt = timedelta(days = (week - 1) * 7)
+  return d + dlt
 
 def time_minute_now():
   return time_to_minute(datetime.utcnow())
@@ -658,16 +666,16 @@ def generate_xml(showname, feed_list, duration, start_minute):
     # lazy-file name
 
     # Start with the start_date of the feed
-    start_of_week = Week(feed['start_date'].year, feed['week'])
+    start_of_week = time_week_to_iso(feed['start_date'].year, feed['week'])
     
     # now we add the minute offset to get a datetime version 
-    dt_start_of_stream = start_of_week + datetime.timedelta(minute = start_minute)
+    dt_start_of_stream = start_of_week + timedelta(minutes = start_minute)
 
     # and then make a unix time stamp from it. This will be the numeric on the file that
     # are committing to making
     str_start_of_stream = dt_start_of_stream.strftime('%s')
 
-    link = "%sstream/%s-%s_%d.mp3" % (base, callsign, str_start_of_stream, duration)
+    link = "%sstream/%s-%s_%d.mp3" % (base_url, callsign, str_start_of_stream, duration)
 
     item = ET.SubElement(channel, 'item')
 
