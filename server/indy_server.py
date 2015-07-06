@@ -66,11 +66,9 @@ def ConfigSectionMap(section, Config):
 
 
 #
-# Open up an mp3 file, find all the blocks,
-# the byte offset of the blocks, and if they
-# are audio blocks, construct a crc32 mapping
-# of some given beginning offset of the audio
-# data ... this is intended for stitching
+# Open up an mp3 file, find all the blocks, the byte offset of the blocks, and if they
+# are audio blocks, construct a crc32 mapping of some given beginning offset of the audio
+# data ... this is intended for stitching.
 #
 def audio_crc(fname, blockcount = -1):
   frame_sig = []
@@ -123,10 +121,9 @@ def audio_crc(fname, blockcount = -1):
 
         # Quoting http://id3.org/d3v2.3.0
         #
-        # The ID3v2 tag size is encoded with four bytes where the most
-        # significant bit (bit 7) is set to zero in every byte, making a total
-        # of 28 bits. The zeroed bits are ignored, so a 257 bytes long tag is
-        # represented as $00 00 02 01.
+        # The ID3v2 tag size is encoded with four bytes where the most significant bit 
+        # (bit 7) is set to zero in every byte, making a total of 28 bits. The zeroed 
+        # bits are ignored, so a 257 bytes long tag is represented as $00 00 02 01.
         #
         candidate = struct.unpack('>I', f.read(4))[0]
         size = ((candidate & 0x007f0000) >> 2 ) | ((candidate & 0x00007f00) >> 1 ) | (candidate & 0x0000007f)
@@ -158,18 +155,19 @@ def audio_time(fname):
   return (1152.0 / 44100) * len(offset)
 
 
+#
 # Given a start_file in a directory and a duration, this function will seek out
 # ajacent files if necessary and serialize them accordingly, and then return the
 # file name of an audio slice that is the combination of them.
+#
 def audio_chain(start_file, start_time, duration):
   return True
 
 
 #
-# audio_serialize takes a list of ordinal tuples and makes
-# one larger mp3 out of it. The tuple format is
-# (fila_name, byte_start, byte_end) where byte_end == -1 
-# means "the whole file" 
+# audio_serialize takes a list of ordinal tuples and makes one larger mp3 out of it. 
+# The tuple format is (fila_name, byte_start, byte_end) where byte_end == -1 means 
+# "the whole file".
 #
 def audio_serialize(file_list, duration):
   # Our file will be the first one_(second duration).mp3
@@ -200,9 +198,8 @@ def audio_serialize(file_list, duration):
 
 
 #
-# Take some mp3 file fname and then create a new one based
-# on the start and end times by finding the closest frames
-# and just doing an extraction.
+# Take some mp3 file fname and then create a new one based on the start and end times 
+# by finding the closest frames and just doing an extraction.
 #
 def audio_slice(name_in, start, end):
   name_out = "%s_%d.mp3" % (name_in[:name_in.rindex('_')], end - start)
@@ -231,9 +228,8 @@ def audio_slice(name_in, start, end):
 
 
 #
-# audio_stitch takes a list of files and then attempt to seamlessly
-# stitch them togther by looking at their crc32 checksums
-# of the data payload in the blocks.
+# audio_stitch takes a list of files and then attempt to seamlessly stitch them 
+# together by looking at their crc32 checksums of the data payload in the blocks.
 #
 def audio_stitch(file_list):
   first = {'name': file_list[0]}
@@ -285,8 +281,7 @@ def audio_stitch(file_list):
     return audio_serialize(args, duration = duration)
 
 
-# Sets a more human-readable process name for the various
-# parts of the system to be viewed in top/htop
+# Sets a more human-readable process name for the various parts of the system to be viewed in top/htop
 def proc_name(what):
   SP.setproctitle(what)
   print "[%s:%d] Starting" % (what, os.getpid())
@@ -364,9 +359,8 @@ def time_to_utc(day_str, hour):
 
 
 #
-# time_get_offset contacts the goog, giving a longitude and lattitude and
-# gets the time offset with regard to the UTC.  There's a sqlite cache 
-# entry for the offset.
+# time_get_offset contacts the goog, giving a longitude and lattitude and gets the time 
+# offset with regard to the UTC.  There's a sqlite cache entry for the offset.
 #
 def time_get_offset():
 
@@ -445,8 +439,8 @@ def db_get(key, expiry=0):
 
 
 #
-# db_connect is a "singleton pattern" or some other fancy $10-world style of
-# maintaining the database connection throughout the execution of the script.
+# db_connect is a "singleton pattern" or some other fancy $10-world style of maintaining 
+# the database connection throughout the execution of the script.
 #
 def db_connect():
   global g_db
@@ -536,9 +530,8 @@ def prune():
 
 
 #
-# Given a start week minute and a duration, this
-# looks for streams in the storage directory that 
-# match it.
+# Given a start week minute and a duration, this looks for streams in the storage 
+# directory that match it.
 #
 def find_streams(start_query, duration):
   global g_streams
@@ -559,8 +552,7 @@ def find_streams(start_query, duration):
     start_test = time_to_minute(int(ts[0]))
     end_test = start_test + duration
 
-    # If we started recording before this is fine
-    # as long as we ended recording after our start
+    # If we started recording before this is fine as long as we ended recording after our start
     if start_test < start_query and end_test > start_query or start_query == -1:
       file_list.append((start_test, start_test + duration, filename))
       next
@@ -578,11 +570,8 @@ def find_streams(start_query, duration):
 # This takes a number of params:
 # 
 #  showname - from the incoming request url
-#  feedList - this is a list of tuples in the form
-#       (date, file)
-#
-#       corresponding to the, um, date of recording
-#       and filename
+#  feedList - this is a list of tuples in the form (date, file)
+#       corresponding to the, um, date of recording and filename
 #   
 # It obviously returns an xml file ... I mean duh.
 #
@@ -664,15 +653,13 @@ def server(config):
   app = Flask(__name__)
 
   #
-  # The path is (unix timestamp)_(duration in minutes)
-  # If it exists (as in we had previously generated it)
-  # then we can trivially send it.  Otherwise we need
+  # The path is (unix timestamp)_(duration in minutes). If it exists (as in we had 
+  # previously generated it) then we can trivially send it.  Otherwise we need
   # to create it.
   #
   @app.route('/stream/<path:path>')
   def send_stream(path):
-    # If the file doesn't exist, then we need to slice
-    # it and create it based on our query.
+    # If the file doesn't exist, then we need to slice it and create it based on our query.
     if not os.path.isfile(config['storage'] + path):
       # TODO: Find the closest timestamp
       # slice if needed
@@ -703,6 +690,7 @@ def server(config):
   
   @app.route('/<weekday>/<start>/<duration>/<showname>')
   def stream(weekday, start, duration, showname):
+    
     # Duration is expressed either in minutes or in \d+hr\d+ minute
     re_minute = re.compile('^(\d+)$')
     re_hr_solo = re.compile('^(\d+)hr$', re.I)
@@ -776,9 +764,9 @@ def download(callsign, url, my_pid):
     stream.write(data)
 
   #
-  # Although we are already in the callsign path, we want the file to
-  # be a self-contained description of the content - not relying on the
-  # path to complete part of the story of what it is.
+  # Although we are already in the callsign path, we want the file to be a self-contained 
+  # description of the content - not relying on the path to complete part of the story 
+  # of what it is.
   #
   fname = callsign + "-" + str(int(time.time())) + ".mp3"
 
@@ -842,11 +830,8 @@ def spawner():
   while True:
 
     #
-    # We cycle this to off for every run.
-    # By the time we go throug the queue
-    # so long as we aren't supposed to be
-    # shutting down, this should be toggled
-    # to true.
+    # We cycle this to off for every run. By the time we go throug the queue so long 
+    # as we aren't supposed to be shutting down, this should be toggled to true.
     #
     flag = False
 
@@ -867,9 +852,8 @@ def spawner():
         flag = True
     
     #
-    # If we are not in full mode, then we should check
-    # whether we should be recording right now according
-    # to our intents.
+    # If we are not in full mode, then we should check whether we should be 
+    # recording right now according to our intents.
     #
     if not mode_full:
       should_record = should_be_recording()
@@ -901,10 +885,8 @@ def spawner():
         return False
 
     #
-    # The only way for the bool to be toggled off
-    # is if we are not in full-mode ... we get here
-    # if we should NOT be recording.  So we make sure
-    # we aren't.
+    # The only way for the bool to be toggled off is if we are not in full-mode ... 
+    # we get here if we should NOT be recording.  So we make sure we aren't.
     #  
     else:
       if process and process.is_alive():
@@ -919,15 +901,14 @@ def spawner():
     # This needs to be on the outside loop in case we are doing a cascade
     # outside of a full mode. In this case, we will need to shut things down
     #
-    # if we are past the cascade_time and we have a process_next, then
+    # If we are past the cascade_time and we have a process_next, then
     # we should shutdown our previous process and move the pointers around.
     #
     if time.time() - last_success > cascade_time and process:
       logging.info("Stopping cascaded downloader")
       process.terminate()
 
-      # If the process_next is running then we move
-      # our last_success forward to the present
+      # If the process_next is running then we move our last_success forward to the present
       last_success = time.time()
 
       # we rename our process_next AS OUR process
@@ -957,9 +938,8 @@ def read_config():
     # The log level to be put into the indycast.log file.
     'loglevel': 'WARN',
 
-    # The recording mode, either 'full' meaning to record
-    # everything, or != 'full' meaning to record only when
-    # an intent is matched.
+    # The recording mode, either 'full' meaning to record everything, or != 'full' 
+    # meaning to record only when an intent is matched.
     'mode': 'full',
 
     # The relative, or absolute directory to put things in
@@ -974,12 +954,10 @@ def read_config():
     # The (day) duration we should be archiving things.
     'archivedays': '7',
 
-    # The (second) time in looking to see if our stream
-    # is running
+    # The (second) time in looking to see if our stream is running
     'cycletime': '7',
 
-    # The (second) time to start a stream BEFORE the lapse
-    # of the cascade-time
+    # The (second) time to start a stream BEFORE the lapse of the cascade-time
     'cascadebuffer': 15,
 
     # The (second) time between cascaded streams
@@ -1009,9 +987,9 @@ def read_config():
   # Now we try to do all this stuff again
   if os.path.isdir(g_config['storage']):
     #
-    # There's a bug after we chdir, where the multiprocessing is trying to
-    # grab the same invocation as the initial argv[0] ... so we need to make
-    # sure that if a user did ./blah this will be maintained.
+    # There's a bug after we chdir, where the multiprocessing is trying to grab the same 
+    # invocation as the initial argv[0] ... so we need to make sure that if a user did 
+    # ./blah this will be maintained.
     #
     if not os.path.isfile(g_config['storage'] + __file__):
       os.symlink(os.path.abspath(__file__), g_config['storage'] + __file__)
@@ -1030,8 +1008,8 @@ def read_config():
   logging.basicConfig(level=numeric_level, filename='indycast.log', datefmt='%Y-%m-%d %H:%M:%S',format='%(asctime)s %(message)s')
 
   #
-  # Increment the number of times this has been run so we 
-  # can track the stability of remote servers and instances
+  # Increment the number of times this has been run so we can track the stability of remote 
+  # servers and instances.
   #
   db_incr('runcount')
 
