@@ -47,6 +47,24 @@ g_db = {}
 g_streams = []
 my_pid = 0
 
+# From https://wiki.python.org/moin/ConfigParserExamples
+def ConfigSectionMap(section, Config):
+  dict1 = {}
+  options = Config.options(section)
+
+  for option in options:
+    try:
+      dict1[option] = Config.get(section, option)
+      if dict1[option] == -1:
+        logging.info("skip: %s" % option)
+
+    except:
+      logging.warning("exception on %s!" % option)
+      dict1[option] = None
+
+  return dict1  
+
+
 #
 # Open up an mp3 file, find all the blocks,
 # the byte offset of the blocks, and if they
@@ -145,6 +163,7 @@ def audio_time(fname):
 # file name of an audio slice that is the combination of them.
 def audio_chain(start_file, start_time, duration):
   return True
+
 
 #
 # audio_serialize takes a list of ordinal tuples and makes
@@ -291,41 +310,24 @@ def shutdown(signal = 15, frame = False):
 
 
 # Time related functions
-def to_minute(unix_time):
+def time_to_minute(unix_time):
   if type(unix_time) is int:
     unix_time = datetime.utcfromtimestamp(unix_time)
 
   return unix_time.weekday() * (24 * 60) + unix_time.hour * 60 + unix_time.minute
 
 
-def minute_now():
-  return to_minute(datetime.utcnow())
+def time_minute_now():
+  return time_to_minute(datetime.utcnow())
 
-
-# From https://wiki.python.org/moin/ConfigParserExamples
-def ConfigSectionMap(section, Config):
-  dict1 = {}
-  options = Config.options(section)
-
-  for option in options:
-    try:
-      dict1[option] = Config.get(section, option)
-      if dict1[option] == -1:
-        logging.info("skip: %s" % option)
-
-    except:
-      logging.warning("exception on %s!" % option)
-      dict1[option] = None
-
-  return dict1  
 
 
 #
-# to_utc takes the nominal weekday (sun, mon, tue, wed, thu, fri, sat)
+# time_to_utc takes the nominal weekday (sun, mon, tue, wed, thu, fri, sat)
 # and a 12 hour time hh:mm [ap]m and converts it to our absolute units
 # with respect to the timestamp in the configuration file
 #
-def to_utc(day_str, hour):
+def time_to_utc(day_str, hour):
   global g_config
 
   try:
@@ -356,17 +358,17 @@ def to_utc(day_str, hour):
   if time.groups()[-1] == 'p':
     local += (12 * 60)
 
-  utc = local + get_time_offset()
+  utc = local + time_get_offset()
 
   return utc
 
 
 #
-# get_time_offset contacts the goog, giving a longitude and lattitude and
+# time_get_offset contacts the goog, giving a longitude and lattitude and
 # gets the time offset with regard to the UTC.  There's a sqlite cache 
 # entry for the offset.
 #
-def get_time_offset():
+def time_get_offset():
 
   offset = db_get('offset', expiry = 60 * 60 * 24)
   if not offset:
@@ -498,7 +500,7 @@ def should_be_recording():
 
   db = db_connect()
 
-  current_minute = minute_now()
+  current_minute = time_minute_now()
 
   intent_count = db['c'].execute(
     """select count(*) from intents where 
@@ -555,7 +557,7 @@ def find_streams(start_query, duration):
     except:
       logging.warning("Unable to read file %s as an mp3 file" % filename)
 
-    start_test = to_minute(int(ts[0]))
+    start_test = time_to_minute(int(ts[0]))
     end_test = start_test + duration
 
     # If we started recording before this is fine
@@ -571,6 +573,7 @@ def find_streams(start_query, duration):
       next
 
   return file_list
+
 
 #
 # This takes a number of params:
@@ -726,7 +729,7 @@ def server(config):
     if type(duration) is str:
       return do_error('duration "%s" is not set correctly' % duration)
 
-    start_time = to_utc(weekday, start)
+    start_time = time_to_utc(weekday, start)
     
     if not start_time:
       return do_error('weekday and start times are not set correctly')
@@ -856,7 +859,7 @@ def spawner():
       prune()
       last_prune = time.time()
 
-    get_time_offset()
+    time_get_offset()
 
     while not g_queue.empty():
       data = g_queue.get(False)
@@ -942,7 +945,7 @@ def spawner():
     time.sleep(cycle_time)
 
 
-def readconfig():
+def read_config():
   global g_config
 
   parser = argparse.ArgumentParser()
@@ -1047,6 +1050,6 @@ if __name__ == "__main__":
     server(g_config)
 
   else: 
-    readconfig()      
+    read_config()      
     proc_name("ic-manager")
     spawner()
