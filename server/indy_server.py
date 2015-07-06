@@ -150,7 +150,16 @@ def audio_crc(fname, blockcount = -1):
   f.close()
   return [frame_sig, start_byte]
 
-def audio_time(fname):
+def audio_time_fast(fname):
+  crc32, offset = audio_crc(fname, 2)
+  # in the fast method we get the first two frames, find out the offset
+  # difference between them, take the length of the file, divide it by that
+  # and then presume that will be the framecount
+  frame_size = offset[1] - offset[0]
+  frame_count_est = os.path.getsize(fname) / frame_size
+  return (1152.0 / 44100) * frame_count_est
+
+def audio_time_slow(fname):
   crc32, offset = audio_crc(fname)
   return (1152.0 / 44100) * len(offset)
 
@@ -544,7 +553,7 @@ def find_streams(start_query, duration):
     ts = ts_re.findall(filename)
 
     try:
-      duration = audio_time(filename) / 60.0
+      duration = audio_time_fast(filename) / 60.0
 
     except:
       logging.warning("Unable to read file %s as an mp3 file" % filename)
@@ -554,7 +563,7 @@ def find_streams(start_query, duration):
 
     # If we started recording before this is fine as long as we ended recording after our start
     if start_test < start_query and end_test > start_query or start_query == -1:
-      audio_chain(filename, start_time = start_query - start_test, duration = duration, dry_run = True)
+      #audio_chain(filename, start_time = start_query - start_test, duration = duration, dry_run = True)
       file_list.append((start_test, start_test + duration, filename))
       next
 
