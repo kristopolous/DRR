@@ -159,11 +159,6 @@ def audio_time_fast(fname):
   frame_count_est = os.path.getsize(fname) / frame_size
   return (1152.0 / 44100) * frame_count_est
 
-def audio_time_slow(fname):
-  crc32, offset = audio_crc(fname)
-  return (1152.0 / 44100) * len(offset)
-
-
 #
 # Given a start_file in a directory and a duration, this function will seek out
 # ajacent files if necessary and serialize them accordingly, and then return the
@@ -180,7 +175,7 @@ def audio_chain(start_file, start_time, duration, dry_run = False):
 #
 def audio_serialize(file_list, duration):
   # Our file will be the first one_(second duration).mp3
-  name = "%s_%d.mp3" % (file_list[0][:-4], duration)
+  name = "stitches/%s_%d.mp3" % (file_list[0][:-4], duration)
 
   # If the file exists, then we just return it
   if os.path.isfile(name):
@@ -211,7 +206,7 @@ def audio_serialize(file_list, duration):
 # by finding the closest frames and just doing an extraction.
 #
 def audio_slice(name_in, start, end):
-  name_out = "%s_%d.mp3" % (name_in[:name_in.rindex('_')], end - start)
+  name_out = "slices/%s_%d.mp3" % (name_in[:name_in.rindex('_')], end - start)
 
   if os.path.isfile(name_out):
     return name_out
@@ -549,7 +544,7 @@ def find_streams(start_query, duration):
   
   end_query = start_query + duration
 
-  for filename in glob('*.mp3'): 
+  for filename in glob('streams/*.mp3'): 
     ts = ts_re.findall(filename)
 
     try:
@@ -850,7 +845,7 @@ def stream_manager():
       logging.info("Unsuccessful download. Removing %s." % fname)
       os.unlink(fname)
 
-    fname = callsign + "-" + str(int(time.time())) + ".mp3"
+    fname = 'streams/' + callsign + "-" + str(int(time.time())) + ".mp3"
     process = Process(target = stream_download, args = (callsign, url, g_pid, fname))
     process.start()
     return [fname, process]
@@ -1010,8 +1005,15 @@ def read_config():
   # server in a single parent directory without forcing the user to decide what goes
   # where.
   g_config['storage'] += '/%s/' % g_config['callsign']
+  g_config['storage'] = re.sub('\/+', '/', g_config['storage'])
+
   if not os.path.isdir(g_config['storage']):
     os.mkdir(g_config['storage'])
+
+  # We have a few sub directories for storing things
+  for subdir in ['streams', 'stitches', 'slices']:
+    if not os.path.isdir(g_config['storage'] + subdir):
+      os.mkdir(g_config['storage'] + subdir)
 
   # Now we try to do all this stuff again
   if os.path.isdir(g_config['storage']):
