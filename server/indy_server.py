@@ -570,7 +570,7 @@ def find_streams(start_query, duration):
 # This takes a number of params:
 # 
 #  showname - from the incoming request url
-#  feedList - this is a list of tuples in the form (date, file)
+#  feedList - this is a list of tuples in the form (date, file, duration (seconds))
 #       corresponding to the, um, date of recording and filename
 #   
 # It obviously returns an xml file ... I mean duh.
@@ -606,7 +606,7 @@ def generate_xml(showname, feed_list):
 
   for feed in feed_list:
     start = str(feed[0])
-    duration = str(feed[1] - feed[0])
+    duration = int(feed[-1])
     filename = feed[2]
 
     link = base_url + 'stream/' + filename
@@ -615,7 +615,7 @@ def generate_xml(showname, feed_list):
     for k,v in {
       '{%s}explicit' % nsmap['itunes']: 'no', 
       '{%s}author' % nsmap['itunes']: g_config['callsign'],
-      '{%s}duration' % nsmap['itunes']: 'TODO', 
+      '{%s}duration' % nsmap['itunes']: duration,
       '{%s}summary' % nsmap['itunes']: showname,
       '{%s}creator' % nsmap['dc']: g_config['callsign'],
       '{%s}origEnclosureLink' % nsmap['feedburner']: link,
@@ -629,17 +629,17 @@ def generate_xml(showname, feed_list):
     }.items():
       ET.SubElement(item, k).text = v
 
-    ET.SubElement(item, 'guid', isPermaLink="false").text = base_url
+    ET.SubElement(item, 'guid', isPermaLink = "false").text = base_url
 
     content = ET.SubElement(item, '{%s}content' % nsmap['media'])
     content.attrib['url'] = link
     content.attrib['fileSize'] = 'TODO'
-    content.attrib['type'] = 'TODO'
+    content.attrib['type'] = 'audio/mpeg3'
 
     content = ET.SubElement(item, 'enclosure')
     content.attrib['url'] = link
     content.attrib['length'] = 'TODO'
-    content.attrib['type'] = 'TODO'
+    content.attrib['type'] = 'audio/mpeg3'
 
   tree = ET.ElementTree(root)
 
