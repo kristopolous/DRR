@@ -198,7 +198,7 @@ def audio_serialize(file_list, duration):
 
 
 #
-# Take some mp3 file fname and then create a new one based on the start and end times 
+# Take some mp3 file name_in and then create a new one based on the start and end times 
 # by finding the closest frames and just doing an extraction.
 #
 def audio_slice(name_in, start, end):
@@ -732,6 +732,7 @@ def server(config):
 
     # Look for streams that we have which match this query and duration.
     feed_list = find_streams(start_time, duration)
+    print feed_list
 
     # Then, taking those two things, make a feed list from them.
     return generate_xml(showname, feed_list)
@@ -754,6 +755,8 @@ def server(config):
 def stream_download(callsign, url, my_pid, fname):
   proc_name("ic-download")
 
+  nl = {'stream': False}
+
   def dl_stop(signal, frame):
     print fname
     sys.exit(0)
@@ -762,16 +765,19 @@ def stream_download(callsign, url, my_pid, fname):
     global g_config, g_queue
 
     g_queue.put(('heartbeat', True))
-    stream.write(data)
 
-  try:
-    stream = open(fname, 'w')
+    if nl['stream'] == False:
+      try:
+        nl['stream'] = open(fname, 'w')
 
-  except:
-    logging.critical("Unable to open %s. Can't record. Must exit." % fname)
-    sys.exit(-1)
+      except:
+        logging.critical("Unable to open %s. Can't record. Must exit." % fname)
+        sys.exit(-1)
 
-  #signal.signal(signal.SIGTERM, dl_stop)
+    nl['stream'].write(data)
+
+
+  # signal.signal(signal.SIGTERM, dl_stop)
   c = pycurl.Curl()
   c.setopt(c.URL, url)
   c.setopt(pycurl.WRITEFUNCTION, cback)
@@ -784,7 +790,8 @@ def stream_download(callsign, url, my_pid, fname):
 
   c.close()
 
-  stream.close()
+  if type(nl['stream']) != bool:
+    nl['stream'].close()
 
 
 # The manager process that makes sure that the
@@ -815,8 +822,10 @@ def stream_manager():
   server_pid = Process(target=server, args=(g_config,))
   server_pid.start()
 
+  fname = False
+
   # A wrapper function to start a donwnload process
-  def download_start():
+  def download_start(fname):
     global g_pid
     g_pid += 1
     logging.info("Starting cascaded downloader #%d. Next up in %ds" % (g_pid, cascade_margin))
@@ -826,10 +835,14 @@ def stream_manager():
     # description of the content - not relying on the path to complete part of the story 
     # of what it is.
     #
+    if fname and os.path.getsize(fname) == 0:
+      logging.info("Unsuccessful download. Removing %s." % fname)
+      os.unlink(fname)
+
     fname = callsign + "-" + str(int(time.time())) + ".mp3"
     process = Process(target = stream_download, args = (callsign, url, g_pid, fname))
     process.start()
-    return process
+    return [fname, process]
 
   while True:
 
@@ -871,7 +884,7 @@ def stream_manager():
         process = False
 
       if not process and not b_shutdown:
-        process = download_start()
+        fname, process = download_start(fname)
         last_success = time.time()
 
       # If we've hit the time when we ought to cascade
@@ -879,7 +892,7 @@ def stream_manager():
 
         # And we haven't created the next process yet, then we start it now.
         if not process_next:
-          process_next = download_start()
+          fname, process_next = download_start(fname)
 
       # If our last_success stream was more than cascade_time - cascade_buffer
       # then we start our process_next
