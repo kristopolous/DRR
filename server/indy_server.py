@@ -301,7 +301,7 @@ def shutdown(signal = 15, frame = False):
   if title == 'ic-manager':
     logging.info("Uptime: %ds", time.time() - g_start_time)
 
-  g_queue.put('shutdown')
+  g_queue.put(('shutdown', True))
   sys.exit(0)
 
 
@@ -750,7 +750,8 @@ def server(config):
       shutdown()
 
 
-def download(callsign, url, my_pid):
+# The curl interfacing that downloads the stream to disk
+def stream_download(callsign, url, my_pid, fname):
   proc_name("ic-download")
 
   def dl_stop(signal, frame):
@@ -760,15 +761,8 @@ def download(callsign, url, my_pid):
   def cback(data): 
     global g_config, g_queue
 
-    g_queue.put(True)
+    g_queue.put(('heartbeat', True))
     stream.write(data)
-
-  #
-  # Although we are already in the callsign path, we want the file to be a self-contained 
-  # description of the content - not relying on the path to complete part of the story 
-  # of what it is.
-  #
-  fname = callsign + "-" + str(int(time.time())) + ".mp3"
 
   try:
     stream = open(fname, 'w')
@@ -826,7 +820,14 @@ def stream_manager():
     global g_pid
     g_pid += 1
     logging.info("Starting cascaded downloader #%d. Next up in %ds" % (g_pid, cascade_margin))
-    process = Process(target = download, args = (callsign, url, g_pid))
+
+    #
+    # Although we are already in the callsign path, we want the file to be a self-contained 
+    # description of the content - not relying on the path to complete part of the story 
+    # of what it is.
+    #
+    fname = callsign + "-" + str(int(time.time())) + ".mp3"
+    process = Process(target = stream_download, args = (callsign, url, g_pid, fname))
     process.start()
     return process
 
@@ -846,9 +847,9 @@ def stream_manager():
     time_get_offset()
 
     while not g_queue.empty():
-      data = g_queue.get(False)
+      what, value = g_queue.get(False)
 
-      if data == 'shutdown':
+      if what == 'shutdown':
         b_shutdown = True
 
       else:
