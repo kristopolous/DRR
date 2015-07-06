@@ -36,6 +36,7 @@ import urllib2
 
 from datetime import datetime
 from glob import glob
+from isoweek import Week
 from flask import Flask, request, jsonify
 import flask
 from multiprocessing import Process, Queue
@@ -597,7 +598,7 @@ def find_streams(start, duration):
     #
     # If we started recording before this is fine as long as we ended recording after our start
     if start == -1 or (i['start_minute'] < start and i['end_minute'] > start) or (i['start_minute'] > start and i['start_minute'] < end):
-
+      # TODO: May need to % 10080 this
       next_valid_start_minute = (start + duration)
       current_week = i['week']
       stream_list.append(i)
@@ -617,7 +618,7 @@ def find_streams(start, duration):
 #
 # In the xml file we will lie about the duration to make life easier
 #
-def generate_xml(showname, feed_list, duration):
+def generate_xml(showname, feed_list, duration, start_time):
   global g_config
 
   base_url = 'http://%s.indycast.net/' % g_config['callsign']
@@ -646,8 +647,16 @@ def generate_xml(showname, feed_list, duration):
   }.items():
     ET.SubElement(channel, k).text = v
 
+  # In our feed, we construct theoretical files which will be stitched and sliced 
+  # together on-demand (lazy) if the user requests it.
   for feed in feed_list:
-    print feed
+    # This is our file ... we have a week number, which is what we need.
+    # By the existence of this feed, we are essentially saying that we have
+    # a specific week at a specific minute ... so we construct that as the 
+    # lazy-file name
+
+    # Start with the start_date of the feed
+     feed['start_date']
     start = str(feed[0])
     filename = feed[2]
 
@@ -776,7 +785,7 @@ def server(config):
     feed_list = find_streams(start_time, duration)
 
     # Then, taking those two things, make a feed list from them.
-    return generate_xml(showname, feed_list, duration)
+    return generate_xml(showname, feed_list, duration, start_time)
 
   if __name__ == '__main__':
     proc_name("ic-webserver")
