@@ -308,8 +308,34 @@ def shutdown(signal = 15, frame = False):
   g_queue.put(('shutdown', True))
   sys.exit(0)
 
+##
+## Time related functions
+##
 
-# Time related functions
+# This determines the date the thing starts,
+# the minute time it starts, and the duration
+def audio_stream_info(fname):
+  ts_re = re.compile('(\d*).mp3')
+  ts = ts_re.findall(fname)
+
+  duration = 0
+  start_minute = 0
+  start_date = 0
+
+  if ts:
+    unix_time = int(ts[0])
+    start_minute = time_to_minute(unix_time)
+    start_date = datetime.utcfromtimestamp(unix_time)
+
+  try:
+    duration = audio_time_fast(fname) / 60.0
+
+  except:
+    logging.warning("Unable to read file %s as an mp3 file" % filename)
+
+  return {'name': fname, 'start_minute': start_minute, 'start_date': start_date, 'duration': duration}
+
+
 def time_to_minute(unix_time):
   if type(unix_time) is int:
     unix_time = datetime.utcfromtimestamp(unix_time)
@@ -534,8 +560,9 @@ def prune():
 
 
 #
-# Given a start week minute and a duration, this looks for streams in the storage 
-# directory that match it.
+# Given a start week minute this looks for streams in the storage 
+# directory that match it - regardless of duration ... so it may return
+# partial shows results.
 #
 def find_streams(start_query, duration):
   global g_streams
@@ -548,7 +575,7 @@ def find_streams(start_query, duration):
     ts = ts_re.findall(filename)
 
     try:
-      duration = audio_time_fast(filename) / 60.0
+      test_duration = audio_time_fast(filename) / 60.0
 
     except:
       logging.warning("Unable to read file %s as an mp3 file" % filename)
@@ -558,14 +585,13 @@ def find_streams(start_query, duration):
 
     # If we started recording before this is fine as long as we ended recording after our start
     if start_test < start_query and end_test > start_query or start_query == -1:
-      #audio_chain(filename, start_time = start_query - start_test, duration = duration, dry_run = True)
-      file_list.append((start_test, start_test + duration, filename))
+      file_list.append((start_test, start_test + test_duration, filename))
       next
 
     # If we started recording after the query time, this is fine
     # so long as it's before the end
     if start_test > start_query and start_test < end_query:
-      file_list.append((start_test, start_test + duration, filename))
+      file_list.append((start_test, start_test + test_duration, filename))
       next
 
   return file_list
@@ -575,12 +601,14 @@ def find_streams(start_query, duration):
 # This takes a number of params:
 # 
 #  showname - from the incoming request url
-#  feedList - this is a list of tuples in the form (date, file, duration (seconds))
+#  feedList - this is a list of tuples in the form (date, file)
 #       corresponding to the, um, date of recording and filename
 #   
 # It obviously returns an xml file ... I mean duh.
 #
-def generate_xml(showname, feed_list):
+# In the xml file we will lie about the duration to make life easier
+#
+def generate_xml(showname, feed_list, duration):
   global g_config
 
   base_url = 'http://%s.indycast.net/' % g_config['callsign']
@@ -612,7 +640,6 @@ def generate_xml(showname, feed_list):
   for feed in feed_list:
     print feed
     start = str(feed[0])
-    duration = int(feed[-1])
     filename = feed[2]
 
     link = base_url + 'stream/' + filename
@@ -741,7 +768,7 @@ def server(config):
     print feed_list
 
     # Then, taking those two things, make a feed list from them.
-    return generate_xml(showname, feed_list)
+    return generate_xml(showname, feed_list, duration)
 
   if __name__ == '__main__':
     proc_name("ic-webserver")
