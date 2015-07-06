@@ -160,7 +160,7 @@ def audio_time(fname):
 # ajacent files if necessary and serialize them accordingly, and then return the
 # file name of an audio slice that is the combination of them.
 #
-def audio_chain(start_file, start_time, duration):
+def audio_chain(start_file, start_time, duration, dry_run = False):
   return True
 
 
@@ -554,6 +554,7 @@ def find_streams(start_query, duration):
 
     # If we started recording before this is fine as long as we ended recording after our start
     if start_test < start_query and end_test > start_query or start_query == -1:
+      audio_chain(filename, start_time = start_query - start_test, duration = duration, dry_run = True)
       file_list.append((start_test, start_test + duration, filename))
       next
 
@@ -605,6 +606,7 @@ def generate_xml(showname, feed_list):
     ET.SubElement(channel, k).text = v
 
   for feed in feed_list:
+    print feed
     start = str(feed[0])
     duration = int(feed[-1])
     filename = feed[2]
