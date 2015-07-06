@@ -47,11 +47,13 @@ g_db = {}
 g_streams = []
 my_pid = 0
 
+#
 # Open up an mp3 file, find all the blocks,
 # the byte offset of the blocks, and if they
 # are audio blocks, construct a crc32 mapping
 # of some given beginning offset of the audio
 # data ... this is intended for stitching
+#
 def audio_crc(fname, blockcount = -1):
   frame_sig = []
   start_byte = []
@@ -145,10 +147,8 @@ def audio_time(fname):
 # means "the whole file" 
 #
 def audio_serialize(file_list, duration):
-  global g_config
-
   # Our file will be the first one_(second duration).mp3
-  name = "%s_%d.mp3" % (file_list[0][0:-4], duration)
+  name = "%s_%d.mp3" % (file_list[0][:-4], duration)
 
   # If the file exists, then we just return it
   if os.path.isfile(name):
@@ -179,24 +179,30 @@ def audio_serialize(file_list, duration):
 # on the start and end times by finding the closest frames
 # and just doing an extraction.
 #
-def audio_slice(fname, start, end):
+def audio_slice(name_in, start, end):
+  name_out = "%s_%d.mp3" % (name_in[:name_in.rindex('_')], end - start)
+
+  if os.path.isfile(name_out):
+    return name_out
+
   # Most common frame-length ... in practice, I haven't 
   # seen other values in the real world
   frame_length = (1152.0 / 44100)
-  crc32, offset = audio_crc(fname)
+  crc32, offset = audio_crc(name_in)
 
   frame_start = int(math.floor(start / frame_length))
   frame_end = int(math.ceil(end / frame_length))
 
-  out = open('/tmp/attempt.mp3', 'wb+')
-  f = open(fname, 'rb')
+  out = open(name_out, 'wb+')
+  fin = open(name_in, 'rb')
 
-  f.seek(offset[frame_start])
-  out.write(f.read(offset[frame_end] - offset[frame_start]))
-  f.close()
+  fin.seek(offset[frame_start])
+  out.write(fin.read(offset[frame_end] - offset[frame_start]))
+
+  fin.close()
   out.close()
 
-  return True
+  return name_out
 
 
 #
