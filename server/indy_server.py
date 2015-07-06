@@ -618,10 +618,11 @@ def find_streams(start, duration):
 #
 # In the xml file we will lie about the duration to make life easier
 #
-def generate_xml(showname, feed_list, duration, start_time):
+def generate_xml(showname, feed_list, duration, start_minute):
   global g_config
 
   base_url = 'http://%s.indycast.net/' % g_config['callsign']
+  callsign = g_config['callsign']
 
   nsmap = {
     'dc': 'http://purl.org/dc/elements/1.1/',
@@ -641,7 +642,7 @@ def generate_xml(showname, feed_list, duration, start_time):
     '{%s}category' % nsmap['itunes']: 'podcast',
     'title': showname,
     'link': base_url,
-    'copyright': g_config['callsign'],
+    'copyright': callsign,
     'description': showname,
     'language': 'en'
   }.items():
@@ -656,27 +657,33 @@ def generate_xml(showname, feed_list, duration, start_time):
     # lazy-file name
 
     # Start with the start_date of the feed
-     feed['start_date']
-    start = str(feed[0])
-    filename = feed[2]
+    start_of_week = Week(feed['start_date'].year, feed['week'])
+    
+    # now we add the minute offset to get a datetime version 
+    dt_start_of_stream = start_of_week + datetime.timedelta(minute = start_minute)
 
-    link = base_url + 'stream/' + filename
+    # and then make a unix time stamp from it. This will be the numeric on the file that
+    # are committing to making
+    str_start_of_stream = dt_start_of_stream.strftime('%s')
+
+    link = "%sstream/%s-%s_%d.mp3" % (base, callsign, str_start_of_stream, duration)
+
     item = ET.SubElement(channel, 'item')
 
     for k,v in {
       '{%s}explicit' % nsmap['itunes']: 'no', 
-      '{%s}author' % nsmap['itunes']: g_config['callsign'],
+      '{%s}author' % nsmap['itunes']: callsign,
       '{%s}duration' % nsmap['itunes']: duration,
       '{%s}summary' % nsmap['itunes']: showname,
-      '{%s}creator' % nsmap['dc']: g_config['callsign'],
+      '{%s}creator' % nsmap['dc']: callsign,
       '{%s}origEnclosureLink' % nsmap['feedburner']: link,
       '{%s}origLink' % nsmap['feedburner']: base_url,
       'description': showname,
       'pubDate': 'TODO',
       'title': showname,
       'link': link,
-      'copyright': g_config['callsign'],
-      'guid': g_config['callsign'] + filename
+      'copyright': callsign,
+      'guid': callsign + filename
     }.items():
       ET.SubElement(item, k).text = v
 
