@@ -140,6 +140,12 @@ def audio_time(fname):
   return (1152.0 / 44100) * len(offset)
 
 
+# Given a start_file in a directory and a duration, this function will seek out
+# ajacent files if necessary and serialize them accordingly, and then return the
+# file name of an audio slice that is the combination of them.
+def audio_chain(start_file, start_time, duration):
+  return True
+
 #
 # audio_serialize takes a list of ordinal tuples and makes
 # one larger mp3 out of it. The tuple format is
