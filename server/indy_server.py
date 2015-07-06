@@ -45,7 +45,7 @@ g_queue = Queue()
 g_config = {}
 g_db = {}
 g_streams = []
-my_pid = 0
+g_pid = 0
 
 # From https://wiki.python.org/moin/ConfigParserExamples
 def ConfigSectionMap(section, Config):
@@ -295,6 +295,7 @@ def proc_name(what):
 # shutdown is hit on the keyboard interrupt
 def shutdown(signal = 15, frame = False):
   global g_db, g_queue, g_start_time
+
   title = SP.getproctitle()
   print "[%s:%d] Shutting down" % (title, os.getpid())
 
@@ -321,7 +322,6 @@ def time_minute_now():
   return time_to_minute(datetime.utcnow())
 
 
-
 #
 # time_to_utc takes the nominal weekday (sun, mon, tue, wed, thu, fri, sat)
 # and a 12 hour time hh:mm [ap]m and converts it to our absolute units
@@ -333,7 +333,7 @@ def time_to_utc(day_str, hour):
   try:
     day_number = ['sun','mon','tue','wed','thu','fri','sat'].index(day_str.lower())
 
-  except e:
+  except:
     return False
 
   local = day_number * (60 * 24)
@@ -413,9 +413,9 @@ def db_incr(key, value = 1):
 def db_set(key, value):
   db = db_connect()
   
-  # from http://stackoverflow.com/questions/418898/sqlite-upsert-not-insert-or-replace
-  res = db['c'].execute(
-    '''INSERT OR REPLACE INTO kv (key, value, created_at) 
+  # From http://stackoverflow.com/questions/418898/sqlite-upsert-not-insert-or-replace
+  res = db['c'].execute('''
+    INSERT OR REPLACE INTO kv (key, value, created_at) 
       VALUES ( 
         COALESCE((SELECT key FROM kv WHERE key = ?), ?),
         ?,
@@ -481,14 +481,13 @@ def register_intent(minute, duration):
   db = db_connect()
 
   key = str(minute) + ':' + str(duration)
-  c = db['c']
-  res = c.execute('select id from intents where key = ?', (key, )).fetchone()
+  res = db['c'].execute('select id from intents where key = ?', (key, )).fetchone()
 
   if res == None:
-    c.execute('insert into intents(key, start, end) values(?, ?, ?)', (key, minute, minute + duration))
+    db['c'].execute('insert into intents(key, start, end) values(?, ?, ?)', (key, minute, minute + duration))
 
   else:
-    c.execute('update intents set read_count = read_count + 1, accessed_at = (current_timestamp) where id = ?', (res[0], )) 
+    db['c'].execute('update intents set read_count = read_count + 1, accessed_at = (current_timestamp) where id = ?', (res[0], )) 
 
   db['conn'].commit()
   return db['c'].lastrowid
@@ -675,7 +674,7 @@ def server(config):
     # If the file doesn't exist, then we need to slice
     # it and create it based on our query.
     if not os.path.isfile(config['storage'] + path):
-      # find the closest timestamp
+      # TODO: Find the closest timestamp
       # slice if needed
       # add up the timestamp
       return True
@@ -704,7 +703,7 @@ def server(config):
   
   @app.route('/<weekday>/<start>/<duration>/<showname>')
   def stream(weekday, start, duration, showname):
-    # duration is expressed either in minutes or in \d+hr\d+ minute
+    # Duration is expressed either in minutes or in \d+hr\d+ minute
     re_minute = re.compile('^(\d+)$')
     re_hr_solo = re.compile('^(\d+)hr$', re.I)
     re_hr_min = re.compile('^(\d+)hr(\d+).*$', re.I)
@@ -736,19 +735,17 @@ def server(config):
 
     # If we are here then it looks like our input is probably good.
     
-    # Strip the .xml from the showname ... this will be used
-    # in our xml 
+    # Strip the .xml from the showname ... this will be used in our xml.
     showname = re.sub('.xml$', '', showname)
 
     # This will register the intent if needed for future recordings
     # (that is if we are in ondemand mode)
     register_intent(start_time, duration)
 
-    # Look for streams that we have which match this query
-    # and duration
+    # Look for streams that we have which match this query and duration.
     feed_list = find_streams(start_time, duration)
 
-    # Then, taking those two things, make a feed list from them
+    # Then, taking those two things, make a feed list from them.
     return generate_xml(showname, feed_list)
 
   if __name__ == '__main__':
@@ -766,7 +763,6 @@ def server(config):
 
 
 def download(callsign, url, my_pid):
-
   proc_name("ic-download")
 
   def dl_stop(signal, frame):
@@ -836,10 +832,10 @@ def spawner():
   server_pid.start()
 
   def process_start():
-    global my_pid
-    my_pid += 1
-    logging.info("Starting cascaded downloader #%d. Next up in %ds" % (my_pid, cascade_margin))
-    process = Process(target=download, args=(callsign, url, my_pid))
+    global g_pid
+    g_pid += 1
+    logging.info("Starting cascaded downloader #%d. Next up in %ds" % (g_pid, cascade_margin))
+    process = Process(target = download, args = (callsign, url, g_pid))
     process.start()
     return process
 
@@ -850,7 +846,7 @@ def spawner():
     # By the time we go throug the queue
     # so long as we aren't supposed to be
     # shutting down, this should be toggled
-    # to true
+    # to true.
     #
     flag = False
 
@@ -892,8 +888,8 @@ def spawner():
 
       # If we've hit the time when we ought to cascade
       elif time.time() - last_success > cascade_margin:
-        # And we haven't created the next process yet, then we start
-        # it now.
+
+        # And we haven't created the next process yet, then we start it now.
         if not process_next:
           process_next = process_start()
 
@@ -930,7 +926,7 @@ def spawner():
       logging.info("Stopping cascaded downloader")
       process.terminate()
 
-      # if the process_next is running then we move
+      # If the process_next is running then we move
       # our last_success forward to the present
       last_success = time.time()
 
@@ -966,8 +962,7 @@ def read_config():
     # an intent is matched.
     'mode': 'full',
 
-    # The relative, or absolute directory to put things
-    # in
+    # The relative, or absolute directory to put things in
     'storage': 'recording',
 
     # The (day) time to expire an intent to record
@@ -1035,7 +1030,7 @@ def read_config():
   logging.basicConfig(level=numeric_level, filename='indycast.log', datefmt='%Y-%m-%d %H:%M:%S',format='%(asctime)s %(message)s')
 
   #
-  # increment the number of times this has been run so we 
+  # Increment the number of times this has been run so we 
   # can track the stability of remote servers and instances
   #
   db_incr('runcount')
