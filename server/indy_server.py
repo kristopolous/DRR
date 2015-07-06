@@ -633,6 +633,7 @@ def generate_xml(showname, feed_list, duration, start_minute):
 
   root = ET.Element("rss", nsmap = nsmap)
   root.attrib['version'] = '2.0'
+  frame_length = 1152.0 / 44100
 
   channel = ET.SubElement(root, "channel")
 
@@ -673,13 +674,13 @@ def generate_xml(showname, feed_list, duration, start_minute):
     for k,v in {
       '{%s}explicit' % nsmap['itunes']: 'no', 
       '{%s}author' % nsmap['itunes']: callsign,
-      '{%s}duration' % nsmap['itunes']: duration,
+      '{%s}duration' % nsmap['itunes']: duration * 60,
       '{%s}summary' % nsmap['itunes']: showname,
       '{%s}creator' % nsmap['dc']: callsign,
       '{%s}origEnclosureLink' % nsmap['feedburner']: link,
       '{%s}origLink' % nsmap['feedburner']: base_url,
       'description': showname,
-      'pubDate': 'TODO',
+      'pubDate': feed['start_date'],
       'title': showname,
       'link': link,
       'copyright': callsign,
@@ -689,14 +690,17 @@ def generate_xml(showname, feed_list, duration, start_minute):
 
     ET.SubElement(item, 'guid', isPermaLink = "false").text = base_url
 
+    # fileSize and length will be guessed based on 209 bytes covering
+    # frame_length seconds of audio (128k/44.1k no id3)
     content = ET.SubElement(item, '{%s}content' % nsmap['media'])
     content.attrib['url'] = link
-    content.attrib['fileSize'] = 'TODO'
+    content.attrib['fileSize'] = 209 * (duration * 60.0) / frame_length 
     content.attrib['type'] = 'audio/mpeg3'
 
+    # The length of the audio we will just take as the duration
     content = ET.SubElement(item, 'enclosure')
     content.attrib['url'] = link
-    content.attrib['length'] = 'TODO'
+    content.attrib['length'] = duration * 60
     content.attrib['type'] = 'audio/mpeg3'
 
   tree = ET.ElementTree(root)
