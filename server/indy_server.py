@@ -44,7 +44,6 @@ g_start_time = time.time()
 g_queue = Queue()
 g_config = {}
 g_db = {}
-g_streams = []
 g_pid = 0
 
 # From https://wiki.python.org/moin/ConfigParserExamples
@@ -328,12 +327,12 @@ def audio_stream_info(fname):
     start_date = datetime.utcfromtimestamp(unix_time)
 
   try:
-    duration = audio_time_fast(fname) / 60.0
+    duration = audio_time_fast(fname) 
 
   except:
     logging.warning("Unable to read file %s as an mp3 file" % filename)
 
-  return {'name': fname, 'start_minute': start_minute, 'start_date': start_date, 'duration': duration}
+  return {'name': fname, 'start_minute': start_minute, 'start_date': start_date, 'end_minute': duration / 60.0 + start_minute, 'duration_sec': duration}
 
 
 def time_to_minute(unix_time):
@@ -565,33 +564,22 @@ def prune():
 # partial shows results.
 #
 def find_streams(start_query, duration):
-  global g_streams
-  ts_re = re.compile('(\d*).mp3')
   file_list = []
   
   end_query = start_query + duration
 
   for filename in glob('streams/*.mp3'): 
-    ts = ts_re.findall(filename)
-
-    try:
-      test_duration = audio_time_fast(filename) / 60.0
-
-    except:
-      logging.warning("Unable to read file %s as an mp3 file" % filename)
-
-    start_test = time_to_minute(int(ts[0]))
-    end_test = start_test + duration
+    info = audio_stream_info(filename)
 
     # If we started recording before this is fine as long as we ended recording after our start
-    if start_test < start_query and end_test > start_query or start_query == -1:
-      file_list.append((start_test, start_test + test_duration, filename))
+    if info['start_minute'] < start_query and info['end_minute'] > start_query or start_query == -1:
+      file_list.append(info)
       next
 
     # If we started recording after the query time, this is fine
     # so long as it's before the end
-    if start_test > start_query and start_test < end_query:
-      file_list.append((start_test, start_test + test_duration, filename))
+    if info['start_minute'] > start_query and info['start_minute'] < end_query:
+      file_list.append(info)
       next
 
   return file_list
