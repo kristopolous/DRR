@@ -45,6 +45,7 @@ g_queue = Queue()
 g_config = {}
 g_db = {}
 g_pid = 0
+__version__ = "0.1"
 
 # From https://wiki.python.org/moin/ConfigParserExamples
 def ConfigSectionMap(section, Config):
@@ -397,10 +398,13 @@ def time_to_minute(unix_time):
 # from http://code.activestate.com/recipes/521915-start-date-and-end-date-of-given-week/
 def time_week_to_iso(year, week):
   d = date(year, 1, 1)
+
   if d.weekday() > 3:
     d = d + timedelta(7 - d.weekday())
+
   else:
     d = d - timedelta(d.weekday())
+
   dlt = timedelta(days = (week - 1) * 7)
   return d + dlt
 
@@ -1092,7 +1096,7 @@ def read_config():
 
   parser = argparse.ArgumentParser()
   parser.add_argument("-c", "--config", default="./indy_config.txt", help="Configuration file (default ./indy_config.txt)")
-  parser.add_argument("-v", "--version", help="Version info")
+  parser.add_argument('--version', action='version', version='indycast %s :: July 2015' % __version__)
   args = parser.parse_args()
 
   Config = ConfigParser.ConfigParser()
