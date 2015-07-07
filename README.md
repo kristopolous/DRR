@@ -1,5 +1,7 @@
 # indycast.net
 
+After 5 weeks of development, [v0.1 is out](https://github.com/kristopolous/DRR/archive/v0.1.zip). Download it and please test
+
 [Indycast](http://indycast.net) is a DVR for independent radio. 
 
 You can use it to transform a broadcast into a podcast for later listening.
