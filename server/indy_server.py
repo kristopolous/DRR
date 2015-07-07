@@ -73,14 +73,18 @@ def ConfigSectionMap(section, Config):
   return dict1  
 
 
-# Sets a more human-readable process name for the various parts of the system to be viewed in top/htop
 def change_proc_name(what):
+  """
+  Sets a more human-readable process name for the various parts of the system to be viewed in top/htop
+  """
   SP.setproctitle(what)
   print "[%s:%d] Starting" % (what, os.getpid())
 
 
-# shutdown is hit on the keyboard interrupt
 def shutdown(signal = 15, frame = False):
+  """
+  shutdown is hit on the keyboard interrupt
+  """
   global g_db, g_queue, g_start_time, g_config
 
   title = SP.getproctitle()
@@ -118,7 +122,7 @@ def audio_stream_info(fname):
     start_date = datetime.fromtimestamp(unix_time)
 
   try:
-    duration = audio_time_fast(fname) 
+    duration = audio_time(fname) 
 
   except Exception as exc:
     # If we can't find a duration then we try to see if it's in the file name
@@ -138,12 +142,12 @@ def audio_stream_info(fname):
   }
 
 
-#
-# Open up an mp3 file, find all the blocks, the byte offset of the blocks, and if they
-# are audio blocks, construct a crc32 mapping of some given beginning offset of the audio
-# data ... this is intended for stitching.
-#
 def audio_crc(fname, blockcount = -1):
+  """
+  Open up an mp3 file, find all the blocks, the byte offset of the blocks, and if they
+  are audio blocks, construct a crc32 mapping of some given beginning offset of the audio
+  data ... this is intended for stitching.
+  """
   frame_sig = []
   start_byte = []
 
@@ -223,7 +227,7 @@ def audio_crc(fname, blockcount = -1):
   f.close()
   return [frame_sig, start_byte]
 
-def audio_time_fast(fname):
+def audio_time(fname):
   crc32, offset = audio_crc(fname, 2)
   # in the fast method we get the first two frames, find out the offset
   # difference between them, take the length of the file, divide it by that
@@ -232,12 +236,12 @@ def audio_time_fast(fname):
   frame_count_est = os.path.getsize(fname) / frame_size
   return FRAME_LENGTH * frame_count_est
 
-#
-# Given a file_list in a directory and a duration, this function will seek out
-# adjacent files if necessary and serialize them accordingly, and then return the
-# file name of an audio slice that is the combination of them.
-#
 def audio_stitch_and_slice(file_list, start_minute, duration_minute):
+  """
+  Given a file_list in a directory and a duration, this function will seek out
+  adjacent files if necessary and serialize them accordingly, and then return the
+  file name of an audio slice that is the combination of them.
+  """
   if not file_list:
     return False
 
@@ -502,8 +506,6 @@ def time_get_offset(force = False):
 ##
 ## Database Related functions
 ##
-
-
 def db_incr(key, value = 1):
   """
   increments some key in the database by some value.  It is used
@@ -542,8 +544,10 @@ def db_set(key, value):
   return value
 
 
-# db_get retrieves a value from the database, tentative on the expiry
 def db_get(key, expiry=0):
+  """
+  retrieves a value from the database, tentative on the expiry
+  """
   db = db_connect()
 
   if expiry > 0:
@@ -559,11 +563,11 @@ def db_get(key, expiry=0):
   return False
 
 
-#
-# db_connect is a "singleton pattern" or some other fancy $10-world style of maintaining 
-# the database connection throughout the execution of the script.
-#
 def db_connect():
+  """
+  a "singleton pattern" or some other fancy $10-world style of maintaining 
+  the database connection throughout the execution of the script.
+  """
   global g_db
 
   if 'conn' not in g_db:
@@ -612,9 +616,10 @@ def db_register_intent(minute, duration):
 ##
 ## Storage and file related
 ##
-
-# Get rid of files older than archivedays
 def file_prune():
+  """
+  Get rid of files older than archivedays
+  """
   global g_config
 
   db = db_connect()
@@ -635,12 +640,12 @@ def file_prune():
   logging.info("Found %d files older than %s days." % (count, g_config['archivedays']))
 
 
-#
-# Given a start week minute this looks for streams in the storage 
-# directory that match it - regardless of duration ... so it may return
-# partial shows results.
-#
 def file_find_streams(start, duration):
+  """
+  Given a start week minute this looks for streams in the storage 
+  directory that match it - regardless of duration ... so it may return
+  partial shows results.
+  """
   stream_list = []
   
   end = (start + duration) % MINUTES_PER_WEEK
@@ -651,6 +656,7 @@ def file_find_streams(start, duration):
   current_week = 0
 
   file_list = glob('streams/*.mp3')
+
   # Sorting by date (see http://stackoverflow.com/questions/23430395/glob-search-files-in-date-order)
   file_list.sort(key=os.path.getmtime)
   stitch_list = []
@@ -685,18 +691,19 @@ def file_find_streams(start, duration):
 
   return stream_list
 
-#
-# This takes a number of params:
-# 
-#  showname - from the incoming request url
-#  feedList - this is a list of tuples in the form (date, file)
-#       corresponding to the, um, date of recording and filename
-#   
-# It obviously returns an xml file ... I mean duh.
-#
-# In the xml file we will lie about the duration to make life easier
-#
 def server_generate_xml(showname, feed_list, duration, start_minute):
+  """
+  This takes a number of params:
+ 
+  showname - from the incoming request url
+  feedList - this is a list of tuples in the form (date, file)
+       corresponding to the, um, date of recording and filename
+   
+  It obviously returns an xml file ... I mean duh.
+
+  In the xml file we will lie about the duration to make life easier
+  """
+
   global g_config
 
   base_url = 'http://%s.indycast.net/' % g_config['callsign']
@@ -900,9 +907,10 @@ def server_manager(config):
 ##
 ## Stream management functions
 ##
-
-# Query the database and see if we ought to be recording at this moment
 def stream_should_be_recording():
+  """
+  Queries the database and see if we ought to be recording at this moment
+  """
   global g_config
 
   db = db_connect()
@@ -921,8 +929,10 @@ def stream_should_be_recording():
   return intent_count != 0
 
 
-# The curl interfacing that downloads the stream to disk
 def stream_download(callsign, url, my_pid, fname):
+  """ 
+  The curl interfacing that downloads the stream to disk
+  """
   change_proc_name("%s-download" % callsign)
 
   nl = {'stream': False}
@@ -970,9 +980,11 @@ def stream_download(callsign, url, my_pid, fname):
     nl['stream'].close()
 
 
-# The manager process that makes sure that the
-# streams are running appropriately
 def stream_manager():
+  """
+  The manager process that makes sure that the
+  streams are running appropriately
+  """
   global g_queue, g_config
 
   callsign = g_config['callsign']
