@@ -83,7 +83,7 @@ def change_proc_name(what):
 
 def shutdown(signal = 15, frame = False):
   """
-  shutdown is hit on the keyboard interrupt
+  Shutdown is hit on the keyboard interrupt
   """
   global g_db, g_queue, g_start_time, g_config
 
@@ -106,7 +106,7 @@ def shutdown(signal = 15, frame = False):
 ##
 def audio_stream_info(fname):
   """
-  determines the date the thing starts,
+  Determines the date the thing starts,
   the minute time it starts, and the duration
   """
   ts_re = re.compile('-(\d*)[.|_]')
@@ -144,7 +144,7 @@ def audio_stream_info(fname):
 
 def audio_crc(fname, blockcount = -1):
   """
-  Open up an mp3 file, find all the blocks, the byte offset of the blocks, and if they
+  Opens up an mp3 file, find all the blocks, the byte offset of the blocks, and if they
   are audio blocks, construct a crc32 mapping of some given beginning offset of the audio
   data ... this is intended for stitching.
   """
@@ -306,7 +306,7 @@ def audio_serialize(file_list, duration_min):
 
 def audio_slice(name_in, start_minute, end_minute = -1, duration_minute = -1):
   """
-  Take some mp3 file name_in and then create a new one based on the start and end times 
+  Takes some mp3 file name_in and then create a new one based on the start and end times 
   by finding the closest frames and just doing an extraction.
   """
 
@@ -345,7 +345,7 @@ def audio_slice(name_in, start_minute, end_minute = -1, duration_minute = -1):
 
 def audio_stitch(file_list, force_stitch = False):
   """
-  Take a list of files and then attempt to seamlessly stitch them 
+  Takes a list of files and then attempt to seamlessly stitch them 
   together by looking at their crc32 checksums of the data payload in the blocks.
   """
 
@@ -476,7 +476,7 @@ def time_to_utc(day_str, hour):
 
 def time_get_offset(force = False):
   """
-  contacts the goog, giving a longitude and lattitude and gets the time 
+  Contacts the goog, giving a longitude and lattitude and gets the time 
   offset with regard to the UTC.  There's a sqlite cache entry for the offset.
   """
 
@@ -508,7 +508,7 @@ def time_get_offset(force = False):
 ##
 def db_incr(key, value = 1):
   """
-  increments some key in the database by some value.  It is used
+  Increments some key in the database by some value.  It is used
   to maintain statistical counters.
   """
 
@@ -525,7 +525,7 @@ def db_incr(key, value = 1):
 
 def db_set(key, value):
   """
-  sets (or replaces) a given key to a specific value.
+  Sets (or replaces) a given key to a specific value.
   """
 
   db = db_connect()
@@ -546,7 +546,7 @@ def db_set(key, value):
 
 def db_get(key, expiry=0):
   """
-  retrieves a value from the database, tentative on the expiry
+  Retrieves a value from the database, tentative on the expiry
   """
   db = db_connect()
 
@@ -1022,7 +1022,6 @@ def stream_manager():
     return [fname, process]
 
   while True:
-
     #
     # We cycle this to off for every run. By the time we go throug the queue so long 
     # as we aren't supposed to be shutting down, this should be toggled to true.
