@@ -1,0 +1,11 @@
+[Main]
+callsign=wxyc
+long=-79.055845
+lat=35.913200
+mode=full
+stream=http://audio-mp3.ibiblio.org:8000/wxyc.mp3
+port=8930
+storage=/var/radio/
+archivedays=30
+loglevel=debug
+expireafter=45
