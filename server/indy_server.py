@@ -64,6 +64,69 @@ def ConfigSectionMap(section, Config):
   return dict1  
 
 
+# Sets a more human-readable process name for the various parts of the system to be viewed in top/htop
+def change_proc_name(what):
+  SP.setproctitle(what)
+  print "[%s:%d] Starting" % (what, os.getpid())
+
+
+# shutdown is hit on the keyboard interrupt
+def shutdown(signal = 15, frame = False):
+  global g_db, g_queue, g_start_time
+
+  title = SP.getproctitle()
+  print "[%s:%d] Shutting down" % (title, os.getpid())
+
+  if 'conn' in g_db:
+    g_db['conn'].close()
+
+  logging.info("[%s:%d] Shutting down through keyboard interrupt" % (title, os.getpid()))
+  if title == 'ic-manager':
+    logging.info("Uptime: %ds", time.time() - g_start_time)
+
+  g_queue.put(('shutdown', True))
+  sys.exit(0)
+
+
+##
+## Audio related functions
+##
+# This determines the date the thing starts,
+# the minute time it starts, and the duration
+def audio_stream_info(fname):
+  ts_re = re.compile('-(\d*)[.|_]')
+  ts = ts_re.findall(fname)
+
+  duration = 0
+  start_minute = 0
+  start_date = 0
+
+  if ts:
+    unix_time = int(ts[0])
+    start_minute = time_to_minute(unix_time)
+    start_date = datetime.utcfromtimestamp(unix_time)
+
+  try:
+    duration = audio_time_fast(fname) 
+
+  except:
+    # If we can't find a duration then we try to see if it's in the file name
+    ts_re_duration = re.compile('_(\d*).mp3')
+    ts = ts_re_duration.findall(fname)
+    if ts:
+      duration = int(ts[0]) * 60
+
+  return {
+    # The week number 
+    'week': start_date.isocalendar()[1], 
+    'name': fname, 
+    'start_minute': start_minute, 
+    'start_date': start_date, 
+    'end_minute': (duration / 60.0 + start_minute) % 10080, 
+    'duration_sec': duration,
+  }
+
+
 #
 # Open up an mp3 file, find all the blocks, the byte offset of the blocks, and if they
 # are audio blocks, construct a crc32 mapping of some given beginning offset of the audio
@@ -317,74 +380,15 @@ def audio_stitch(file_list, force_stitch = False):
     return audio_serialize(args, duration_min = int(duration / 60))
 
 
-# Sets a more human-readable process name for the various parts of the system to be viewed in top/htop
-def proc_name(what):
-  SP.setproctitle(what)
-  print "[%s:%d] Starting" % (what, os.getpid())
-
-
-# shutdown is hit on the keyboard interrupt
-def shutdown(signal = 15, frame = False):
-  global g_db, g_queue, g_start_time
-
-  title = SP.getproctitle()
-  print "[%s:%d] Shutting down" % (title, os.getpid())
-
-  if 'conn' in g_db:
-    g_db['conn'].close()
-
-  logging.info("[%s:%d] Shutting down through keyboard interrupt" % (title, os.getpid()))
-  if title == 'ic-manager':
-    logging.info("Uptime: %ds", time.time() - g_start_time)
-
-  g_queue.put(('shutdown', True))
-  sys.exit(0)
-
 ##
 ## Time related functions
 ##
-
-# This determines the date the thing starts,
-# the minute time it starts, and the duration
-def audio_stream_info(fname):
-  ts_re = re.compile('-(\d*)[.|_]')
-  ts = ts_re.findall(fname)
-
-  duration = 0
-  start_minute = 0
-  start_date = 0
-
-  if ts:
-    unix_time = int(ts[0])
-    start_minute = time_to_minute(unix_time)
-    start_date = datetime.utcfromtimestamp(unix_time)
-
-  try:
-    duration = audio_time_fast(fname) 
-
-  except:
-    # If we can't find a duration then we try to see if it's in the file name
-    ts_re_duration = re.compile('_(\d*).mp3')
-    ts = ts_re_duration.findall(fname)
-    if ts:
-      duration = int(ts[0]) * 60
-
-  return {
-    # The week number 
-    'week': start_date.isocalendar()[1], 
-    'name': fname, 
-    'start_minute': start_minute, 
-    'start_date': start_date, 
-    'end_minute': (duration / 60.0 + start_minute) % 10080, 
-    'duration_sec': duration,
-  }
-
-
 def time_to_minute(unix_time):
   if type(unix_time) is int:
     unix_time = datetime.utcfromtimestamp(unix_time)
 
   return unix_time.weekday() * (24 * 60) + unix_time.hour * 60 + unix_time.minute
+
 
 # from http://code.activestate.com/recipes/521915-start-date-and-end-date-of-given-week/
 def time_week_to_iso(year, week):
@@ -395,6 +399,7 @@ def time_week_to_iso(year, week):
     d = d - timedelta(d.weekday())
   dlt = timedelta(days = (week - 1) * 7)
   return d + dlt
+
 
 def time_minute_now():
   return time_to_minute(datetime.utcnow())
@@ -469,6 +474,10 @@ def time_get_offset():
 
   return int(offset)
 
+
+##
+## Database Related functions
+##
 
 #
 # db_incr increments some key in the database by some value.  It is used
@@ -554,7 +563,7 @@ def db_connect():
   return g_db
 
 
-def register_intent(minute, duration):
+def db_register_intent(minute, duration):
   db = db_connect()
 
   key = str(minute) + ':' + str(duration)
@@ -570,28 +579,13 @@ def register_intent(minute, duration):
   return db['c'].lastrowid
   
 
-# Query the database and see if we ought to be recording at this moment
-def should_be_recording():
-  global g_config
-
-  db = db_connect()
-
-  current_minute = time_minute_now()
-
-  intent_count = db['c'].execute(
-    """select count(*) from intents where 
-        start >= ? and 
-        end <= ? and 
-        accessed_at > datetime('now','-%s days')
-    """ % g_config['expireafter'], 
-    (current_minute, current_minute)
-  ).fetchone()[0]
-
-  return intent_count != 0
   
+##
+## Storage and file related
+##
 
 # Get rid of files older than archivedays
-def prune():
+def file_prune():
   global g_config
 
   db = db_connect()
@@ -617,7 +611,7 @@ def prune():
 # directory that match it - regardless of duration ... so it may return
 # partial shows results.
 #
-def find_streams(start, duration):
+def file_find_streams(start, duration):
   stream_list = []
   
   end = (start + duration) % 10080
@@ -671,7 +665,7 @@ def find_streams(start, duration):
 #
 # In the xml file we will lie about the duration to make life easier
 #
-def generate_xml(showname, feed_list, duration, start_minute):
+def server_generate_xml(showname, feed_list, duration, start_minute):
   global g_config
 
   base_url = 'http://%s.indycast.net/' % g_config['callsign']
@@ -763,10 +757,10 @@ def generate_xml(showname, feed_list, duration, start_minute):
   return ET.tostring(tree, xml_declaration=True, encoding="utf-8")
 
 
-def do_error(errstr):
+def server_error(errstr):
   return jsonify({'result': False, 'error':errstr}), 500
     
-def server(config):
+def server_manager(config):
   app = Flask(__name__)
 
   #
@@ -787,9 +781,7 @@ def server(config):
       info = audio_stream_info(fname)
 
       # Now we see what our start stream should be
-      start_stream = find_streams(info['start_minute'], info['duration_sec'] / 60)
-      print start_stream
-      print info
+      start_stream = file_find_streams(info['start_minute'], info['duration_sec'] / 60)
 
       # slice if needed
       # add up the timestamp
@@ -811,7 +803,7 @@ def server(config):
       'kv': [record for record in db['c'].execute('select * from kv').fetchall()],
       'uptime': int(time.time() - g_start_time),
       'disk': sum(os.path.getsize(f) for f in os.listdir('.') if os.path.isfile(f)),
-      'streams': find_streams(-1, 0),
+      'streams': file_find_streams(-1, 0),
       'config': config
     }
 
@@ -843,12 +835,12 @@ def server(config):
 
     # This means we failed to parse
     if type(duration) is str:
-      return do_error('duration "%s" is not set correctly' % duration)
+      return server_error('duration "%s" is not set correctly' % duration)
 
     start_time = time_to_utc(weekday, start)
     
     if not start_time:
-      return do_error('weekday and start times are not set correctly')
+      return server_error('weekday and start times are not set correctly')
 
     # If we are here then it looks like our input is probably good.
     
@@ -857,16 +849,16 @@ def server(config):
 
     # This will register the intent if needed for future recordings
     # (that is if we are in ondemand mode)
-    register_intent(start_time, duration)
+    db_register_intent(start_time, duration)
 
     # Look for streams that we have which match this query and duration.
-    feed_list = find_streams(start_time, duration)
+    feed_list = file_find_streams(start_time, duration)
 
     # Then, taking those two things, make a feed list from them.
-    return generate_xml(showname, feed_list, duration, start_time)
+    return server_generate_xml(showname, feed_list, duration, start_time)
 
   if __name__ == '__main__':
-    proc_name("ic-webserver")
+    change_proc_name("ic-webserver")
 
     start = time.time()
     try:
@@ -878,10 +870,33 @@ def server(config):
 
       shutdown()
 
+##
+## Stream management functions
+##
+
+# Query the database and see if we ought to be recording at this moment
+def stream_should_be_recording():
+  global g_config
+
+  db = db_connect()
+
+  current_minute = time_minute_now()
+
+  intent_count = db['c'].execute(
+    """select count(*) from intents where 
+        start >= ? and 
+        end <= ? and 
+        accessed_at > datetime('now','-%s days')
+    """ % g_config['expireafter'], 
+    (current_minute, current_minute)
+  ).fetchone()[0]
+
+  return intent_count != 0
+
 
 # The curl interfacing that downloads the stream to disk
 def stream_download(callsign, url, my_pid, fname):
-  proc_name("ic-download")
+  change_proc_name("ic-download")
 
   nl = {'stream': False}
 
@@ -947,7 +962,7 @@ def stream_manager():
   process = False
   process_next = False
 
-  server_pid = Process(target=server, args=(g_config,))
+  server_pid = Process(target = server_manager, args=(g_config,))
   server_pid.start()
 
   fname = False
@@ -982,7 +997,7 @@ def stream_manager():
 
     yesterday = time.time() - 24 * 60 * 60
     if last_prune < yesterday:
-      prune()
+      file_prune()
       last_prune = time.time()
 
     time_get_offset()
@@ -1001,7 +1016,7 @@ def stream_manager():
     # recording right now according to our intents.
     #
     if not mode_full:
-      should_record = should_be_recording()
+      should_record = stream_should_be_recording()
 
     if should_record:
 
@@ -1172,10 +1187,10 @@ if __name__ == "__main__":
 
   # From http://stackoverflow.com/questions/25504149/why-does-running-the-flask-dev-server-run-itself-twice
   if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
-    proc_name("ic-main")
-    server(g_config)
+    change_proc_name("ic-main")
+    server_manager(g_config)
 
   else: 
     read_config()      
-    proc_name("ic-manager")
+    change_proc_name("ic-manager")
     stream_manager()
