@@ -916,6 +916,12 @@ def stream_download(callsign, url, my_pid, fname):
   def cback(data): 
     global g_config, g_queue
 
+    if len(data) < 200 and re.match('https?://', data):
+      # If we are getting a redirect then we don't mind, we
+      # just put it in the stream and then we leave
+      g_queue.put(('stream', data.strip()))
+      return True
+
     g_queue.put(('heartbeat', True))
 
     if nl['stream'] == False:
@@ -933,6 +939,7 @@ def stream_download(callsign, url, my_pid, fname):
   c = pycurl.Curl()
   c.setopt(c.URL, url)
   c.setopt(pycurl.WRITEFUNCTION, cback)
+  c.setopt(pycurl.FOLLOWLOCATION, True)
 
   try:
     c.perform()
@@ -952,7 +959,6 @@ def stream_manager():
   global g_queue, g_config
 
   callsign = g_config['callsign']
-  url = g_config['stream']
 
   cascade_time = int(g_config['cascadetime'])
   cascade_buffer = int(g_config['cascadebuffer'])
@@ -981,18 +987,8 @@ def stream_manager():
     global g_pid
     g_pid += 1
     logging.info("Starting cascaded downloader #%d. Next up in %ds" % (g_pid, cascade_margin))
-
-    #
-    # Although we are already in the callsign path, we want the file to be a self-contained 
-    # description of the content - not relying on the path to complete part of the story 
-    # of what it is.
-    #
-    if fname and os.path.getsize(fname) == 0:
-      logging.info("Unsuccessful download. Removing %s." % fname)
-      os.unlink(fname)
-
     fname = 'streams/%s-%d.mp3' % (callsign, time_sec_now())
-    process = Process(target = stream_download, args = (callsign, url, g_pid, fname))
+    process = Process(target = stream_download, args = (callsign, g_config['stream'], g_pid, fname))
     process.start()
     return [fname, process]
 
@@ -1014,7 +1010,15 @@ def stream_manager():
     while not g_queue.empty():
       what, value = g_queue.get(False)
 
-      if what == 'shutdown':
+      # The curl proces discovered a new stream to be
+      # used instead.
+      if what == 'stream':
+        g_config['stream'] = value
+        logging.info("Using %s as the stream now" % value)
+        # We now don't toggle to flag in order to shutdown the
+        # old process and start a new one
+
+      elif what == 'shutdown':
         b_shutdown = True
 
       else:
