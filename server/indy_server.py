@@ -47,6 +47,7 @@ g_db = {}
 g_pid = 0
 __version__ = "0.1"
 FRAME_LENGTH = (1152.0 / 44100)
+MINUTES_PER_WEEK = 10080
 
 # From https://wiki.python.org/moin/ConfigParserExamples
 def ConfigSectionMap(section, Config):
@@ -124,7 +125,7 @@ def audio_stream_info(fname):
     'name': fname, 
     'start_minute': start_minute, 
     'start_date': start_date, 
-    'end_minute': (duration / 60.0 + start_minute) % 10080, 
+    'end_minute': (duration / 60.0 + start_minute) % MINUTES_PER_WEEK,
     'duration_sec': duration,
   }
 
@@ -205,7 +206,7 @@ def audio_crc(fname, blockcount = -1):
 
       else:
         # This helps me debug mp3 files that I'm not reading correctly.
-        print "%s:%s:%s:%s %s %d" % (binascii.b2a_hex(header), header, f.read(5), fname, hex(f.tell()), len(start_byte) * (1152.0 / 44100) / 60)
+        print "%s:%s:%s:%s %s %d" % (binascii.b2a_hex(header), header, f.read(5), fname, hex(f.tell()), len(start_byte) * FRAME_LENGTH / 60)
         break
 
     else:
@@ -221,7 +222,7 @@ def audio_time_fast(fname):
   # and then presume that will be the framecount
   frame_size = offset[1] - offset[0]
   frame_count_est = os.path.getsize(fname) / frame_size
-  return (1152.0 / 44100) * frame_count_est
+  return FRAME_LENGTH * frame_count_est
 
 #
 # Given a start_file in a directory and a duration, this function will seek out
@@ -624,7 +625,7 @@ def file_prune():
 def file_find_streams(start, duration):
   stream_list = []
   
-  end = (start + duration) % 10080
+  end = (start + duration) % MINUTES_PER_WEEK
 
   # We want to make sure we only get the edges so we need to have state
   # between the iterations.
@@ -653,7 +654,7 @@ def file_find_streams(start, duration):
       else:
         fname = audio_stitch_and_slice(stitch_list, start, duration)
         stitch_list = [filename]
-        next_valid_start_minute = (start + duration) % 10080
+        next_valid_start_minute = (start + duration) % MINUTES_PER_WEEK
         current_week = i['week']
 
       if fname:
@@ -754,7 +755,7 @@ def server_generate_xml(showname, feed_list, duration, start_minute):
     # frame_length seconds of audio (128k/44.1k no id3)
     content = ET.SubElement(item, '{%s}content' % nsmap['media'])
     content.attrib['url'] = link
-    content.attrib['fileSize'] = str(209 * (duration * 60.0) / FRAME_LENGTH) 
+    content.attrib['fileSize'] = str(os.path.getsize(file_name))
     content.attrib['type'] = 'audio/mpeg3'
 
     # The length of the audio we will just take as the duration
