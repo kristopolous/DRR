@@ -8,9 +8,9 @@ $schema = [
   'base_url'    => 'TEXT',
   'last_seen'   => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
   'first_seen'  => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
-  'pings'       => 'INTEGER',
-  'drops'       => 'INTEGER',
-  'latency'     => 'INTEGER',
+  'pings'       => 'INTEGER DEFAULT 0',
+  'drops'       => 'INTEGER DEFAULT 0',
+  'latency'     => 'INTEGER DEFAULT 0',
   'log'         => 'TEXT',
   'notes'       => 'TEXT'
 ];
@@ -35,11 +35,46 @@ function sql_escape_hash($obj) {
   return $res;
 }
 
+// active stations are things we've seen in the past few days
+function active_stations() {
+}
+
+function db_get($str) {
+  global $db;
+  $res = $db->query($str);
+  if($res) {
+    return $res->fetchArray();
+  }
+}
+
+function sql_kv($hash) {
+  $ret = [];
+  foreach($hash as $key => $value) {
+    if ( !empty($value) ) {
+      $ret[] = "$key = '$value'";
+    }
+  } 
+  return $ret;
+}
+
+function get_station($dirty) {
+  global $db;
+  $clean = sql_escape_hash($dirty);
+  $inj = sql_kv($clean);
+  return db_get('select * from stations where ' . implode(' and ', $inj));
+}
+
 function add_station($dirty) {
   global $db;
   $clean = sql_escape_hash($dirty);
 
-  $db->exec('select * from stations where callsign = "' . $clean['callsign'] . '"');
-  var_dump($var);
+  $station = db_get('select * from stations where callsign = "' . $clean['callsign'] . '"');
+  if(!$station) {
+    $lhs = array_keys($dirty); $rhs = array_values($dirty);
+    return $db->exec('insert into stations (' . implode(',', $lhs) . ') values ("' . implode('","', $dirty) . '")');
+  } else {
+    $inj = sql_kv($dirty);
+    return $db->exec('update stations set ' . implode(',', $inj) . ' where id = ' . $station['id']);
+  }
 }
 
