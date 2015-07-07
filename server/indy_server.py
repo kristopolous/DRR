@@ -58,7 +58,7 @@ def ConfigSectionMap(section, Config):
       if dict1[option] == -1:
         logging.info("skip: %s" % option)
 
-    except:
+    except Exception as exc:
       logging.warning("exception on %s!" % option)
       dict1[option] = None
 
@@ -110,7 +110,7 @@ def audio_stream_info(fname):
   try:
     duration = audio_time_fast(fname) 
 
-  except:
+  except Exception as exc:
     # If we can't find a duration then we try to see if it's in the file name
     ts_re_duration = re.compile('_(\d*).mp3')
     ts = ts_re_duration.findall(fname)
@@ -365,7 +365,7 @@ def audio_stitch(file_list, force_stitch = False):
           logging.warn("Indices do not match between %s and %s" % (first['name'], second['name']))
           break
 
-    except: 
+    except Exception as exc:
       logging.warn("Cannot find indices between %s and %s" % (first['name'], second['name']))
       pos = 1
       isFound = force_stitch
@@ -427,7 +427,7 @@ def time_to_utc(day_str, hour):
   try:
     day_number = ['sun','mon','tue','wed','thu','fri','sat'].index(day_str.lower())
 
-  except:
+  except Exception as exc:
     return False
 
   local = day_number * (60 * 24)
@@ -500,7 +500,7 @@ def db_incr(key, value = 1):
   try:
     db['c'].execute('insert into kv(value, key) values(?, ?)', (value, key))
 
-  except:
+  except Exception as exc:
     db['c'].execute('update kv set value = value + ? where key = ?', (value, key))
 
   db['conn'].commit()
@@ -874,7 +874,7 @@ def server_manager(config):
     try:
       app.run(port = int(config['port']), host = '0.0.0.0')
 
-    except:
+    except Exception as exc:
       if time.time() - start < 5:
         print "Error, can't start server ... perhaps %s is already in use?" % config['port']
 
@@ -928,7 +928,7 @@ def stream_download(callsign, url, my_pid, fname):
       try:
         nl['stream'] = open(fname, 'w')
 
-      except:
+      except Exception as exc:
         logging.critical("Unable to open %s. Can't record. Must exit." % fname)
         sys.exit(-1)
 
@@ -944,7 +944,7 @@ def stream_download(callsign, url, my_pid, fname):
   try:
     c.perform()
 
-  except:
+  except Exception as exc:
     logging.warning("Couldn't resolve or connect to %s." % url)
 
   c.close()
@@ -1146,7 +1146,7 @@ def read_config():
       # If I can't do this, that's fine.
       os.mkdir(g_config['storage'])
 
-    except:
+    except Exception as exc:
       # We make it from the current directory
       g_config['storage'] = defaults['storage']
 
