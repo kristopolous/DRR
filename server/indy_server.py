@@ -867,7 +867,7 @@ def server_manager(config):
     return server_generate_xml(showname, feed_list, duration, start_time)
 
   if __name__ == '__main__':
-    change_proc_name("ic-webserver")
+    change_proc_name("%s-webserver" % config['callsign'])
 
     start = time.time()
     try:
@@ -905,7 +905,7 @@ def stream_should_be_recording():
 
 # The curl interfacing that downloads the stream to disk
 def stream_download(callsign, url, my_pid, fname):
-  change_proc_name("ic-download")
+  change_proc_name("%s-download" % callsign)
 
   nl = {'stream': False}
 
@@ -1201,5 +1201,5 @@ if __name__ == "__main__":
 
   else: 
     read_config()      
-    change_proc_name("ic-manager")
+    change_proc_name("%s-manager" % g_config['callsign'])
     stream_manager()
