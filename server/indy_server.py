@@ -1149,7 +1149,9 @@ def read_config():
     except:
       # We make it from the current directory
       g_config['storage'] = defaults['storage']
-      os.mkdir(g_config['storage'])
+
+      if not os.path.isdir(g_config['storage']):
+        os.mkdir(g_config['storage'])
 
   # We go to the callsign level in order to store multiple station feeds on a single
   # server in a single parent directory without forcing the user to decide what goes
