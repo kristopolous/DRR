@@ -46,6 +46,7 @@ g_config = {}
 g_db = {}
 g_pid = 0
 __version__ = "0.1"
+FRAME_LENGTH = (1152.0 / 44100)
 
 # From https://wiki.python.org/moin/ConfigParserExamples
 def ConfigSectionMap(section, Config):
@@ -73,7 +74,7 @@ def change_proc_name(what):
 
 # shutdown is hit on the keyboard interrupt
 def shutdown(signal = 15, frame = False):
-  global g_db, g_queue, g_start_time
+  global g_db, g_queue, g_start_time, g_config
 
   title = SP.getproctitle()
   print "[%s:%d] Shutting down" % (title, os.getpid())
@@ -82,7 +83,7 @@ def shutdown(signal = 15, frame = False):
     g_db['conn'].close()
 
   logging.info("[%s:%d] Shutting down through keyboard interrupt" % (title, os.getpid()))
-  if title == 'ic-manager':
+  if title == ('%s-manager' % g_config['callsign']):
     logging.info("Uptime: %ds", time.time() - g_start_time)
 
   g_queue.put(('shutdown', True))
@@ -228,7 +229,7 @@ def audio_time_fast(fname):
 # file name of an audio slice that is the combination of them.
 #
 def audio_stitch_and_slice(file_list, start_minute, duration_minute):
-  if len(file_list) == 0:
+  if not file_list:
     return False
 
   # We presume that there is a file list we need to make 
@@ -311,11 +312,10 @@ def audio_slice(name_in, start_minute, end_minute = -1, duration_minute = -1):
 
   # Most common frame-length ... in practice, I haven't 
   # seen other values in the real world
-  frame_length = (1152.0 / 44100)
   crc32, offset = audio_crc(name_in)
 
-  frame_start = int(math.floor(start_sec / frame_length))
-  frame_end = int(math.ceil(end_sec / frame_length))
+  frame_start = max(int(math.floor(start_sec / FRAME_LENGTH)), 0)
+  frame_end = min(int(math.ceil(end_sec / FRAME_LENGTH)), len(offset) - 1)
 
   out = open(name_out, 'wb+')
   fin = open(name_in, 'rb')
@@ -336,7 +336,6 @@ def audio_slice(name_in, start_minute, end_minute = -1, duration_minute = -1):
 def audio_stitch(file_list, force_stitch = False):
   first = {'name': file_list[0]}
   duration = 0
-  frame_length = (1152.0 / 44100)
 
   crc32, offset = audio_crc(first['name'])
 
@@ -344,7 +343,7 @@ def audio_stitch(file_list, force_stitch = False):
   first['offset'] = offset
 
   args = [(first['name'], 0, first['offset'][-1])]
-  duration += len(first['offset']) * frame_length
+  duration += len(first['offset']) * FRAME_LENGTH
 
   for name in file_list[1:]:
     second = {'name': name}
@@ -372,7 +371,7 @@ def audio_stitch(file_list, force_stitch = False):
 
     if isFound:
       args.append((second['name'], second['offset'][pos], second['offset'][-2]))
-      duration += (len(second['offset']) - pos - 1) * frame_length
+      duration += (len(second['offset']) - pos - 1) * FRAME_LENGTH
       first = second
       continue
 
@@ -693,7 +692,6 @@ def server_generate_xml(showname, feed_list, duration, start_minute):
 
   root = ET.Element("rss", nsmap = nsmap)
   root.attrib['version'] = '2.0'
-  frame_length = 1152.0 / 44100
 
   channel = ET.SubElement(root, "channel")
 
@@ -756,7 +754,7 @@ def server_generate_xml(showname, feed_list, duration, start_minute):
     # frame_length seconds of audio (128k/44.1k no id3)
     content = ET.SubElement(item, '{%s}content' % nsmap['media'])
     content.attrib['url'] = link
-    content.attrib['fileSize'] = str(209 * (duration * 60.0) / frame_length) 
+    content.attrib['fileSize'] = str(209 * (duration * 60.0) / FRAME_LENGTH) 
     content.attrib['type'] = 'audio/mpeg3'
 
     # The length of the audio we will just take as the duration
@@ -924,7 +922,7 @@ def stream_download(callsign, url, my_pid, fname):
 
     g_queue.put(('heartbeat', True))
 
-    if nl['stream'] == False:
+    if not nl['stream']:
       try:
         nl['stream'] = open(fname, 'w')
 
