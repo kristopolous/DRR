@@ -655,14 +655,13 @@ def find_streams(start, duration):
       current_week = i['week']
 
       if fname:
-        stream_list.append(fname)
+        stream_list.append(audio_stream_info(fname))
 
   fname = audio_stitch_and_slice(stitch_list, start, duration)
   if fname:
-    stream_list.append(fname)
+    stream_list.append(audio_stream_info(fname))
 
   return stream_list
-
 
 #
 # This takes a number of params:
@@ -715,17 +714,18 @@ def generate_xml(showname, feed_list, duration, start_minute):
     # lazy-file name
 
     # Start with the start_date of the feed
-    start_of_week = time_week_to_iso(feed['start_date'].year, feed['week'])
+    #start_of_week = time_week_to_iso(feed['start_date'].year, feed['week'])
     
     # now we add the minute offset to get a datetime version 
-    dt_start_of_stream = start_of_week + timedelta(minutes = start_minute)
+    #dt_start_of_stream = start_of_week + timedelta(minutes = start_minute)
 
     # and then make a unix time stamp from it. This will be the numeric on the file that
     # are committing to making
-    str_start_of_stream = dt_start_of_stream.strftime('%s')
+    #str_start_of_stream = dt_start_of_stream.strftime('%s')
 
-    file_name = "%s-%s_%d.mp3" % (callsign, str_start_of_stream, duration)
-    link = "%sslices/%s" % (base_url, file_name)
+    #file_name = "%s-%s_%d.mp3" % (callsign, str_start_of_stream, duration)
+    file_name = feed['name']
+    link = "%s%s" % (base_url, file_name)
 
     item = ET.SubElement(channel, 'item')
 
