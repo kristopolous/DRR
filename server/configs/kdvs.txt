@@ -1,0 +1,11 @@
+[Main]
+callsign=kdvs
+long=-121.740517
+lat=38.544907
+mode=full
+stream=http://api.kdvs.org:8000/kdvs128.m3u
+port=9030
+storage=/var/radio/
+archivedays=30
+loglevel=debug
+expireafter=45
