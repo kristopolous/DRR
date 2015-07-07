@@ -174,9 +174,18 @@ def audio_stitch_and_slice(file_list, start_minute, duration_minute)
     logging.warn("Unable to stitch file list")
     return -1
 
-  audio_slice(stitched_name, start_minute = max(info['start_minute'] - start_minute, 0), duration_minute = duration)
+  # After we've stitched together the audio then we start our slice
+  # by figuring our the start_minute of the slice, versus ours
+  start_slice = max(info['start_minute'] - start_minute, 0)
 
-  return True
+  # Now we need to take the duration of the stream we want, in minutes, and then
+  # make sure that we don't exceed the length of the file.
+  duration_slice =  min(duration_minute, start_slice + info['duration_sec'] / 60.0)
+
+  sliced_name = audio_slice(stitched_name, start_minute = start_slice, duration_minute = duration_slice)
+
+  print sliced_name
+  return sliced_name
 
 
 #
@@ -222,7 +231,7 @@ def audio_slice(name_in, start_minute, end_minute = -1, duration_minute = -1):
   else:
     end_minute = start_minute + duration_minute
 
-  name_out = "slices/%s_%d.mp3" % (name_in[:name_in.rindex('_')], duration_minute)
+  name_out = "slices/%s_%d.mp3" % (name_in[name_in.index('/') + 1:name_in.rindex('_')], duration_minute)
   start_sec = start_minute * 60.0
   end_sec = end_minute * 60.0
 
@@ -362,7 +371,7 @@ def audio_stream_info(fname):
     'start_minute': start_minute, 
     'start_date': start_date, 
     'end_minute': (duration / 60.0 + start_minute) % 10080, 
-    'duration_sec': duration
+    'duration_sec': duration,
   }
 
 
