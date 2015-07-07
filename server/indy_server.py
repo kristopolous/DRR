@@ -802,9 +802,6 @@ def server_manager(config):
   def heartbeat():
     global g_start_time
 
-    if request.remote_addr != '127.0.0.1':
-      return '', 403
-
     db = db_connect()
 
     stats = {
