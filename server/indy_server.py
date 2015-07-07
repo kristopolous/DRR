@@ -242,12 +242,13 @@ def audio_stitch_and_slice(file_list, start_minute, duration_minute):
 
   # After we've stitched together the audio then we start our slice
   # by figuring our the start_minute of the slice, versus ours
-  start_slice = max(info['start_minute'] - start_minute, 0)
+  start_slice = max(start_minute - info['start_minute'], 0)
 
   # Now we need to take the duration of the stream we want, in minutes, and then
   # make sure that we don't exceed the length of the file.
   duration_slice = min(duration_minute, start_slice + info['duration_sec'] / 60.0)
 
+  print stitched_name, start_slice, start_minute, duration_slice, duration_minute, info
   sliced_name = audio_slice(stitched_name, start_minute = start_slice, duration_minute = duration_slice)
 
   return sliced_name
@@ -295,10 +296,13 @@ def audio_serialize(file_list, duration_min):
 def audio_slice(name_in, start_minute, end_minute = -1, duration_minute = -1):
   if duration_minute == -1:
     duration_minute = end_minute - start_minute
+
   else:
     end_minute = start_minute + duration_minute
 
-  name_out = "slices/%s_%d.mp3" % (name_in[name_in.index('/') + 1:name_in.rindex('_')], duration_minute)
+  callsign, unix_time = re.findall('(\w*)-(\d+)_', name_in)[0]
+
+  name_out = "slices/%s-%d_%d.mp3" % (callsign, int(unix_time) + start_minute * 60, duration_minute)
   start_sec = start_minute * 60.0
   end_sec = end_minute * 60.0
 
@@ -640,11 +644,13 @@ def file_find_streams(start, duration):
     #
     # If we started recording before this is fine as long as we ended recording after our start
     if start == -1 or (i['start_minute'] < start and i['end_minute'] > start) or (i['start_minute'] > start and i['start_minute'] < end):
+      print start, filename
       if start == -1:
         fname = filename
 
       else:
         fname = audio_stitch_and_slice(stitch_list, start, duration)
+        print fname
         stitch_list = [filename]
         next_valid_start_minute = (start + duration) % 10080
         current_week = i['week']
@@ -652,8 +658,9 @@ def file_find_streams(start, duration):
       if fname:
         stream_list.append(audio_stream_info(fname))
 
-  if start == -1:
+  if start != -1:
     fname = audio_stitch_and_slice(stitch_list, start, duration)
+    print fname
     if fname:
       stream_list.append(audio_stream_info(fname))
 
