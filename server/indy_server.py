@@ -104,7 +104,7 @@ def audio_stream_info(fname):
   if ts:
     unix_time = int(ts[0])
     start_minute = time_to_minute(unix_time)
-    start_date = datetime.utcfromtimestamp(unix_time)
+    start_date = datetime.fromtimestamp(unix_time)
 
   try:
     duration = audio_time_fast(fname) 
@@ -385,7 +385,7 @@ def audio_stitch(file_list, force_stitch = False):
 ##
 def time_to_minute(unix_time):
   if type(unix_time) is int:
-    unix_time = datetime.utcfromtimestamp(unix_time)
+    unix_time = datetime.fromtimestamp(unix_time)
 
   return unix_time.weekday() * (24 * 60) + unix_time.hour * 60 + unix_time.minute
 
@@ -400,6 +400,9 @@ def time_week_to_iso(year, week):
   dlt = timedelta(days = (week - 1) * 7)
   return d + dlt
 
+
+def time_sec_now():
+  return int((datetime.utcnow() + timedelta(minutes = time_get_offset())).strftime('%s'))
 
 def time_minute_now():
   return time_to_minute(datetime.utcnow())
@@ -450,10 +453,10 @@ def time_to_utc(day_str, hour):
 # time_get_offset contacts the goog, giving a longitude and lattitude and gets the time 
 # offset with regard to the UTC.  There's a sqlite cache entry for the offset.
 #
-def time_get_offset():
+def time_get_offset(force = False):
 
   offset = db_get('offset', expiry = 60 * 60 * 24)
-  if not offset:
+  if not offset or force:
 
     when = int(time.time())
 
@@ -466,7 +469,7 @@ def time_get_offset():
 
     if opts['status'] == 'OK': 
       logging.info("Location: %s | offset: %s" % (opts['timeZoneId'], opts['rawOffset']))
-      offset = int(opts['rawOffset']) / 60
+      offset = (int(opts['rawOffset']) + int(opts['dstOffset'])) / 60
       db_set('offset', offset)
 
     else:
@@ -982,7 +985,7 @@ def stream_manager():
       logging.info("Unsuccessful download. Removing %s." % fname)
       os.unlink(fname)
 
-    fname = 'streams/' + callsign + "-" + str(int(time.time())) + ".mp3"
+    fname = 'streams/%s-%d.mp3' % (callsign, time_sec_now())
     process = Process(target = stream_download, args = (callsign, url, g_pid, fname))
     process.start()
     return [fname, process]
@@ -1182,6 +1185,7 @@ def read_config():
   db_incr('runcount')
 
   signal.signal(signal.SIGINT, shutdown)
+
 
 if __name__ == "__main__":
 
