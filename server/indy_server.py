@@ -163,14 +163,18 @@ def audio_time_fast(fname):
 # ajacent files if necessary and serialize them accordingly, and then return the
 # file name of an audio slice that is the combination of them.
 #
-def audio_stitch_and_slice(file_list, start_minute, duration_minute)
-  # We presume that there is a file list we need to make 
-  stitched_name = audio_stitch(file_list)
+def audio_stitch_and_slice(file_list, start_minute, duration_minute):
+  if len(file_list) == 0:
+    return False
 
-  if stitched:
+  print file_list
+  # We presume that there is a file list we need to make 
+  stitched_name = audio_stitch(file_list, force_stitch = True)
+
+  if stitched_name:
     info = audio_stream_info(stitched_name)
 
-  else
+  else:
     logging.warn("Unable to stitch file list")
     return -1
 
@@ -194,8 +198,11 @@ def audio_stitch_and_slice(file_list, start_minute, duration_minute)
 # "the whole file".
 #
 def audio_serialize(file_list, duration_min):
+  first_file = file_list[0][0]
+  print first_file, file_list
   # Our file will be the first one_duration.mp3
-  name = "stitches/%s_%d.mp3" % (file_list[0][:-4], duration_min)
+  name = "stitches/%s_%d.mp3" % (first_file[first_file.index('/') + 1:first_file.rindex('.')], duration_min)
+  print "serialize", name, first_file, file_list
 
   # If the file exists, then we just return it
   if os.path.isfile(name):
@@ -226,7 +233,7 @@ def audio_serialize(file_list, duration_min):
 # by finding the closest frames and just doing an extraction.
 #
 def audio_slice(name_in, start_minute, end_minute = -1, duration_minute = -1):
-  if duration_minue == -1:
+  if duration_minute == -1:
     duration_minute = end_minute - start_minute
   else:
     end_minute = start_minute + duration_minute
@@ -262,7 +269,7 @@ def audio_slice(name_in, start_minute, end_minute = -1, duration_minute = -1):
 # audio_stitch takes a list of files and then attempt to seamlessly stitch them 
 # together by looking at their crc32 checksums of the data payload in the blocks.
 #
-def audio_stitch(file_list):
+def audio_stitch(file_list, force_stitch = False):
   first = {'name': file_list[0]}
   duration = 0
   frame_length = (1152.0 / 44100)
@@ -295,8 +302,9 @@ def audio_stitch(file_list):
           break
 
     except: 
-      raise "Cannot find indices between %s and %s" % (first['name'], second['name'])
-      break
+      logging.warn("Cannot find indices between %s and %s" % (first['name'], second['name']))
+      pos = 1
+      isFound = force_stitch
 
     if isFound:
       args.append((second['name'], second['offset'][pos], second['offset'][-2]))
@@ -639,6 +647,7 @@ def find_streams(start, duration):
     # If we started recording before this is fine as long as we ended recording after our start
     if start == -1 or (i['start_minute'] < start and i['end_minute'] > start) or (i['start_minute'] > start and i['start_minute'] < end):
       fname = audio_stitch_and_slice(stitch_list, start, duration)
+      print fname
 
       stitch_list = [filename]
       # TODO: May need to % 10080 this
