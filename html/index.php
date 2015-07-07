@@ -203,7 +203,8 @@
         if(map.station && map.day && map.start && map.duration) {
           map.station = map.station.toLowerCase();
           url = 'http://' + [
-            map.station + '.indycast.net:' + portMap[map.station],
+            'indycast.net',
+            map.station,
             " " + map.day.toLowerCase(),
             map.start.replace(/\s+/,'').toLowerCase(),
             map['duration'],
