@@ -56,7 +56,13 @@ FRAME_LENGTH = (1152.0 / 44100)
 MINUTES_PER_WEEK = 10080
 
 # From https://wiki.python.org/moin/ConfigParserExamples
-def ConfigSectionMap(section, Config):
+def config_section_map(section, Config):
+  """
+  Takes a section in a config file and makes a dictionary
+  out of it.
+
+  Returns that dictionary
+  """
   dict1 = {}
   options = Config.options(section)
 
@@ -144,7 +150,7 @@ def audio_stream_info(fname):
 
 def audio_crc(fname, blockcount = -1):
   """
-  Opens up an mp3 file, find all the blocks, the byte offset of the blocks, and if they
+  Opens an mp3 file, find all the blocks, the byte offset of the blocks, and if they
   are audio blocks, construct a crc32 mapping of some given beginning offset of the audio
   data ... this is intended for stitching.
   """
@@ -196,6 +202,7 @@ def audio_crc(fname, blockcount = -1):
         # Rest of the header
         throw_away = f.read(4)
 
+        #
         # Quoting http://id3.org/d3v2.3.0
         #
         # The ID3v2 tag size is encoded with four bytes where the most significant bit 
@@ -213,7 +220,7 @@ def audio_crc(fname, blockcount = -1):
         f.read(126)
 
       elif len(header) == 1:
-        # we are at the end of file, but let's just continue.
+        # We are at the end of file, but let's just continue.
         next
 
       else:
@@ -227,14 +234,22 @@ def audio_crc(fname, blockcount = -1):
   f.close()
   return [frame_sig, start_byte]
 
+
 def audio_time(fname):
+  """
+  Determines the duration of an audio file by doing some estimates based on the offsets
+
+  Returns the audio time in seconds
+  """
+
   crc32, offset = audio_crc(fname, 2)
-  # in the fast method we get the first two frames, find out the offset
+  # In this fast method we get the first two frames, find out the offset
   # difference between them, take the length of the file, divide it by that
   # and then presume that will be the framecount
   frame_size = offset[1] - offset[0]
   frame_count_est = os.path.getsize(fname) / frame_size
   return FRAME_LENGTH * frame_count_est
+
 
 def audio_stitch_and_slice(file_list, start_minute, duration_minute):
   """
@@ -403,36 +418,23 @@ def audio_stitch(file_list, force_stitch = False):
 ## Time related functions
 ##
 def time_to_minute(unix_time):
+  """ Takes a given unix time and finds the week minute corresponding to it. """
   if type(unix_time) is int:
     unix_time = datetime.fromtimestamp(unix_time)
 
   return unix_time.weekday() * (24 * 60) + unix_time.hour * 60 + unix_time.minute
 
-
-# from http://code.activestate.com/recipes/521915-start-date-and-end-date-of-given-week/
-def time_week_to_iso(year, week):
-  d = date(year, 1, 1)
-
-  if d.weekday() > 3:
-    d = d + timedelta(7 - d.weekday())
-
-  else:
-    d = d - timedelta(d.weekday())
-
-  dlt = timedelta(days = (week - 1) * 7)
-  return d + dlt
-
-
 def time_sec_now():
+  """ Returns the unix time with respect to the timezone of the station being recorded """
   return int((datetime.utcnow() + timedelta(minutes = time_get_offset())).strftime('%s'))
 
 def time_minute_now():
-  return time_to_minute(datetime.utcnow())
-
+  """ Returns the mod 10080 week minute with respect to the timezone of the station being recorded """
+  return time_to_minute(datetime.utcnow() + timedelta(minutes = time_get_offset()))
 
 def time_to_utc(day_str, hour):
   """
-  Take the nominal weekday (sun, mon, tue, wed, thu, fri, sat)
+  Takes the nominal weekday (sun, mon, tue, wed, thu, fri, sat)
   and a 12 hour time hh:mm [ap]m and converts it to our absolute units
   with respect to the timestamp in the configuration file
   """
@@ -472,12 +474,12 @@ def time_to_utc(day_str, hour):
   return utc
 
 
-
-
 def time_get_offset(force = False):
   """
   Contacts the goog, giving a longitude and lattitude and gets the time 
   offset with regard to the UTC.  There's a sqlite cache entry for the offset.
+
+  Returns an int second offset
   """
 
   offset = db_get('offset', expiry = 60 * 60 * 24)
@@ -524,8 +526,10 @@ def db_incr(key, value = 1):
 
 
 def db_set(key, value):
-  """
-  Sets (or replaces) a given key to a specific value.
+  """ 
+  Sets (or replaces) a given key to a specific value.  
+
+  Returns the value that was sent
   """
 
   db = db_connect()
@@ -548,6 +552,7 @@ def db_get(key, expiry=0):
   """
   Retrieves a value from the database, tentative on the expiry
   """
+
   db = db_connect()
 
   if expiry > 0:
@@ -567,7 +572,10 @@ def db_connect():
   """
   a "singleton pattern" or some other fancy $10-world style of maintaining 
   the database connection throughout the execution of the script.
+
+  Returns the database instance
   """
+
   global g_db
 
   if 'conn' not in g_db:
@@ -618,8 +626,9 @@ def db_register_intent(minute, duration):
 ##
 def file_prune():
   """
-  Get rid of files older than archivedays
+  Gets rid of files older than archivedays
   """
+
   global g_config
 
   db = db_connect()
@@ -627,14 +636,12 @@ def file_prune():
   duration = int(g_config['archivedays']) * 60 * 60 * 24
   cutoff = time.time() - duration
 
-  # Dumping old streams
+  # Dump old streams stitches and slices
   count = 0
-  for f in os.listdir('.'): 
-    entry = g_config['storage'] + f
-  
-    if os.path.isfile(entry) and os.path.getctime(entry) < cutoff:
+  for fname in glob('*/*.mp3'):
+    if os.path.isfile(fname) and os.path.getctime(fname) < cutoff:
       logging.debug("Prune: %s" % entry)
-      os.unlink(entry)
+      os.unlink(fname)
       count += 1 
 
   logging.info("Found %d files older than %s days." % (count, g_config['archivedays']))
@@ -658,7 +665,7 @@ def file_find_streams(start, duration):
   file_list = glob('streams/*.mp3')
 
   # Sorting by date (see http://stackoverflow.com/questions/23430395/glob-search-files-in-date-order)
-  file_list.sort(key=os.path.getmtime)
+  file_list.sort(key = os.path.getmtime)
   stitch_list = []
 
   for filename in file_list:
@@ -733,25 +740,7 @@ def server_generate_xml(showname, feed_list, duration, start_minute):
   }.items():
     ET.SubElement(channel, k).text = v
 
-  # In our feed, we construct theoretical files which will be stitched and sliced 
-  # together on-demand (lazy) if the user requests it.
   for feed in feed_list:
-    # This is our file ... we have a week number, which is what we need.
-    # By the existence of this feed, we are essentially saying that we have
-    # a specific week at a specific minute ... so we construct that as the 
-    # lazy-file name
-
-    # Start with the start_date of the feed
-    #start_of_week = time_week_to_iso(feed['start_date'].year, feed['week'])
-    
-    # now we add the minute offset to get a datetime version 
-    #dt_start_of_stream = start_of_week + timedelta(minutes = start_minute)
-
-    # and then make a unix time stamp from it. This will be the numeric on the file that
-    # are committing to making
-    #str_start_of_stream = dt_start_of_stream.strftime('%s')
-
-    #file_name = "%s-%s_%d.mp3" % (callsign, str_start_of_stream, duration)
     file_name = feed['name']
     link = "%s%s" % (base_url, file_name)
 
@@ -812,7 +801,7 @@ def server_manager(config):
 
     # If the file doesn't exist, then we need to slice it and create it based on our query.
     if not os.path.isfile(fname):
-      # 1. Find the closest timestamp
+      # Find the closest timestamp
       # Even though the file doesn't exist, we'll still get
       # a partial return on getting it's "info"
       info = audio_stream_info(fname)
@@ -917,11 +906,11 @@ def stream_should_be_recording():
 
   current_minute = time_minute_now()
 
-  intent_count = db['c'].execute(
-    """select count(*) from intents where 
-        start >= ? and 
-        end <= ? and 
-        accessed_at > datetime('now','-%s days')
+  intent_count = db['c'].execute("""
+    select count(*) from intents where 
+      start >= ? and 
+      end <= ? and 
+      accessed_at > datetime('now','-%s days')
     """ % g_config['expireafter'], 
     (current_minute, current_minute)
   ).fetchone()[0]
@@ -931,8 +920,10 @@ def stream_should_be_recording():
 
 def stream_download(callsign, url, my_pid, fname):
   """ 
-  The curl interfacing that downloads the stream to disk
+  Curl interfacing which downloads the stream to disk. 
+  Follows redirects and parses out basic m3u
   """
+
   change_proc_name("%s-download" % callsign)
 
   nl = {'stream': False}
@@ -982,7 +973,7 @@ def stream_download(callsign, url, my_pid, fname):
 
 def stream_manager():
   """
-  The manager process that makes sure that the
+  Manager process which makes sure that the
   streams are running appropriately
   """
   global g_queue, g_config
@@ -1013,6 +1004,8 @@ def stream_manager():
 
   # A wrapper function to start a donwnload process
   def download_start(fname):
+    """ Starts a process that manages the downloading of a stream.  """
+
     global g_pid
     g_pid += 1
     logging.info("Starting cascaded downloader #%d. Next up in %ds" % (g_pid, cascade_margin))
@@ -1123,17 +1116,15 @@ def stream_manager():
     time.sleep(cycle_time)
 
 
-def read_config():
+def read_config(config):
+  """
+  Reads a configuration file, currently documented at https://github.com/kristopolous/DRR/wiki/Join-the-Federation
+  """
   global g_config
 
-  parser = argparse.ArgumentParser()
-  parser.add_argument("-c", "--config", default="./indy_config.txt", help="Configuration file (default ./indy_config.txt)")
-  parser.add_argument('--version', action='version', version='indycast %s :: July 2015' % __version__)
-  args = parser.parse_args()
-
   Config = ConfigParser.ConfigParser()
-  Config.read(args.config)
-  g_config = ConfigSectionMap('Main', Config)
+  Config.read(config)
+  g_config = config_section_map('Main', Config)
   
   defaults = {
     # The log level to be put into the indycast.log file.
@@ -1165,7 +1156,7 @@ def read_config():
     'cascadetime': 60 * 15
   }
 
-  for k,v in defaults.items():
+  for k, v in defaults.items():
     if k not in g_config:
       g_config[k] = v
 
@@ -1181,7 +1172,7 @@ def read_config():
       if not os.path.isdir(g_config['storage']):
         os.mkdir(g_config['storage'])
 
-  # We go to the callsign level in order to store multiple station feeds on a single
+  # Go to the callsign level in order to store multiple station feeds on a single
   # server in a single parent directory without forcing the user to decide what goes
   # where.
   g_config['storage'] += '/%s/' % g_config['callsign']
@@ -1235,6 +1226,11 @@ if __name__ == "__main__":
     server_manager(g_config)
 
   else: 
-    read_config()      
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-c", "--config", default="./indy_config.txt", help="Configuration file (default ./indy_config.txt)")
+    parser.add_argument('--version', action='version', version='indycast %s :: July 2015' % __version__)
+    args = parser.parse_args()
+    read_config(args.config)      
+
     change_proc_name("%s-manager" % g_config['callsign'])
     stream_manager()
