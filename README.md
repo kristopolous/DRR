@@ -16,12 +16,3 @@ You can help by
 Thanks for your interest!
 
 
-## Notes
-
-Here's just some notes for my own purpose:
-
- * add_station 
- * find_station 
- * generate_rss 
- * manage_download 
- * stitch_audio
