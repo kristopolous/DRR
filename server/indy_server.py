@@ -248,7 +248,6 @@ def audio_stitch_and_slice(file_list, start_minute, duration_minute):
   # make sure that we don't exceed the length of the file.
   duration_slice = min(duration_minute, start_slice + info['duration_sec'] / 60.0)
 
-  print stitched_name, start_slice, start_minute, duration_slice, duration_minute, info
   sliced_name = audio_slice(stitched_name, start_minute = start_slice, duration_minute = duration_slice)
 
   return sliced_name
@@ -263,13 +262,13 @@ def audio_serialize(file_list, duration_min):
   first_file = file_list[0][0]
 
   # Our file will be the first one_duration.mp3
-  name = "stitches/%s_%d.mp3" % (first_file[first_file.index('/') + 1:first_file.rindex('.')], duration_min)
+  name_out = "stitches/%s_%d.mp3" % (first_file[first_file.index('/') + 1:first_file.rindex('.')], duration_min)
 
   # If the file exists, then we just return it
-  if os.path.isfile(name):
-    return name
+  if os.path.isfile(name_out):
+    return name_out
 
-  out = open(name, 'wb+')
+  out = open(name_out, 'wb+')
 
   for name, start, end in file_list:
     f = open(name, 'rb')
@@ -286,7 +285,7 @@ def audio_serialize(file_list, duration_min):
 
   out.close()
 
-  return name
+  return name_out
 
 
 #
@@ -362,7 +361,7 @@ def audio_stitch(file_list, force_stitch = False):
       for i in xrange(5, 1, -1):
         if second['crc32'][pos - i + 2] != first['crc32'][-i]:
           isFound = False
-          print "Indices do not match between %s and %s" % (first['name'], second['name'])
+          logging.warn("Indices do not match between %s and %s" % (first['name'], second['name']))
           break
 
     except: 
@@ -381,7 +380,8 @@ def audio_stitch(file_list, force_stitch = False):
   # Since we end at the last block, we can safely pass in a file1_stop of 0
   if len(args) > 1:
     # And then we take the offset in the second['crc32'] where things began
-    return audio_serialize(args, duration_min = int(duration / 60))
+    fname = audio_serialize(args, duration_min = int(duration / 60))
+    return fname
 
 
 ##
@@ -644,13 +644,11 @@ def file_find_streams(start, duration):
     #
     # If we started recording before this is fine as long as we ended recording after our start
     if start == -1 or (i['start_minute'] < start and i['end_minute'] > start) or (i['start_minute'] > start and i['start_minute'] < end):
-      print start, filename
       if start == -1:
         fname = filename
 
       else:
         fname = audio_stitch_and_slice(stitch_list, start, duration)
-        print fname
         stitch_list = [filename]
         next_valid_start_minute = (start + duration) % 10080
         current_week = i['week']
@@ -660,7 +658,6 @@ def file_find_streams(start, duration):
 
   if start != -1:
     fname = audio_stitch_and_slice(stitch_list, start, duration)
-    print fname
     if fname:
       stream_list.append(audio_stream_info(fname))
 
@@ -913,7 +910,6 @@ def stream_download(callsign, url, my_pid, fname):
   nl = {'stream': False}
 
   def dl_stop(signal, frame):
-    print fname
     sys.exit(0)
 
   def cback(data): 
