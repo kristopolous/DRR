@@ -1,4 +1,8 @@
 <title>admin | indycast</title>
+<style>
+  table { background: black;border-spacing: 1px}
+  td,th { padding: 0.25em;border-spacing: 1px;background:white}
+</style>
 <table>
 <?php
 include_once('db.php');
@@ -22,3 +26,4 @@ while($row = prune($res)) {
 ?>
 </tbody>
 </table>
+<a href="modify.php">Add Station</a>
