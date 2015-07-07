@@ -44,7 +44,6 @@ g_start_time = time.time()
 g_queue = Queue()
 g_config = {}
 g_db = {}
-g_streams = []
 g_pid = 0
 
 # From https://wiki.python.org/moin/ConfigParserExamples
@@ -164,7 +163,19 @@ def audio_time_fast(fname):
 # ajacent files if necessary and serialize them accordingly, and then return the
 # file name of an audio slice that is the combination of them.
 #
-def audio_chain(start_file, start_time, duration, dry_run = False):
+def audio_stitch_and_slice(file_list, start_minute, duration_minute)
+  # We presume that there is a file list we need to make 
+  stitched_name = audio_stitch(file_list)
+
+  if stitched:
+    info = audio_stream_info(stitched_name)
+
+  else
+    logging.warn("Unable to stitch file list")
+    return -1
+
+  audio_slice(stitched_name, start_minute = max(info['start_minute'] - start_minute, 0), duration_minute = duration)
+
   return True
 
 
@@ -173,9 +184,9 @@ def audio_chain(start_file, start_time, duration, dry_run = False):
 # The tuple format is (fila_name, byte_start, byte_end) where byte_end == -1 means 
 # "the whole file".
 #
-def audio_serialize(file_list, duration):
-  # Our file will be the first one_(second duration).mp3
-  name = "stitches/%s_%d.mp3" % (file_list[0][:-4], duration)
+def audio_serialize(file_list, duration_min):
+  # Our file will be the first one_duration.mp3
+  name = "stitches/%s_%d.mp3" % (file_list[0][:-4], duration_min)
 
   # If the file exists, then we just return it
   if os.path.isfile(name):
@@ -205,8 +216,15 @@ def audio_serialize(file_list, duration):
 # Take some mp3 file name_in and then create a new one based on the start and end times 
 # by finding the closest frames and just doing an extraction.
 #
-def audio_slice(name_in, start, end):
-  name_out = "slices/%s_%d.mp3" % (name_in[:name_in.rindex('_')], end - start)
+def audio_slice(name_in, start_minute, end_minute = -1, duration_minute = -1):
+  if duration_minue == -1:
+    duration_minute = end_minute - start_minute
+  else:
+    end_minute = start_minute + duration_minute
+
+  name_out = "slices/%s_%d.mp3" % (name_in[:name_in.rindex('_')], duration_minute)
+  start_sec = start_minute * 60.0
+  end_sec = end_minute * 60.0
 
   if os.path.isfile(name_out):
     return name_out
@@ -216,8 +234,8 @@ def audio_slice(name_in, start, end):
   frame_length = (1152.0 / 44100)
   crc32, offset = audio_crc(name_in)
 
-  frame_start = int(math.floor(start / frame_length))
-  frame_end = int(math.ceil(end / frame_length))
+  frame_start = int(math.floor(start_sec / frame_length))
+  frame_end = int(math.ceil(end_sec / frame_length))
 
   out = open(name_out, 'wb+')
   fin = open(name_in, 'rb')
@@ -282,7 +300,7 @@ def audio_stitch(file_list):
   # Since we end at the last block, we can safely pass in a file1_stop of 0
   if len(args) > 1:
     # And then we take the offset in the second['crc32'] where things began
-    return audio_serialize(args, duration = duration)
+    return audio_serialize(args, duration_min = int(duration / 60))
 
 
 # Sets a more human-readable process name for the various parts of the system to be viewed in top/htop
@@ -315,7 +333,7 @@ def shutdown(signal = 15, frame = False):
 # This determines the date the thing starts,
 # the minute time it starts, and the duration
 def audio_stream_info(fname):
-  ts_re = re.compile('(\d*).mp3')
+  ts_re = re.compile('-(\d*)[.|_]')
   ts = ts_re.findall(fname)
 
   duration = 0
@@ -331,7 +349,11 @@ def audio_stream_info(fname):
     duration = audio_time_fast(fname) 
 
   except:
-    logging.warning("Unable to read file %s as an mp3 file" % filename)
+    # If we can't find a duration then we try to see if it's in the file name
+    ts_re_duration = re.compile('_(\d*).mp3')
+    ts = ts_re_duration.findall(fname)
+    if ts:
+      duration = int(ts[0]) * 60
 
   return {
     # The week number 
@@ -582,7 +604,6 @@ def prune():
 # partial shows results.
 #
 def find_streams(start, duration):
-  global g_streams
   stream_list = []
   
   end = (start + duration) % 10080
@@ -595,22 +616,32 @@ def find_streams(start, duration):
   file_list = glob('streams/*.mp3')
   # Sorting by date (see http://stackoverflow.com/questions/23430395/glob-search-files-in-date-order)
   file_list.sort(key=os.path.getmtime)
+  stitch_list = []
 
   for filename in file_list:
     i = audio_stream_info(filename)
 
     if i['start_minute'] < next_valid_start_minute and i['week'] == current_week:
+      stitch_list.append(filename)
       continue
 
     # We are only looking for starting edges of the stream
     #
     # If we started recording before this is fine as long as we ended recording after our start
     if start == -1 or (i['start_minute'] < start and i['end_minute'] > start) or (i['start_minute'] > start and i['start_minute'] < end):
+      fname = audio_stitch_and_slice(stitch_list, start, duration)
+
+      stitch_list = [filename]
       # TODO: May need to % 10080 this
       next_valid_start_minute = (start + duration)
       current_week = i['week']
-      stream_list.append(i)
-      next
+
+      if fname:
+        stream_list.append(fname)
+
+  fname = audio_stitch_and_slice(stitch_list, start, duration)
+  if fname:
+    stream_list.append(fname)
 
   return stream_list
 
@@ -676,7 +707,7 @@ def generate_xml(showname, feed_list, duration, start_minute):
     str_start_of_stream = dt_start_of_stream.strftime('%s')
 
     file_name = "%s-%s_%d.mp3" % (callsign, str_start_of_stream, duration)
-    link = "%sstream/%s" % (base_url, file_name)
+    link = "%sslices/%s" % (base_url, file_name)
 
     item = ET.SubElement(channel, 'item')
 
@@ -728,11 +759,21 @@ def server(config):
   # previously generated it) then we can trivially send it.  Otherwise we need
   # to create it.
   #
-  @app.route('/stream/<path:path>')
+  @app.route('/slices/<path:path>')
   def send_stream(path):
+    fname = config['storage'] + path
     # If the file doesn't exist, then we need to slice it and create it based on our query.
-    if not os.path.isfile(config['storage'] + path):
-      # TODO: Find the closest timestamp
+    if not os.path.isfile(fname):
+      # 1. Find the closest timestamp
+      # Even though the file doesn't exist, we'll still get
+      # a partial return on getting it's "info"
+      info = audio_stream_info(fname)
+
+      # Now we see what our start stream should be
+      start_stream = find_streams(info['start_minute'], info['duration_sec'] / 60)
+      print start_stream
+      print info
+
       # slice if needed
       # add up the timestamp
       return True
