@@ -167,7 +167,6 @@ def audio_stitch_and_slice(file_list, start_minute, duration_minute):
   if len(file_list) == 0:
     return False
 
-  print file_list
   # We presume that there is a file list we need to make 
   stitched_name = audio_stitch(file_list, force_stitch = True)
 
@@ -184,11 +183,10 @@ def audio_stitch_and_slice(file_list, start_minute, duration_minute):
 
   # Now we need to take the duration of the stream we want, in minutes, and then
   # make sure that we don't exceed the length of the file.
-  duration_slice =  min(duration_minute, start_slice + info['duration_sec'] / 60.0)
+  duration_slice = min(duration_minute, start_slice + info['duration_sec'] / 60.0)
 
   sliced_name = audio_slice(stitched_name, start_minute = start_slice, duration_minute = duration_slice)
 
-  print sliced_name
   return sliced_name
 
 
@@ -199,10 +197,9 @@ def audio_stitch_and_slice(file_list, start_minute, duration_minute):
 #
 def audio_serialize(file_list, duration_min):
   first_file = file_list[0][0]
-  print first_file, file_list
+
   # Our file will be the first one_duration.mp3
   name = "stitches/%s_%d.mp3" % (first_file[first_file.index('/') + 1:first_file.rindex('.')], duration_min)
-  print "serialize", name, first_file, file_list
 
   # If the file exists, then we just return it
   if os.path.isfile(name):
@@ -779,7 +776,9 @@ def server(config):
   #
   @app.route('/slices/<path:path>')
   def send_stream(path):
-    fname = config['storage'] + path
+    base_dir = config['storage'] + 'slices/'
+    fname = base_dir + path
+
     # If the file doesn't exist, then we need to slice it and create it based on our query.
     if not os.path.isfile(fname):
       # 1. Find the closest timestamp
@@ -796,7 +795,7 @@ def server(config):
       # add up the timestamp
       return True
 
-    return flask.send_from_directory(config['storage'], path)
+    return flask.send_from_directory(base_dir, path)
 
   @app.route('/heartbeat')
   def heartbeat():
