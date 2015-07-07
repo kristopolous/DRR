@@ -46,7 +46,13 @@ g_config = {}
 g_db = {}
 g_pid = 0
 __version__ = "0.1"
+
+# Most common frame-length ... in practice, I haven't 
+# seen other values in the real world
 FRAME_LENGTH = (1152.0 / 44100)
+
+# Everything is presumed to be weekly and on the minute
+# scale. We use this to do wrap around when necessary
 MINUTES_PER_WEEK = 10080
 
 # From https://wiki.python.org/moin/ConfigParserExamples
@@ -94,9 +100,11 @@ def shutdown(signal = 15, frame = False):
 ##
 ## Audio related functions
 ##
-# This determines the date the thing starts,
-# the minute time it starts, and the duration
 def audio_stream_info(fname):
+  """
+  determines the date the thing starts,
+  the minute time it starts, and the duration
+  """
   ts_re = re.compile('-(\d*)[.|_]')
   ts = ts_re.findall(fname)
 
@@ -225,8 +233,8 @@ def audio_time_fast(fname):
   return FRAME_LENGTH * frame_count_est
 
 #
-# Given a start_file in a directory and a duration, this function will seek out
-# ajacent files if necessary and serialize them accordingly, and then return the
+# Given a file_list in a directory and a duration, this function will seek out
+# adjacent files if necessary and serialize them accordingly, and then return the
 # file name of an audio slice that is the combination of them.
 #
 def audio_stitch_and_slice(file_list, start_minute, duration_minute):
@@ -256,12 +264,12 @@ def audio_stitch_and_slice(file_list, start_minute, duration_minute):
   return sliced_name
 
 
-#
-# audio_serialize takes a list of ordinal tuples and makes one larger mp3 out of it. 
-# The tuple format is (fila_name, byte_start, byte_end) where byte_end == -1 means 
-# "the whole file".
-#
 def audio_serialize(file_list, duration_min):
+  """
+  Takes a list of ordinal tuples and makes one larger mp3 out of it. 
+  :param file_list: The tuple format is (file_name, byte_start, byte_end) where byte_end == -1 means "the whole file".
+  """
+
   first_file = file_list[0][0]
 
   # Our file will be the first one_duration.mp3
@@ -291,11 +299,13 @@ def audio_serialize(file_list, duration_min):
   return name_out
 
 
-#
-# Take some mp3 file name_in and then create a new one based on the start and end times 
-# by finding the closest frames and just doing an extraction.
-#
+
 def audio_slice(name_in, start_minute, end_minute = -1, duration_minute = -1):
+  """
+  Take some mp3 file name_in and then create a new one based on the start and end times 
+  by finding the closest frames and just doing an extraction.
+  """
+
   if duration_minute == -1:
     duration_minute = end_minute - start_minute
 
@@ -311,8 +321,6 @@ def audio_slice(name_in, start_minute, end_minute = -1, duration_minute = -1):
   if os.path.isfile(name_out):
     return name_out
 
-  # Most common frame-length ... in practice, I haven't 
-  # seen other values in the real world
   crc32, offset = audio_crc(name_in)
 
   frame_start = max(int(math.floor(start_sec / FRAME_LENGTH)), 0)
@@ -330,11 +338,13 @@ def audio_slice(name_in, start_minute, end_minute = -1, duration_minute = -1):
   return name_out
 
 
-#
-# audio_stitch takes a list of files and then attempt to seamlessly stitch them 
-# together by looking at their crc32 checksums of the data payload in the blocks.
-#
+
 def audio_stitch(file_list, force_stitch = False):
+  """
+  Take a list of files and then attempt to seamlessly stitch them 
+  together by looking at their crc32 checksums of the data payload in the blocks.
+  """
+
   first = {'name': file_list[0]}
   duration = 0
 
@@ -416,12 +426,13 @@ def time_minute_now():
   return time_to_minute(datetime.utcnow())
 
 
-#
-# time_to_utc takes the nominal weekday (sun, mon, tue, wed, thu, fri, sat)
-# and a 12 hour time hh:mm [ap]m and converts it to our absolute units
-# with respect to the timestamp in the configuration file
-#
 def time_to_utc(day_str, hour):
+  """
+  Take the nominal weekday (sun, mon, tue, wed, thu, fri, sat)
+  and a 12 hour time hh:mm [ap]m and converts it to our absolute units
+  with respect to the timestamp in the configuration file
+  """
+
   global g_config
 
   try:
@@ -457,11 +468,13 @@ def time_to_utc(day_str, hour):
   return utc
 
 
-#
-# time_get_offset contacts the goog, giving a longitude and lattitude and gets the time 
-# offset with regard to the UTC.  There's a sqlite cache entry for the offset.
-#
+
+
 def time_get_offset(force = False):
+  """
+  contacts the goog, giving a longitude and lattitude and gets the time 
+  offset with regard to the UTC.  There's a sqlite cache entry for the offset.
+  """
 
   offset = db_get('offset', expiry = 60 * 60 * 24)
   if not offset or force:
@@ -490,11 +503,13 @@ def time_get_offset(force = False):
 ## Database Related functions
 ##
 
-#
-# db_incr increments some key in the database by some value.  It is used
-# to maintain statistical counters.
-#
+
 def db_incr(key, value = 1):
+  """
+  increments some key in the database by some value.  It is used
+  to maintain statistical counters.
+  """
+
   db = db_connect()
 
   try:
@@ -506,8 +521,11 @@ def db_incr(key, value = 1):
   db['conn'].commit()
 
 
-# db_set sets (or replaces) a given key to a specific value.
 def db_set(key, value):
+  """
+  sets (or replaces) a given key to a specific value.
+  """
+
   db = db_connect()
   
   # From http://stackoverflow.com/questions/418898/sqlite-upsert-not-insert-or-replace
