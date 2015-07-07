@@ -871,7 +871,7 @@ def server_manager(config):
 
     start = time.time()
     try:
-      app.run(port = int(config['port']))
+      app.run(port = int(config['port']), host = '0.0.0.0')
 
     except:
       if time.time() - start < 5:
