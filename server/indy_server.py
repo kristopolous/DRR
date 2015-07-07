@@ -640,20 +640,22 @@ def file_find_streams(start, duration):
     #
     # If we started recording before this is fine as long as we ended recording after our start
     if start == -1 or (i['start_minute'] < start and i['end_minute'] > start) or (i['start_minute'] > start and i['start_minute'] < end):
-      fname = audio_stitch_and_slice(stitch_list, start, duration)
-      print fname
+      if start == -1:
+        fname = filename
 
-      stitch_list = [filename]
-      # TODO: May need to % 10080 this
-      next_valid_start_minute = (start + duration)
-      current_week = i['week']
+      else:
+        fname = audio_stitch_and_slice(stitch_list, start, duration)
+        stitch_list = [filename]
+        next_valid_start_minute = (start + duration) % 10080
+        current_week = i['week']
 
       if fname:
         stream_list.append(audio_stream_info(fname))
 
-  fname = audio_stitch_and_slice(stitch_list, start, duration)
-  if fname:
-    stream_list.append(audio_stream_info(fname))
+  if start == -1:
+    fname = audio_stitch_and_slice(stitch_list, start, duration)
+    if fname:
+      stream_list.append(audio_stream_info(fname))
 
   return stream_list
 
