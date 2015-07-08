@@ -9,7 +9,16 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $_POST['active'] = 1;
     $res = add_station($_POST);
   }
-  header('Location: ' . dirname($_SERVER['REQUEST_URI']) . '/admin.php');
+
+  $dir = dirname($_SERVER['REQUEST_URI']);
+
+  if (!empty($dir) && strlen($dir) > 2) {
+    $dir .= '/';
+  } else {
+    $dir = 'http://indycast.net/';
+  }
+
+  header('Location: ' . $dir . 'admin.php');
   exit(0);
 }
 

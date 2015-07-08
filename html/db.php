@@ -17,6 +17,7 @@ $schema = [
 ];
 
 function is_read_only() {
+  return false;
   return ($_SERVER['REMOTE_ADDR'] !== '::1');
 }
 
