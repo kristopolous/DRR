@@ -3184,3 +3184,24 @@ form#donate {
 #podcast-url {
   text-transform: none;
 }
+#description h2 {
+  text-align: left;
+  margin-bottom: 0.25em;
+  color: rgba(255,255,255,0.9);
+  border-bottom: 1px solid rgba(255,255,255,0.7);
+}
+#description p {
+  margin: 0.25em 0;
+}
+#description {
+  margin: 0.75em;
+  z-index: 100;
+  padding: 0.35em 0.75em;
+  position: absolute;
+  display: block;
+  right: 0;
+  border-radius: 4px;
+  color: white;
+  display: none;
+  background: rgba(0,0,0,0.55);
+}

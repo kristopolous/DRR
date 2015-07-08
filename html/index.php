@@ -1,3 +1,6 @@
+<?php
+include_once('db.php');
+?>
 <!DOCTYPE HTML>
 <html>
 	<head>
@@ -28,18 +31,15 @@
 
 				<div class="box alt container">
 					<section class="feature left">
-						<a href="#" class="image icon fa-signal"><img src="images/pic01.jpg" alt="" /></a>
+						<a href="#" class="image icon fa-signal"><img src="images/pic01.jpg" alt="" /><div id="description"></div></a>
 						<div class="content">
 							<h3>Choose an indy station</h3>
               <ul class="radio-group group" id="station">
-                <li><a class="button">KXLU</a></li>
-                <li><a class="button">KDVS</a></li>
-                <li><a class="button">KPCC</a></li>
-                <li><a class="button">WXYC</a></li>
-                <li><a class="button">WCBN</a></li>
-                <li><a class="button">WFMU</a></li>
-                <li><a class="button">KZSU</a></li>
-                <li><a class="button">KVRX</a></li>
+<?php
+  foreach(active_stations() as $station) {
+    echo '<li><a data="' . $station['description'] . '" class="button">' . strtoupper($station['callsign']) . '</a></li> ';
+  }
+?>
               </ul>
               <a href="#volunteer">Volunteer to add a station!</a>
 						</div>
@@ -180,16 +180,6 @@
 
       <script>
       var 
-        portMap = {
-          kxlu: 8890,
-          kdvs: 9030,
-          kpcc: 8930,
-          wxyc: 8930,
-          wcbn: 8830,
-          wfmu: 9110,
-          kzsu: 9010,
-          kvrx: 9170
-        },
         ev = EvDa({start: '', name: '', station: ''}),
         time_re = /^\s*(1[0-2]|[1-9])(:[0-5][0-9])?\s*[ap]m\s*$/i;
 
@@ -228,7 +218,19 @@
         cb(res);
       });
 
+      function htmldo(what) {
+        // hyperlinking
+        what = what.replace(/[a-z]+:\/\/[^\s^<]+/g, '<a href="$&" target=_blank>$&</a>');
+        // paragrapherizing
+        what = what.replace(/\n/g, '</p><p>');
+        // finalerizing
+        return '<p>' + what + '</p>';
+      }
+
       $(function() {
+        $(".radio-group a").hover(function(){
+          $("#description").html("<h2>" + this.innerHTML + "</h2>" + htmldo(this.getAttribute('data'))).show();
+        });
         $(".group a").click(function(){
           var node = $(this).parentsUntil("div").last();
           ev(node[0].id, this.getAttribute('data') || this.innerHTML);
