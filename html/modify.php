@@ -37,11 +37,18 @@ label { width: 10em;display: inline-block;}
     foreach($schema as $key => $value) {
       if($value == 'TEXT') {
         echo "<div><label for='$key'>$key</label>";
-        echo "<input 
-          value='" . (isset($station[$key]) ? $station[$key] : '') . "'
-          type='text' 
-          id='$key' name='$key' />
-         </div>";
+        if($key == 'description') {
+          echo "<textarea
+            type='text' 
+            id='$key' name='$key' />" . (isset($station[$key]) ? $station[$key] : '') . "</textarea>
+           </div>";
+        } else {
+          echo "<input 
+            value='" . (isset($station[$key]) ? $station[$key] : '') . "'
+            type='text' 
+            id='$key' name='$key' />
+           </div>";
+        }
       }
     }
   ?>

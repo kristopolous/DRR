@@ -22,7 +22,9 @@ function is_read_only() {
 
 function db_all($what) {
   $res = [];
-  while($res[] = prune($what));
+  while($item = prune($what)) {
+    $res[] = $item;
+  }
   return $res;
 }
 
@@ -68,7 +70,7 @@ function sql_kv($hash, $operator = '=', $quotes = "'") {
 // active stations are things we've seen in the past few days
 function active_stations() {
   global $db;
-  return db_all($db->query('select * from stations where active = 1'));
+  return db_all($db->query('select * from stations where active = 1 order by callsign asc'));
 }
 
 function get_station($dirty) {
