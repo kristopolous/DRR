@@ -40,6 +40,7 @@ form { display: inline-block }
 form > * { padding: 0.5em }
 form > :nth-child(2n) { background: #ccc }
 label { width: 10em;display: inline-block;}
+button { padding: 0}
 </style>
 <form method="post">
   <?php
@@ -48,6 +49,8 @@ label { width: 10em;display: inline-block;}
         echo "<div><label for='$key'>$key</label>";
         if($key == 'description') {
           echo "<textarea
+            rows='5'
+            cols='60'
             type='text' 
             id='$key' name='$key' />" . (isset($station[$key]) ? $station[$key] : '') . "</textarea>
            </div>";
@@ -65,10 +68,9 @@ label { width: 10em;display: inline-block;}
   <a href="admin.php">cancel</a>
 </form>
 <?php if (!empty($station)) { ?>
-<br/>
 <form method="post">
   <input type='hidden' name='id' value='<?= $station['id'] ?>'>
   <input type='hidden' value='delete' name='_action'>
-  <input type='submit' value='Delete <?= $station['callsign'] ?>'>
+  <button>Delete <?= $station['callsign'] ?></button>
 </form>
 <?php } ?>
