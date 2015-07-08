@@ -37,7 +37,7 @@ include_once('db.php');
               <ul class="radio-group group" id="station">
 <?php
   foreach(active_stations() as $station) {
-    echo '<li><a data="' . $station['description'] . '" class="button">' . strtoupper($station['callsign']) . '</a></li> ';
+    echo '<li><a desc="' . $station['description'] . '" class="button">' . strtoupper($station['callsign']) . '</a></li> ';
   }
 ?>
               </ul>
@@ -75,6 +75,7 @@ include_once('db.php');
 							<h3>Give it a name</h3>
               <label for="name">Show Name</label>
               <input class="text" type="text" name="name" id="name" value="" placeholder="ex. Alien Air Music" />
+            </div>
 					</section>
 				</div>
 
@@ -221,15 +222,17 @@ include_once('db.php');
       function htmldo(what) {
         // hyperlinking
         what = what.replace(/[a-z]+:\/\/[^\s^<]+/g, '<a href="$&" target=_blank>$&</a>');
+
         // paragrapherizing
         what = what.replace(/\n/g, '</p><p>');
+
         // finalerizing
         return '<p>' + what + '</p>';
       }
 
       $(function() {
         $(".radio-group a").hover(function(){
-          $("#description").html("<h2>" + this.innerHTML + "</h2>" + htmldo(this.getAttribute('data'))).show();
+          $("#description").html("<h2>" + this.innerHTML + "</h2>" + htmldo(this.getAttribute('desc'))).show();
         });
         $(".group a").click(function(){
           var node = $(this).parentsUntil("div").last();

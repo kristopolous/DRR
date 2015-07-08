@@ -3191,7 +3191,8 @@ form#donate {
   border-bottom: 1px solid rgba(255,255,255,0.7);
 }
 #description p {
-  margin: 0.25em 0;
+  margin: 0.45em 0;
+  line-height: 1.35em;
 }
 #description {
   margin: 0.75em;
@@ -3204,4 +3205,9 @@ form#donate {
   color: white;
   display: none;
   background: rgba(0,0,0,0.55);
+}
+@media screen and (max-width: 1280px) {
+  #description {
+    bottom: 0;
+  }
 }
