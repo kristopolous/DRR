@@ -804,7 +804,7 @@ def server_generate_xml(showname, feed_list, duration, start_minute, weekday, st
     'title': "%s from %s" % (showname, callsign.upper()),
     'link': base_url,
     'copyright': callsign,
-    'description': "%s recorded every %s at %s. Brought to you through http://indycast.net" % (showname, fullday, start),
+    'description': "The show %s is recorded every %s at %s on %s. Saved and delivered when you want it, through a volunteer network at http://indycast.net." % (showname, fullday, callsign.upper(), start),
     'language': 'en'
   }.items():
     ET.SubElement(channel, k).text = v
@@ -820,10 +820,10 @@ def server_generate_xml(showname, feed_list, duration, start_minute, weekday, st
       '{%s}author' % nsmap['itunes']: callsign,
       '{%s}duration' % nsmap['itunes']: str(duration * 60),
       '{%s}summary' % nsmap['itunes']: showname,
-      '{%s}creator' % nsmap['dc']: callsign,
+      '{%s}creator' % nsmap['dc']: callsign.upper(),
       '{%s}origEnclosureLink' % nsmap['feedburner']: link,
       '{%s}origLink' % nsmap['feedburner']: base_url,
-      'description': showname,
+      'description': "%s recorded on %s" % (showname, feed['start_date'].strftime("%Y-%m-%d %H:%M:%S")),
       'pubDate': feed['start_date'].strftime("%Y-%m-%d %H:%M:%S"),
       'title': "%s - %s" % (showname, feed['start_date'].strftime("%Y.%m.%d")),
       'link': link,
