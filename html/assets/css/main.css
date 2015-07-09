@@ -3183,6 +3183,7 @@ form#donate {
 }
 #podcast-url {
   text-transform: none;
+  white-space: normal;
 }
 #description h2 {
   text-align: left;
@@ -3206,13 +3207,16 @@ form#donate {
   display: none;
   background: rgba(0,0,0,0.55);
 }
+#time * {
+  text-align: right;
+}
 @media screen and (max-width: 1280px) {
   #description {
     bottom: 0;
   }
-}
-#time * {
-  text-align: right;
+  #time * {
+    text-align: center;
+  }
 }
 #start {
   width: 7em;
