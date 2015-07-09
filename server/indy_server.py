@@ -888,6 +888,17 @@ def server_manager(config):
 
     return flask.send_from_directory(base_dir, path)
 
+  @app.route('/restart')
+  def restart():
+    cwd = os.getcwd()
+    os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
+    shutdown_server()
+    g_queue.put(('restart', True))
+    return "restarting..."
+
+    os.chdir(cwd)
+
   @app.route('/upgrade')
   def upgrade():
     cwd = os.getcwd()
