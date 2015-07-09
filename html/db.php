@@ -1,5 +1,5 @@
 <?
-$db = new SQLite3("main.db");
+$db = new SQLite3("../db/main.db");
 
 $schema = [
   'id'          => 'INTEGER PRIMARY KEY', 
