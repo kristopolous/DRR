@@ -6,5 +6,5 @@ $request = implode('/', $parts);
 $station = get_station(['callsign' => $callsign]);
 
 if($station) {
-  header('Location: http://' . $station['base_url'] . '/' . $request);
+  echo file_get_contents('http://' . $station['base_url'] . '/' . $request);
 }
