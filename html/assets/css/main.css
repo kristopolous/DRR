@@ -3211,3 +3211,11 @@ form#donate {
     bottom: 0;
   }
 }
+#time * {
+  text-align: right;
+}
+#start {
+  width: 7em;
+  display: inline-block;
+  text-align: right;
+}
