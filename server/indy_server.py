@@ -11,11 +11,11 @@ import pycurl
 import re
 import setproctitle as SP
 import signal
-import socket
 import sqlite3
 import struct
 import sys
 import time
+import socket
 
 #
 # This is needed to force ipv4 on ipv6 devices. It's sometimes needed
