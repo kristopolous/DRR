@@ -85,7 +85,7 @@ include_once('db.php');
           <div id="podcast-done">
             <h3>Your podcast link</h3>
             <p>You can subscribe with the link below:</p>
-            <h3 id="podcast-url"></h3>
+            <span id="podcast-url"></span>
           </div>
           <div id="podcast-notdone">
             <h3>The podcast will appear here</h3>
@@ -176,9 +176,9 @@ include_once('db.php');
             map.start.replace(/\s+/,'').toLowerCase(),
             map['duration'],
             encodeURI(map['name'] || 'stream')
-          ].join('/') + '.xml';
+          ].join('/');
 
-          $("#podcast-url").html('<a href="' + url.replace(/\s/,'') +'">' + url.replace(/\s/, '<br>') + '</a>');
+          $("#podcast-url").html('<a href="' + url.replace(/\s/,'') +'">' + url.replace(/^http:../,'').replace(/\s/, '<br>') + '</a>');
           $("#podcast-notdone").hide();
           $("#podcast-done").show();
         } else {

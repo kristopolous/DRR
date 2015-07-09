@@ -3223,3 +3223,7 @@ form#donate {
   display: inline-block;
   text-align: right;
 }
+#podcast-url {
+  font-weight: bold;
+  font-size: 1.3em;
+}
