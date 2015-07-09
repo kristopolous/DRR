@@ -757,7 +757,7 @@ def file_find_streams(start, duration):
 
   return stream_list
 
-def server_generate_xml(showname, feed_list, duration, start_minute):
+def server_generate_xml(showname, feed_list, duration, start_minute, weekday, start):
   """
   This takes a number of params:
  
@@ -769,6 +769,16 @@ def server_generate_xml(showname, feed_list, duration, start_minute):
 
   In the xml file we will lie about the duration to make life easier
   """
+
+  fullday = {
+    'sun': 'Sunday',
+    'mon': 'Monday',
+    'tue': 'Tuesday',
+    'wed': 'Wednesday',
+    'thu': 'Thursday',
+    'fri': 'Friday',
+    'sat': 'Saturday'
+  }[weekday]
 
   global g_config
 
@@ -794,7 +804,7 @@ def server_generate_xml(showname, feed_list, duration, start_minute):
     'title': "%s from %s" % (showname, callsign.upper()),
     'link': base_url,
     'copyright': callsign,
-    'description': showname,
+    'description': "%s recorded every %s at %s. Brought to you through http://indycast.net" % (showname, fullday, start),
     'language': 'en'
   }.items():
     ET.SubElement(channel, k).text = v
@@ -1009,7 +1019,7 @@ def server_manager(config):
     feed_list = file_find_streams(start_time, duration)
 
     # Then, taking those two things, make a feed list from them.
-    return server_generate_xml(showname, feed_list, duration, start_time)
+    return server_generate_xml(showname, feed_list, duration, start_time, weekday, start)
 
   if __name__ == '__main__':
     pid = change_proc_name("%s-webserver" % config['callsign'])
