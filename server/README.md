@@ -57,8 +57,14 @@ In the storage directory you should see something like this:
 
 ## configs/
 
-These are the current configuration files for all the supported stations.
-It should be relatively straight-forward to make your own given these examples.
+See [https://github.com/kristopolous/DRR/wiki/Join-the-Federation](Joining the Federation) for an overview
+of what these options are. Also, if you aren't faint of heart, you can look at the definition of the `defaults`
+dict inside the `read_config()` function in [the main source](https://github.com/kristopolous/DRR/blob/master/server/indy_server.py) for
+an overview of some of the more obscure parameters supported.
+
+Inside the configs directory are the current configuration files for all the supported stations.
+You could do a pull request to add one, or [send an email](mailto:indycast@googlegroups.com) to [the mailing list](https://groups.google.com/d/forum/indycast).
+
 
 ## server_query.py
 
