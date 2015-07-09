@@ -166,11 +166,13 @@ def audio_crc(fname, blockcount = -1):
   first_header_seen = False
   header_attempts = 0
 
+  #
   # Looking at the first 16 bytes of the payload yield a rate that is 99.75% unique
   # as tested over various corpi ranging from 1,000,000 - 7,000,000 blocks.
   #
-  # There's additional precautions (of looking for a string of 4 matches) which
+  # There's an additional precautions of looking for a string of 4 matches which
   # mitigates this even further
+  #
   read_size = 16
 
   freqTable = [ 44100, 48000, 32000, 0 ]
@@ -842,6 +844,22 @@ def server_manager(config):
 
   @app.route('/heartbeat')
   def heartbeat():
+    """
+    A low resource version of the /stats call ... this is invoked
+    by the server health check 
+    """
+    global g_start_time
+
+    return jsonify({
+      'uptime': int(time.time() - g_start_time),
+    }), 200
+
+
+  @app.route('/stats')
+  def stats():
+    """
+    Reports various statistical metrics on a particular server
+    """
     global g_start_time
 
     db = db_connect()
