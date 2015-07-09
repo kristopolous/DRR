@@ -33,10 +33,11 @@ def getAddrInfoWrapper(host, port, family=0, socktype=0, proto=0, flags=0):
 socket.getaddrinfo = getAddrInfoWrapper
 
 import urllib2
+import urllib
 
 from datetime import datetime, timedelta, date
 from glob import glob
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, url_for
 import flask
 from subprocess import call
 import subprocess
@@ -865,15 +866,19 @@ def server_manager(config):
   # From http://stackoverflow.com/questions/13317536/get-a-list-of-all-routes-defined-in-the-app
   @app.route("/site-map")
   def site_map():
-    links = []
+    output = []
     for rule in app.url_map.iter_rules():
-        # Filter out rules we can't navigate to in a browser
-        # and rules that require parameters
-        if "GET" in rule.methods and has_no_empty_params(rule):
-            url = url_for(rule.endpoint)
-            links.append((url, rule.endpoint))
 
-    return jsonify(links), 200
+      options = {}
+      for arg in rule.arguments:
+        options[arg] = "[{0}]".format(arg)
+
+      url = url_for(rule.endpoint, **options)
+      line = urllib.unquote("{:25s} {}".format(rule.endpoint, url))
+      output.append(line)
+
+    return '\n'.join(output), 200
+
   #
   # The path is (unix timestamp)_(duration in minutes). If it exists (as in we had 
   # previously generated it) then we can trivially send it.  Otherwise we need
