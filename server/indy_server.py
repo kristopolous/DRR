@@ -966,7 +966,7 @@ def server_manager(config):
       'intents': [record for record in db['c'].execute('select * from intents').fetchall()],
       'kv': [record for record in db['c'].execute('select * from kv').fetchall()],
       'uptime': int(time.time() - g_start_time),
-      'free': os.popen("df / | tail -1").read().strip(),
+      'free': os.popen("df -h / | tail -1").read().strip(),
       'disk': sum(os.path.getsize(f) for f in os.listdir('.') if os.path.isfile(f)),
       #'streams': file_find_streams(-1, 0),
       'version': __version__,
