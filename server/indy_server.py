@@ -851,6 +851,8 @@ def server_error(errstr):
   return jsonify({'result': False, 'error':errstr}), 500
     
 def server_manager(config):
+  global g_queue
+
   app = Flask(__name__)
 
   # from http://flask.pocoo.org/snippets/67/
@@ -891,20 +893,19 @@ def server_manager(config):
     cwd = os.getcwd()
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
-    #os.popen('git pull') 
+    os.system('git pull') 
 
     # See what the version is after the pull
-    #newversion = os.popen("git describe").read().strip()
+    newversion = os.popen("git describe").read().strip()
 
-    #if newversion != __version__:
+    if newversion != __version__:
       # from http://blog.petrzemek.net/2014/03/23/restarting-a-python-script-within-itself/
-    args = ' '.join([__file__] + sys.argv) + '&'
-    print args
-    shutdown_server()
-    #os.system('(sleep 4;' + ' '.join(sys.argv) + '& )')
+      shutdown_server()
+      g_queue.put(('restart', True))
+      return 'Server shutting down...'
 
     os.chdir(cwd)
-    return 'Server shutting down...'
+    return 'Version %s is current' % __version__
 
   @app.route('/heartbeat')
   def heartbeat():
@@ -1010,7 +1011,7 @@ def server_manager(config):
           attempt += 1
           time.sleep(1)
 
-    shutdown_manager()
+    #shutdown_manager()
 
 ##
 ## Stream management functions
@@ -1172,6 +1173,10 @@ def stream_manager():
 
       elif what == 'shutdown':
         b_shutdown = True
+
+      elif what == 'restart':
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
+        subprocess.Popen(sys.argv)
 
       else:
         flag = True
@@ -1348,7 +1353,7 @@ def read_config(config):
       oldserver = f.readline()
       try:  
         os.kill(int(oldserver), 15)
-        time.sleep(5)
+        time.sleep(4)
 
       except:
         pass
