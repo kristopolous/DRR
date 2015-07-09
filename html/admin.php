@@ -21,8 +21,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       unset($_SESSION['admin']);
     }
   }
+  sleep(1);
   session_write_close();
   header('location: admin.php');
+  exit(0);
 }
 
 if (!empty($_SESSION['admin']) && $_SESSION['admin'] == 1) {
