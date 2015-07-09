@@ -38,15 +38,17 @@ from datetime import datetime, timedelta, date
 from glob import glob
 from flask import Flask, request, jsonify
 import flask
+from subprocess import call
 from multiprocessing import Process, Queue
 
 g_start_time = time.time()
 g_queue = Queue()
+g_pid_queue = Queue()
 g_config = {}
 g_db = {}
 g_pid = 0
 g_manager_pid = 0
-__version__ = "0.1"
+__version__ = os.popen("git describe").read().strip()
 
 # Most common frame-length ... in practice, I haven't 
 # seen other values in the real world
@@ -100,7 +102,12 @@ def shutdown(signal = 15, frame = False):
   """
   Shutdown is hit on the keyboard interrupt
   """
-  global g_db, g_queue, g_start_time, g_config
+  global g_db, g_queue, g_start_time, g_config, g_pid_queue
+
+  while not g_pid_queue.empty():
+    pid = g_pid_queue.get(False)
+    if pid:
+      os.kill(pid, signal)
 
   title = SP.getproctitle()
   print "[%s:%d] Shutting down" % (title, os.getpid())
@@ -816,6 +823,8 @@ def server_error(errstr):
   return jsonify({'result': False, 'error':errstr}), 500
     
 def server_manager(config):
+  global g_pid_queue 
+
   app = Flask(__name__)
 
   #
@@ -854,6 +863,7 @@ def server_manager(config):
 
     return jsonify({
       'uptime': int(time.time() - g_start_time),
+      'version': __version__
     }), 200
 
 
@@ -872,6 +882,7 @@ def server_manager(config):
       'uptime': int(time.time() - g_start_time),
       'disk': sum(os.path.getsize(f) for f in os.listdir('.') if os.path.isfile(f)),
       'streams': file_find_streams(-1, 0),
+      'version': __version__,
       'config': config
     }
 
@@ -926,10 +937,12 @@ def server_manager(config):
     return server_generate_xml(showname, feed_list, duration, start_time)
 
   if __name__ == '__main__':
-    change_proc_name("%s-webserver" % config['callsign'])
+    pid = change_proc_name("%s-webserver" % config['callsign'])
+    g_pid_queue.put(pid, True)
 
     start = time.time()
     try:
+      print "Listening on %s" % config['port']
       app.run(port = int(config['port']), host = '0.0.0.0')
 
     except Exception as exc:
@@ -1299,5 +1312,9 @@ if __name__ == "__main__":
     read_config(args.config)      
 
     pid = change_proc_name("%s-manager" % g_config['callsign'])
+
+    # This is the pid that should be killed to shut the system
+    # down.
     g_manager_pid = pid
+
     stream_manager()
