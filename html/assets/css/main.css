@@ -3225,8 +3225,16 @@ form#donate {
 }
 #podcast-url {
   font-weight: bold;
+  display: inline-block;
   font-size: 1.3em;
+  border-radius: 8px;
+  padding: 0.5em;
+  border: 2px solid rgba(78, 185, 128, 1);
+  background: rgba(78, 185, 128, 0.85);
 }
 #podcast-url a { 
   display: block;
+  color: white;
+  text-decoration: none;
+  border-bottom: 0;
 }
