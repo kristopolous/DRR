@@ -58,8 +58,10 @@ include_once('db.php');
                 <li><a class="button">Fri</a></li>
                 <li><a class="button">Sat</a></li>
               </ul>
-              <label for="start">Starting at</label>
-              <input class="text" type="text" name="start" id="start" value="" placeholder="ex: 3:30 PM" />
+              <div id='time'>
+                <label for="start">Starting at</label>
+                <input class="text" size=4 type="text" name="start" id="start" value="" placeholder="ex: 3:30 PM" />
+              </div>
               <label for="duration">For how long</label>
               <ul class="week-group group" id="duration">
                 <li><a data="30min" class="button">30 min</a></li>
@@ -157,11 +159,8 @@ include_once('db.php');
 					</form>
 
 					<ul class="icons">
-						<li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
-						<li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li>
-						<li><a href="#" class="icon fa-instagram"><span class="label">Instagram</span></a></li>
-						<li><a href="#" class="icon fa-github"><span class="label">Github</span></a></li>
-						<li><a href="#" class="icon fa-dribbble"><span class="label">Dribbble</span></a></li>
+						<li><a href="https://twitter.com/indycaster" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
+						<li><a href="http://github.com/kristopolous/DRR/" class="icon fa-github"><span class="label">Github</span></a></li>
 					</ul>
 
 					<ul class="copyright">
