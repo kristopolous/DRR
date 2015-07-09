@@ -1,18 +1,8 @@
 # Installation
 
-You need the following things in Debian-based systems:
- 
-    sudo apt-get -y -f install  \
-      python-pip   python       \
-      python-dev   libxslt1-dev \
-      libxml2-dev  python-pycurl 
+To run the server, you need the things listed in the [bootstrap](https://github.com/kristopolous/DRR/blob/master/bootstrap.sh) file ( don't worry, this is a very simple file )
 
-Your OS of choice should have these in their own terms - remember
-this is intended to be run on a server somewhere.
-
-Then you need the requirements here. You can install them with
-
-    pip install --user -r requirements.txt
+Your OS of choice should have these in their own terms - remember this is intended to be run on a server somewhere.
 
 # Overview
 
