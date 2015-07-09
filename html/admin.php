@@ -10,7 +10,7 @@
   table { background: black;border-spacing: 1px;margin:1em 0}
   td,th { padding: 0.25em 0.5em;border-spacing: 1px;background:white}
 </style>
-</head><body>
+</head><body>[ <a href="/">Home</a> ] 
 <?php
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
