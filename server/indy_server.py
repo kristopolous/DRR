@@ -791,7 +791,7 @@ def server_generate_xml(showname, feed_list, duration, start_minute):
     '{%s}summary' % nsmap['itunes']: showname,
     '{%s}subtitle' % nsmap['itunes']: showname,
     '{%s}category' % nsmap['itunes']: 'podcast',
-    'title': showname,
+    'title': "%s from %s" % (showname, callsign),
     'link': base_url,
     'copyright': callsign,
     'description': showname,
@@ -815,7 +815,7 @@ def server_generate_xml(showname, feed_list, duration, start_minute):
       '{%s}origLink' % nsmap['feedburner']: base_url,
       'description': showname,
       'pubDate': feed['start_date'].strftime("%Y-%m-%d %H:%M:%S"),
-      'title': showname,
+      'title': "%s %s" % (showname, feed['start_date'].strftime("%Y.%m.%d")),
       'link': link,
       'copyright': callsign,
       'guid': callsign + file_name
