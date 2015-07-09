@@ -791,7 +791,7 @@ def server_generate_xml(showname, feed_list, duration, start_minute):
     '{%s}summary' % nsmap['itunes']: showname,
     '{%s}subtitle' % nsmap['itunes']: showname,
     '{%s}category' % nsmap['itunes']: 'podcast',
-    'title': "%s from %s" % (showname, callsign),
+    'title': "%s from %s" % (showname, callsign.upper()),
     'link': base_url,
     'copyright': callsign,
     'description': showname,
