@@ -6,6 +6,7 @@ import math
 import base64
 from glob import glob
 
+MAX_HEADER_ATTEMPTS = 1024
 def hash_test(file_list):
   for name in file_list:
     audio_crc(name)
@@ -25,14 +26,28 @@ def audio_crc(fname, blockcount = -1):
   ]
 
   f = open(fname, 'rb')
+
+  first_header_seen = False
+  header_attempts = 0
+
   while blockcount != 0:
-    blockcount -= 1
+
+    if first_header_seen:
+      blockcount -= 1
+
+    else:
+      header_attempts += 1 
+      if header_attempts > 2:
+        # Go 1 back.
+        f.seek(-1, 1)
+
 
     frame_start = f.tell()
     header = f.read(2)
     if header:
 
       if header == '\xff\xfb' or header == '\xff\xfa':
+        first_header_seen = True
         b = ord(f.read(1))
 
         samp_rate = freqTable[(b & 0x0f) >> 2]
@@ -47,7 +62,7 @@ def audio_crc(fname, blockcount = -1):
 
         # Get the signature
         block = f.read(rsize)
-        print "%s" % (binascii.b2a_hex(block))
+        #print "%s" % (binascii.b2a_hex(block))
         crc = binascii.crc32(block)
 
         frame_sig.append(crc)
@@ -79,8 +94,8 @@ def audio_crc(fname, blockcount = -1):
         # We've already read 2 so we can go 126 forward
         f.read(126)
 
-      else:
-        print "%s:%s:%s:%s %s %d" % (binascii.b2a_hex(header), header, f.read(5), fname, hex(f.tell()), len(start_byte) * (1152.0 / 44100) / 60)
+      elif first_header_seen or header_attempts > MAX_HEADER_ATTEMPTS:
+        print "%s:%s:%s:%s %s %d" % (binascii.b3a_hex(header), header, f.read(5), fname, hex(f.tell()), len(start_byte) * (1152.0 / 44100) / 60)
         break
 
     else:
@@ -183,9 +198,10 @@ def audio_stitch(file_list):
     #print len(p[0])
 
 # success case
-hash_test(glob('/sd/mp3/*.mp3'))
+audio_crc('/home/chris/radio/kvrx/streams/kvrx-1436373880.mp3')
+
 sys.exit(0)
-isSuccess = audio_stitch(["/var/radio/kpcc-1435670339.mp3","/var/radio/kpcc-1435671243.mp3","/var/radio/kpcc-1435672147.mp3","/var/radio/kpcc-1435673051.mp3","/var/radio/kpcc-1435673955.mp3","/var/radio/kpcc-1435674859.mp3","/var/radio/kpcc-1435675763.mp3","/var/radio/kpcc-1435676667.mp3","/var/radio/kpcc-1435677571.mp3","/var/radio/kpcc-1435678475.mp3","/var/radio/kpcc-1435679379.mp3"])
+#isSuccess = audio_stitch(["/var/radio/kpcc-1435670337.mp3","/var/radio/kpcc-1435671243.mp3","/var/radio/kpcc-1435672147.mp3","/var/radio/kpcc-1435673051.mp3","/var/radio/kpcc-1435673955.mp3","/var/radio/kpcc-1435674859.mp3","/var/radio/kpcc-1435675763.mp3","/var/radio/kpcc-1435676667.mp3","/var/radio/kpcc-1435677571.mp3","/var/radio/kpcc-1435678475.mp3","/var/radio/kpcc-1435679379.mp3"])
 
 # failure case
 #stitch_attempt('/var/radio/kpcc-1435670339.mp3', '/var/radio/kpcc-1435669435.mp3')
