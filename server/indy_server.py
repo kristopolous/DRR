@@ -37,7 +37,7 @@ import urllib
 
 from datetime import datetime, timedelta, date
 from glob import glob
-from flask import Flask, request, jsonify, url_for
+from flask import Flask, request, jsonify, Response, url_for
 import flask
 from subprocess import call
 import subprocess
@@ -877,7 +877,7 @@ def server_manager(config):
       line = urllib.unquote("{:25s} {}".format(rule.endpoint, url))
       output.append(line)
 
-    return '\n'.join(output), 200
+    return Response('\n'.join(output), mimetype='text/plain')
 
   #
   # The path is (unix timestamp)_(duration in minutes). If it exists (as in we had 
