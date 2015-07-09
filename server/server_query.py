@@ -54,12 +54,14 @@ for station in station_list.fetchall():
   try:
     start = time.time()
 
+    print url
+
     stream = urllib2.urlopen("http://%s/%s" % (url, args.query))
     data = stream.read()
 
     stop = time.time()
 
-    print "---------\n%s\n%s" % (url, data)
+    print "[ %d ] %s\n%s" % (stop - start, url, data)
 
     db['c'].execute('update stations set latency = latency + ?, pings = pings + 1, last_seen = current_timestamp where id = ?', ( str(stop - start), str(station[ID]) ))
 
