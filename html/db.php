@@ -1,4 +1,5 @@
 <?
+session_start();
 $db = new SQLite3("../db/main.db");
 
 $schema = [
@@ -17,8 +18,7 @@ $schema = [
 ];
 
 function is_read_only() {
-  return false;
-  return ($_SERVER['REMOTE_ADDR'] !== '::1');
+  return empty($_SESSION['admin']) || $_SESSION['admin'] != 1;
 }
 
 function db_all($what) {
