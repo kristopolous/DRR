@@ -43,7 +43,6 @@ from multiprocessing import Process, Queue
 
 g_start_time = time.time()
 g_queue = Queue()
-g_pid_queue = Queue()
 g_config = {}
 g_db = {}
 g_pid = 0
@@ -102,22 +101,34 @@ def shutdown(signal = 15, frame = False):
   """
   Shutdown is hit on the keyboard interrupt
   """
-  global g_db, g_queue, g_start_time, g_config, g_pid_queue
+  global g_db, g_queue, g_start_time, g_config
 
-  while not g_pid_queue.empty():
-    pid = g_pid_queue.get(False)
-    if pid:
-      os.kill(pid, signal)
+  if os.path.isfile('pid-webserver'):
+    with open('pid-webserver', 'r') as f:
+      webserver = f.readline()
+
+      try:  
+        os.kill(int(webserver), signal)
+
+      except:
+        pass
+
+    os.unlink('pid-webserver')
 
   title = SP.getproctitle()
+
   print "[%s:%d] Shutting down" % (title, os.getpid())
 
   if 'conn' in g_db:
     g_db['conn'].close()
 
-  logging.info("[%s:%d] Shutting down through keyboard interrupt" % (title, os.getpid()))
+  logging.info("[%s:%d] Shutting down through signal %d" % (title, os.getpid(), signal))
+
   if title == ('%s-manager' % g_config['callsign']):
     logging.info("Uptime: %ds", time.time() - g_start_time)
+
+  elif title != ('%s-webserver' % g_config['callsign']) and os.path.isfile('pid-manager'):
+    os.unlink('pid-manager')
 
   g_queue.put(('shutdown', True))
   sys.exit(0)
@@ -823,8 +834,6 @@ def server_error(errstr):
   return jsonify({'result': False, 'error':errstr}), 500
     
 def server_manager(config):
-  global g_pid_queue 
-
   app = Flask(__name__)
 
   #
@@ -852,6 +861,22 @@ def server_manager(config):
       return True
 
     return flask.send_from_directory(base_dir, path)
+
+  @app.route('/upgrade')
+  def upgrade():
+    cwd = os.getcwd()
+    os.chdir(os.path.realpath(__file__))
+
+    os.popen('git pull') 
+
+    # See what the version is after the pull
+    newversion = os.popen("git describe").read().strip()
+
+    if newversion != __version__:
+      # from http://blog.petrzemek.net/2014/03/23/restarting-a-python-script-within-itself/
+      os.execv(__file__, sys.argv)
+
+    os.chdir(cwd)
 
   @app.route('/heartbeat')
   def heartbeat():
@@ -938,7 +963,8 @@ def server_manager(config):
 
   if __name__ == '__main__':
     pid = change_proc_name("%s-webserver" % config['callsign'])
-    g_pid_queue.put(pid, True)
+    with open('pid-webserver', 'w+') as f:
+      f.write(str(pid))
 
     start = time.time()
     try:
@@ -1011,7 +1037,7 @@ def stream_download(callsign, url, my_pid, fname):
     nl['stream'].write(data)
 
     if not manager_is_running():
-      raise Exception("Shutting down")
+      shutdown()
 
 
   # signal.signal(signal.SIGTERM, dl_stop)
@@ -1316,5 +1342,7 @@ if __name__ == "__main__":
     # This is the pid that should be killed to shut the system
     # down.
     g_manager_pid = pid
+    with open('pid-manager', 'w+') as f:
+      f.write(str(pid))
 
     stream_manager()
