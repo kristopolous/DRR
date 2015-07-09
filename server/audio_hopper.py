@@ -1,12 +1,19 @@
 #!/usr/bin/python -O
 import binascii
+import sys
 import struct
 import math
 import base64
+from glob import glob
+
+def hash_test(file_list):
+  for name in file_list:
+    audio_crc(name)
 
 def audio_crc(fname, blockcount = -1):
   frame_sig = []
   start_byte = []
+  rsize = 64
 
   freqTable = [ 44100, 48000, 32000, 0 ]
 
@@ -39,14 +46,16 @@ def audio_crc(fname, blockcount = -1):
         throw_away = f.read(1)
 
         # Get the signature
-        crc = binascii.crc32(f.read(32))
+        block = f.read(rsize)
+        print "%s" % (binascii.b2a_hex(block))
+        crc = binascii.crc32(block)
 
         frame_sig.append(crc)
 
         start_byte.append(frame_start)
 
         # Move forward the frame f.read size + 4 byte header
-        throw_away = f.read(frame_size - 36)
+        throw_away = f.read(frame_size - (rsize + 4))
 
       #ID3 tag for some reason
       elif header == '\x49\x44':
@@ -174,6 +183,8 @@ def audio_stitch(file_list):
     #print len(p[0])
 
 # success case
+hash_test(glob('/sd/mp3/*.mp3'))
+sys.exit(0)
 isSuccess = audio_stitch(["/var/radio/kpcc-1435670339.mp3","/var/radio/kpcc-1435671243.mp3","/var/radio/kpcc-1435672147.mp3","/var/radio/kpcc-1435673051.mp3","/var/radio/kpcc-1435673955.mp3","/var/radio/kpcc-1435674859.mp3","/var/radio/kpcc-1435675763.mp3","/var/radio/kpcc-1435676667.mp3","/var/radio/kpcc-1435677571.mp3","/var/radio/kpcc-1435678475.mp3","/var/radio/kpcc-1435679379.mp3"])
 
 # failure case
