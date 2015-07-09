@@ -28,6 +28,22 @@ Normally you should be able to start up a server like this:
     Listening on 8930
     [kpcc-download:16634] Starting
 
+Then you should get something like this:
+
+    $ ps af
+    ...
+    16885 pts/14   Ss+    0:00 -zsh
+    16626 pts/14   S+     0:00  \_ kpcc-manager                                           
+    16633 pts/14   S+     0:00      \_ kpcc-webserver                                         
+    16634 pts/14   Sl+    0:00      \_ kpcc-download  
+    ...
+
+If you want to shut things down, kill the manager pid
+
+    $ kill 16885
+
+Which is also stored in a pid file in the storage directory, which we will now go over.
+
 In the storage directory you should see something like this:
 
  * config.db      - An sqlite3 database of intents and key/values
