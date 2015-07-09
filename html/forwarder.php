@@ -6,5 +6,6 @@ $request = implode('/', $parts);
 $station = get_station(['callsign' => $callsign]);
 
 if($station) {
-  echo file_get_contents('http://' . $station['base_url'] . '/' . $request);
+  $url = 'http://' . $station['base_url'] . '/' . implode("/", array_map("rawurlencode", explode("/", $request)));
+  echo file_get_contents($url);
 }
