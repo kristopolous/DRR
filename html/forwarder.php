@@ -6,6 +6,12 @@ $request = implode('/', $parts);
 $station = get_station(['callsign' => $callsign]);
 
 if($station) {
+  $ch = curl_init();
   $url = 'http://' . $station['base_url'] . '/' . implode("/", array_map("rawurlencode", explode("/", $request)));
-  echo file_get_contents($url);
+  curl_setopt($ch, CURLOPT_URL, $url);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+  $data = curl_exec($ch);
+  $info = curl_getinfo($ch);
+  header('Content-Type: ' . $info['content_type']);
+  echo $data;
 }
