@@ -45,6 +45,7 @@ g_queue = Queue()
 g_config = {}
 g_db = {}
 g_pid = 0
+g_manager_pid = 0
 __version__ = "0.1"
 
 # Most common frame-length ... in practice, I haven't 
@@ -92,6 +93,7 @@ def change_proc_name(what):
   """
   SP.setproctitle(what)
   print "[%s:%d] Starting" % (what, os.getpid())
+  return os.getpid()
 
 
 def shutdown(signal = 15, frame = False):
@@ -995,6 +997,9 @@ def stream_download(callsign, url, my_pid, fname):
 
     nl['stream'].write(data)
 
+    if not manager_is_running():
+      raise Exception("Shutting down")
+
 
   # signal.signal(signal.SIGTERM, dl_stop)
   c = pycurl.Curl()
@@ -1013,6 +1018,15 @@ def stream_download(callsign, url, my_pid, fname):
   if type(nl['stream']) != bool:
     nl['stream'].close()
 
+def manager_is_running():
+  global g_manager_pid
+
+  try:
+    os.kill(g_manager_pid, 0)
+    return True
+
+  except:
+    return False
 
 def stream_manager():
   """
@@ -1088,6 +1102,10 @@ def stream_manager():
       else:
         flag = True
     
+    # Check for our management process
+    if not manager_is_running():
+      b_shutdown = True
+
     #
     # If we are not in full mode, then we should check whether we should be 
     # recording right now according to our intents.
@@ -1156,6 +1174,11 @@ def stream_manager():
 
     # Increment the amount of time this has been running
     db_incr('uptime', cycle_time)
+
+    if b_shutdown:
+      logging.info("Manager process gone, shutting down.")
+      return True
+
     time.sleep(cycle_time)
 
 
@@ -1275,5 +1298,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     read_config(args.config)      
 
-    change_proc_name("%s-manager" % g_config['callsign'])
+    pid = change_proc_name("%s-manager" % g_config['callsign'])
+    g_manager_pid = pid
     stream_manager()
