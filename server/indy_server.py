@@ -55,6 +55,13 @@ FRAME_LENGTH = (1152.0 / 44100)
 # scale. We use this to do wrap around when necessary
 MINUTES_PER_WEEK = 10080
 
+# Some stations don't start you off with a valid mp3 header
+# (such as kdvs), so we have to just seek into the file
+# and look for one.  This is the number of bytes we try.
+# In practice, 217 appears to be enough, so we make it about
+# twice that and cross our fingers
+MAX_HEADER_ATTEMPTS = 512
+
 # From https://wiki.python.org/moin/ConfigParserExamples
 def config_section_map(section, Config):
   """
@@ -156,6 +163,8 @@ def audio_crc(fname, blockcount = -1):
   """
   frame_sig = []
   start_byte = []
+  first_header_seen = False
+  header_attempts = 0
 
   # Looking at the first 16 bytes of the payload yield a rate that is 99.75% unique
   # as tested over various corpi ranging from 1,000,000 - 7,000,000 blocks.
@@ -175,13 +184,22 @@ def audio_crc(fname, blockcount = -1):
 
   f = open(fname, 'rb')
   while blockcount != 0:
-    blockcount -= 1
+
+    if first_header_seen:
+      blockcount -= 1
+
+    else:
+      header_attempts += 1 
+      if header_attempts > 2:
+        # Go 1 back.
+        f.seek(-1, 1)
 
     frame_start = f.tell()
     header = f.read(2)
     if header:
 
       if header == '\xff\xfb' or header == '\xff\xfa':
+        first_header_seen = True
         b = ord(f.read(1))
 
         samp_rate = freqTable[(b & 0x0f) >> 2]
@@ -230,7 +248,7 @@ def audio_crc(fname, blockcount = -1):
         # We are at the end of file, but let's just continue.
         next
 
-      else:
+      elif first_header_seen or header_attempts > MAX_HEADER_ATTEMPTS:
         # This helps me debug mp3 files that I'm not reading correctly.
         print "%s:%s:%s:%s %s %d" % (binascii.b2a_hex(header), header, f.read(5), fname, hex(f.tell()), len(start_byte) * FRAME_LENGTH / 60)
         break
