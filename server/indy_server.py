@@ -62,8 +62,8 @@ MINUTES_PER_WEEK = 10080
 # (such as kdvs), so we have to just seek into the file
 # and look for one.  This is the number of bytes we try.
 # In practice, 217 appears to be enough, so we make it about
-# twice that and cross our fingers
-MAX_HEADER_ATTEMPTS = 512
+# ten times that and cross our fingers
+MAX_HEADER_ATTEMPTS = 2048
 
 PIDFILE_MANAGER = 'pid-manager'
 PIDFILE_WEBSERVER = 'pid-webserver'
@@ -902,7 +902,7 @@ def server_manager(config):
       # from http://blog.petrzemek.net/2014/03/23/restarting-a-python-script-within-itself/
       shutdown_server()
       g_queue.put(('restart', True))
-      return 'Server shutting down...'
+      return "Upgrading from %s to %s" % (__version__, newversion)
 
     os.chdir(cwd)
     return 'Version %s is current' % __version__
