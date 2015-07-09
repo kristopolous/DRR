@@ -47,7 +47,7 @@ g_start_time = time.time()
 g_queue = Queue()
 g_config = {}
 g_db = {}
-g_pid = 0
+g_download_pid = 0
 g_manager_pid = 0
 __version__ = os.popen("git describe").read().strip()
 
@@ -66,6 +66,9 @@ MINUTES_PER_WEEK = 10080
 # ten times that and cross our fingers
 MAX_HEADER_ATTEMPTS = 2048
 
+# Maintain a pidfile for the manager and the webserver (which
+# likes to become a zombie ... braaaainnns!) so we have to take
+# care of it separately and specially - like a little retard.
 PIDFILE_MANAGER = 'pid-manager'
 PIDFILE_WEBSERVER = 'pid-webserver'
 
@@ -100,19 +103,6 @@ def change_proc_name(what):
   SP.setproctitle(what)
   print "[%s:%d] Starting" % (what, os.getpid())
   return os.getpid()
-
-
-def shutdown_manager():
-  if os.path.isfile(PIDFILE_MANAGER):
-    with open(PIDFILE_MANAGER, 'r') as f:
-      manager = f.readline()
-      print manager
-
-      try:  
-        os.kill(int(manager), 15)
-
-      except:
-        pass
 
 
 def shutdown(signal = 15, frame = False):
@@ -670,6 +660,10 @@ def db_connect():
 
 
 def db_register_intent(minute, duration):
+  """
+  Tells the server to record on a specific minute for a specific duration when
+  not in full mode.  Otherwise, this is just here for statistical purposes.
+  """
   db = db_connect()
 
   key = str(minute) + ':' + str(duration)
@@ -879,34 +873,29 @@ def server_manager(config):
 
     return Response('\n'.join(output), mimetype='text/plain')
 
-  #
-  # The path is (unix timestamp)_(duration in minutes). If it exists (as in we had 
-  # previously generated it) then we can trivially send it.  Otherwise we need
-  # to create it.
-  #
+  
   @app.route('/slices/<path:path>')
   def send_stream(path):
+    """
+    Downloads a stream from the server. The path is (unix timestamp)_(duration in minutes). 
+    If it exists (as in we had previously generated it) then we can trivially send it. Otherwise
+    we'll just call this an error to make our lives easier.
+    """
+
     base_dir = config['storage'] + 'slices/'
     fname = base_dir + path
 
     # If the file doesn't exist, then we need to slice it and create it based on our query.
     if not os.path.isfile(fname):
-      # Find the closest timestamp
-      # Even though the file doesn't exist, we'll still get
-      # a partial return on getting it's "info"
-      info = audio_stream_info(fname)
-
-      # Now we see what our start stream should be
-      start_stream = file_find_streams(info['start_minute'], info['duration_sec'] / 60)
-
-      # slice if needed
-      # add up the timestamp
-      return True
+      return "File not found. Perhaps the stream is old?", 404
 
     return flask.send_from_directory(base_dir, path)
 
   @app.route('/restart')
   def restart():
+    """
+    Restarts an instance
+    """
     cwd = os.getcwd()
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -918,6 +907,10 @@ def server_manager(config):
 
   @app.route('/upgrade')
   def upgrade():
+    """
+    Goes to the source directory, pulls down the latest from git
+    and if the versions are different, the application restarts
+    """
     cwd = os.getcwd()
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -1023,6 +1016,11 @@ def server_manager(config):
     with open(PIDFILE_WEBSERVER, 'w+') as f:
       f.write(str(pid))
 
+    """
+    When we do an upgrade or a restart, there's a race condition of getting to start this server
+    before the previous one has cleaned up all the socket work.  So if the time is under our
+    patience threshold then we sleep a second and just try again, hoping that it will work.
+    """
     patience = 10
     attempt = 1
 
@@ -1039,15 +1037,11 @@ def server_manager(config):
           attempt += 1
           time.sleep(1)
 
-    #shutdown_manager()
-
 ##
 ## Stream management functions
 ##
 def stream_should_be_recording():
-  """
-  Queries the database and see if we ought to be recording at this moment
-  """
+  """ Queries the database and see if we ought to be recording at this moment """
   global g_config
 
   db = db_connect()
@@ -1121,7 +1115,13 @@ def stream_download(callsign, url, my_pid, fname):
   if type(nl['stream']) != bool:
     nl['stream'].close()
 
+
 def manager_is_running():
+  """
+  Checks to see if the manager is still running or if we should 
+  shutdown.  It works by sending a signal(0) to a pid and seeing
+  if that fails
+  """
   global g_manager_pid
 
   try:
@@ -1130,6 +1130,7 @@ def manager_is_running():
 
   except:
     return False
+
 
 def stream_manager():
   """
@@ -1166,11 +1167,11 @@ def stream_manager():
   def download_start(fname):
     """ Starts a process that manages the downloading of a stream.  """
 
-    global g_pid
-    g_pid += 1
-    logging.info("Starting cascaded downloader #%d. Next up in %ds" % (g_pid, cascade_margin))
+    global g_download_pid
+    g_download_pid += 1
+    logging.info("Starting cascaded downloader #%d. Next up in %ds" % (g_download_pid, cascade_margin))
     fname = 'streams/%s-%d.mp3' % (callsign, time_sec_now())
-    process = Process(target = stream_download, args = (callsign, g_config['stream'], g_pid, fname))
+    process = Process(target = stream_download, args = (callsign, g_config['stream'], g_download_pid, fname))
     process.start()
     return [fname, process]
 
