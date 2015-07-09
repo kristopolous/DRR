@@ -1,5 +1,6 @@
 #!/usr/bin/python -O
 import argparse
+import os
 import sys
 import socket
 
@@ -22,6 +23,7 @@ import urllib2
 import sqlite3
 import time
 
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 conn = sqlite3.connect('../db/main.db')
 db = {'conn': conn, 'c': conn.cursor()}
 
