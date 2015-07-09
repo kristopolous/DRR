@@ -35,10 +35,13 @@ if (!$station) {
 }
 
 ?>
+<link href='http://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'>
 <style>
+  body { margin: 2em }
+  * { font-family: 'Lora', serif; }
 form { display: inline-block }
 form > * { padding: 0.5em }
-form > :nth-child(2n) { background: #ccc }
+form > :nth-child(2n) { background: #ddd }
 label { width: 10em;display: inline-block;}
 button { padding: 0}
 </style>
