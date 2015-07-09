@@ -84,7 +84,6 @@ include_once('db.php');
 				<footer class="major container">
           <div id="podcast-done">
             <h3>Your podcast link</h3>
-            <p>You can subscribe with the link below:</p>
             <span id="podcast-url"></span>
           </div>
           <div id="podcast-notdone">
