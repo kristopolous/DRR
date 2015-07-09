@@ -105,9 +105,10 @@ def shutdown_manager():
   if os.path.isfile(PIDFILE_MANAGER):
     with open(PIDFILE_MANAGER, 'r') as f:
       manager = f.readline()
+      print manager
 
       try:  
-        os.kill(int(manager), signal)
+        os.kill(int(manager), 15)
 
       except:
         pass
@@ -900,7 +901,7 @@ def server_manager(config):
     args = ' '.join([__file__] + sys.argv) + '&'
     print args
     shutdown_server()
-    os.system(' '.join(sys.argv) + '&')
+    #os.system('(sleep 4;' + ' '.join(sys.argv) + '& )')
 
     os.chdir(cwd)
     return 'Server shutting down...'
@@ -993,15 +994,15 @@ def server_manager(config):
     with open(PIDFILE_WEBSERVER, 'w+') as f:
       f.write(str(pid))
 
-    start = time.time()
-
-    patience = 20
+    patience = 10
     attempt = 1
 
+    start = time.time()
     while time.time() - start < patience:
       try:
         print "Listening on %s" % config['port']
         app.run(port = int(config['port']), host = '0.0.0.0')
+        break
 
       except Exception as exc:
         if time.time() - start < patience:
