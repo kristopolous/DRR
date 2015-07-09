@@ -1,4 +1,5 @@
 #!/usr/bin/python -O
+import argparse
 import socket
 
 #
@@ -28,9 +29,19 @@ CYCLE_TIME = 60 * 60 * 12
 # this trick robbed from http://stackoverflow.com/questions/702834/whats-the-common-practice-for-enums-in-python
 ID, CALLSIGN, DESCRIPTION, BASE_URL, LAST_SEEN, FIRST_SEEN, PINGS, DROPS, LATENCY, ACTIVE, LOG, NOTES = range(12)
 
+parser = argparse.ArgumentParser()
+parser.add_argument("-q", "--query", default="heartbeat", help="query to send to the servers (if heartbeat then this daemonizes)")
+parser.add_argument("-c", "--callsign", default="all", help="station to query (default all)")
+args = parser.parse_args()
+
 while True:
+
   # retrieve a list of the active stations
-  station_list = db['c'].execute('select * from stations where active == 1')
+  if args.callsign == 'all':
+    station_list = db['c'].execute('select * from stations where active = 1')
+
+  else:
+    station_list = db['c'].execute('select * from stations where active = 1 and callsign = "%s"' % args.callsign)
 
   for station in station_list.fetchall():
     url = station[BASE_URL]
@@ -38,7 +49,7 @@ while True:
     try:
       start = time.time()
 
-      stream = urllib2.urlopen("http://%s/heartbeat" % url)
+      stream = urllib2.urlopen("http://%s/%s" % (url, args.query))
       data = stream.read()
 
       stop = time.time()
@@ -51,5 +62,10 @@ while True:
       # Say that we couldn't see this station
       db['c'].execute('update stations set drops = drops + 1 where id = ?', str(station[ID]))
 
-  db['conn'].commit()
-  time.sleep(CYCLE_TIME)
+  if args.query == 'heartbeat':
+    db['conn'].commit()
+    time.sleep(CYCLE_TIME)
+
+  else:
+    break
+  
