@@ -157,6 +157,13 @@ def audio_crc(fname, blockcount = -1):
   frame_sig = []
   start_byte = []
 
+  # Looking at the first 16 bytes of the payload yield a rate that is 99.75% unique
+  # as tested over various corpi ranging from 1,000,000 - 7,000,000 blocks.
+  #
+  # There's additional precautions (of looking for a string of 4 matches) which
+  # mitigates this even further
+  read_size = 16
+
   freqTable = [ 44100, 48000, 32000, 0 ]
 
   brTable = [
@@ -188,14 +195,14 @@ def audio_crc(fname, blockcount = -1):
         throw_away = f.read(1)
 
         # Get the signature
-        crc = binascii.crc32(f.read(32))
+        crc = f.read(read_size)
 
         frame_sig.append(crc)
 
         start_byte.append(frame_start)
 
         # Move forward the frame f.read size + 4 byte header
-        throw_away = f.read(frame_size - 36)
+        throw_away = f.read(frame_size - (read_size + 4))
 
       # ID3 tag for some reason
       elif header == '\x49\x44':
