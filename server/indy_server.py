@@ -777,7 +777,7 @@ def server_generate_xml(showname, feed_list, duration, start_minute):
 
   global g_config
 
-  base_url = 'http://%s.indycast.net/' % g_config['callsign']
+  base_url = 'http://%s.indycast.net:%s/' % (g_config['callsign'], g_config['port'])
   callsign = g_config['callsign']
 
   nsmap = {
@@ -1353,7 +1353,7 @@ def read_config(config):
       oldserver = f.readline()
       try:  
         os.kill(int(oldserver), 15)
-        time.sleep(4)
+        time.sleep(2)
 
       except:
         pass
