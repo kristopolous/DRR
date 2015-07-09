@@ -849,7 +849,7 @@ def server_generate_xml(showname, feed_list, duration, start_minute, weekday, st
 
   tree = ET.ElementTree(root)
 
-  return Response(ET.tostring(tree, xml_declaration=True, encoding="utf-8"), mimetype = 'text/xml; charset=UTF-8')
+  return Response(ET.tostring(tree, xml_declaration=True, encoding="utf-8"), mimetype = 'text/xml')
 
 
 
