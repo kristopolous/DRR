@@ -506,7 +506,7 @@ def time_to_utc(day_str, hour):
   global g_config
 
   try:
-    day_number = ['sun','mon','tue','wed','thu','fri','sat'].index(day_str.lower())
+    day_number = ['mon','tue','wed','thu','fri','sat','sun'].index(day_str.lower())
 
   except Exception as exc:
     return False
@@ -533,9 +533,9 @@ def time_to_utc(day_str, hour):
   if time.groups()[-1] == 'p':
     local += (12 * 60)
 
-  utc = local + time_get_offset()
+  #utc = local + time_get_offset()
 
-  return utc
+  return local
 
 
 def time_get_offset(force = False):
