@@ -54,9 +54,12 @@ while True:
 
       stop = time.time()
 
-      print url
-      print data
+      print "---------\n%s\n%s" % (url, data)
+
       db['c'].execute('update stations set latency = latency + ?, pings = pings + 1, last_seen = current_timestamp where id = ?', ( str(stop - start), str(station[ID]) ))
+
+    except urllib2.URLError:
+      db['c'].execute('update stations set drops = drops + 1 where id = ?', str(station[ID]))
 
     except urllib2.HTTPError:
       # Say that we couldn't see this station
