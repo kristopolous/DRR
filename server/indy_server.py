@@ -64,6 +64,9 @@ MINUTES_PER_WEEK = 10080
 # twice that and cross our fingers
 MAX_HEADER_ATTEMPTS = 512
 
+PIDFILE_MANAGER = 'pid-manager'
+PIDFILE_WEBSERVER = 'pid-webserver'
+
 # From https://wiki.python.org/moin/ConfigParserExamples
 def config_section_map(section, Config):
   """
@@ -103,8 +106,8 @@ def shutdown(signal = 15, frame = False):
   """
   global g_db, g_queue, g_start_time, g_config
 
-  if os.path.isfile('pid-webserver'):
-    with open('pid-webserver', 'r') as f:
+  if os.path.isfile(PIDFILE_WEBSERVER):
+    with open(PIDFILE_WEBSERVER, 'r') as f:
       webserver = f.readline()
 
       try:  
@@ -113,7 +116,7 @@ def shutdown(signal = 15, frame = False):
       except:
         pass
 
-    os.unlink('pid-webserver')
+    os.unlink(PIDFILE_WEBSERVER)
 
   title = SP.getproctitle()
 
@@ -127,8 +130,8 @@ def shutdown(signal = 15, frame = False):
   if title == ('%s-manager' % g_config['callsign']):
     logging.info("Uptime: %ds", time.time() - g_start_time)
 
-  elif title != ('%s-webserver' % g_config['callsign']) and os.path.isfile('pid-manager'):
-    os.unlink('pid-manager')
+  elif title != ('%s-webserver' % g_config['callsign']) and os.path.isfile(PIDFILE_MANAGER):
+    os.unlink(PIDFILE_MANAGER)
 
   g_queue.put(('shutdown', True))
   sys.exit(0)
@@ -963,7 +966,7 @@ def server_manager(config):
 
   if __name__ == '__main__':
     pid = change_proc_name("%s-webserver" % config['callsign'])
-    with open('pid-webserver', 'w+') as f:
+    with open(PIDFILE_WEBSERVER, 'w+') as f:
       f.write(str(pid))
 
     start = time.time()
@@ -1306,6 +1309,17 @@ def read_config(config):
   else:
     logging.warning("Can't find %s. Using current directory." % g_config['storage'])
 
+  # If there is an existing pid-manager, that means that 
+  # there is probably another version running.
+  if os.path.isfile(PIDFILE_MANAGER):
+    with open(PIDFILE_MANAGER, 'r') as f:
+      oldserver = f.readline()
+      try:  
+        os.kill(int(oldserver), 15)
+        time.sleep(2)
+
+      except:
+        pass
    
   # From https://docs.python.org/2/howto/logging.html
   numeric_level = getattr(logging, g_config['loglevel'].upper(), None)
@@ -1342,7 +1356,7 @@ if __name__ == "__main__":
     # This is the pid that should be killed to shut the system
     # down.
     g_manager_pid = pid
-    with open('pid-manager', 'w+') as f:
+    with open(PIDFILE_MANAGER, 'w+') as f:
       f.write(str(pid))
 
     stream_manager()
