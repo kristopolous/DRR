@@ -81,7 +81,7 @@ include_once('db.php');
 					</section>
 				</div>
 
-				<footer class="major container 75%">
+				<footer class="major container">
           <div id="podcast-done">
             <h3>Your podcast link</h3>
             <p>You can subscribe with the link below:</p>
