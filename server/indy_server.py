@@ -39,6 +39,7 @@ from glob import glob
 from flask import Flask, request, jsonify
 import flask
 from subprocess import call
+import subprocess
 from multiprocessing import Process, Queue
 
 g_start_time = time.time()
@@ -98,6 +99,18 @@ def change_proc_name(what):
   SP.setproctitle(what)
   print "[%s:%d] Starting" % (what, os.getpid())
   return os.getpid()
+
+
+def shutdown_manager():
+  if os.path.isfile(PIDFILE_MANAGER):
+    with open(PIDFILE_MANAGER, 'r') as f:
+      manager = f.readline()
+
+      try:  
+        os.kill(int(manager), signal)
+
+      except:
+        pass
 
 
 def shutdown(signal = 15, frame = False):
@@ -839,6 +852,13 @@ def server_error(errstr):
 def server_manager(config):
   app = Flask(__name__)
 
+  # from http://flask.pocoo.org/snippets/67/
+  def shutdown_server():
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+      raise RuntimeError('Not running with the Werkzeug Server')
+    func()
+
   #
   # The path is (unix timestamp)_(duration in minutes). If it exists (as in we had 
   # previously generated it) then we can trivially send it.  Otherwise we need
@@ -868,18 +888,22 @@ def server_manager(config):
   @app.route('/upgrade')
   def upgrade():
     cwd = os.getcwd()
-    os.chdir(os.path.realpath(__file__))
+    os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
-    os.popen('git pull') 
+    #os.popen('git pull') 
 
     # See what the version is after the pull
-    newversion = os.popen("git describe").read().strip()
+    #newversion = os.popen("git describe").read().strip()
 
-    if newversion != __version__:
+    #if newversion != __version__:
       # from http://blog.petrzemek.net/2014/03/23/restarting-a-python-script-within-itself/
-      os.execv(__file__, sys.argv)
+    args = ' '.join([__file__] + sys.argv) + '&'
+    print args
+    shutdown_server()
+    os.system(' '.join(sys.argv) + '&')
 
     os.chdir(cwd)
+    return 'Server shutting down...'
 
   @app.route('/heartbeat')
   def heartbeat():
@@ -970,15 +994,22 @@ def server_manager(config):
       f.write(str(pid))
 
     start = time.time()
-    try:
-      print "Listening on %s" % config['port']
-      app.run(port = int(config['port']), host = '0.0.0.0')
 
-    except Exception as exc:
-      if time.time() - start < 5:
-        print "Error, can't start server ... perhaps %s is already in use?" % config['port']
+    patience = 20
+    attempt = 1
 
-      shutdown()
+    while time.time() - start < patience:
+      try:
+        print "Listening on %s" % config['port']
+        app.run(port = int(config['port']), host = '0.0.0.0')
+
+      except Exception as exc:
+        if time.time() - start < patience:
+          print "[attempt: %d] Error, can't start server ... perhaps %s is already in use?" % (attempt, config['port'])
+          attempt += 1
+          time.sleep(1)
+
+    shutdown_manager()
 
 ##
 ## Stream management functions
@@ -1316,7 +1347,7 @@ def read_config(config):
       oldserver = f.readline()
       try:  
         os.kill(int(oldserver), 15)
-        time.sleep(2)
+        time.sleep(5)
 
       except:
         pass
