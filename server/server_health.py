@@ -24,11 +24,14 @@ db = db_connect()
 
 cycle_time = 60 * 60 * 12
 
+# this trick robbed from http://stackoverflow.com/questions/702834/whats-the-common-practice-for-enums-in-python
+ID, CALLSIGN, DESCRIPTION, BASE_URL, LAST_SEEN, FIRST_SEEN, PINGS, DROPS, LATENCY, ACTIVE, LOG, NOTES = range(12)
+
 while True:
   # retrieve a list of the active stations
   station_list = db['c'].execute('select * from stations where active == 1')
 
   for station in station_list:
-    print station
+    print station[BASE_URL]
 
   time.sleep(cycle_time)
