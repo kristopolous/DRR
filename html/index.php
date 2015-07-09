@@ -178,7 +178,12 @@ include_once('db.php');
             encodeURI(map['name'] || 'stream')
           ].join('/');
 
-          $("#podcast-url").html('<a href="' + url.replace(/\s/,'') +'">' + url.replace(/^http:../,'').replace(/\s/, '<br>') + '</a>');
+          var parts = url.split(' '), single = url.replace(/\s/,'');
+
+          $("#podcast-url").html(
+            '<a href="' + single + '">' + parts[0].replace(/^http:../,'') + '</a>' +
+            '<a href="' + single + '">' + parts[1] + '</a>'
+          );
           $("#podcast-notdone").hide();
           $("#podcast-done").show();
         } else {
