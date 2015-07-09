@@ -1,5 +1,6 @@
 #!/usr/bin/python -O
 import argparse
+import sys
 import socket
 
 #
@@ -24,51 +25,49 @@ import time
 conn = sqlite3.connect('../db/main.db')
 db = {'conn': conn, 'c': conn.cursor()}
 
-CYCLE_TIME = 60 * 60 * 12
-
 # this trick robbed from http://stackoverflow.com/questions/702834/whats-the-common-practice-for-enums-in-python
 ID, CALLSIGN, DESCRIPTION, BASE_URL, LAST_SEEN, FIRST_SEEN, PINGS, DROPS, LATENCY, ACTIVE, LOG, NOTES = range(12)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-q", "--query", default="heartbeat", help="query to send to the servers (if heartbeat then this daemonizes)")
 parser.add_argument("-c", "--callsign", default="all", help="station to query (default all)")
+parser.add_argument('-l', '--list', action='store_true', help='show stations')
 args = parser.parse_args()
 
-while True:
+# retrieve a list of the active stations
+if args.callsign == 'all':
+  station_list = db['c'].execute('select * from stations where active = 1')
 
-  # retrieve a list of the active stations
-  if args.callsign == 'all':
-    station_list = db['c'].execute('select * from stations where active = 1')
+else:
+  station_list = db['c'].execute('select * from stations where active = 1 and callsign = "%s"' % args.callsign)
 
-  else:
-    station_list = db['c'].execute('select * from stations where active = 1 and callsign = "%s"' % args.callsign)
-
+if args.list:
   for station in station_list.fetchall():
-    url = station[BASE_URL]
+    print station[CALLSIGN]
+  sys.exit(0)
 
-    try:
-      start = time.time()
+for station in station_list.fetchall():
+  url = station[BASE_URL]
 
-      stream = urllib2.urlopen("http://%s/%s" % (url, args.query))
-      data = stream.read()
+  try:
+    start = time.time()
 
-      stop = time.time()
+    stream = urllib2.urlopen("http://%s/%s" % (url, args.query))
+    data = stream.read()
 
-      print "---------\n%s\n%s" % (url, data)
+    stop = time.time()
 
-      db['c'].execute('update stations set latency = latency + ?, pings = pings + 1, last_seen = current_timestamp where id = ?', ( str(stop - start), str(station[ID]) ))
+    print "---------\n%s\n%s" % (url, data)
 
-    except urllib2.URLError:
-      db['c'].execute('update stations set drops = drops + 1 where id = ?', str(station[ID]))
+    db['c'].execute('update stations set latency = latency + ?, pings = pings + 1, last_seen = current_timestamp where id = ?', ( str(stop - start), str(station[ID]) ))
 
-    except urllib2.HTTPError:
-      # Say that we couldn't see this station
-      db['c'].execute('update stations set drops = drops + 1 where id = ?', str(station[ID]))
+  except urllib2.URLError:
+    db['c'].execute('update stations set drops = drops + 1 where id = ?', str(station[ID]))
 
-  if args.query == 'heartbeat':
-    db['conn'].commit()
-    time.sleep(CYCLE_TIME)
+  except urllib2.HTTPError:
+    # Say that we couldn't see this station
+    db['c'].execute('update stations set drops = drops + 1 where id = ?', str(station[ID]))
 
-  else:
-    break
-  
+if args.query == 'heartbeat':
+  db['conn'].commit()
+
