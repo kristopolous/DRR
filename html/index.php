@@ -181,7 +181,7 @@ include_once('db.php');
           var parts = url.split(' '), single = url.replace(/\s/,'');
 
           $("#podcast-url").html(
-            '<a href="' + single + '">' + parts[0].replace(/^http:../,'') + '</a>' +
+            '<a href="' + single + '">' + parts[0].replace(/^http:../,'') + '</a><br>' +
             '<a href="' + single + '">' + parts[1] + '</a>'
           );
           $("#podcast-notdone").hide();
