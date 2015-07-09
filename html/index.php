@@ -133,30 +133,7 @@ include_once('db.php');
 						<h2>Questions or comments</h2>
 					</header>
 
-          <p>For questions, comments, or a device which isn't supported, please speak up! Thanks.</p>
-
-					<form method="post" action="#">
-						<div class="row">
-							<div class="6u 12u(mobilep)">
-								<input type="text" name="name" placeholder="Name" />
-							</div>
-							<div class="6u 12u(mobilep)">
-								<input type="email" name="email" placeholder="Email" />
-							</div>
-						</div>
-						<div class="row">
-							<div class="12u">
-								<textarea name="message" placeholder="Message" rows="6"></textarea>
-							</div>
-						</div>
-						<div class="row">
-							<div class="12u">
-								<ul class="actions">
-									<li><input type="submit" value="Send Message" /></li>
-								</ul>
-							</div>
-						</div>
-					</form>
+          <p>For questions, comments, or to report a device that isn't supported, please <a href="mailto:indycast@googlegroups.com">send an email</a> to <a href="https://groups.google.com/d/forum/indycast">the mailing list</a>. Thanks!</p>
 
 					<ul class="icons">
 						<li><a href="https://twitter.com/indycaster" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
