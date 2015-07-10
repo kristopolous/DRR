@@ -195,7 +195,7 @@ include_once('db.php');
             " " + map.day.toLowerCase(),
             map.start.replace(/\s+/,'').toLowerCase(),
             map.duration,
-            encodeURI(map.name || 'stream').replace(/%20/g,'+')
+            encodeURI(map.name || 'stream').replace(/%20/g,'_')
           ].join('/') + ".xml";
 
           var parts = url.split(' '), single = url.replace(/\s/,'');
