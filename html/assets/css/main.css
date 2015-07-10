@@ -3217,6 +3217,7 @@ form#donate {
   #time * {
     text-align: center;
   }
+  #rss-time { font-size: 0.75em}
 }
 #start {
   width: 7em;
