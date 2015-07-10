@@ -156,7 +156,7 @@ include_once('db.php');
           </span>
         </span>
         <span id='podcast-link'>
-          <%= parts.join('<br>') %>
+          <%= parts.join(' <br> ') %>
         </span>
       </script>
 
