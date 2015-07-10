@@ -145,8 +145,24 @@ include_once('db.php');
 
 				</div>
 			</div>
+      <script type='text/template' id='tpl-podcast'>
+        <span id='rss-top'>
+          <span>
+            <img src='images/rss_64.png'>
+          </span>
+          <span id='rss-header'>
+            <h3 id='rss-title'><%= name %></h3>
+            <span id='rss-time'><%= day %> at <%= time %> on <%= station %></span>
+          </span>
+        </span>
+        <span>
+          <a href='<%= single %>'><%= parts[0] %></a>
+          <a href='<%= single %>'><%= parts[1] %></a>
+        </span>
+      </script>
 
 		<!-- Scripts -->
+      <script src='assets/js/underscore-min.js'></script>
 			<script src="assets/js/jquery.min.js"></script>
 			<script src="assets/js/skel.min.js"></script>
 			<script src="assets/js/util.js"></script>
@@ -157,6 +173,7 @@ include_once('db.php');
       <script>
       var 
         ev = EvDa({start: '', name: '', station: ''}),
+        tpl = {},
         time_re = /^\s*(1[0-2]|[1-9])(:[0-5][0-9])?\s*[ap]m\s*$/i;
 
       ev('', function(map) {
@@ -173,16 +190,25 @@ include_once('db.php');
             map.station,
             " " + map.day.toLowerCase(),
             map.start.replace(/\s+/,'').toLowerCase(),
-            map['duration'],
-            encodeURI(map['name'] || 'stream').replace(/%20/g,'+')
-          ].join('/');
+            map.duration,
+            encodeURI(map.name || 'stream').replace(/%20/g,'+')
+          ].join('/') + ".xml";
 
           var parts = url.split(' '), single = url.replace(/\s/,'');
 
-          $("#podcast-url").html(
-            '<a href="' + single + '">' + parts[0] + '</a>' +
-            '<a href="' + single + '">' + parts[1] + '</a>'
+          $("#podcast-url").click(function(){
+            document.location = single;
+          }).html(
+            tpl.podcast({
+              name: (map.name || ''),
+              day: map.day,
+              time: map.start,
+              station: map.station.toUpperCase(),
+              single: single,
+              parts: parts
+            })
           );
+
           $("#podcast-notdone").hide();
           $("#podcast-done").show();
         } else {
@@ -211,9 +237,12 @@ include_once('db.php');
       }
 
       $(function() {
+        tpl.podcast = _.template($("#tpl-podcast").html());
+
         $(".radio-group a").hover(function(){
           $("#description").html("<h2>" + this.innerHTML + "</h2>" + htmldo(this.getAttribute('desc'))).show();
         });
+
         $(".group a").click(function(){
           var node = $(this).parentsUntil("div").last();
           ev(node[0].id, this.getAttribute('data') || this.innerHTML);
@@ -222,9 +251,25 @@ include_once('db.php');
         $("#start,#name").bind('blur focus change keyup',function(){
           ev(this.id, this.value, {node: this});
         });
+        
+        for(var el in {start:1,name:1}) {
+          var $node = $("#" + el),
+              val = $node.val();
 
+          if(val) {
+            ev(el, val, {node: $node.get(0)});
+          }
+        }
+        
         ev.fire('start');
         ev.fire('name');
+        ev({
+          station: 'kxlu',
+          name: 'Headspace',
+          day: 'thu',
+          start: '8pm',
+          duration: '2hr'
+        })
       });
       </script>
 	</body>
