@@ -3224,6 +3224,10 @@ form#donate {
   display: inline-block;
   text-align: right;
 }
+#podcast-url:hover {
+  background: #3C9767;
+  box-shadow: inset 0 0 10px 3px rgba(78, 185, 128, 0.85);
+}
 #podcast-url h3 {
   font-weight: normal;
   font-size: 1.6em;
@@ -3260,7 +3264,7 @@ form#donate {
   border: 2px solid rgba(78, 185, 128, 1);
   background: rgba(78, 185, 128, 0.85);
 }
-#podcast-url a { 
+#podcast-link { 
   display: block;
   color: white;
   text-decoration: none;
