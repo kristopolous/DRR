@@ -1016,6 +1016,9 @@ def server_manager(config):
     # Strip the .xml from the showname ... this will be used in our xml.
     showname = re.sub('.xml$', '', showname)
 
+    # We come in with spaces as underscores so here we translate that back
+    showname = re.sub('_', ' ', showname)
+
     # This will register the intent if needed for future recordings
     # (that is if we are in ondemand mode)
     db_register_intent(start_time, duration)
