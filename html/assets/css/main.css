@@ -3217,7 +3217,9 @@ form#donate {
   #time * {
     text-align: center;
   }
-  #rss-time { font-size: 0.75em}
+  #rss-time { 
+    font-size: 0.75em
+  }
 }
 #start {
   width: 7em;
@@ -3247,7 +3249,9 @@ form#donate {
   text-align: left;
   font-weight: normal;
 }
-#rss-time { display: block; }
+#rss-time { 
+  display: block; 
+}
 #podcast-url img {
   vertical-align: bottom;
   display: inline-block;
