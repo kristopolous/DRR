@@ -152,7 +152,7 @@ include_once('db.php');
           </span>
           <span id='rss-header'>
             <h3 id='rss-title'><%= name %></h3>
-            <span id='rss-time'><%= day %> at <%= time %> on <%= station %></span>
+            <span id='rss-time'><%= day %>s at <%= time %> on <%= station %></span>
           </span>
         </span>
         <span>
@@ -173,6 +173,10 @@ include_once('db.php');
       <script>
       var 
         ev = EvDa({start: '', name: '', station: ''}),
+        fullName = {
+          sun: 'Sunday', mon: 'Monday', tue: 'Tuesday', wed: 'Wednesday',
+          thu: 'Thursday', fri: 'Friday', sat: 'Saturday', sun: 'Sunday'
+        },
         tpl = {},
         time_re = /^\s*(1[0-2]|[1-9])(:[0-5][0-9])?\s*[ap]m\s*$/i;
 
@@ -201,7 +205,7 @@ include_once('db.php');
           }).html(
             tpl.podcast({
               name: (map.name || ''),
-              day: map.day,
+              day: fullName[map.day],
               time: map.start,
               station: map.station.toUpperCase(),
               single: single,
