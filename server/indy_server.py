@@ -849,13 +849,14 @@ def server_generate_xml(showname, feed_list, duration, start_minute, weekday, st
 
   tree = ET.ElementTree(root)
 
-  return Response(ET.tostring(tree, xml_declaration=True, encoding="utf-8"), mimetype = 'text/xml')
-
+  return Response(ET.tostring(tree, xml_declaration=True, encoding="utf-8"), mimetype = 'application/rss+xml')
 
 
 def server_error(errstr):
+  """ Returns a server error as a JSON result """
   return jsonify({'result': False, 'error':errstr}), 500
     
+
 def server_manager(config):
   global g_queue
 
@@ -916,6 +917,7 @@ def server_manager(config):
 
     os.chdir(cwd)
 
+
   @app.route('/upgrade')
   def upgrade():
     """
@@ -938,6 +940,7 @@ def server_manager(config):
 
     os.chdir(cwd)
     return 'Version %s is current' % __version__
+
 
   @app.route('/heartbeat')
   def heartbeat():
