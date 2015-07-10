@@ -84,7 +84,7 @@ include_once('db.php');
 				<footer class="major container">
           <div id="podcast-done">
             <h3>Your podcast link</h3>
-            <span id="podcast-url"></span>
+            <a id="podcast-url"></a>
           </div>
           <div id="podcast-notdone">
             <h3>The podcast will appear here</h3>
@@ -113,7 +113,7 @@ include_once('db.php');
             <h3>Join the Federation</h3>
             <p>Each server gets a hostname corresponding to the callsign of the station.  For instance, kxlu.indycast.net and kdvs.indycast.net are different servers responsible for each station.</p>
 
-            <p>If you'd like to add or support a station, <a href='https://github.com/kristopolous/DRR/wiki/Join-the-Federation'>join the federation</a>.</p>
+            <p><a href='https://github.com/kristopolous/DRR/wiki/Join-the-Federation'>If you'd like to add or support a station, join the federation</a>.</p>
 
             <p>We also accept <a href=https://github.com/kristopolous/DRR/wiki/How-To-Donate>donations of VPS nodes</a> and money. Thanks for supporting indy radio in the 21st century.
             <div class="active-list">
@@ -155,9 +155,8 @@ include_once('db.php');
             <span id='rss-time'><%= day %>s at <%= time %> on <%= station %></span>
           </span>
         </span>
-        <span>
-          <a href='<%= single %>'><%= parts[0] %></a>
-          <a href='<%= single %>'><%= parts[1] %></a>
+        <span id='podcast-link'>
+          <%= parts.join('<br>') %>
         </span>
       </script>
 
@@ -200,9 +199,7 @@ include_once('db.php');
 
           var parts = url.split(' '), single = url.replace(/\s/,'');
 
-          $("#podcast-url").click(function(){
-            document.location = single;
-          }).html(
+          $("#podcast-url").attr({'href': single }).html(
             tpl.podcast({
               name: (map.name || ''),
               day: fullName[map.day],
