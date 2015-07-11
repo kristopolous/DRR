@@ -3,7 +3,7 @@
 header('Content-type: image/png');
 
 $height = 1715;
-$width = 1920;
+$width = 1715;
 
 $show = $_GET['show'];
 $draw = new ImagickDraw();
@@ -15,8 +15,20 @@ $draw = new ImagickDraw();
 $draw->setFillColor('#fff');
 
 /* Font properties */
-$draw->setFont('Droid-Sans');
-$draw->setFontSize( 420 );
+$draw->setFont('DejaVu-Sans-Bold');
+$wordList = explode(' ', $show);
+$maxLength = 0;
+
+foreach ($wordList as $word) {
+  $maxLength = max(strlen($word), $maxLength);
+}
+
+$fontsize = 420;
+if($maxLength > 6) {
+  $fontsize = (6 / $maxLength) * $fontsize;
+}
+
+$draw->setFontSize( $fontsize );
 
 $draw->setStrokeColor('#000');
 $draw->setStrokeWidth(4);
@@ -30,13 +42,16 @@ $outputImage->trimImage(0); //Cut off transparent border
 //$outputImage->resizeImage(300,0, imagick::FILTER_CATROM, 0.9, false);
 
 
-$image = new Imagick('images/radio-backdrop.png');
+$image = new Imagick('images/radio-backdrop_1715.png');
 
-$outputImage->compositeImage($image, imagick::COLOR_ALPHA, 0, 0);
+$image->compositeImage($outputImage, imagick::COLOR_ALPHA, 0, 0);
 // If 0 is provided as a width or height parameter,
 // aspect ratio is maintained
 //$image->annotateImage($draw, 10, 45, 0, $show);
 //$image->thumbnailImage(100, 0);
 
-echo $image;
+// I use curl to debug ... when I do that I don't want the image to come back
+if(! preg_match('/curl/', $_SERVER['HTTP_USER_AGENT'])) {
+  echo $image;
+}
 
