@@ -44,7 +44,17 @@ $outputImage->trimImage(0); //Cut off transparent border
 
 $image = new Imagick('images/radio-backdrop_1715.png');
 
-$image->compositeImage($outputImage, imagick::COLOR_ALPHA, 0, 0);
+$map = 'abcdefghijklmnopqrstuvwxyz';
+
+$parts = strtolower(substr($show, 0, 2));
+
+$offset = strpos($map, $parts[0]) * 26 + strpos($map, $parts[1]);
+$hue = floor($offset / (26 * 26) * 360);
+
+$color = new ImagickPixel("hsl($hue, 150, 110)");
+$image->colorizeImage($color, 1);
+
+//$image->compositeImage($outputImage, imagick::COLOR_ALPHA, 0, 0);
 // If 0 is provided as a width or height parameter,
 // aspect ratio is maintained
 //$image->annotateImage($draw, 10, 45, 0, $show);
