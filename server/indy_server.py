@@ -16,6 +16,7 @@ import struct
 import sys
 import time
 import socket
+import StringIO
 
 #
 # This is needed to force ipv4 on ipv6 devices. It's sometimes needed
@@ -49,6 +50,7 @@ g_config = {}
 g_db = {}
 g_download_pid = 0
 g_manager_pid = 0
+g_params = {}
 __version__ = os.popen("git describe").read().strip()
 
 # Most common frame-length ... in practice, I haven't 
@@ -1084,6 +1086,8 @@ def stream_download(callsign, url, my_pid, fname):
   Follows redirects and parses out basic m3u
   """
 
+  global g_params
+
   change_proc_name("%s-download" % callsign)
 
   nl = {'stream': False}
@@ -1092,13 +1096,27 @@ def stream_download(callsign, url, my_pid, fname):
     sys.exit(0)
 
   def cback(data): 
-    global g_config, g_queue
+    global g_config, g_queue, g_params
 
-    if len(data) < 200 and re.match('https?://', data):
-      # If we are getting a redirect then we don't mind, we
-      # just put it in the stream and then we leave
-      g_queue.put(('stream', data.strip()))
-      return True
+    if g_params['isFirst'] == True:
+      g_params['isFirst'] = False
+      if len(data) < 200:
+        if re.match('https?://', data):
+          # If we are getting a redirect then we don't mind, we
+          # just put it in the stream and then we leave
+          g_queue.put(('stream', data.strip()))
+          return True
+
+        # A pls style playlist
+        elif data[0] == '[':
+          logging.info("Found a pls, using the File1 parameter");
+          # from http://stackoverflow.com/questions/21766451/how-to-read-config-from-string-or-list
+          buf = StringIO.StringIO(data)
+          Config = ConfigParser.ConfigParser()
+          Config.readfp(buf)
+          playlist = config_section_map('playlist', Config)
+          g_queue.put(('stream', playlist['file1'].strip()))
+          return True
 
     g_queue.put(('heartbeat', True))
 
@@ -1115,12 +1133,12 @@ def stream_download(callsign, url, my_pid, fname):
     if not manager_is_running():
       shutdown()
 
-
   # signal.signal(signal.SIGTERM, dl_stop)
   c = pycurl.Curl()
   c.setopt(c.URL, url)
   c.setopt(pycurl.WRITEFUNCTION, cback)
   c.setopt(pycurl.FOLLOWLOCATION, True)
+  g_params['isFirst'] = True
 
   try:
     c.perform()
