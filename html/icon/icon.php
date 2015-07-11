@@ -92,10 +92,9 @@ $draw->setFontSize( get_font_size($show) );
 $draw->setStrokeColor("hsl($hue, 300, 70)");
 $draw->setFillColor("hsl($hue, 300, 230)");
 $draw->setStrokeWidth(max(min(18 * (450 / $out_res), 30), 6));
-$draw->setStrokeAntialias(true);  //try with and without
-$draw->setTextAntialias(true);  //try with and without
+$draw->setStrokeAntialias(true);
+$draw->setTextAntialias(true); 
 $draw->setGravity(imagick::GRAVITY_NORTH);
-
 
 $image->annotateImage($draw, 5, 45, 2, $show);
 $image->thumbnailImage($out_res, 0);
