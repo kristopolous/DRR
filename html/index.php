@@ -50,13 +50,13 @@ include_once('db.php');
 
               <label for="day">day of week to record on</label>
               <ul class="week-group group" id="day">
-                <li><a class="button">Sun</a></li>
-                <li><a class="button">Mon</a></li>
-                <li><a class="button">Tue</a></li>
-                <li><a class="button">Wed</a></li>
-                <li><a class="button">Thu</a></li>
-                <li><a class="button">Fri</a></li>
-                <li><a class="button">Sat</a></li>
+                <li><a class="button">sun</a></li>
+                <li><a class="button">mon</a></li>
+                <li><a class="button">tue</a></li>
+                <li><a class="button">wed</a></li>
+                <li><a class="button">thu</a></li>
+                <li><a class="button">fri</a></li>
+                <li><a class="button">sat</a></li>
               </ul>
               <div id='time'>
                 <label for="start">Starting at</label>
@@ -84,7 +84,7 @@ include_once('db.php');
 				<footer class="major container">
           <div id="podcast-done">
             <h3>Your podcast link</h3>
-            <span id="podcast-url"></span>
+            <a id="podcast-url"></a>
           </div>
           <div id="podcast-notdone">
             <h3>The podcast will appear here</h3>
@@ -113,7 +113,7 @@ include_once('db.php');
             <h3>Join the Federation</h3>
             <p>Each server gets a hostname corresponding to the callsign of the station.  For instance, kxlu.indycast.net and kdvs.indycast.net are different servers responsible for each station.</p>
 
-            <p>If you'd like to add or support a station, <a href='https://github.com/kristopolous/DRR/wiki/Join-the-Federation'>join the federation</a>.</p>
+            <p><a href='https://github.com/kristopolous/DRR/wiki/Join-the-Federation'>If you'd like to add or support a station, join the federation</a>.</p>
 
             <p>We also accept <a href=https://github.com/kristopolous/DRR/wiki/How-To-Donate>donations of VPS nodes</a> and money. Thanks for supporting indy radio in the 21st century.
             <div class="active-list">
@@ -145,8 +145,23 @@ include_once('db.php');
 
 				</div>
 			</div>
+      <script type='text/template' id='tpl-podcast'>
+        <span id='rss-top'>
+          <span>
+            <img src='images/rss_64.png'>
+          </span>
+          <span id='rss-header'>
+            <h3 id='rss-title'><%= name %></h3>
+            <span id='rss-time'><%= day %>s at <%= time %> on <%= station %></span>
+          </span>
+        </span>
+        <span id='podcast-link'>
+          <%= parts.join(' <br> ') %>
+        </span>
+      </script>
 
 		<!-- Scripts -->
+      <script src='assets/js/underscore-min.js'></script>
 			<script src="assets/js/jquery.min.js"></script>
 			<script src="assets/js/skel.min.js"></script>
 			<script src="assets/js/util.js"></script>
@@ -157,6 +172,11 @@ include_once('db.php');
       <script>
       var 
         ev = EvDa({start: '', name: '', station: ''}),
+        fullName = {
+          sun: 'Sunday', mon: 'Monday', tue: 'Tuesday', wed: 'Wednesday',
+          thu: 'Thursday', fri: 'Friday', sat: 'Saturday'
+        },
+        tpl = {},
         time_re = /^\s*(1[0-2]|[1-9])(:[0-5][0-9])?\s*[ap]m\s*$/i;
 
       ev('', function(map) {
@@ -167,22 +187,33 @@ include_once('db.php');
         }
 
         if(map.station && map.day && map.start && map.duration) {
+          if (!map.name) {
+            map.name = 'stream';
+          }
+
           map.station = map.station.toLowerCase();
           url = 'http://' + [
             'indycast.net',
             map.station,
-            " " + map.day.toLowerCase(),
+            " " + map.day,
             map.start.replace(/\s+/,'').toLowerCase(),
-            map['duration'],
-            encodeURI(map['name'] || 'stream').replace(/%20/g,'+')
-          ].join('/');
+            map.duration,
+            encodeURI(map.name).replace(/%20/g,'_')
+          ].join('/') + ".xml";
 
           var parts = url.split(' '), single = url.replace(/\s/,'');
 
-          $("#podcast-url").html(
-            '<a href="' + single + '">' + parts[0] + '</a>' +
-            '<a href="' + single + '">' + parts[1] + '</a>'
+          $("#podcast-url").attr({'href': single }).html(
+            tpl.podcast({
+              name: (map.name || ''),
+              day: fullName[map.day],
+              time: map.start,
+              station: map.station.toUpperCase(),
+              single: single,
+              parts: parts
+            })
           );
+
           $("#podcast-notdone").hide();
           $("#podcast-done").show();
         } else {
@@ -211,9 +242,12 @@ include_once('db.php');
       }
 
       $(function() {
+        tpl.podcast = _.template($("#tpl-podcast").html());
+
         $(".radio-group a").hover(function(){
           $("#description").html("<h2>" + this.innerHTML + "</h2>" + htmldo(this.getAttribute('desc'))).show();
         });
+
         $(".group a").click(function(){
           var node = $(this).parentsUntil("div").last();
           ev(node[0].id, this.getAttribute('data') || this.innerHTML);
@@ -222,9 +256,28 @@ include_once('db.php');
         $("#start,#name").bind('blur focus change keyup',function(){
           ev(this.id, this.value, {node: this});
         });
+        
+        for(var el in {start:1,name:1}) {
+          var $node = $("#" + el),
+              val = $node.val();
 
+          if(val) {
+            ev(el, val, {node: $node.get(0)});
+          }
+        }
+        
         ev.fire('start');
         ev.fire('name');
+
+        /*
+        ev({
+          station: 'kxlu',
+          name: 'Headspace',
+          day: 'thu',
+          start: '8pm',
+          duration: '2hr'
+        })
+         */
       });
       </script>
 	</body>

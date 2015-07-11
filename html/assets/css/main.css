@@ -3217,14 +3217,50 @@ form#donate {
   #time * {
     text-align: center;
   }
+  #rss-time { 
+    font-size: 0.75em
+  }
 }
 #start {
   width: 7em;
   display: inline-block;
   text-align: right;
 }
+#podcast-url:hover {
+  background: #3C9767;
+  box-shadow: inset 0 0 10px 3px rgba(78, 185, 128, 0.85);
+}
+#podcast-url h3 {
+  font-weight: normal;
+  font-size: 1.6em;
+  letter-spacing: normal;
+  color: white;
+  margin: 0;
+  text-transform: none;
+  display: inline-block;
+  line-height: 1em;
+}
+#rss-top {
+  text-align: left;
+}
+#rss-header {
+  line-height: 1em;
+  display: inline-block;
+  text-align: left;
+  font-weight: normal;
+}
+#rss-time { 
+  display: block; 
+}
+#podcast-url img {
+  vertical-align: bottom;
+  display: inline-block;
+}
 #podcast-url {
+  cursor: pointer;
+  color: white;
   font-weight: bold;
+  text-align: left;
   display: inline-block;
   font-size: 1.3em;
   border-radius: 8px;
@@ -3232,7 +3268,7 @@ form#donate {
   border: 2px solid rgba(78, 185, 128, 1);
   background: rgba(78, 185, 128, 0.85);
 }
-#podcast-url a { 
+#podcast-link { 
   display: block;
   color: white;
   text-decoration: none;

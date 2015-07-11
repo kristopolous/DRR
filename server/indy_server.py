@@ -849,7 +849,7 @@ def server_generate_xml(showname, feed_list, duration, start_minute, weekday, st
 
   tree = ET.ElementTree(root)
 
-  return Response(ET.tostring(tree, xml_declaration=True, encoding="utf-8"), mimetype = 'application/rss+xml')
+  return Response(ET.tostring(tree, xml_declaration=True, encoding="utf-8"), mimetype = 'text/xml')
 
 
 def server_error(errstr):
@@ -1015,6 +1015,9 @@ def server_manager(config):
     
     # Strip the .xml from the showname ... this will be used in our xml.
     showname = re.sub('.xml$', '', showname)
+
+    # We come in with spaces as underscores so here we translate that back
+    showname = re.sub('_', ' ', showname)
 
     # This will register the intent if needed for future recordings
     # (that is if we are in ondemand mode)

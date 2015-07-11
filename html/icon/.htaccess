@@ -1,0 +1,5 @@
+Options +FollowSymLinks
+RewriteEngine on
+
+RewriteCond %{REQUEST_FILENAME} !-f 
+RewriteRule ^(.+)$      icon.php?show=$1 [L]
