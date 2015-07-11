@@ -21,34 +21,32 @@ if(count($matches)) {
 } 
 
 // from http://stackoverflow.com/questions/5746537/how-can-i-wrap-text-using-imagick-in-php-so-that-it-is-drawn-as-multiline-text
-function wordWrapAnnotation($image, $draw, $text, $maxWidth)
-{   
-    $text = trim($text);
+function wordWrapAnnotation($image, $draw, $text, $maxWidth) {   
+  $text = trim($text);
 
-    $words = preg_split('%\s%', $text, -1, PREG_SPLIT_NO_EMPTY);
-    $lines = array();
-    $i = 0;
-    $lineHeight = 0;
+  $words = preg_split('%\s%', $text, -1, PREG_SPLIT_NO_EMPTY);
+  $lines = array();
+  $i = 0;
+  $lineHeight = 0;
 
-    while (count($words) > 0)
-    {   
-        $metrics = $image->queryFontMetrics($draw, implode(' ', array_slice($words, 0, ++$i)));
-        $lineHeight = max($metrics['textHeight'], $lineHeight);
+  while (count($words) > 0) {   
+    $metrics = $image->queryFontMetrics($draw, implode(' ', array_slice($words, 0, ++$i)));
+    $lineHeight = max($metrics['textHeight'], $lineHeight);
 
-        // check if we have found the word that exceeds the line width
-        if ($metrics['textWidth'] > $maxWidth or count($words) < $i) 
-        {   
-            // handle case where a single word is longer than the allowed line width (just add this as a word on its own line?)
-            if ($i == 1)
-                $i++;
+    // check if we have found the word that exceeds the line width
+    if ($metrics['textWidth'] > $maxWidth or count($words) < $i) {   
+      // handle case where a single word is longer than the allowed line width (just add this as a word on its own line?)
+      if ($i == 1) {
+        $i++;
+      }
 
-            $lines[] = implode(' ', array_slice($words, 0, --$i));
-            $words = array_slice($words, $i);
-            $i = 0;
-        }   
+      $lines[] = implode(' ', array_slice($words, 0, --$i));
+      $words = array_slice($words, $i);
+      $i = 0;
     }   
+  }   
 
-    return array($lines, $lineHeight);
+  return array($lines, $lineHeight);
 }
 
 function get_font_size($phrase) {
@@ -59,11 +57,11 @@ function get_font_size($phrase) {
     $maxLength = max(strlen($word), $maxLength);
   }
 
-  $fontsize = 410;
+  $fontsize = 397;
   if($maxLength > 6) {
     $fontsize = (6 / $maxLength) * $fontsize;
   }
-  return $fontsize;
+  return max($fontsize, 200);
 }
 
 function tint_bg(&$image, $phrase) {
@@ -94,12 +92,13 @@ $draw->setFillColor("white");
 $draw->setStrokeWidth(6);//max(min(18 * (450 / $out_res), 30), 6));
 $draw->setStrokeAntialias(true);
 $draw->setTextAntialias(true); 
+$draw->setTextAlignment(imagick::ALIGN_LEFT);
 $draw->setGravity(imagick::GRAVITY_NORTH);
 
-list($parts, $height) = wordWrapAnnotation($image, $draw, $show, 1650);
+list($parts, $height) = wordWrapAnnotation($image, $draw, $show, 1635);
 $ix = 0;
 foreach($parts as $line) {
-  $image->annotateImage($draw, 2, $ix * $height, 2, $line);
+  $image->annotateImage($draw, 40, ($ix + 1) * $height, 0, $line);
   $ix ++;
 }
 
