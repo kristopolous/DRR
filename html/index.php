@@ -50,13 +50,13 @@ include_once('db.php');
 
               <label for="day">day of week to record on</label>
               <ul class="week-group group" id="day">
-                <li><a class="button">Sun</a></li>
-                <li><a class="button">Mon</a></li>
-                <li><a class="button">Tue</a></li>
-                <li><a class="button">Wed</a></li>
-                <li><a class="button">Thu</a></li>
-                <li><a class="button">Fri</a></li>
-                <li><a class="button">Sat</a></li>
+                <li><a class="button">sun</a></li>
+                <li><a class="button">mon</a></li>
+                <li><a class="button">tue</a></li>
+                <li><a class="button">wed</a></li>
+                <li><a class="button">thu</a></li>
+                <li><a class="button">fri</a></li>
+                <li><a class="button">sat</a></li>
               </ul>
               <div id='time'>
                 <label for="start">Starting at</label>
@@ -174,7 +174,7 @@ include_once('db.php');
         ev = EvDa({start: '', name: '', station: ''}),
         fullName = {
           sun: 'Sunday', mon: 'Monday', tue: 'Tuesday', wed: 'Wednesday',
-          thu: 'Thursday', fri: 'Friday', sat: 'Saturday', sun: 'Sunday'
+          thu: 'Thursday', fri: 'Friday', sat: 'Saturday'
         },
         tpl = {},
         time_re = /^\s*(1[0-2]|[1-9])(:[0-5][0-9])?\s*[ap]m\s*$/i;
@@ -187,14 +187,18 @@ include_once('db.php');
         }
 
         if(map.station && map.day && map.start && map.duration) {
+          if (!map.name) {
+            map.name = 'stream';
+          }
+
           map.station = map.station.toLowerCase();
           url = 'http://' + [
             'indycast.net',
             map.station,
-            " " + map.day.toLowerCase(),
+            " " + map.day,
             map.start.replace(/\s+/,'').toLowerCase(),
             map.duration,
-            encodeURI(map.name || 'stream').replace(/%20/g,'_')
+            encodeURI(map.name).replace(/%20/g,'_')
           ].join('/') + ".xml";
 
           var parts = url.split(' '), single = url.replace(/\s/,'');
