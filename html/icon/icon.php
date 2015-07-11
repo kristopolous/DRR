@@ -1,12 +1,12 @@
 <?php
-$show = $_GET['show'];
+$origFilename = $show = str_replace('/', '_', $_GET['show']);
+
+if(strpos($show, '.png') === False) {
+  echo 'Icons must end in png';
+  exit(-1);
+}
 
 header('Content-type: image/png');
-
-// TODO: security vuln.
-if(file_exists($show)) {
-  return file_get_contents($show);  
-}
 
 // strip the extension.
 $show = preg_replace('/.png$/', '', $show);
@@ -103,6 +103,8 @@ foreach($parts as $line) {
 }
 
 $image->thumbnailImage($out_res, 0);
+$image->setImageDepth(2);
+$image->writeImage($origFilename);
 
 // I use curl to debug ... when I do that I don't want the image to come back
 if(! preg_match('/curl/', $_SERVER['HTTP_USER_AGENT'])) {
