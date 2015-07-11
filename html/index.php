@@ -265,6 +265,7 @@ include_once('db.php');
         ev.fire('start');
         ev.fire('name');
 
+        /*
         ev({
           station: 'kxlu',
           name: 'Headspace',
@@ -272,6 +273,7 @@ include_once('db.php');
           start: '8pm',
           duration: '2hr'
         })
+         */
       });
       </script>
 	</body>
