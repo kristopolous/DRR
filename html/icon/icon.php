@@ -74,7 +74,7 @@ function tint_bg(&$image, $phrase) {
   $offset = strpos($map, $parts[0]) * 26 + strpos($map, $parts[1]);
   $hue = floor($offset / (26 * 26) * 360);
 
-  $strcolor = "hsl($hue, 150, 110)";
+  $strcolor = "hsl($hue, 230, 110)";
   $color = new ImagickPixel($strcolor);
   $image->colorizeImage($color, 1);
   return $hue;
@@ -83,20 +83,26 @@ function tint_bg(&$image, $phrase) {
 $height = 1715;
 $width = 1715;
 $image = new Imagick('../images/radio-backdrop_1715.png');
-$hue =tint_bg($image, $show);
 
 $draw = new ImagickDraw();
+$hue = tint_bg($image, $show);
 $draw->setFont('DejaVu-Sans-Bold');
 
 $draw->setFontSize( get_font_size($show) );
-$draw->setStrokeColor("hsl($hue, 300, 70)");
-$draw->setFillColor("hsl($hue, 300, 230)");
-$draw->setStrokeWidth(max(min(18 * (450 / $out_res), 30), 6));
+$draw->setStrokeColor("black");
+$draw->setFillColor("white");
+$draw->setStrokeWidth(6);//max(min(18 * (450 / $out_res), 30), 6));
 $draw->setStrokeAntialias(true);
 $draw->setTextAntialias(true); 
 $draw->setGravity(imagick::GRAVITY_NORTH);
 
-$image->annotateImage($draw, 5, 45, 2, $show);
+list($parts, $height) = wordWrapAnnotation($image, $draw, $show, 1650);
+$ix = 0;
+foreach($parts as $line) {
+  $image->annotateImage($draw, 2, $ix * $height, 2, $line);
+  $ix ++;
+}
+
 $image->thumbnailImage($out_res, 0);
 
 // I use curl to debug ... when I do that I don't want the image to come back
