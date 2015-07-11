@@ -3,9 +3,22 @@ $show = $_GET['show'];
 
 header('Content-type: image/png');
 
+// TODO: security vuln.
 if(file_exists($show)) {
   return file_get_contents($show);  
 }
+
+// strip the extension.
+$show = preg_replace('/.png$/', '', $show);
+
+// get the resolution.
+preg_match('/_(\d*)$/', $show, $matches);
+$out_res = 512;
+
+if(count($matches)) {
+  $out_res = intval($matches[1]);
+} 
+var_dump($out_res);
 
 $height = 1715;
 $width = 1715;
