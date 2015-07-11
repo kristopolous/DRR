@@ -2,4 +2,5 @@ Options +FollowSymLinks
 RewriteEngine on
 
 RewriteCond %{REQUEST_FILENAME} !-f 
+RewriteRule ^icon/(.+)$      icon.php?show=$1 [L]
 RewriteRule ^(.+)$      forwarder.php?$1 [L]

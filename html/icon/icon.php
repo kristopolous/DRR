@@ -1,11 +1,15 @@
 <?php
+$show = $_GET['show'];
 
 header('Content-type: image/png');
+
+if(file_exists($show)) {
+  return file_get_contents($show);  
+}
 
 $height = 1715;
 $width = 1715;
 
-$show = $_GET['show'];
 $draw = new ImagickDraw();
 
 $draw->setStrokeAntialias(true);  //try with and without
@@ -42,7 +46,7 @@ $outputImage->trimImage(0); //Cut off transparent border
 //$outputImage->resizeImage(300,0, imagick::FILTER_CATROM, 0.9, false);
 
 
-$image = new Imagick('images/radio-backdrop_1715.png');
+$image = new Imagick('../images/radio-backdrop_1715.png');
 
 $map = 'abcdefghijklmnopqrstuvwxyz';
 
