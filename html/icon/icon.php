@@ -92,13 +92,22 @@ $draw->setFillColor("white");
 $draw->setStrokeWidth(6);//max(min(18 * (450 / $out_res), 30), 6));
 $draw->setStrokeAntialias(true);
 $draw->setTextAntialias(true); 
-$draw->setTextAlignment(imagick::ALIGN_LEFT);
-$draw->setGravity(imagick::GRAVITY_NORTH);
-
 list($parts, $height) = wordWrapAnnotation($image, $draw, $show, 1635);
-$ix = 0;
+
+// If we only have one line then we can leave it centered.
+if(count($parts) > 1) {
+  $draw->setTextAlignment(imagick::ALIGN_LEFT);
+  $draw->setGravity(imagick::GRAVITY_NORTH);
+  $ix = 0;
+  $offset = 40;
+} else {
+  $draw->setGravity(imagick::GRAVITY_CENTER);
+  $ix = -1;
+  $offset = 0;
+}
+
 foreach($parts as $line) {
-  $image->annotateImage($draw, 40, ($ix + 1) * $height, 0, $line);
+  $image->annotateImage($draw, $offset, ($ix + 1) * $height, 0, $line);
   $ix ++;
 }
 
