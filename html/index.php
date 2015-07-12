@@ -10,6 +10,22 @@ include_once('db.php');
 		<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
+
+    <meta name="description" content="The world's independent radio - podcasted." />
+    <meta property="og:site_name" content="Indycast" />
+    <meta property="og:type" content="service" />
+    <meta property="og:url" content="http://indycast.net" />
+    <meta property="og:title" content="Indycast" />
+    <meta property="og:description" content="The world's independent radio - podcasted." />
+    <meta property="og:image" content="http://indycast.net/icon/Indycast_1200.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@indycaster" />
+    <meta name="twitter:creator" content="@indycaster" />
+    <meta name="twitter:title" content="Indycast" />
+    <meta name="twitter:url" content="http://indycast.net" />
+    <meta name="twitter:description" content="The world's independent radio - podcasted." />
+    <meta name="twitter:image:src" content="http://indycast.net/icon/Indycast_1200.jpg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 	</head>
 	<body>
 		<!-- Header -->
