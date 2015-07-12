@@ -65,12 +65,13 @@ function get_font_size($phrase) {
 }
 
 function tint_bg(&$image, $phrase) {
-  $map = 'abcdefghijklmnopqrstuvwxyz';
+  $map = 'abcdefghijklmnopqrstuvwxyz0123456789 ';
+  $len = strlen($map);
 
   $parts = strtolower(substr($phrase, 0, 2));
 
-  $offset = strpos($map, $parts[0]) * 26 + strpos($map, $parts[1]);
-  $hue = floor($offset / (26 * 26) * 360);
+  $offset = strpos($map, $parts[0]) * $len + strpos($map, $parts[1]);
+  $hue = floor($offset / ($len * $len) * 360);
 
   $strcolor = "hsl($hue, 230, 110)";
   $color = new ImagickPixel($strcolor);
