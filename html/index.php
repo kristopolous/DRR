@@ -127,7 +127,7 @@ include_once('db.php');
             <p>People like you. Voluntarily.</p>
 
             <h3>Join the Federation</h3>
-            <p>Each server gets a hostname corresponding to the callsign of the station.  For instance, kxlu.indycast.net and kdvs.indycast.net are different servers responsible for each station.</p>
+            <p>Generally each station gets its own server.  For instance, kxlu.indycast.net and kdvs.indycast.net are different servers responsible for each station.</p>
 
             <p><a href='https://github.com/kristopolous/DRR/wiki/Join-the-Federation'>If you'd like to add or support a station, join the federation</a>.</p>
 

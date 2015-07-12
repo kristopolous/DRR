@@ -56,14 +56,21 @@ for station in station_list.fetchall():
 
     print url
 
-    stream = urllib2.urlopen("http://%s/%s" % (url, args.query))
+    stream = urllib2.urlopen("http://%s/%s" % (url, args.query), timeout = 15)
+
     data = stream.read()
 
     stop = time.time()
 
     print "[ %d ] %s\n%s" % (stop - start, url, data)
 
-    db['c'].execute('update stations set latency = latency + ?, pings = pings + 1, last_seen = current_timestamp where id = ?', ( str(stop - start), str(station[ID]) ))
+    db['c'].execute('update stations set active = 1, latency = latency + ?, pings = pings + 1, last_seen = current_timestamp where id = ?', ( str(stop - start), str(station[ID]) ))
+
+  except socket.timeout:
+    stop = time.time()
+    print "[ %d ] FAILURE: %s" % (stop - start, url)
+    # This means we can't contact it ... a notification should be sent here.
+    db['c'].execute('update stations set drops = drops + 1 where id = ?', str(station[ID]))
 
   except urllib2.URLError:
     db['c'].execute('update stations set drops = drops + 1 where id = ?', str(station[ID]))
