@@ -759,7 +759,7 @@ def file_find_streams(start, duration):
 
   return stream_list
 
-def server_generate_xml(showname, feed_list, duration, start_minute, weekday, start):
+def server_generate_xml(showname, feed_list, duration, start_minute, weekday, start, duration_string):
   """
   This takes a number of params:
  
@@ -803,10 +803,10 @@ def server_generate_xml(showname, feed_list, duration, start_minute, weekday, st
     '{%s}summary' % nsmap['itunes']: showname,
     '{%s}subtitle' % nsmap['itunes']: showname,
     '{%s}category' % nsmap['itunes']: 'podcast',
-    'title': "%s from %s" % (showname, callsign.upper()),
+    'title': showname,
     'link': base_url,
     'copyright': callsign,
-    'description': "The show %s is recorded every %s at %s on %s. Saved and delivered when you want it, through a volunteer network at http://indycast.net." % (showname, fullday, callsign.upper(), start),
+    'description': "%s is a %s recorded every %s at %s on %s. Saved and delivered when you want it, through a volunteer network at http://indycast.net." % (showname, duration_string, fullday, callsign.upper(), start),
     'language': 'en'
   }.items():
     ET.SubElement(channel, k).text = v
@@ -997,6 +997,8 @@ def server_manager(config):
   @app.route('/<weekday>/<start>/<duration>/<showname>')
   def stream(weekday, start, duration, showname):
     
+    duration_string = duration
+
     # Duration is expressed either in minutes or in \d+hr\d+ minute
     re_minute = re.compile('^(\d+)$')
     re_hr_solo = re.compile('^(\d+)hr$', re.I)
@@ -1043,7 +1045,7 @@ def server_manager(config):
     feed_list = file_find_streams(start_time, duration)
 
     # Then, taking those two things, make a feed list from them.
-    return server_generate_xml(showname, feed_list, duration, start_time, weekday, start)
+    return server_generate_xml(showname, feed_list = feed_list, duration = duration, start_minute = start_time, weekday = weekday, start = start, duration_string = duration_string)
 
   if __name__ == '__main__':
     pid = change_proc_name("%s-webserver" % config['callsign'])
