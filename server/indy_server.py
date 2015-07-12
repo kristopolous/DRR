@@ -803,7 +803,6 @@ def server_generate_xml(showname, feed_list, duration, start_minute, weekday, st
     '{%s}summary' % nsmap['itunes']: showname,
     '{%s}subtitle' % nsmap['itunes']: showname,
     '{%s}category' % nsmap['itunes']: 'podcast',
-    '{%s}image' % nsmap['itunes']: 'http://indycast.net/icon/%s_1400.png' % urllib.quote(showname),
     'title': "%s from %s" % (showname, callsign.upper()),
     'link': base_url,
     'copyright': callsign,
@@ -811,6 +810,12 @@ def server_generate_xml(showname, feed_list, duration, start_minute, weekday, st
     'language': 'en'
   }.items():
     ET.SubElement(channel, k).text = v
+
+  itunes_image = ET.SubElement(channel, '{%s}image' % nsmap['itunes'])
+  itunes_image.attrib['href'] = 'http://indycast.net/icon/%s_1400.png' % urllib.quote(showname)
+
+  media_image = ET.SubElement(channel, '{%s}thumbnail' % nsmap['media'])
+  media_image.attrib['url'] = 'http://indycast.net/icon/%s_1400.png' % urllib.quote(showname)
 
   image = ET.SubElement(channel, 'image')
   for k,v in {
