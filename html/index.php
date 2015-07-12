@@ -211,7 +211,7 @@ include_once('db.php');
           url = 'http://' + [
             'indycast.net',
             map.station,
-            " " + map.day,
+            map.day + " ",
             map.start.replace(/\s+/,'').toLowerCase(),
             map.duration,
             encodeURI(map.name).replace(/%20/g,'_')
