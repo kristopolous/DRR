@@ -31,7 +31,7 @@ include_once('db.php');
 		<!-- Header -->
 			<div id="header">
 				<h1>Indycast Radio Recorder</h1>
-				<p>A DVR for independent radio.
+				<p>Podcasting the world's Independent Radio</p>
 			</div>
 
 		<!-- Main -->
@@ -39,9 +39,9 @@ include_once('db.php');
 
 				<header class="major container 75%">
 					<h2>
-          Transform indy radio
+          A DVR for indy radio
           <br />
-          into a podcast.
+          Delivered free
           </h2>
 				</header>
 
@@ -53,7 +53,7 @@ include_once('db.php');
               <ul class="radio-group group" id="station">
 <?php
   foreach(active_stations() as $station) {
-    echo '<li><a desc="' . $station['description'] . '" class="button">' . strtoupper($station['callsign']) . '</a></li> ';
+    echo '<li><a desc="' . $station['description'] . '" class="button">' . ($station['callsign']) . '</a></li> ';
   }
 ?>
               </ul>
@@ -198,8 +198,11 @@ include_once('db.php');
       ev('', function(map) {
         for(var key in map) {
           $("#" + key + " a").removeClass("selected");
-          $("#" + key + " a:contains(" + map[key] + ")").addClass("selected");
-          $("#" + key + " a[data='" + map[key] + "']").addClass("selected");
+
+          if(key != 'name') {
+            $("#" + key + " a:contains(" + map[key] + ")").addClass("selected");
+            $("#" + key + " a[data='" + map[key] + "']").addClass("selected");
+          }
         }
 
         if(map.station && map.day && map.start && map.duration) {
