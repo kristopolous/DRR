@@ -2356,7 +2356,20 @@
     display: inline-block;
     margin-bottom: 0.25em;
   }
-  .week-group .button,
+  #day, #duration {
+    display: block;
+  }
+  .week-group a {
+    padding: 0;
+    width: 100%;
+  }
+  .week-group li {
+		font-size: 14px;
+    width: 14%;
+  }
+  #duration li {
+    width: 21%;
+  }
   .radio-group .button {
 		font-size: 14px;
 		min-width: 6em;
