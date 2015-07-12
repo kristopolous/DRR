@@ -1,6 +1,6 @@
 # indycast.net
 
-After 5 weeks of development, [v0.1 is out](https://github.com/kristopolous/DRR/archive/v0.1.zip). Download it and please test
+After 6 weeks of development, v0.2 is out. Git pull it and please test.
 
 [Indycast](http://indycast.net) is a DVR for independent radio. 
 
