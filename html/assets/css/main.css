@@ -3233,6 +3233,9 @@ form#donate {
   #rss-time { 
     font-size: 0.75em
   }
+  #podcast-link { 
+    font-size: 90%;
+  }
 }
 #start {
   width: 7em;
