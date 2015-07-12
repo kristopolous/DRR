@@ -806,7 +806,7 @@ def server_generate_xml(showname, feed_list, duration, start_minute, weekday, st
     'title': showname,
     'link': base_url,
     'copyright': callsign,
-    'description': "%s is a %s recorded every %s at %s on %s. Saved and delivered when you want it, through a volunteer network at http://indycast.net." % (showname, duration_string, fullday, callsign.upper(), start),
+    'description': "%s is a %s show recorded every %s on %s at %s. Saved and delivered when you want it, through a volunteer network at http://indycast.net." % (showname, duration_string, fullday, callsign.upper(), start),
     'language': 'en'
   }.items():
     ET.SubElement(channel, k).text = v
