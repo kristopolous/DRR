@@ -130,8 +130,9 @@ def shutdown(signal = 15, frame = False):
 
   print "[%s:%d] Shutting down" % (title, os.getpid())
 
-  if 'conn' in g_db:
-    g_db['conn'].close()
+  for instance in g_db.items():
+    if 'conn' in instance:
+      instance['conn'].close()
 
   logging.info("[%s:%d] Shutting down through signal %d" % (title, os.getpid(), signal))
 
@@ -635,8 +636,6 @@ def db_connect():
   """
   global g_db
 
-  thread_id = threading.current_thread().ident
-
   #
   # We need to have one instance per thread, as this is what
   # sqlite's driver dictates ... so we do this based on thread id.
@@ -644,6 +643,7 @@ def db_connect():
   # We don't have to worry about the different memory sharing models here.
   # Really, just think about it ... it's totally irrelevant.
   #
+  thread_id = threading.current_thread().ident
   if thread_id not in g_db:
     g_db[thread_id] = {}
 
