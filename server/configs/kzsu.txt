@@ -6,6 +6,6 @@ mode=full
 stream=http://kzsu-streams.stanford.edu/kzsu-1-128.mp3
 port=9010
 storage=/home/chris/radio
-archivedays=30
+archivedays=14
 loglevel=debug
 expireafter=45
