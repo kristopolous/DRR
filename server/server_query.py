@@ -22,6 +22,7 @@ socket.getaddrinfo = getAddrInfoWrapper
 import urllib2
 import sqlite3
 import time
+import random
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 conn = sqlite3.connect('../db/main.db')
@@ -43,18 +44,29 @@ if args.callsign == 'all':
 else:
   station_list = db['c'].execute('select * from stations where active = 1 and callsign = "%s"' % args.callsign)
 
+all_stations = station_list.fetchall()
+
 if args.list:
-  for station in station_list.fetchall():
+  # Just list all the supported stations
+  for station in all_stations:
     print station[CALLSIGN]
+
   sys.exit(0)
 
-for station in station_list.fetchall():
+# From https://github.com/kristopolous/DRR/issues/19:
+# shuffling can allow for more robust querying if something locks up - 
+# although of course a lock up should never happen. ;-)
+random.shuffle(all_stations)
+
+for station in all_stations:
   url = station[BASE_URL]
+  hasFailure = False
 
   try:
     start = time.time()
 
-    print url
+    # Take out the \n (we'll be putting it in below)
+    sys.stdout.write("%s " % url)
 
     stream = urllib2.urlopen("http://%s/%s" % (url, args.query), timeout = 15)
 
@@ -62,21 +74,19 @@ for station in station_list.fetchall():
 
     stop = time.time()
 
-    print "[ %d ] %s\n%s" % (stop - start, url, data)
+    print "[ %d ]\n%s" % (stop - start, data)
 
     db['c'].execute('update stations set active = 1, latency = latency + ?, pings = pings + 1, last_seen = current_timestamp where id = ?', ( str(stop - start), str(station[ID]) ))
 
-  except socket.timeout:
+  except Exception as e:
+    hasFailure = str(e)
+
+  # If this wasn't hit that means that we weren't able to access the host for
+  # one reason or another.
+  if hasFailure:
+    # Stop the timer and register it as a drop.
     stop = time.time()
-    print "[ %d ] FAILURE: %s" % (stop - start, url)
-    # This means we can't contact it ... a notification should be sent here.
-    db['c'].execute('update stations set drops = drops + 1 where id = ?', str(station[ID]))
-
-  except urllib2.URLError:
-    db['c'].execute('update stations set drops = drops + 1 where id = ?', str(station[ID]))
-
-  except urllib2.HTTPError:
-    # Say that we couldn't see this station
+    print "[ %d ] Failure: %s\n" % (stop - start, hasFailure)
     db['c'].execute('update stations set drops = drops + 1 where id = ?', str(station[ID]))
 
 if args.query == 'heartbeat':
