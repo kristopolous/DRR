@@ -1361,7 +1361,7 @@ def read_config(config):
     'mode': 'full',
 
     # The relative, or absolute directory to put things in
-    'storage': 'recording',
+    'storage': "%s/radio" % os.path.expanduser('~'),
 
     # The (day) time to expire an intent to record
     'expireafter': '45',
