@@ -17,6 +17,7 @@ import sys
 import time
 import socket
 import StringIO
+import threading
 
 #
 # This is needed to force ipv4 on ipv6 devices. It's sometimes needed
@@ -627,19 +628,33 @@ def db_get(key, expiry=0):
 
 def db_connect():
   """
-  a "singleton pattern" or some other fancy $10-world style of maintaining 
+  A "singleton pattern" or some other fancy $10-world style of maintaining 
   the database connection throughout the execution of the script.
 
   Returns the database instance
   """
-
   global g_db
 
-  if 'conn' not in g_db:
-    conn = sqlite3.connect('config.db')
-    g_db = {'conn': conn, 'c': conn.cursor()}
+  thread_id = threading.current_thread().ident
 
-    g_db['c'].execute("""CREATE TABLE IF NOT EXISTS intents(
+  #
+  # We need to have one instance per thread, as this is what
+  # sqlite's driver dictates ... so we do this based on thread id.
+  #
+  # We don't have to worry about the different memory sharing models here.
+  # Really, just think about it ... it's totally irrelevant.
+  #
+  if thread_id not in g_db:
+    g_db[thread_id] = {}
+
+  instance = g_db[thread_id]
+
+  if 'conn' not in instance:
+    conn = sqlite3.connect('config.db')
+    instance['conn'] = conn
+    instance['c'] = conn.cursor()
+
+    instance['c'].execute("""CREATE TABLE IF NOT EXISTS intents(
       id    INTEGER PRIMARY KEY, 
       key   TEXT UNIQUE,
       start INTEGER, 
@@ -649,16 +664,16 @@ def db_connect():
       accessed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )""");
 
-    g_db['c'].execute("""CREATE TABLE IF NOT EXISTS kv(
+    instance['c'].execute("""CREATE TABLE IF NOT EXISTS kv(
       id    INTEGER PRIMARY KEY, 
       key   TEXT UNIQUE,
       value TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )""");
 
-    g_db['conn'].commit()
+    instance['conn'].commit()
 
-  return g_db
+  return instance
 
 
 def db_register_intent(minute, duration):
@@ -731,6 +746,7 @@ def file_find_streams(start, duration):
 
   for filename in file_list:
     i = audio_stream_info(filename)
+    print i
 
     if i['start_minute'] < next_valid_start_minute and i['week'] == current_week:
       stitch_list.append(filename)
