@@ -225,13 +225,12 @@ include_once('db.php');
           }
 
           map.station = map.station.toLowerCase();
-          map.start += map.ampm;
 
           url = 'http://' + [
             'indycast.net',
             map.station,
             map.day + " ",
-            map.start.replace(/\s+/,'').toLowerCase(),
+            map.start.replace(/\s+/,'').toLowerCase() + map.ampm,
             map.duration,
             encodeURI(map.name).replace(/%20/g,'_')
           ].join('/') + ".xml";
@@ -242,7 +241,7 @@ include_once('db.php');
             tpl.podcast({
               name: (map.name || ''),
               day: fullName[map.day],
-              time: map.start,
+              time: map.start + map.ampm,
               station: map.station.toUpperCase(),
               single: single,
               parts: parts
