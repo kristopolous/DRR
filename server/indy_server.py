@@ -1088,7 +1088,7 @@ def server_manager(config):
     before the previous one has cleaned up all the socket work.  So if the time is under our
     patience threshold then we sleep a second and just try again, hoping that it will work.
     """
-    patience = PROCES_DELAY * 2
+    patience = PROCESS_DELAY * 2
     attempt = 1
 
     start = time.time()
