@@ -301,10 +301,10 @@ def audio_time(fname):
   Returns the audio time in seconds
   """
 
-  crc32, offset = audio_crc(fname, 2)
   # In this fast method we get the first two frames, find out the offset
   # difference between them, take the length of the file, divide it by that
   # and then presume that will be the framecount
+  crc32, offset = audio_crc(fname, 2)
   frame_size = offset[1] - offset[0]
   frame_count_est = os.path.getsize(fname) / frame_size
   return FRAME_LENGTH * frame_count_est
@@ -375,7 +375,6 @@ def audio_serialize(file_list, duration_min):
   out.close()
 
   return name_out
-
 
 
 def audio_slice(name_in, start_minute, end_minute = -1, duration_minute = -1):
@@ -937,9 +936,7 @@ def server_manager(config):
 
   @app.route('/restart')
   def restart():
-    """
-    Restarts an instance
-    """
+    """ Restarts an instance """
     cwd = os.getcwd()
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -990,9 +987,7 @@ def server_manager(config):
 
   @app.route('/stats')
   def stats():
-    """
-    Reports various statistical metrics on a particular server
-    """
+    """ Reports various statistical metrics on a particular server """
     global g_start_time
 
     db = db_connect()
@@ -1012,6 +1007,10 @@ def server_manager(config):
   
   @app.route('/<weekday>/<start>/<duration>/<showname>')
   def stream(weekday, start, duration, showname):
+    """
+    Returns an xml file based on the weekday, start and duration
+    from the front end.
+    """
     
     duration_string = duration
 
@@ -1117,7 +1116,6 @@ def stream_download(callsign, url, my_pid, fname):
   Curl interfacing which downloads the stream to disk. 
   Follows redirects and parses out basic m3u
   """
-
   global g_params
 
   change_proc_name("%s-download" % callsign)
@@ -1269,6 +1267,7 @@ def stream_manager():
         # old process and start a new one
 
       elif what == 'shutdown':
+        print "-- shutdown"
         b_shutdown = True
 
       elif what == 'restart':
