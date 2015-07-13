@@ -3237,10 +3237,12 @@ form#donate {
     font-size: 90%;
   }
 }
+
 #start {
   width: 7em;
   display: inline-block;
   text-align: right;
+  vertical-align: top;
 }
 #podcast-url:hover {
   background: #3C9767;
@@ -3289,4 +3291,16 @@ form#donate {
   color: white;
   text-decoration: none;
   border-bottom: 0;
+}
+#ampm {
+  margin-left: -1em;
+  border-radius: 0 8px 8px 0;
+}
+#ampm a{
+  width: 100%;
+  text-align: center;
+  padding: 0.25em 0;
+}
+#ampm li{
+  width: 3em;
 }

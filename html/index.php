@@ -77,6 +77,12 @@ include_once('db.php');
               <div id='time'>
                 <label for="start">Starting at</label>
                 <input class="text" size=4 type="text" name="start" id="start" value="" placeholder="ex: 3:30 PM" />
+
+                <ul class="week-group inline" id="ampm">
+                  <li><a class="button">AM</a></li>
+                  <li><a class="button">PM</a></li>
+                </ul>
+
               </div>
               <label for="duration">For how long</label>
               <ul class="week-group group" id="duration">
