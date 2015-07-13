@@ -35,6 +35,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-q", "--query", default="heartbeat", help="query to send to the servers (if heartbeat then this daemonizes)")
 parser.add_argument("-c", "--callsign", default="all", help="station to query (default all)")
 parser.add_argument('-l', '--list', action='store_true', help='show stations')
+parser.add_argument('-n', '--notrandom', action='store_true', help='do not reandomize order')
 args = parser.parse_args()
 
 # retrieve a list of the active stations
@@ -56,7 +57,8 @@ if args.list:
 # From https://github.com/kristopolous/DRR/issues/19:
 # shuffling can allow for more robust querying if something locks up - 
 # although of course a lock up should never happen. ;-)
-random.shuffle(all_stations)
+if not args.notrandom:
+  random.shuffle(all_stations)
 
 for station in all_stations:
   url = station[BASE_URL]
@@ -69,7 +71,6 @@ for station in all_stations:
     sys.stdout.write("%s " % url)
 
     stream = urllib2.urlopen("http://%s/%s" % (url, args.query), timeout = 15)
-
     data = stream.read()
 
     stop = time.time()
