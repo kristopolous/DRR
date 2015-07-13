@@ -75,6 +75,16 @@ MAX_HEADER_ATTEMPTS = 2048
 PIDFILE_MANAGER = 'pid-manager'
 PIDFILE_WEBSERVER = 'pid-webserver'
 
+# The process delay is used throughout to measure things like the delay in
+# forking a subprocesses, waiting for DNS, and then starting a stream or
+# waiting for all the sub-processes like the web-server to clean up and free
+# the tcp port they are listening on, and shut down.  
+#
+# Making this generous shouldn't be discouraged as it is also used as a metric
+# to calculate the number of accomodations that are to be given to make service
+# continuous.
+PROCESS_DELAY = 4
+
 # From https://wiki.python.org/moin/ConfigParserExamples
 def config_section_map(section, Config):
   """
@@ -481,9 +491,13 @@ def time_to_minute(unix_time):
 
   return unix_time.weekday() * (24 * 60) + unix_time.hour * 60 + unix_time.minute
 
-def time_sec_now():
-  """ Returns the unix time with respect to the timezone of the station being recorded """
-  return int((datetime.utcnow() + timedelta(minutes = time_get_offset())).strftime('%s'))
+def time_sec_now(offset_sec = 0):
+  """ 
+  Returns the unix time with respect to the timezone of the station being recorded.
+  
+  Accepts an optional offset_sec to forward the time into the future
+  """
+  return int((datetime.utcnow() + timedelta(seconds = offset_sec, minutes = time_get_offset())).strftime('%s'))
 
 def time_minute_now():
   """ Returns the mod 10080 week minute with respect to the timezone of the station being recorded """
@@ -1071,7 +1085,7 @@ def server_manager(config):
     before the previous one has cleaned up all the socket work.  So if the time is under our
     patience threshold then we sleep a second and just try again, hoping that it will work.
     """
-    patience = 10
+    patience = PROCES_DELAY * 2
     attempt = 1
 
     start = time.time()
@@ -1085,7 +1099,7 @@ def server_manager(config):
         if time.time() - start < patience:
           print "[attempt: %d] Error, can't start server ... perhaps %s is already in use?" % (attempt, config['port'])
           attempt += 1
-          time.sleep(1)
+          time.sleep(PROCESS_DELAY / 4)
 
 ##
 ## Stream management functions
@@ -1230,12 +1244,16 @@ def stream_manager():
 
   # A wrapper function to start a donwnload process
   def download_start(fname):
-    """ Starts a process that manages the downloading of a stream.  """
+    """ Starts a process that manages the downloading of a stream."""
 
     global g_download_pid
     g_download_pid += 1
     logging.info("Starting cascaded downloader #%d. Next up in %ds" % (g_download_pid, cascade_margin))
-    fname = 'streams/%s-%d.mp3' % (callsign, time_sec_now())
+
+    # There may be a multi-second lapse time from the naming of the file to
+    # the actual start of the download so we should err on that side by putting it
+    # in the future by some margin
+    fname = 'streams/%s-%d.mp3' % (callsign, time_sec_now(offset_sec = PROCESS_DELAY))
     process = Process(target = stream_download, args = (callsign, g_config['stream'], g_download_pid, fname))
     process.start()
     return [fname, process]
@@ -1454,7 +1472,7 @@ def read_config(config):
         os.kill(int(oldserver), 15)
         # We give it a few seconds to shut everything down
         # before trying to proceed
-        time.sleep(2)
+        time.sleep(PROCESS_DELAY / 2)
 
       except:
         pass
