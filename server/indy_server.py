@@ -83,6 +83,9 @@ PIDFILE_WEBSERVER = 'pid-webserver'
 # Making this generous shouldn't be discouraged as it is also used as a metric
 # to calculate the number of accomodations that are to be given to make service
 # continuous.
+#
+# Things are specified in multiples of this value ... for instance PROCESS_DELAY
+# / 4 or * 2.  4 is a good number.
 PROCESS_DELAY = 4
 
 # From https://wiki.python.org/moin/ConfigParserExamples
