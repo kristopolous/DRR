@@ -1064,7 +1064,7 @@ def server_manager(config):
     while time.time() - start < patience:
       try:
         print "Listening on %s" % config['port']
-        app.run(port = int(config['port']), host = '0.0.0.0')
+        app.run(threaded = True, port = int(config['port']), host = '0.0.0.0')
         break
 
       except Exception as exc:
