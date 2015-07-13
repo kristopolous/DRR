@@ -6,6 +6,6 @@ mode=full
 stream=http://api.kdvs.org:8000/kdvs128.m3u
 port=9030
 storage=/home/chris/radio
-archivedays=30
+archivedays=14
 loglevel=debug
 expireafter=45
