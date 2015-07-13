@@ -5,7 +5,4 @@ lat=42.331427
 mode=full
 stream=http://www.wcbn.org/wcbn-hi.m3u
 port=8830
-storage=/home/chris/radio
-archivedays=14
 loglevel=debug
-expireafter=45

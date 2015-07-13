@@ -5,7 +5,4 @@ lat=40.728157
 mode=full
 stream=http://wfmu.org/wfmu.pls
 port=9110
-storage=/home/chris/radio
-archivedays=14
 loglevel=debug
-expireafter=45
