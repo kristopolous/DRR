@@ -126,7 +126,7 @@ include_once('db.php');
           <div style="text-align: left">
             <p>Due to their limited resources, much of independent radio is not syndicated or available after broadcast.  We want to enjoy the benefits of time-shifted programming on these stations.</p>
 
-            <a name="volunteer"><h3>How it works</h3>
+            <a name="volunteer"></a><h3>How it works</h3>
             <p>The web stream of the station is recorded and then saved and delivered for personal use.  Every station is a different server which acts in a federation.</p>
 
             <h3>Who runs this</h3>
