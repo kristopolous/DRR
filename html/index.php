@@ -78,9 +78,9 @@ include_once('db.php');
                 <label for="start">Starting at</label>
                 <input class="text" size=4 type="text" name="start" id="start" value="" placeholder="ex: 3:30 PM" />
 
-                <ul class="week-group inline" id="ampm">
-                  <li><a class="button">AM</a></li>
-                  <li><a class="button">PM</a></li>
+                <ul class="week-group group inline" id="ampm">
+                  <li><a class="button">am</a></li>
+                  <li><a class="button">pm</a></li>
                 </ul>
 
               </div>
@@ -193,13 +193,21 @@ include_once('db.php');
 
       <script>
       var 
-        ev = EvDa({start: '', name: '', station: ''}),
+        ev = EvDa({start: '', name: '', station: '', ampm: ''}),
         fullName = {
           sun: 'Sunday', mon: 'Monday', tue: 'Tuesday', wed: 'Wednesday',
           thu: 'Thursday', fri: 'Friday', sat: 'Saturday'
         },
         tpl = {},
-        time_re = /^\s*(1[0-2]|[1-9])(:[0-5][0-9])?\s*[ap]m\s*$/i;
+        time_re = /^\s*(1[0-2]|[1-9])(:[0-5][0-9])?\s*([ap]m)?\s*$/i;
+
+
+      ev('ampm', function(val){
+        if(val) {
+          $("#start").val($("#start").val().replace(/\s*([ap]m)\s*/i, val))
+        }
+      });
+
 
       ev('', function(map) {
         for(var key in map) {
@@ -211,12 +219,14 @@ include_once('db.php');
           }
         }
 
-        if(map.station && map.day && map.start && map.duration) {
+        if(map.station && map.ampm && map.day && map.start && map.duration) {
           if (!map.name) {
             map.name = 'stream';
           }
 
           map.station = map.station.toLowerCase();
+          map.start += map.ampm;
+
           url = 'http://' + [
             'indycast.net',
             map.station,
@@ -251,6 +261,13 @@ include_once('db.php');
 
       ev.test('start', function(v, cb, meta) {
         var res = time_re.test(v);
+        
+        if(res) {
+          if(/[ap]m/.test(v)) {
+            ev('ampm', v.slice(-2));
+          } 
+        } 
+         
         $(meta.node)[(res ? 'remove' : 'add') + 'Class']('error');
         cb(res);
       });
