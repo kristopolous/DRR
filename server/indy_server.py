@@ -101,7 +101,8 @@ def config_section_map(section, Config):
 
 def change_proc_name(what):
   """
-  Sets a more human-readable process name for the various parts of the system to be viewed in top/htop
+  Sets a more human-readable process name for the various 
+  parts of the system to be viewed in top/htop
   """
   SP.setproctitle(what)
   print "[%s:%d] Starting" % (what, os.getpid())
@@ -109,11 +110,10 @@ def change_proc_name(what):
 
 
 def shutdown(signal = 15, frame = False):
-  """
-  Shutdown is hit on the keyboard interrupt
-  """
+  """ Shutdown is hit on the keyboard interrupt """
   global g_db, g_queue, g_start_time, g_config
 
+  # Try to manually shutdown the webserver
   if os.path.isfile(PIDFILE_WEBSERVER):
     with open(PIDFILE_WEBSERVER, 'r') as f:
       webserver = f.readline()
@@ -413,7 +413,6 @@ def audio_slice(name_in, start_minute, end_minute = -1, duration_minute = -1):
   out.close()
 
   return name_out
-
 
 
 def audio_stitch(file_list, force_stitch = False):
@@ -1279,6 +1278,7 @@ def stream_manager():
     
     # Check for our management process
     if not manager_is_running():
+      logging.info("Manager isn't running");
       b_shutdown = True
 
     #
@@ -1289,7 +1289,6 @@ def stream_manager():
       should_record = stream_should_be_recording()
 
     if should_record:
-
       # Didn't respond in cycle_time seconds so we respawn
       if not flag:
         if process and process.is_alive():
@@ -1350,9 +1349,9 @@ def stream_manager():
     # Increment the amount of time this has been running
     db_incr('uptime', cycle_time)
 
-    if b_shutdown:
-      logging.info("Manager process gone, shutting down.")
-      return True
+    #if b_shutdown:
+    #  logging.info("Manager process gone, shutting down.")
+    #  return True
 
     time.sleep(cycle_time)
 
@@ -1450,8 +1449,11 @@ def read_config(config):
   if os.path.isfile(PIDFILE_MANAGER):
     with open(PIDFILE_MANAGER, 'r') as f:
       oldserver = f.readline()
+
       try:  
         os.kill(int(oldserver), 15)
+        # We give it a few seconds to shut everything down
+        # before trying to proceed
         time.sleep(2)
 
       except:
@@ -1477,7 +1479,6 @@ if __name__ == "__main__":
 
   # From http://stackoverflow.com/questions/25504149/why-does-running-the-flask-dev-server-run-itself-twice
   if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
-    change_proc_name("ic-main")
     server_manager(g_config)
 
   else: 
