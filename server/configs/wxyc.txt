@@ -5,7 +5,4 @@ lat=35.913200
 mode=full
 stream=http://audio-mp3.ibiblio.org:8000/wxyc.mp3
 port=8930
-storage=/home/chris/radio
-archivedays=14
 loglevel=debug
-expireafter=45
