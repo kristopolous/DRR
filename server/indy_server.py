@@ -1386,6 +1386,9 @@ def read_config(config):
     if k not in g_config:
       g_config[k] = v
 
+  # in case someone is specifying ~/radio 
+  g_config['storage'] = os.path.expanduser(g_config['storage'])
+
   if not os.path.isdir(g_config['storage']):
     try:
       # If I can't do this, that's fine.
