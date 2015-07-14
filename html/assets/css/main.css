@@ -3269,6 +3269,7 @@ form#donate {
 }
 #rss-time { 
   display: block; 
+  width: 15em;
 }
 #podcast-url img {
   vertical-align: bottom;
