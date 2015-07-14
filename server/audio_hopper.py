@@ -59,8 +59,10 @@ def audio_crc(fname, blockcount = -1):
 
         # Rest of the header
         throw_away = f.read(1)
+        #print samp_rate, bit_rate, hex(ord(throw_away))
 
         # Get the signature
+        #print "%s %d" % (hex(frame_start), rsize)
         block = f.read(rsize)
         #print "%s" % (binascii.b2a_hex(block))
         crc = binascii.crc32(block)
@@ -95,8 +97,24 @@ def audio_crc(fname, blockcount = -1):
         f.read(126)
 
       elif first_header_seen or header_attempts > MAX_HEADER_ATTEMPTS:
-        print "%s:%s:%s:%s %s %d" % (binascii.b3a_hex(header), header, f.read(5), fname, hex(f.tell()), len(start_byte) * (1152.0 / 44100) / 60)
-        break
+
+        print "%d[%d/%d]%s:%s:%s %s %d" % (len(frame_sig), header_attempts, MAX_HEADER_ATTEMPTS, binascii.b2a_hex(header), binascii.b2a_hex(f.read(5)), fname, hex(f.tell()), len(start_byte) * (1152.0 / 44100) / 60)
+
+        # This means that perhaps we didn't guess the start correct so we try this again
+        if len(frame_sig) == 1 and header_attempts < MAX_HEADER_ATTEMPTS:
+          print "False start -- trying again"
+
+          # seek to the first start byte + 1
+          f.seek(start_byte[0] + 2)
+
+          # discard what we thought was the first start byte and
+          # frame signature
+          start_byte = []
+          frame_sig = []
+          first_header_seen = False
+
+        else:
+          break
 
     else:
       break
@@ -198,7 +216,7 @@ def audio_stitch(file_list):
     #print len(p[0])
 
 # success case
-audio_crc('/home/chris/radio/kvrx/streams/kvrx-1436373880.mp3')
+audio_crc(sys.argv[1])
 
 sys.exit(0)
 #isSuccess = audio_stitch(["/var/radio/kpcc-1435670337.mp3","/var/radio/kpcc-1435671243.mp3","/var/radio/kpcc-1435672147.mp3","/var/radio/kpcc-1435673051.mp3","/var/radio/kpcc-1435673955.mp3","/var/radio/kpcc-1435674859.mp3","/var/radio/kpcc-1435675763.mp3","/var/radio/kpcc-1435676667.mp3","/var/radio/kpcc-1435677571.mp3","/var/radio/kpcc-1435678475.mp3","/var/radio/kpcc-1435679379.mp3"])
