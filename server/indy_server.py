@@ -932,6 +932,7 @@ def server_error(errstr):
     
 
 def server_manager(config):
+  """ Main flask process that manages the end points """
   global g_queue
 
   app = Flask(__name__)
@@ -946,6 +947,7 @@ def server_manager(config):
   # from http://blog.asgaard.co.uk/2012/08/03/http-206-partial-content-for-flask-python
   @app.after_request
   def after_request(response):
+    """ Supports 206 partial content requests for podcast streams """
     response.headers.add('Accept-Ranges', 'bytes')
     return response
 
@@ -991,6 +993,7 @@ def server_manager(config):
   # From http://stackoverflow.com/questions/13317536/get-a-list-of-all-routes-defined-in-the-app
   @app.route("/site-map")
   def site_map():
+    """ Shows all the end points supported by the current server """
     output = []
     for rule in app.url_map.iter_rules():
 
@@ -1456,7 +1459,8 @@ def stream_manager():
 
 def read_config(config):
   """
-  Reads a configuration file, currently documented at https://github.com/kristopolous/DRR/wiki/Join-the-Federation
+  Reads a configuration file. 
+  Currently documented at https://github.com/kristopolous/DRR/wiki/Join-the-Federation
   """
   global g_config
 
