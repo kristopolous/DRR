@@ -943,8 +943,8 @@ def server_manager(config):
 
   def send_file_partial(path):
     """ 
-      Wrapper around send_file which handles HTTP 206 Partial Content
-      (byte ranges)
+    Wrapper around send_file which handles HTTP 206 Partial Content
+    (byte ranges)
     """
     range_header = request.headers.get('Range', None)
     if not range_header: return send_file(path)
@@ -955,8 +955,11 @@ def server_manager(config):
     m = re.search('(\d+)-(\d*)', range_header)
     g = m.groups()
     
-    if g[0]: byte1 = int(g[0])
-    if g[1]: byte2 = int(g[1])
+    if g[0]: 
+      byte1 = int(g[0])
+
+    if g[1]: 
+      byte2 = int(g[1])
 
     length = size - byte1
     if byte2 is not None:
