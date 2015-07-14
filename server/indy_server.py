@@ -947,7 +947,8 @@ def server_manager(config):
     (byte ranges)
     """
     range_header = request.headers.get('Range', None)
-    if not range_header: return send_file(path)
+    if not range_header: 
+      return flask.send_file(path)
     
     size = os.path.getsize(path)    
     byte1, byte2 = 0, None
@@ -970,10 +971,11 @@ def server_manager(config):
       f.seek(byte1)
       data = f.read(length)
 
-    rv = Response(data, 
+    rv = Response(
+      data, 
       206,
-      mimetype=mimetypes.guess_type(path)[0], 
-      direct_passthrough=True)
+      mimetype = 'audio/mpeg',
+      direct_passthrough = True)
     rv.headers.add('Content-Range', 'bytes {0}-{1}/{2}'.format(byte1, byte1 + length - 1, size))
 
     return rv
