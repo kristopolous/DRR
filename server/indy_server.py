@@ -877,7 +877,7 @@ def server_generate_xml(showname, feed_list, duration, start_minute, weekday, st
 
     item = ET.SubElement(channel, 'item')
 
-    itunes_duration += "%02d:00" % (duration % 60)
+    itunes_duration = "%02d:00" % (duration % 60)
     if duration > 60:
       itunes_duration = "%d:%s" % (int(math.floor(duration / 60 )), itunes_duration)    
 
