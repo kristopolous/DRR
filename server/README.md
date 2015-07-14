@@ -55,9 +55,23 @@ In the storage directory you should see something like this:
  * stitches       - Aggregations of streams to larger blocks which correspond to specific intents
  * slices         - Sliced versions of the stitches corresponding to the actual audio to serve
 
+### Audio processing
+
+I explained the novel approach to the processing of the mp3s in pure python, in this [reddit post](https://www.reddit.com/r/Python/comments/3ch1vn/show_rpython_indycast_mostly_written_in_python/csvs64l). Essentially an mp3 file is a block-based stream.  Each block has a header and a payload.  You can get ID3 which is meta-information or MP3 data. 
+
+Since you are downloading essentially a remote file which won't be magically transcoded, you can treat it like a file.  That is to say that if I download it from two different places, it will of course have the exact same bytes.
+
+So what I've done is I took the first few bytes of the mp3 payload and then I checked over the course of a few samples of 10 million data blocks, how many bytes I would need to look at before asymptotically there was really no benefit.  I then used this as an "audio signature".  Effectively, I need to look for 4 sequential blocks with identical audio signatures.
+
+Then I can presume that that region is the overlap and use those to stitch the audio together.
+
+This method comptletely avoids mp3 decoding entirely and so is actually blisteringly fast.  It can process audio streams in fractions of a second. 
+
+Because of this, the audio gets processed before the xml is returned ... the delay due to this fast method of processing is fairly imperceptible.
+
 ## configs/
 
-See [https://github.com/kristopolous/DRR/wiki/Join-the-Federation](Joining the Federation) for an overview
+See [Joining the Federation](https://github.com/kristopolous/DRR/wiki/Join-the-Federation) for an overview
 of what these options are. Also, if you aren't faint of heart, you can look at the definition of the `defaults`
 dict inside the `read_config()` function in [the main source](https://github.com/kristopolous/DRR/blob/master/server/indy_server.py) for
 an overview of some of the more obscure parameters supported.
