@@ -1,6 +1,6 @@
 # indycast.net
 
-v0.3-Caladrius. Git pull it and please test.
+Current version is v0.3-Caladrius from July 13, 2015. Git pull it and please test.
 
 [Indycast](http://indycast.net) is a DVR for independent radio. 
 
@@ -14,6 +14,7 @@ You can help by
  * [Giving us money](https://github.com/kristopolous/DRR/wiki/Donating-Money)
  * [Running a server](https://github.com/kristopolous/DRR/wiki/Join-the-Federation)
  * [Giving us an account on an existing server](https://github.com/kristopolous/DRR/wiki/Donating-Servers).
+ * [See the current network](https://github.com/kristopolous/DRR/wiki/Current-Architecture)
 
 Thanks for your interest!
 
