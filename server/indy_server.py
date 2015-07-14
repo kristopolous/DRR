@@ -367,6 +367,14 @@ def audio_stitch_and_slice(file_list, start_minute, duration_minute):
 
   sliced_name = audio_slice(stitched_name, start_minute = start_slice, duration_minute = duration_slice)
 
+  # After we are done with the stitched audio we remove it to save space
+  # since its an intemediate file
+  try:
+    os.unlink(stitched_name)
+
+  except:
+    pass
+
   return sliced_name
 
 
@@ -731,9 +739,7 @@ def db_register_intent(minute, duration):
 ## Storage and file related
 ##
 def file_prune():
-  """
-  Gets rid of files older than archivedays
-  """
+  """ Gets rid of files older than archivedays and cleans out the stitches directory. """
 
   global g_config
 
@@ -745,8 +751,10 @@ def file_prune():
   # Dump old streams stitches and slices
   count = 0
   for fname in glob('*/*.mp3'):
-    if os.path.isfile(fname) and os.path.getctime(fname) < cutoff:
-      logging.debug("Prune: %s" % entry)
+    # Because stitches can be made fast and they take up space, we dump them opportunistically.
+    # Otherwise we observe the rules set up in the config.
+    if re.match('stitches', fname) or (os.path.isfile(fname) and os.path.getctime(fname) < cutoff):
+      logging.debug("Prune: %s" % fname)
       os.unlink(fname)
       count += 1 
 
