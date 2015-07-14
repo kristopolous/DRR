@@ -61,6 +61,7 @@ FRAME_LENGTH = (1152.0 / 44100)
 # Everything is presumed to be weekly and on the minute
 # scale. We use this to do wrap around when necessary
 MINUTES_PER_WEEK = 10080
+ONE_DAY = 60 * 60 * 24
 
 # Some stations don't start you off with a valid mp3 header
 # (such as kdvs), so we have to just seek into the file
@@ -556,7 +557,7 @@ def time_get_offset(force = False):
   Returns an int second offset
   """
 
-  offset = db_get('offset', expiry = 60 * 60 * 24)
+  offset = db_get('offset', expiry = ONE_DAY)
   if not offset or force:
 
     when = int(time.time())
@@ -724,7 +725,7 @@ def file_prune():
 
   db = db_connect()
 
-  duration = int(g_config['archivedays']) * 60 * 60 * 24
+  duration = int(g_config['archivedays']) * ONE_DAY
   cutoff = time.time() - duration
 
   # Dump old streams stitches and slices
@@ -1268,7 +1269,7 @@ def stream_manager():
     #
     flag = False
 
-    yesterday = time.time() - 24 * 60 * 60
+    yesterday = time.time() - ONE_DAY
     if last_prune < yesterday:
       file_prune()
       last_prune = time.time()
