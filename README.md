@@ -1,10 +1,8 @@
-# indycast.net
+# Podcasting the World's Independent Radio.
 
-Current version is v0.3-Caladrius from July 13, 2015. Git pull it and please test.
+This is the source code for [Indycast](http://indycast.net), a DVR for independent radio. 
 
-[Indycast](http://indycast.net) is a DVR for independent radio. 
-
-You can use it to transform a broadcast into a podcast for later listening.
+It's built so you can subscribe to your favorite shows and listen on your time, not airtime.
 
 Stations are supported through the generosity of a volunteer network of servers around the world.
 
@@ -14,8 +12,8 @@ You can help by
  * [Giving us money](https://github.com/kristopolous/DRR/wiki/Donating-Money)
  * [Running a server](https://github.com/kristopolous/DRR/wiki/Join-the-Federation)
  * [Giving us an account on an existing server](https://github.com/kristopolous/DRR/wiki/Donating-Servers).
- * [See the current network](https://github.com/kristopolous/DRR/wiki/Current-Architecture)
 
-Thanks for your interest!
+You can also [see the current network](https://github.com/kristopolous/DRR/wiki/Current-Architecture) and costs.
 
+Thank you.
 
