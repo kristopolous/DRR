@@ -13,7 +13,6 @@ include_once('db.php');
 
     <meta name="description" content="The world's independent radio - podcasted." />
     <meta property="og:site_name" content="Indycast" />
-    <meta property="og:type" content="service" />
     <meta property="og:url" content="http://indycast.net" />
     <meta property="og:title" content="Indycast" />
     <meta property="og:type" content="website" />
