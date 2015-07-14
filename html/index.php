@@ -17,7 +17,7 @@ include_once('db.php');
     <meta property="og:url" content="http://indycast.net" />
     <meta property="og:title" content="Indycast" />
     <meta property="og:description" content="The world's independent radio - podcasted." />
-    <meta property="og:image" content="http://indycast.net/icon/Indycast_1200.png" />
+    <meta property="og:image" content="http://indycast.net/images/fb-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@indycaster" />
     <meta name="twitter:creator" content="@indycaster" />
