@@ -1084,6 +1084,7 @@ def server_manager(config):
 
     stats = {
       'intents': [record for record in db['c'].execute('select * from intents').fetchall()],
+      'hits': db['c'].execute('select sum(read_count) from intents').fetchone()[0],
       'kv': [record for record in db['c'].execute('select * from kv').fetchall()],
       'uptime': int(time.time() - g_start_time),
       'free': os.popen("df -h / | tail -1").read().strip(),
