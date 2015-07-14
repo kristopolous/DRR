@@ -8,7 +8,7 @@ Stations are supported through the generosity of a volunteer network of servers 
 
 You can help by
 
- * [Giving us money](https://github.com/kristopolous/DRR/wiki/Donating-Money)
+ * [Donating money to help cover the costs](https://github.com/kristopolous/DRR/wiki/Donating-Money)
  * [Running a server](https://github.com/kristopolous/DRR/wiki/Join-the-Federation)
  * [Fixing bugs in the software](https://github.com/kristopolous/DRR/issues)
  * [Giving us an account on an existing server](https://github.com/kristopolous/DRR/wiki/Donating-Servers).
