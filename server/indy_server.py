@@ -877,10 +877,14 @@ def server_generate_xml(showname, feed_list, duration, start_minute, weekday, st
 
     item = ET.SubElement(channel, 'item')
 
+    itunes_duration += "%02d:00" % (duration % 60)
+    if duration > 60:
+      itunes_duration = "%d:%s" % (int(math.floor(duration / 60 )), itunes_duration)    
+
     for k,v in {
       '{%s}explicit' % nsmap['itunes']: 'no', 
       '{%s}author' % nsmap['itunes']: callsign,
-      '{%s}duration' % nsmap['itunes']: str(duration * 60),
+      '{%s}duration' % nsmap['itunes']: itunes_duration,
       '{%s}summary' % nsmap['itunes']: showname,
       '{%s}creator' % nsmap['dc']: callsign.upper(),
       '{%s}origEnclosureLink' % nsmap['feedburner']: link,
