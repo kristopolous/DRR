@@ -1,6 +1,6 @@
 # indycast.net
 
-After 6 weeks of development, v0.2 is out. Git pull it and please test.
+v0.3-Caladrius. Git pull it and please test.
 
 [Indycast](http://indycast.net) is a DVR for independent radio. 
 
