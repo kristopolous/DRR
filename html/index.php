@@ -24,7 +24,7 @@ include_once('db.php');
     <meta name="twitter:title" content="Indycast" />
     <meta name="twitter:url" content="http://indycast.net" />
     <meta name="twitter:description" content="The world's independent radio - podcasted." />
-    <meta name="twitter:image:src" content="http://indycast.net/icon/Indycast_1200.jpg" />
+    <meta name="twitter:image:src" content="http://indycast.net/images/twit-image.jpg" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
 	</head>
 	<body>
