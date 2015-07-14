@@ -39,7 +39,7 @@ include_once('db.php');
 
       <header class="major container 75%">
         <h2>
-        Subscribe to your favorite shows
+        Subscribe to your favorite shows.
         <br />
         Listen on your time, not airtime.
         </h2>
