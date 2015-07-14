@@ -1,4 +1,4 @@
-# Podcasting the World's Independent Radio.
+# Podcasting the World's Independent Radio
 
 This is the source code for [Indycast](http://indycast.net), a DVR for independent radio. 
 
@@ -8,9 +8,9 @@ Stations are supported through the generosity of a volunteer network of servers 
 
 You can help by
 
- * [Fixing bugs in the software](https://github.com/kristopolous/DRR/issues)
  * [Giving us money](https://github.com/kristopolous/DRR/wiki/Donating-Money)
  * [Running a server](https://github.com/kristopolous/DRR/wiki/Join-the-Federation)
+ * [Fixing bugs in the software](https://github.com/kristopolous/DRR/issues)
  * [Giving us an account on an existing server](https://github.com/kristopolous/DRR/wiki/Donating-Servers).
 
 You can also [see the current network](https://github.com/kristopolous/DRR/wiki/Current-Architecture) and costs.
