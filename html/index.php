@@ -4,7 +4,7 @@ include_once('db.php');
 <!DOCTYPE HTML>
 <html>
   <head>
-    <title>Indycast Radio Recorder</title>
+    <title>Indycast - Podcasting The World's Independent Radio</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -15,33 +15,33 @@ include_once('db.php');
     <meta name="description" content="The world's independent radio - podcasted." />
     <meta property="og:site_name" content="Indycast" />
     <meta property="og:url" content="http://indycast.net" />
-    <meta property="og:title" content="Indycast" />
+    <meta property="og:title" content="Indycast - Podcasting the World's Independent Radio" />
     <meta property="og:type" content="website" />
-    <meta property="og:description" content="The world's independent radio - podcasted." />
+    <meta property="og:description" content="Subscribe to your favorite shows. Listen on your time, not airtime." />
     <meta property="og:image" content="http://indycast.net/images/fb-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@indycaster" />
     <meta name="twitter:creator" content="@indycaster" />
-    <meta name="twitter:title" content="Indycast" />
+    <meta name="twitter:title" content="Indycast - Podcasting the World's Independent Radio" />
     <meta name="twitter:url" content="http://indycast.net" />
-    <meta name="twitter:description" content="The world's independent radio - podcasted." />
+    <meta name="twitter:description" content="Subscribe to your favorite shows. Listen on your time, not airtime." />
     <meta name="twitter:image:src" content="http://indycast.net/images/twit-image.jpg" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="favicon.ico" >
   </head>
   <body>
     <div id="header">
-      <h1>Indycast Radio Recorder</h1>
-      <p>Podcasting the world's Independent Radio</p>
+      <h1>Indycast Radio</h1>
+      <p>Podcasting the World's Independent Radio</p>
     </div>
 
     <div id="main">
 
       <header class="major container 75%">
         <h2>
-        A DVR for indy radio
+        Subscribe to your favorite shows
         <br />
-        Delivered free
+        Listen on your time, not airtime.
         </h2>
       </header>
 
@@ -49,7 +49,7 @@ include_once('db.php');
         <section class="feature left">
           <a href="#" class="image icon fa-signal"><img src="images/pic01.jpg" alt="" /><div id="description"></div></a>
           <div class="content">
-            <h3>Choose an indy station</h3>
+            <h3>Choose the station</h3>
             <ul class="radio-group group" id="station">
 <?php
   foreach(active_stations() as $station) {
