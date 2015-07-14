@@ -868,56 +868,58 @@ function EvDa (imported) {
 
         // If there's a coroutine then we call that
         // here
-        if (!coroutine(meta, true)) {
-          return result;
-        }
+        if (coroutine(meta, true)) {
 
-        value = meta.value;
+          value = meta.value;
 
-        //
-        // Set the key to the new value.
-        // The old value is being passed in
-        // through the meta
-        //
-        if(!(_opts.onlychange && value === data[key])) {
+          //
+          // Set the key to the new value.
+          // The old value is being passed in
+          // through the meta
+          //
+          if(!(_opts.onlychange && value === data[key])) {
 
-          if(!_opts.noset) {
-            data[key] = value;
+            if(!_opts.noset) {
+              data[key] = value;
 
-            if(key != '') {
-              data_ix[key] = (data_ix[key] || 0) + 1;
-            }
-          }
-
-          var myargs = arguments, cback = function(){
-            each(
-              (eventMap[FIRST + key] || []).concat(
-                (eventMap[ON + key] || [])
-              ),
-              function(callback) {
-                meta.last = runCallback(callback, pub.context, value, meta);
-              });
-
-            // After this, we bubble up if relevant.
-            if(key.length > 0) {
-              bubble.apply(pub.context, [key].concat(slice.call(myargs, 2)));
+              if(key != '') {
+                data_ix[key] = (data_ix[key] || 0) + 1;
+              }
             }
 
-            each(eventMap[AFTER + key] || [],
-              function(callback) {
-                meta.last = runCallback(callback, pub.context, value, meta);
-              });
+            var myargs = arguments, cback = function(){
+              each(
+                (eventMap[FIRST + key] || []).concat(
+                  (eventMap[ON + key] || [])
+                ),
+                function(callback) {
+                  meta.last = runCallback(callback, pub.context, value, meta);
+                });
 
-            return value;
-          }
+              // After this, we bubble up if relevant.
+              if(key.length > 0) {
+                // But we don't hit the coroutine
+                delete _opts['coroutine'];
 
-          if(!noexec) {
-            result = cback.call(pub.context);
-          } else {
-            // if we are not executing this, then
-            // we return a set of functions that we
-            // would be executing.
-            result = cback;
+                bubble.apply(pub.context, [key].concat(slice.call(myargs, 2)));
+              }
+
+              each(eventMap[AFTER + key] || [],
+                function(callback) {
+                  meta.last = runCallback(callback, pub.context, value, meta);
+                });
+
+              return value;
+            }
+
+            if(!noexec) {
+              result = cback.call(pub.context);
+            } else {
+              // if we are not executing this, then
+              // we return a set of functions that we
+              // would be executing.
+              result = cback;
+            }
           }
         }
       } 
@@ -1010,7 +1012,7 @@ function EvDa (imported) {
     // This is a sort + M complexity version that
     // doesn't perserve ordinality.
     setadd: function ( key, value, meta ) {
-      var before = data[key] || [];
+      var before = data[key] || [], v = 0;
 
       return pub( key, value, meta, {
         // this is only called if the tests pass
@@ -1025,6 +1027,11 @@ function EvDa (imported) {
           return (before.length != meta.set.length);
         }
       });
+    },
+
+    settoggle: function ( key, value, meta ) {
+      var routine = ((data[key] || []).indexOf(value) === -1) ? 'add' : 'del';
+      return pub['set' + routine](key, value, meta);
     },
 
     setdel: function ( key, value, meta ) {
@@ -1139,6 +1146,7 @@ function EvDa (imported) {
   });
 
   pub.setAdd = pub.setadd;
+  pub.setToggle = pub.settoggle;
   pub.osetAdd = pub.osetadd;
   pub.setDel = pub.setdel;
   pub.isSet = pub.isset;

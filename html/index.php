@@ -65,7 +65,7 @@ include_once('db.php');
           <div class="content">
 
             <label for="day">day of week to record on</label>
-            <ul class="week-group group" id="day">
+            <ul class="week-group" id="day">
               <li><a class="button">sun</a></li>
               <li><a class="button">mon</a></li>
               <li><a class="button">tue</a></li>
@@ -173,7 +173,7 @@ include_once('db.php');
         </span>
         <span id='rss-header'>
           <h3 id='rss-title'><%= name %></h3>
-          <span id='rss-time'><%= day %>s at <%= time %> on <%= station %></span>
+          <span id='rss-time'><%= day %> at <%= time %> on <%= station %></span>
         </span>
       </span>
       <span id='podcast-link'>
@@ -191,10 +191,10 @@ include_once('db.php');
 
     <script>
     var 
-      ev = EvDa({start: '', name: '', station: '', ampm: ''}),
+      ev = EvDa({start: '', name: '', station: '', ampm: '', day: []}),
       fullName = {
-        sun: 'Sunday', mon: 'Monday', tue: 'Tuesday', wed: 'Wednesday',
-        thu: 'Thursday', fri: 'Friday', sat: 'Saturday'
+        sun: 'Sundays', mon: 'Mondays', tue: 'Tuesdays', wed: 'Wednesdays',
+        thu: 'Thursdays', fri: 'Fridays', sat: 'Saturdays'
       },
       tpl = {},
       time_re = /^\s*(1[0-2]|[1-9])(:[0-5][0-9])?\s*([ap]m)?\s*$/i;
@@ -212,13 +212,18 @@ include_once('db.php');
       for(var key in map) {
         $("#" + key + " a").removeClass("selected");
 
-        if(key != 'name') {
+        if(key == 'day') {
+          _.each(map[key], function(what) {
+            $("#" + key + " a:contains(" + what + ")").addClass("selected");
+          });
+        } else if(key != 'name') {
           $("#" + key + " a:contains(" + map[key] + ")").addClass("selected");
           $("#" + key + " a[data='" + map[key] + "']").addClass("selected");
         }
+
       }
 
-      if(map.station && map.ampm && map.day && map.start && map.duration) {
+      if(map.station && map.ampm && map.day && map.day.length && map.start && map.duration) {
         if (!map.name) {
           map.name = 'stream';
         }
@@ -231,18 +236,27 @@ include_once('db.php');
         url = 'http://' + [
           'indycast.net',
           map.station,
-          map.day + " ",
+          map.day.join(',') + " ",
           start_time,
           map.duration,
           encodeURI(map.name).replace(/%20/g,'_')
         ].join('/') + ".xml";
 
-        var parts = url.split(' '), single = url.replace(/\s/,'');
+        var parts = url.split(' '), 
+          single = url.replace(/\s/,''), 
+          fullday;
+          _map = _.map(map.day, function(what) { return fullName[what] });
+
+        if(map.day.length == 1) {
+          fullday = _map[0];
+        } else {
+          fullday = _map.slice(0, -1).join(', ') + ' and ' + _.last(_map);
+        }
 
         $("#podcast-url").attr({'href': single }).html(
           tpl.podcast({
             name: (map.name || ''),
-            day: fullName[map.day],
+            day: fullday,
             time: start_time,
             station: map.station.toUpperCase(),
             single: single,
@@ -289,6 +303,11 @@ include_once('db.php');
 
       $(".radio-group a").hover(function(){
         $("#description").html("<h2>" + this.innerHTML + "</h2>" + htmldo(this.getAttribute('desc'))).show();
+      });
+
+      // #23 - multiday recordings
+      $("#day a").click(function(){
+        ev.setToggle('day', this.innerHTML);
       });
 
       $(".group a").click(function(){
