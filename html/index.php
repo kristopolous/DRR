@@ -7,6 +7,7 @@ include_once('db.php');
     <title>Indycast Radio Recorder</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
     <link rel="stylesheet" href="assets/css/main.css" />
     <!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
@@ -26,6 +27,7 @@ include_once('db.php');
     <meta name="twitter:description" content="The world's independent radio - podcasted." />
     <meta name="twitter:image:src" content="http://indycast.net/images/twit-image.jpg" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="favicon.ico" >
   </head>
   <body>
     <div id="header">
@@ -205,6 +207,8 @@ include_once('db.php');
     });
 
     ev('', function(map) {
+      var start_time;
+
       for(var key in map) {
         $("#" + key + " a").removeClass("selected");
 
@@ -221,11 +225,14 @@ include_once('db.php');
 
         map.station = map.station.toLowerCase();
 
+        // #27: dump the spaces, make it lower case and avoid a double am/pm
+        start_time = map.start.replace(/\s+/,'').toLowerCase().replace(/[ap]m/, '') + map.ampm;
+
         url = 'http://' + [
           'indycast.net',
           map.station,
           map.day + " ",
-          map.start.replace(/\s+/,'').toLowerCase() + map.ampm,
+          start_time,
           map.duration,
           encodeURI(map.name).replace(/%20/g,'_')
         ].join('/') + ".xml";
@@ -236,7 +243,7 @@ include_once('db.php');
           tpl.podcast({
             name: (map.name || ''),
             day: fullName[map.day],
-            time: map.start + map.ampm,
+            time: start_time,
             station: map.station.toUpperCase(),
             single: single,
             parts: parts
@@ -306,7 +313,8 @@ include_once('db.php');
       ev.fire('name');
 
     });
-    // Da Goog!
+
+    // #30: Da Goog!
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
