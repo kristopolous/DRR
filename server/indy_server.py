@@ -1118,6 +1118,12 @@ def server_manager(config):
     if type(duration) is str:
       return server_error('duration "%s" is not set correctly' % duration)
 
+    # See https://github.com/kristopolous/DRR/issues/22:
+    #
+    # We're going to add 2 minutes to the duration to make sure that we get
+    # the entire episode.
+    duration += 2
+
     start_time = time_to_utc(weekday, start)
     
     if not start_time:
