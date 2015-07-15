@@ -1,30 +1,35 @@
 <?php
 include_once('db.php');
+if(isset($_GET['callsign'])) {
+  $callsign = $_GET['callsign'];
+} else {
+  $callsign = '';
+}
 ?>
 <!DOCTYPE HTML>
 <html>
   <head>
-    <title>Indycast - Podcasting The World's Independent Radio</title>
+    <title>Indycast - Podcasting <?= $callsign ? strtoupper($callsign) : "the World's Independent Radio" ?></title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
-    <link rel="stylesheet" href="assets/css/main.css" />
-    <!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
+    <!--[if lte IE 8]><script src="/assets/js/ie/html5shiv.js"></script><![endif]-->
+    <link rel="stylesheet" href="/assets/css/main.css" />
+    <!--[if lte IE 8]><link rel="stylesheet" href="/assets/css/ie8.css" /><![endif]-->
 
-    <meta name="description" content="The world's independent radio - podcasted." />
+    <meta name="description" content="<?= $callsign ? strtoupper($callsign) : "the World's Independent Radio" ?> - podcasted." />
     <meta property="og:site_name" content="Indycast" />
     <meta property="og:url" content="http://indycast.net" />
-    <meta property="og:title" content="Indycast - Podcasting the World's Independent Radio" />
+    <meta property="og:title" content="Indycast - Podcasting <?= $callsign ? strtoupper($callsign) : "the World's Independent Radio" ?>" />
     <meta property="og:type" content="website" />
-    <meta property="og:description" content="Subscribe to your favorite shows. Listen on your time, not airtime." />
+    <meta property="og:description" content="Subscribe to your favorite <?= $callsign ?> shows. Listen on your time, not airtime." />
     <meta property="og:image" content="http://indycast.net/og-image.php" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@indycaster" />
     <meta name="twitter:creator" content="@indycaster" />
-    <meta name="twitter:title" content="Indycast - Podcasting the World's Independent Radio" />
+    <meta name="twitter:title" content="Indycast - Podcasting <?= $callsign ? strtoupper($callsign) : "the World's Independent Radio" ?>" />
     <meta name="twitter:url" content="http://indycast.net" />
-    <meta name="twitter:description" content="Subscribe to your favorite shows. Listen on your time, not airtime." />
+    <meta name="twitter:description" content="Subscribe to your <?= $callsign ?> favorite shows. Listen on your time, not airtime." />
     <meta name="twitter:image:src" content="http://indycast.net/images/twit-image.jpg" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="favicon.ico" >
@@ -32,22 +37,24 @@ include_once('db.php');
   <body>
     <div id="header">
       <h1>Indycast Radio</h1>
-      <p>Podcasting the World's Independent Radio</p>
+      <p>Podcasting <?= $callsign ? strtoupper($callsign) : "the World's Independent Radio" ?>
+      <? if ($callsign) { ?> <br/><small>(<a href="/">and more</a>)</small> <? } ?></p>
     </div>
 
     <div id="main">
 
       <header class="major container 75%">
         <h2>
-        Subscribe to your favorite shows.
+        Subscribe to your favorite <?= $callsign ?> shows.
         <br />
         Listen on your time, not airtime.
         </h2>
       </header>
 
       <div class="box alt container">
+<? if(!$callsign) { ?>
         <section class="feature left">
-          <a href="#" class="image icon fa-signal"><img src="images/pic01.jpg" alt="" /><div id="description"></div></a>
+          <a href="#" class="image icon fa-signal"><img src="/images/pic01.jpg" alt="" /><div id="description"></div></a>
           <div class="content">
             <h3>Choose the station</h3>
             <ul class="radio-group group" id="station">
@@ -60,8 +67,9 @@ include_once('db.php');
             <a href="#volunteer">Volunteer to add a station!</a>
           </div>
         </section>
+<? } ?>
         <section class="feature right">
-          <a href="#" class="image icon fa-clock-o"><img src="images/pic02.jpg" alt="" /></a>
+          <a href="#" class="image icon fa-clock-o"><img src="/images/pic02.jpg" alt="" /></a>
           <div class="content">
 
             <label for="day">day of week to record on</label>
@@ -94,7 +102,7 @@ include_once('db.php');
           </div>
         </section>
         <section class="feature left">
-          <a href="#" class="image icon fa-mobile"><img src="images/pic03.jpg" alt="" /></a>
+          <a href="#" class="image icon fa-mobile"><img src="/images/pic03.jpg" alt="" /></a>
           <div class="content">
             <h3>Give it a name</h3>
             <label for="name">Show Name</label>
@@ -169,7 +177,7 @@ include_once('db.php');
     <script type='text/template' id='tpl-podcast'>
       <span id='rss-top'>
         <span>
-          <img src='images/rss_64.png'>
+          <img src='/images/rss_64.png'>
         </span>
         <span id='rss-header'>
           <h3 id='rss-title'><%= name %></h3>
@@ -181,14 +189,16 @@ include_once('db.php');
       </span>
     </script>
 
-    <script src='assets/js/underscore-min.js'></script>
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/js/skel.min.js"></script>
-    <script src="assets/js/util.js"></script>
-    <script src="assets/js/evda.min.js"></script>
-    <!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
-    <script src="assets/js/main.js"></script>
-    <script src="assets/js/indycast.js"></script>
-    </script>
+    <script src='/assets/js/underscore-min.js'></script>
+    <script src="/assets/js/jquery.min.js"></script>
+    <script src="/assets/js/skel.min.js"></script>
+    <script src="/assets/js/util.js"></script>
+    <script src="/assets/js/evda.min.js"></script>
+    <!--[if lte IE 8]><script src="/assets/js/ie/respond.min.js"></script><![endif]-->
+    <script src="/assets/js/main.js"></script>
+    <script src="/assets/js/indycast.js"></script>
+    <? if ($callsign) { ?>
+      <script> ev('station', '<?= $callsign ?>'); </script>
+    <? } ?>
   </body>
 </html>
