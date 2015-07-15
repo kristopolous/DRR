@@ -3305,3 +3305,6 @@ form#donate {
 #ampm li{
   width: 3em;
 }
+small { 
+  font-size: 0.7em;
+}
