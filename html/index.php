@@ -118,7 +118,7 @@ if(isset($_GET['callsign'])) {
         </div>
         <div id="podcast-notdone">
           <h3>The podcast will appear here</h3>
-          <p>Please select desired day, station, and time above</p>
+          <p>Please select desired day<?= $callsign ? '' : ', station, ' ?> and time above</p>
         </div>
       </footer>
 
