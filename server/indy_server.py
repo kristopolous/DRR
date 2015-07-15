@@ -167,10 +167,15 @@ def shutdown(signal = 15, frame = False):
 ## Audio related functions
 ##
 def audio_get_map(fname):
-  f = gzip.open(map_name, 'r')
-  ret = marshall.loads(f.read())
-  f.close()
-  return ret
+  map_name = fname + '.map'
+
+  if os.path.exists(map_name):
+    f = gzip.open(map_name, 'r')
+    ret = marshall.loads(f.read())
+    f.close()
+    return ret
+
+  return None, None
     
 def audio_make_map(fname):
   map_name = fname + '.map'
@@ -350,7 +355,10 @@ def audio_time(fname):
   # In this fast method we get the first two frames, find out the offset
   # difference between them, take the length of the file, divide it by that
   # and then presume that will be the framecount
-  crc32, offset = audio_crc(fname, 2)
+  crc32, offset = audio_get_map(fname)
+  if crc32 is None:
+    crc32, offset = audio_crc(fname, 2)
+
   frame_size = offset[1] - offset[0]
   frame_count_est = os.path.getsize(fname) / frame_size
   return FRAME_LENGTH * frame_count_est
