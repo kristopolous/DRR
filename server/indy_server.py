@@ -171,7 +171,7 @@ def audio_get_map(fname):
 
   if os.path.exists(map_name):
     f = gzip.open(map_name, 'r')
-    ret = marshall.loads(f.read())
+    ret = marshal.loads(f.read())
     f.close()
     return ret
 
@@ -230,6 +230,10 @@ def audio_crc(fname, blockcount = -1):
   are audio blocks, construct a crc32 mapping of some given beginning offset of the audio
   data ... this is intended for stitching.
   """
+  crc32, offset = audio_get_map(fname)
+  if crc32 is not None:
+    return crc32, offset
+
   frame_sig = []
   start_byte = []
   first_header_seen = False
@@ -342,7 +346,14 @@ def audio_crc(fname, blockcount = -1):
       break
 
   f.close()
-  return [frame_sig, start_byte]
+  # If we get here that mans that we don't have a map
+  # file yet.  So we just creat it.
+  map_name = fname + '.map'
+  if not os.path.exists(map_name):
+    with gzip.open(map_name, 'wb') as f:
+      f.write(marshal.dumps([frame_sig, start_byte]))
+
+  return frame_sig, start_byte
 
 
 def audio_time(fname):
@@ -355,9 +366,7 @@ def audio_time(fname):
   # In this fast method we get the first two frames, find out the offset
   # difference between them, take the length of the file, divide it by that
   # and then presume that will be the framecount
-  crc32, offset = audio_get_map(fname)
-  if crc32 is None:
-    crc32, offset = audio_crc(fname, 2)
+  crc32, offset = audio_crc(fname, 2)
 
   frame_size = offset[1] - offset[0]
   frame_count_est = os.path.getsize(fname) / frame_size
