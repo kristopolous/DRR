@@ -168,9 +168,7 @@ def shutdown(signal = 15, frame = False):
 ##
 def audio_get_map(fname):
   """ Retrieves a map file associated with the mp3 """
-
-  if not fname.endswith('.map'):
-    map_name = fname + '.map'
+  map_name = fname if fname.endswith('.map') else fname + '.map'
 
   if os.path.exists(map_name):
     f = gzip.open(map_name, 'r')
@@ -226,7 +224,9 @@ def audio_crc(fname, blockcount = -1, only_check = False):
   """
   # Simply make sure that there is a map associated with the
   # mp3.  Otherwise create one.
-  if only_check and os.path.exists(fname + '.map'):
+  map_name = fname if fname.endswith('.map') else fname + '.map'
+
+  if only_check and os.path.exists(map_name):
     return True
 
   crc32, offset = audio_get_map(fname)
@@ -784,7 +784,7 @@ def file_prune():
 
   # Dump old streams stitches and slices
   count = 0
-  for fname in glob('*/*.mp3'):
+  for fname in glob('*/*.mp3 */*.map'):
     # Because stitches can be made fast and they take up space, we dump them opportunistically.
     # Otherwise we observe the rules set up in the config.
     if re.match('stitches', fname) or (os.path.isfile(fname) and os.path.getctime(fname) < cutoff):
@@ -818,7 +818,7 @@ def file_find_streams(start, duration):
   next_valid_start_minute = 0
   current_week = 0
 
-  file_list = glob('streams/*.mp3')
+  file_list = glob('streams/*.map')
 
   # Sorting by date (see http://stackoverflow.com/questions/23430395/glob-search-files-in-date-order)
   file_list.sort(key = os.path.getmtime)
@@ -1131,7 +1131,7 @@ def server_manager(config):
       'uptime': int(time.time() - g_start_time),
       'free': os.popen("df -h / | tail -1").read().strip(),
       'disk': sum(os.path.getsize(f) for f in os.listdir('.') if os.path.isfile(f)),
-      #'streams': file_find_streams(-1, 0),
+      'streams': file_find_streams(-1, 0),
       'version': __version__,
       'config': config
     }
