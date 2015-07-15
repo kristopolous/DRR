@@ -3,6 +3,7 @@
 # This is where the mp3 routines get testbedded before being integrated into the server
 #
 import binascii
+import os
 import sys
 import struct
 import math
@@ -23,7 +24,8 @@ def make_map(fname):
 def audio_crc(fname, blockcount = -1):
   frame_sig = []
   start_byte = []
-  rsize = 64
+  chain = []
+  rsize = 4
 
   freqTable = [ 44100, 48000, 32000, 0 ]
 
@@ -64,7 +66,11 @@ def audio_crc(fname, blockcount = -1):
         pad_bit = (b & 0x3) >> 1
 
         # from http://id3.org/mp3Frame
-        frame_size = (144000 * bit_rate / samp_rate) + pad_bit
+        try:
+          frame_size = (144000 * bit_rate / samp_rate) + pad_bit
+
+        except:
+          return
 
         # Rest of the header
         throw_away = f.read(1)
@@ -72,13 +78,18 @@ def audio_crc(fname, blockcount = -1):
 
         # Get the signature
         #print "%s %d" % (hex(frame_start), rsize)
+        if len(chain) > 4:
+          print "%s" % (' '.join([binascii.b2a_hex(block) for block in chain]))
+          chain.pop(0)
+          
         block = f.read(rsize)
-        #print "%s" % (binascii.b2a_hex(block))
-        crc = binascii.crc32(block)
+        chain.append(block)
+        #print "%s" % (binascii.b3a_hex(block))
+        #crc = binascii.crc32(block)
 
-        frame_sig.append(crc)
+        #frame_sig.append(crc)
 
-        start_byte.append(frame_start)
+        #start_byte.append(frame_start)
 
         # Move forward the frame f.read size + 4 byte header
         throw_away = f.read(frame_size - (rsize + 4))
@@ -220,15 +231,15 @@ def audio_stitch(file_list):
     audio_serialize(args)
     return True
 
-#for f in glob.glob("*.mp3"):
-#    p =  mp3_crc(f)
-    #print len(p[0])
+for f in glob("/home/chris/radio/wxyc/streams/*.mp3"):
+  if os.path.getsize(f) > 5000000:
+    p = audio_crc(f, 30000)
 
 # success case
-make_map(sys.argv[1])
+#make_map(sys.argv[1])
 #audio_crc(sys.argv[1])
 
-sys.exit(0)
+#sys.exit(0)
 #isSuccess = audio_stitch(["/var/radio/kpcc-1435670337.mp3","/var/radio/kpcc-1435671243.mp3","/var/radio/kpcc-1435672147.mp3","/var/radio/kpcc-1435673051.mp3","/var/radio/kpcc-1435673955.mp3","/var/radio/kpcc-1435674859.mp3","/var/radio/kpcc-1435675763.mp3","/var/radio/kpcc-1435676667.mp3","/var/radio/kpcc-1435677571.mp3","/var/radio/kpcc-1435678475.mp3","/var/radio/kpcc-1435679379.mp3"])
 
 # failure case
