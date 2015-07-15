@@ -166,6 +166,12 @@ def shutdown(signal = 15, frame = False):
 ##
 ## Audio related functions
 ##
+def audio_get_map(fname):
+  f = gzip.open(map_name, 'r')
+  ret = marshall.loads(f.read())
+  f.close()
+  return ret
+    
 def audio_make_map(fname):
   map_name = fname + '.map'
 
@@ -231,7 +237,7 @@ def audio_crc(fname, blockcount = -1):
   # There's an additional precautions of looking for a string of 4 matches which
   # mitigates this even further
   #
-  read_size = 16
+  read_size = 4
 
   freqTable = [ 44100, 48000, 32000, 0 ]
 
