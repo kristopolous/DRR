@@ -8,6 +8,9 @@ import lxml.etree as ET
 import math
 import os
 import pycurl
+import marshal
+import pylzma
+import gzip
 import re
 import setproctitle as SP
 import signal
@@ -163,6 +166,15 @@ def shutdown(signal = 15, frame = False):
 ##
 ## Audio related functions
 ##
+def audio_make_map(fname):
+  map_name = fname + '.map'
+
+  if not os.path.exists(map_name):
+    with gzip.open(map_name, 'wb') as f:
+      f.write(marshal.dumps(audio_crc(fname)))
+
+  return os.path.getsize(map_name)
+
 def audio_stream_info(fname):
   """
   Determines the date the thing starts,
@@ -1590,6 +1602,16 @@ if __name__ == "__main__":
     parser.add_argument('--version', action='version', version='indycast %s :: July 2015' % __version__)
     args = parser.parse_args()
     read_config(args.config)      
+
+    # TODO: Remove this eventually
+    reduced = 0
+    original = 0
+    start = time.time()
+    for fname in glob('streams/*.mp3'):
+      reduced += audio_make_map(fname)
+      original += os.path.getsize(fname)
+
+    print time.time() - start, reduced, original, float(reduced) / original
 
     pid = change_proc_name("%s-manager" % g_config['callsign'])
 

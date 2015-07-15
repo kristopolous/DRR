@@ -1,15 +1,24 @@
 #!/usr/bin/python -O
+#
+# This is where the mp3 routines get testbedded before being integrated into the server
+#
 import binascii
 import sys
 import struct
 import math
 import base64
+import marshal
 from glob import glob
 
 MAX_HEADER_ATTEMPTS = 1024
 def hash_test(file_list):
   for name in file_list:
     audio_crc(name)
+
+def make_map(fname):
+  obj = audio_crc(fname)
+  print len(obj[0])
+  marshal.dump(obj, open(fname + '.map', 'wb'))
 
 def audio_crc(fname, blockcount = -1):
   frame_sig = []
@@ -216,7 +225,8 @@ def audio_stitch(file_list):
     #print len(p[0])
 
 # success case
-audio_crc(sys.argv[1])
+make_map(sys.argv[1])
+#audio_crc(sys.argv[1])
 
 sys.exit(0)
 #isSuccess = audio_stitch(["/var/radio/kpcc-1435670337.mp3","/var/radio/kpcc-1435671243.mp3","/var/radio/kpcc-1435672147.mp3","/var/radio/kpcc-1435673051.mp3","/var/radio/kpcc-1435673955.mp3","/var/radio/kpcc-1435674859.mp3","/var/radio/kpcc-1435675763.mp3","/var/radio/kpcc-1435676667.mp3","/var/radio/kpcc-1435677571.mp3","/var/radio/kpcc-1435678475.mp3","/var/radio/kpcc-1435679379.mp3"])
