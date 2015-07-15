@@ -167,7 +167,10 @@ def shutdown(signal = 15, frame = False):
 ## Audio related functions
 ##
 def audio_get_map(fname):
-  map_name = fname + '.map'
+  """ Retrieves a map file associated with the mp3 """
+
+  if not fname.endswith('.map'):
+    map_name = fname + '.map'
 
   if os.path.exists(map_name):
     f = gzip.open(map_name, 'r')
@@ -177,15 +180,6 @@ def audio_get_map(fname):
 
   return None, None
     
-def audio_make_map(fname):
-  map_name = fname + '.map'
-
-  if not os.path.exists(map_name):
-    with gzip.open(map_name, 'wb') as f:
-      f.write(marshal.dumps(audio_crc(fname)))
-
-  return os.path.getsize(map_name)
-
 def audio_stream_info(fname):
   """
   Determines the date the thing starts,
@@ -224,12 +218,17 @@ def audio_stream_info(fname):
   }
 
 
-def audio_crc(fname, blockcount = -1):
+def audio_crc(fname, blockcount = -1, only_check = False):
   """
   Opens an mp3 file, find all the blocks, the byte offset of the blocks, and if they
   are audio blocks, construct a crc32 mapping of some given beginning offset of the audio
   data ... this is intended for stitching.
   """
+  # Simply make sure that there is a map associated with the
+  # mp3.  Otherwise create one.
+  if only_check and os.path.exists(fname + '.map'):
+    return True
+
   crc32, offset = audio_get_map(fname)
   if crc32 is not None:
     return crc32, offset
@@ -796,6 +795,14 @@ def file_prune():
   logging.info("Found %d files older than %s days." % (count, g_config['archivedays']))
 
 
+def file_get(path):
+  """
+  If the file exists locally then we return it, otherwise
+  we go out to the network store and retrieve it
+  """
+  if os.path.exists(path):
+    return path
+    
 def file_find_streams(start, duration):
   """
   Given a start week minute this looks for streams in the storage 
@@ -1626,15 +1633,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     read_config(args.config)      
 
-    # TODO: Remove this eventually
-    reduced = 0
-    original = 0
-    start = time.time()
     for fname in glob('streams/*.mp3'):
-      reduced += audio_make_map(fname)
-      original += os.path.getsize(fname)
-
-    print time.time() - start, reduced, original, float(reduced) / original
+      audio_crc(fname, only_check = True)
 
     pid = change_proc_name("%s-manager" % g_config['callsign'])
 
