@@ -301,7 +301,7 @@ def audio_crc(fname, blockcount = -1, only_check = False):
 
           # If there's a /0 error
         except:
-          next
+          continue
 
         # Rest of the header
         throw_away = f.read(1)
