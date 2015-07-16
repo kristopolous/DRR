@@ -770,13 +770,22 @@ def db_register_intent(minute_list, duration):
 ##
 ## Storage and file related
 ##
-def cloud_put(path):
+def cloud_connect():
   from azure.storage import BlobService
   global g_config
   container = 'streams'
 
   blob_service = BlobService(g_config['azure']['storage_account_name'], g_config['azure']['primary_access_key'])
-  blob_service.create_container(container)
+  blob_service.create_container(container, x_ms_blob_public_access='container')
+  return blob_service, container
+
+def cloud_unlink(path):
+  fname = os.path.basename(path)
+  blob_service, container = cloud_connect()
+  return blob_service.delete_blob(container, path)
+
+def cloud_put(path):
+  blob_service, container = cloud_connect()
 
   if blob_service:
     return blob_service.put_block_blob_from_path(
@@ -784,6 +793,20 @@ def cloud_put(path):
       os.path.basename(path),
       path,
       max_connections=5,
+    )
+
+  return False
+
+def cloud_get(path):
+  blob_service, container = cloud_connect()
+
+  if blob_service:
+    fname = os.path.basename(path)
+    return blob_service.get_blob_to_path(
+      container,
+      fname,
+      '/tmp/%s' % fname,
+      max_connections = 8,
     )
 
   return False
@@ -804,7 +827,7 @@ def file_prune():
 
   # Dump old streams and slices
   count = 0
-  for fname in glob('*/*.mp3') + glob('*/*.map'):
+  for fname in glob('*/*.mp3'):
     ctime = os.path.getctime(fname)
 
     # We observe the rules set up in the config.
@@ -814,8 +837,22 @@ def file_prune():
       count += 1 
 
     elif cloud_cutoff and ctime < cloud_cutoff:
-      print "Putting %s to cloud" % fname
-      print cloud_put(fname)
+      logging.debug("Prune[cloud]: putting %s" % fname)
+      cloud_put(fname)
+      os.unlink(fname)
+
+  # The map names are different since there may or may not be a corresponding
+  # cloud thingie associated with it.
+  for fname in glob('*/*.map'):
+    if ctime < cutoff:
+
+      # If there's a cloud account at all then we need to unlink the 
+      # equivalent mp3 file
+      if cloud_cutoff:
+        cloud_unlink(fname[:-4])
+
+      # now only after we've deleted from the cloud can we delete the local file
+      os.unlink(fname)
 
   logging.info("Found %d files older than %s days." % (count, g_config['archivedays']))
 
