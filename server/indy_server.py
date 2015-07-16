@@ -289,7 +289,12 @@ def audio_crc(fname, blockcount = -1, only_check = False):
 
       if header == '\xff\xfb' or header == '\xff\xfa':
         first_header_seen = True
-        b = ord(f.read(1))
+
+	try:
+          b = ord(f.read(1))
+          # If we are at the EOF
+        except:
+          break
 
         samp_rate = freqTable[(b & 0x0f) >> 2]
         bit_rate = brTable[b >> 4]
