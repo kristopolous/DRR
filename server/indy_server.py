@@ -1168,6 +1168,7 @@ def server_manager(config):
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
     os.system('git pull') 
+    os.system('pip install --user -r requirements.txt') 
 
     # See what the version is after the pull
     newversion = os.popen("git describe").read().strip()
