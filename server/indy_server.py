@@ -743,24 +743,27 @@ def db_connect():
   return instance
 
 
-def db_register_intent(minute, duration):
+def db_register_intent(minute_list, duration):
   """
   Tells the server to record on a specific minute for a specific duration when
   not in full mode.  Otherwise, this is just here for statistical purposes.
   """
   db = db_connect()
 
-  key = str(minute) + ':' + str(duration)
-  res = db['c'].execute('select id from intents where key = ?', (key, )).fetchone()
+  for minute in minute_list:
+    key = str(minute) + ':' + str(duration)
+    res = db['c'].execute('select id from intents where key = ?', (key, )).fetchone()
 
-  if res == None:
-    db['c'].execute('insert into intents(key, start, end) values(?, ?, ?)', (key, minute, minute + duration))
+    if res == None:
+      db['c'].execute('insert into intents(key, start, end) values(?, ?, ?)', (key, minute, minute + duration))
 
-  else:
-    db['c'].execute('update intents set read_count = read_count + 1, accessed_at = (current_timestamp) where id = ?', (res[0], )) 
+    else:
+      db['c'].execute('update intents set read_count = read_count + 1, accessed_at = (current_timestamp) where id = ?', (res[0], )) 
 
-  db['conn'].commit()
-  return db['c'].lastrowid
+    db['conn'].commit()
+    return db['c'].lastrowid
+
+  return None
   
 
   
@@ -796,21 +799,17 @@ def file_get(path):
   """
   if os.path.exists(path):
     return open(path, 'rb')
+
+  else:
+    pass
     
-def file_find_streams(start, duration):
+def file_find_streams(start_list, duration):
   """
   Given a start week minute this looks for streams in the storage 
   directory that match it - regardless of duration ... so it may return
   partial shows results.
   """
   stream_list = []
-  
-  end = (start + duration) % MINUTES_PER_WEEK
-
-  # We want to make sure we only get the edges so we need to have state
-  # between the iterations.
-  next_valid_start_minute = 0
-  current_week = 0
 
   file_list = glob('streams/*.map')
 
@@ -819,42 +818,51 @@ def file_find_streams(start, duration):
   file_list.sort() 
   stitch_list = []
 
-  for filename in file_list:
-    i = audio_stream_info(filename)
+  # TODO: This needs to be chronologically
+  for start in start_list:
+    end = (start + duration) % MINUTES_PER_WEEK
 
-    if i['start_minute'] < next_valid_start_minute and i['week'] == current_week:
-      stitch_list.append(filename)
-      continue
+    # We want to make sure we only get the edges so we need to have state
+    # between the iterations.
+    next_valid_start_minute = 0
+    current_week = 0
 
-    # We are only looking for starting edges of the stream
-    #
-    # If we started recording before this is fine as long as we ended recording after our start
-    if start == -1 or (i['start_minute'] < start and i['end_minute'] > start) or (i['start_minute'] > start and i['start_minute'] < end):
-      if start == -1:
-        fname = filename
+    for filename in file_list:
+      i = audio_stream_info(filename)
 
-      else:
-        fname = audio_stitch_and_slice(stitch_list, start, duration)
-        stitch_list = [filename]
-        next_valid_start_minute = (start + duration) % MINUTES_PER_WEEK
-        current_week = i['week']
+      if i['start_minute'] < next_valid_start_minute and i['week'] == current_week:
+        stitch_list.append(filename)
+        continue
 
+      # We are only looking for starting edges of the stream
+      #
+      # If we started recording before this is fine as long as we ended recording after our start
+      if start == -1 or (i['start_minute'] < start and i['end_minute'] > start) or (i['start_minute'] > start and i['start_minute'] < end):
+        if start == -1:
+          fname = filename
+
+        else:
+          fname = audio_stitch_and_slice(stitch_list, start, duration)
+          stitch_list = [filename]
+          next_valid_start_minute = (start + duration) % MINUTES_PER_WEEK
+          current_week = i['week']
+
+        if fname:
+          stream_list.append(audio_stream_info(fname))
+
+    if start != -1:
+      fname = audio_stitch_and_slice(stitch_list, start, duration)
       if fname:
         stream_list.append(audio_stream_info(fname))
 
-  if start != -1:
-    fname = audio_stitch_and_slice(stitch_list, start, duration)
-    if fname:
-      stream_list.append(audio_stream_info(fname))
-
   return stream_list
 
-def server_generate_xml(showname, feed_list, duration, start_minute, weekday, start, duration_string):
+def server_generate_xml(showname, feed_list, duration, start_time_list, weekday_list, start, duration_string):
   """
   This takes a number of params:
  
   showname - from the incoming request url
-  feedList - this is a list of tuples in the form (date, file)
+  feed_list - this is a list of tuples in the form (date, file)
        corresponding to the, um, date of recording and filename
    
   It obviously returns an xml file ... I mean duh.
@@ -1139,6 +1147,9 @@ def server_manager(config):
     from the front end.
     """
     
+    # Supports multiple weekdays
+    weekday_list = weekday.split(',')
+
     duration_string = duration
 
     # Duration is expressed either in minutes or in \d+hr\d+ minute
@@ -1172,9 +1183,9 @@ def server_manager(config):
     # the entire episode.
     duration += 2
 
-    start_time = time_to_utc(weekday, start)
+    start_time_list = [time_to_utc(day, start) for day in weekday_list]
     
-    if not start_time:
+    if not start_time_list[0]:
       return server_error('weekday and start times are not set correctly')
 
     # If we are here then it looks like our input is probably good.
@@ -1187,13 +1198,21 @@ def server_manager(config):
 
     # This will register the intent if needed for future recordings
     # (that is if we are in ondemand mode)
-    db_register_intent(start_time, duration)
+    db_register_intent(start_time_list, duration)
 
     # Look for streams that we have which match this query and duration.
-    feed_list = file_find_streams(start_time, duration)
+    feed_list = file_find_streams(start_time_list, duration)
 
     # Then, taking those two things, make a feed list from them.
-    return server_generate_xml(showname, feed_list = feed_list, duration = duration, start_minute = start_time, weekday = weekday, start = start, duration_string = duration_string)
+    return server_generate_xml(
+      showname = showname, 
+      feed_list = feed_list, 
+      duration = duration, 
+      start_time_list = start_time_list, 
+      weekday_list = weekday_list, 
+      start = start, 
+      duration_string = duration_string
+    )
 
   if __name__ == '__main__':
     pid = change_proc_name("%s-webserver" % config['callsign'])
