@@ -815,6 +815,7 @@ def file_prune():
   """ Gets rid of files older than archivedays - cloud stores things if relevant """
 
   global g_config
+  pid = change_proc_name("%s-cleanup" % g_config['callsign'])
 
   db = db_connect()
 
@@ -1476,7 +1477,9 @@ def stream_manager():
 
     yesterday = time.time() - ONE_DAY
     if last_prune < yesterday:
-      file_prune()
+      # We just assume it can do its business in under a day
+      prune_process = Process(target = file_prune)
+      prune_process.start()
       last_prune = time.time()
 
     time_get_offset()
