@@ -6,3 +6,4 @@ mode=full
 stream=http://live.scpr.org/kpcclive/
 port=8930
 loglevel=debug
+azurecredfile=~/azurecreds.cfg
