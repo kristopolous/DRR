@@ -9,7 +9,6 @@ import math
 import os
 import pycurl
 import marshal
-import pylzma
 import gzip
 import re
 import setproctitle as SP
