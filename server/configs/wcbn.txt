@@ -6,4 +6,4 @@ mode=full
 stream=http://www.wcbn.org/wcbn-hi.m3u
 port=8830
 loglevel=debug
-azurecredfile=~/azurecreds.cfg
+cloud=~/cloudcreds.cfg

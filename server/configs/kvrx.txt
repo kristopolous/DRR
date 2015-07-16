@@ -6,4 +6,4 @@ mode=full
 stream=http://tstv-stream.tsm.utexas.edu:8000/kvrx_livestream
 port=9170
 loglevel=debug
-azurecredfile=~/azurecreds.cfg
+cloud=~/cloudcreds.cfg
