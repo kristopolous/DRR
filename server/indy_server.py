@@ -296,7 +296,12 @@ def audio_crc(fname, blockcount = -1, only_check = False):
         pad_bit = (b & 0x3) >> 1
 
         # from http://id3.org/mp3Frame
-        frame_size = (144000 * bit_rate / samp_rate) + pad_bit
+        try:
+          frame_size = (144000 * bit_rate / samp_rate) + pad_bit
+
+          # If there's a /0 error
+        except:
+          next
 
         # Rest of the header
         throw_away = f.read(1)
