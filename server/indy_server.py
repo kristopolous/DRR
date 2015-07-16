@@ -178,11 +178,24 @@ def audio_get_map(fname):
 
   return None, None
     
+def audio_list_info(file_list):
+  info = audio_stream_info(file_list[0]['name'])
+
+  # Some things are the same such as the
+  # week, start_minute, start_date
+  info['duration_sec'] = reduce(lambda x, y: x['duration_sec'] + y['duration_sec'], file_list)
+  info['end_minute'] = (info['duration_sec'] / 60.0 + info['duration_sec']) % MINUTES_PER_WEEK
+
+  return info
+
 def audio_stream_info(fname):
   """
   Determines the date the thing starts,
   the minute time it starts, and the duration
   """
+  if type(fname) is not str:
+    return audio_list_info(fname)
+
   ts_re = re.compile('-(\d*)[.|_]')
   ts = ts_re.findall(fname)
 
@@ -212,7 +225,7 @@ def audio_stream_info(fname):
     'start_minute': start_minute, 
     'start_date': start_date, 
     'end_minute': (duration / 60.0 + start_minute) % MINUTES_PER_WEEK,
-    'duration_sec': duration,
+    'duration_sec': duration
   }
 
 
@@ -382,10 +395,10 @@ def audio_stitch_and_slice(file_list, start_minute, duration_minute):
     return False
 
   # We presume that there is a file list we need to make 
-  stitched_name = audio_stitch(file_list, force_stitch = True)
+  stitched_list = audio_stitch(file_list, force_stitch = True)
 
-  if stitched_name:
-    info = audio_stream_info(stitched_name)
+  if len(stitched_list) > 1:
+    info = audio_stream_info(stitched_list)
 
   else:
     logging.warn("Unable to stitch file list")
@@ -499,7 +512,14 @@ def audio_stitch(file_list, force_stitch = False):
   first['crc32'] = crc32
   first['offset'] = offset
 
-  args = [(first['name'], 0, first['offset'][-1])]
+  args = [{
+    'name': first['name'], 
+    'start_byte': 0, 
+    'end_byte': first['offset'][-1],
+    'start_minute': 0,
+    'duration_sec': len(first['offset'] - 1) * FRAME_LENGTH
+  }]
+
   duration += len(first['offset']) * FRAME_LENGTH
 
   for name in file_list[1:]:
@@ -527,18 +547,29 @@ def audio_stitch(file_list, force_stitch = False):
       isFound = force_stitch
 
     if isFound:
-      args.append((second['name'], second['offset'][pos], second['offset'][-2]))
+      args.append({
+        'name': second['name'], 
+        'start_byte': second['offset'][pos], 
+        'end_byte': second['offset'][-2],
+        'start_minute': pos * FRAME_LENGTH,
+        'duration_sec': len(second['offset'] - pos - 1) * FRAME_LENGTH
+      })
+
       duration += (len(second['offset']) - pos - 1) * FRAME_LENGTH
       first = second
       continue
 
     break
 
+  return args
+  """
   # Since we end at the last block, we can safely pass in a file1_stop of 0
   if len(args) > 1:
     # And then we take the offset in the second['crc32'] where things began
+    print args
     fname = audio_serialize(args, duration_min = int(duration / 60))
     return fname
+  """
 
 
 ##
@@ -826,7 +857,6 @@ def file_find_streams(start, duration):
 
   for filename in file_list:
     i = audio_stream_info(filename)
-    print i
 
     if i['start_minute'] < next_valid_start_minute and i['week'] == current_week:
       stitch_list.append(filename)
