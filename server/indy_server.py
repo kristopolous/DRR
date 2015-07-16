@@ -857,7 +857,7 @@ def file_find_streams(start_list, duration):
 
   return stream_list
 
-def server_generate_xml(showname, feed_list, duration, start_time_list, weekday_list, start, duration_string):
+def server_generate_xml(showname, feed_list, duration, weekday_list, start, duration_string):
   """
   This takes a number of params:
  
@@ -869,8 +869,9 @@ def server_generate_xml(showname, feed_list, duration, start_time_list, weekday_
 
   In the xml file we will lie about the duration to make life easier
   """
+  global g_config
 
-  fullday = {
+  day_map = {
     'sun': 'Sunday',
     'mon': 'Monday',
     'tue': 'Tuesday',
@@ -878,9 +879,14 @@ def server_generate_xml(showname, feed_list, duration, start_time_list, weekday_
     'thu': 'Thursday',
     'fri': 'Friday',
     'sat': 'Saturday'
-  }[weekday]
+  }
+  day_list = [ day_map[weekday] for weekday in weekday_list ]
+  if len(day_list) == 1:
+    week_string = day_list[0]
 
-  global g_config
+  else:
+    # an oxford comma, how cute.
+    week_string = "%s and %s" % (', '.join(day_list[:-1]), day_list[-1])
 
   base_url = 'http://%s.indycast.net:%s/' % (g_config['callsign'], g_config['port'])
   callsign = g_config['callsign']
@@ -904,7 +910,7 @@ def server_generate_xml(showname, feed_list, duration, start_time_list, weekday_
     'title': showname,
     'link': base_url,
     'copyright': callsign,
-    'description': "%s is a %s show recorded every %s on %s at %s. Saved and delivered when you want it, through a volunteer network at http://indycast.net." % (showname, duration_string, fullday, callsign.upper(), start),
+    'description': "%s is a %s show recorded every %s on %s at %s. Saved and delivered when you want it, through a volunteer network at http://indycast.net." % (showname, duration_string, week_string, callsign.upper(), start),
     'language': 'en'
   }.items():
     ET.SubElement(channel, k).text = v
@@ -946,7 +952,7 @@ def server_generate_xml(showname, feed_list, duration, start_time_list, weekday_
       'title': "%s - %s" % (showname, feed['start_date'].strftime("%Y.%m.%d")),
       'link': link,
       'copyright': callsign,
-      'guid': callsign + file_name
+      'guid': file_name
     }.items():
       ET.SubElement(item, k).text = v
 
@@ -1208,7 +1214,6 @@ def server_manager(config):
       showname = showname, 
       feed_list = feed_list, 
       duration = duration, 
-      start_time_list = start_time_list, 
       weekday_list = weekday_list, 
       start = start, 
       duration_string = duration_string
