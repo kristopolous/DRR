@@ -183,7 +183,10 @@ def audio_list_info(file_list):
 
   # Some things are the same such as the
   # week, start_minute, start_date
-  info['duration_sec'] = reduce(lambda x, y: x['duration_sec'] + y['duration_sec'], file_list)
+  info['duration_sec'] = 0
+  for item in file_list:
+    info['duration_sec'] += item['duration_sec']
+
   info['end_minute'] = (info['duration_sec'] / 60.0 + info['duration_sec']) % MINUTES_PER_WEEK
 
   return info
@@ -412,15 +415,7 @@ def audio_stitch_and_slice(file_list, start_minute, duration_minute):
   # make sure that we don't exceed the length of the file.
   duration_slice = min(duration_minute, start_slice + info['duration_sec'] / 60.0)
 
-  sliced_name = audio_slice(stitched_name, start_minute = start_slice, duration_minute = duration_slice)
-
-  # After we are done with the stitched audio we remove it to save space
-  # since its an intemediate file
-  try:
-    os.unlink(stitched_name)
-
-  except:
-    pass
+  sliced_name = audio_list_slice(stitched_list, start_minute = start_slice, duration_minute = duration_slice)
 
   return sliced_name
 
@@ -459,6 +454,47 @@ def audio_serialize(file_list, duration_min):
 
   return name_out
 
+
+def audio_list_slice(list_in, start_minute, end_minute = -1, duration_minute = -1):
+  """
+  Takes some stitch list, list_in and then create a new one based on the start and end times 
+  by finding the closest frames and just doing an extraction.
+  """
+  print(list_in)
+
+  if duration_minute == -1:
+    duration_minute = end_minute - start_minute
+
+  else:
+    end_minute = start_minute + duration_minute
+
+  first_file = list_in[0]['name']
+  callsign, unix_time = re.findall('(\w*)-(\d+)_', first_file)[0]
+
+  name_out = "slices/%s-%d_%d.mp3" % (callsign, int(unix_time) + start_minute * 60, duration_minute)
+  start_sec = start_minute * 60.0
+  end_sec = end_minute * 60.0
+
+  if os.path.isfile(name_out):
+    return name_out
+
+  crc32, offset = audio_crc(name_in)
+
+  frame_start = max(int(math.floor(start_sec / FRAME_LENGTH)), 0)
+  frame_end = min(int(math.ceil(end_sec / FRAME_LENGTH)), len(offset) - 1)
+
+  out = open(name_out, 'wb+')
+
+  for item in list_in:
+    fin = file_get(item['name'])
+
+  fin.seek(offset[frame_start])
+  out.write(fin.read(offset[frame_end] - offset[frame_start]))
+
+  fin.close()
+  out.close()
+
+  return name_out
 
 def audio_slice(name_in, start_minute, end_minute = -1, duration_minute = -1):
   """
@@ -517,7 +553,7 @@ def audio_stitch(file_list, force_stitch = False):
     'start_byte': 0, 
     'end_byte': first['offset'][-1],
     'start_minute': 0,
-    'duration_sec': len(first['offset'] - 1) * FRAME_LENGTH
+    'duration_sec': (len(first['offset']) - 1) * FRAME_LENGTH
   }]
 
   duration += len(first['offset']) * FRAME_LENGTH
@@ -552,7 +588,7 @@ def audio_stitch(file_list, force_stitch = False):
         'start_byte': second['offset'][pos], 
         'end_byte': second['offset'][-2],
         'start_minute': pos * FRAME_LENGTH,
-        'duration_sec': len(second['offset'] - pos - 1) * FRAME_LENGTH
+        'duration_sec': (len(second['offset']) - pos - 1) * FRAME_LENGTH
       })
 
       duration += (len(second['offset']) - pos - 1) * FRAME_LENGTH
@@ -832,7 +868,7 @@ def file_get(path):
   we go out to the network store and retrieve it
   """
   if os.path.exists(path):
-    return path
+    return open(path, 'rb')
     
 def file_find_streams(start, duration):
   """
