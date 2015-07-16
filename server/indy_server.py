@@ -419,51 +419,14 @@ def audio_stitch_and_slice(file_list, start_minute, duration_minute):
   return sliced_name
 
 
-def audio_serialize(file_list, duration_min):
-  """
-  Takes a list of ordinal tuples and makes one larger mp3 out of it. 
-  :param file_list: The tuple format is (file_name, byte_start, byte_end) where byte_end == -1 means "the whole file".
-  """
-
-  first_file = file_list[0][0]
-
-  # Our file will be the first one_duration.mp3
-  name_out = "stitches/%s_%d.mp3" % (first_file[first_file.index('/') + 1:first_file.rindex('.')], duration_min)
-
-  # If the file exists, then we just return it
-  if os.path.isfile(name_out):
-    return name_out
-
-  out = open(name_out, 'wb+')
-
-  for name, start, end in file_list:
-    f = open(name, 'rb')
-
-    f.seek(start)
-    
-    if end == -1:
-      out.write(f.read())
-
-    else:
-      out.write(f.read(end - start))
-
-    f.close()
-
-  out.close()
-
-  return name_out
-
-
 def audio_list_slice(list_in, start_minute, duration_minute = -1):
   """
   Takes some stitch list, list_in and then create a new one based on the start and end times 
   by finding the closest frames and just doing an extraction.
   """
-  print(list_in)
   duration_sec = duration_minute * 60.0
 
   first_file = list_in[0]['name']
-  print 'first', first_file
   callsign, unix_time = re.findall('(\w*)-(\d+)', first_file)[0]
 
   name_out = "slices/%s-%d_%d.mp3" % (callsign, int(unix_time) + start_minute * 60, duration_minute)
@@ -479,7 +442,6 @@ def audio_list_slice(list_in, start_minute, duration_minute = -1):
 
     # get the regular map
     crc32, offset = audio_crc(item['name'])
-    print duration_sec
 
     if ix == len(list_in) - 1:
       frame_end = min(int(math.ceil(duration_sec / FRAME_LENGTH)), len(offset) - 1)
@@ -572,14 +534,6 @@ def audio_stitch(file_list, force_stitch = False):
     break
 
   return args
-  """
-  # Since we end at the last block, we can safely pass in a file1_stop of 0
-  if len(args) > 1:
-    # And then we take the offset in the second['crc32'] where things began
-    print args
-    fname = audio_serialize(args, duration_min = int(duration / 60))
-    return fname
-  """
 
 
 ##
@@ -870,7 +824,6 @@ def file_find_streams(start, duration):
     i = audio_stream_info(filename)
 
     if i['start_minute'] < next_valid_start_minute and i['week'] == current_week:
-      print i
       stitch_list.append(filename)
       continue
 
@@ -878,7 +831,6 @@ def file_find_streams(start, duration):
     #
     # If we started recording before this is fine as long as we ended recording after our start
     if start == -1 or (i['start_minute'] < start and i['end_minute'] > start) or (i['start_minute'] > start and i['start_minute'] < end):
-      print i
       if start == -1:
         fname = filename
 
