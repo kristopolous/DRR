@@ -6,3 +6,4 @@ mode=full
 stream=http://kzsu-streams.stanford.edu/kzsu-1-128.mp3
 port=9010
 loglevel=debug
+azurecredfile=~/azurecreds.cfg
