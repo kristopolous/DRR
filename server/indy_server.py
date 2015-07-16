@@ -381,11 +381,10 @@ def audio_time(fname):
   # In this fast method we get the first two frames, find out the offset
   # difference between them, take the length of the file, divide it by that
   # and then presume that will be the framecount
-  crc32, offset = audio_crc(fname, 2)
+  crc32, offset = audio_crc(fname)
 
   frame_size = offset[1] - offset[0]
-  frame_count_est = os.path.getsize(fname) / frame_size
-  return FRAME_LENGTH * frame_count_est
+  return FRAME_LENGTH * len(offset)
 
 
 def audio_stitch_and_slice(file_list, start_minute, duration_minute):
@@ -455,46 +454,45 @@ def audio_serialize(file_list, duration_min):
   return name_out
 
 
-def audio_list_slice(list_in, start_minute, end_minute = -1, duration_minute = -1):
+def audio_list_slice(list_in, start_minute, duration_minute = -1):
   """
   Takes some stitch list, list_in and then create a new one based on the start and end times 
   by finding the closest frames and just doing an extraction.
   """
   print(list_in)
-
-  if duration_minute == -1:
-    duration_minute = end_minute - start_minute
-
-  else:
-    end_minute = start_minute + duration_minute
+  duration_sec = duration_minute * 60.0
 
   first_file = list_in[0]['name']
-  callsign, unix_time = re.findall('(\w*)-(\d+)_', first_file)[0]
+  print 'first', first_file
+  callsign, unix_time = re.findall('(\w*)-(\d+)', first_file)[0]
 
   name_out = "slices/%s-%d_%d.mp3" % (callsign, int(unix_time) + start_minute * 60, duration_minute)
   start_sec = start_minute * 60.0
-  end_sec = end_minute * 60.0
 
   if os.path.isfile(name_out):
     return name_out
 
   out = open(name_out, 'wb+')
 
-  for ix in len(list_in):
+  for ix in range(0, len(list_in)):
     item = list_in[ix]
 
     # get the regular map
     crc32, offset = audio_crc(item['name'])
+    print duration_sec
+
+    if ix == len(list_in) - 1:
+      frame_end = min(int(math.ceil(duration_sec / FRAME_LENGTH)), len(offset) - 1)
+    else:
+      frame_end = len(offset) - 1
 
     if ix == 0:
       frame_start = max(int(math.floor(start_sec / FRAME_LENGTH)), 0)
+      duration_sec -= (item['duration_sec'] - start_sec)
     else:
       frame_start = item['start_offset']
+      duration_sec -= item['duration_sec'] 
 
-    if ix == len(list_in) - 1:
-      frame_end = min(int(math.ceil(end_sec / FRAME_LENGTH)), len(offset) - 1)
-    else:
-      frame_end = len(offset) - 1
 
     # try and get the mp3 referred to by the map file
     fin = file_get(item['name'][:-4])
@@ -503,43 +501,6 @@ def audio_list_slice(list_in, start_minute, end_minute = -1, duration_minute = -
     out.write(fin.read(offset[frame_end] - offset[frame_start]))
     fin.close()
 
-  out.close()
-
-  return name_out
-
-def audio_slice(name_in, start_minute, end_minute = -1, duration_minute = -1):
-  """
-  Takes some mp3 file name_in and then create a new one based on the start and end times 
-  by finding the closest frames and just doing an extraction.
-  """
-
-  if duration_minute == -1:
-    duration_minute = end_minute - start_minute
-
-  else:
-    end_minute = start_minute + duration_minute
-
-  callsign, unix_time = re.findall('(\w*)-(\d+)_', name_in)[0]
-
-  name_out = "slices/%s-%d_%d.mp3" % (callsign, int(unix_time) + start_minute * 60, duration_minute)
-  start_sec = start_minute * 60.0
-  end_sec = end_minute * 60.0
-
-  if os.path.isfile(name_out):
-    return name_out
-
-  crc32, offset = audio_crc(name_in)
-
-  frame_start = max(int(math.floor(start_sec / FRAME_LENGTH)), 0)
-  frame_end = min(int(math.ceil(end_sec / FRAME_LENGTH)), len(offset) - 1)
-
-  out = open(name_out, 'wb+')
-  fin = open(name_in, 'rb')
-
-  fin.seek(offset[frame_start])
-  out.write(fin.read(offset[frame_end] - offset[frame_start]))
-
-  fin.close()
   out.close()
 
   return name_out
@@ -900,14 +861,16 @@ def file_find_streams(start, duration):
 
   file_list = glob('streams/*.map')
 
-  # Sorting by date (see http://stackoverflow.com/questions/23430395/glob-search-files-in-date-order)
-  file_list.sort(key = os.path.getmtime)
+  # Sort nominally - since we have unix time in the name, this should come out
+  # as sorted by time for us for free.
+  file_list.sort() 
   stitch_list = []
 
   for filename in file_list:
     i = audio_stream_info(filename)
 
     if i['start_minute'] < next_valid_start_minute and i['week'] == current_week:
+      print i
       stitch_list.append(filename)
       continue
 
@@ -915,6 +878,7 @@ def file_find_streams(start, duration):
     #
     # If we started recording before this is fine as long as we ended recording after our start
     if start == -1 or (i['start_minute'] < start and i['end_minute'] > start) or (i['start_minute'] > start and i['start_minute'] < end):
+      print i
       if start == -1:
         fname = filename
 
