@@ -797,6 +797,7 @@ def cloud_put(path):
 
   return False
 
+
 def cloud_get(path):
   blob_service, container = cloud_connect()
 
@@ -867,7 +868,9 @@ def file_get(path):
     return open(path, 'rb')
 
   else:
-    pass
+    cloud_get(path)
+    return open(path, 'rb')
+
     
 def file_find_streams(start_list, duration):
   """
@@ -876,6 +879,9 @@ def file_find_streams(start_list, duration):
   partial shows results.
   """
   stream_list = []
+
+  if type(start_list) is int:
+    start_list = [start_list]
 
   file_list = glob('streams/*.map')
 
