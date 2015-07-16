@@ -770,6 +770,24 @@ def db_register_intent(minute_list, duration):
 ##
 ## Storage and file related
 ##
+def cloud_put(path):
+  from azure.storage import BlobService
+  global g_config
+  container = 'streams'
+
+  blob_service = BlobService(g_config['azure']['storage_account_name'], g_config['azure']['primary_access_key'])
+  blob_service.create_container(container)
+
+  if blob_service:
+    return blob_service.put_block_blob_from_path(
+      container,
+      os.path.basename(path),
+      path,
+      max_connections=5,
+    )
+
+  return False
+
 def file_prune():
   """ Gets rid of files older than archivedays - cloud stores things if relevant """
 
@@ -782,16 +800,22 @@ def file_prune():
 
   cloud_cutoff = False
   if g_config['cloud']:
-    cloud_cutoff = g_config['cloudarchive']
+    cloud_cutoff = time.time() - int(g_config['cloudarchive']) * ONE_DAY
 
   # Dump old streams and slices
   count = 0
-  for fname in glob('*/*.mp3 */*.map'):
+  for fname in glob('*/*.mp3') + glob('*/*.map'):
+    ctime = os.path.getctime(fname)
+
     # We observe the rules set up in the config.
-    if os.path.getctime(fname) < cutoff:
+    if ctime < cutoff:
       logging.debug("Prune: %s" % fname)
       os.unlink(fname)
       count += 1 
+
+    elif cloud_cutoff and ctime < cloud_cutoff:
+      print "Putting %s to cloud" % fname
+      print cloud_put(fname)
 
   logging.info("Found %d files older than %s days." % (count, g_config['archivedays']))
 
@@ -1588,9 +1612,8 @@ def read_config(config):
       # If there's a cloud conifiguration file then we read that too
       cloud_config = ConfigParser.ConfigParser()
       cloud_config.read(g_config['cloud'])
-      g_config += config_section_map('Azure', cloud_config)
+      g_config['azure'] = config_section_map('Azure', cloud_config)
 
-  print g_config
   if not os.path.isdir(g_config['storage']):
     try:
       # If I can't do this, that's fine.
