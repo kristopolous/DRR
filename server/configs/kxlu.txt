@@ -6,4 +6,4 @@ mode=full
 stream=http://216.235.85.29/play?now=92&membername=&session=1436247685-202438&tag=pro&s=kxlu2&d=LIVE365&r=0&app_id=pro%3ABROWSER&token=64cab2202cf60af6e4b549beefa692c9-4105070080100000&AuthType=NORMAL&lid=807-usa&SaneID=50.1.134.134-1436247444455
 port=8890
 loglevel=debug
-azurecredfile=~/azurecreds.cfg
+cloud=~/cloudcreds.cfg

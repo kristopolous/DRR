@@ -6,4 +6,4 @@ mode=full
 stream=http://api.kdvs.org:8000/kdvs128.m3u
 port=9030
 loglevel=debug
-azurecredfile=~/azurecreds.cfg
+cloud=~/cloudcreds.cfg

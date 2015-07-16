@@ -6,4 +6,4 @@ mode=full
 stream=http://wfmu.org/wfmu.pls
 port=9110
 loglevel=debug
-azurecredfile=~/azurecreds.cfg
+cloud=~/cloudcreds.cfg
