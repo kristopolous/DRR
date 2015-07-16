@@ -768,7 +768,7 @@ def db_register_intent(minute, duration):
 ## Storage and file related
 ##
 def file_prune():
-  """ Gets rid of files older than archivedays and cleans out the stitches directory. """
+  """ Gets rid of files older than archivedays. """
 
   global g_config
 
@@ -777,12 +777,11 @@ def file_prune():
   duration = int(g_config['archivedays']) * ONE_DAY
   cutoff = time.time() - duration
 
-  # Dump old streams stitches and slices
+  # Dump old streams and slices
   count = 0
   for fname in glob('*/*.mp3 */*.map'):
-    # Because stitches can be made fast and they take up space, we dump them opportunistically.
-    # Otherwise we observe the rules set up in the config.
-    if re.match('stitches', fname) or (os.path.isfile(fname) and os.path.getctime(fname) < cutoff):
+    # We observe the rules set up in the config.
+    if os.path.getctime(fname) < cutoff:
       logging.debug("Prune: %s" % fname)
       os.unlink(fname)
       count += 1 
@@ -1565,7 +1564,7 @@ def read_config(config):
     os.mkdir(g_config['storage'])
 
   # We have a few sub directories for storing things
-  for subdir in ['streams', 'stitches', 'slices']:
+  for subdir in ['streams', 'slices']:
     if not os.path.isdir(g_config['storage'] + subdir):
       os.mkdir(g_config['storage'] + subdir)
 

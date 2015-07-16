@@ -52,8 +52,7 @@ In the storage directory you should see something like this:
  * pid-manager    - A file that gets created and destroyed every time with the pid of the manager
  * indycast.log   - A non-rolling eternal log
  * streams        - Recordings from the station in 15 minute blocks (this is configurable)
- * stitches       - Aggregations of streams to larger blocks which correspond to specific intents
- * slices         - Sliced versions of the stitches corresponding to the actual audio to serve
+ * slices         - Sliced versions of stitched audio corresponding to the actual audio to serve
 
 ### Audio processing
 
@@ -61,7 +60,7 @@ I explained the novel approach to the processing of the mp3s in pure python, in 
 
 Since you are downloading essentially a remote file which won't be magically transcoded, you can treat it like a file.  That is to say that if I download it from two different places, it will of course have the exact same bytes.
 
-So what I've done is I took the first few bytes of the mp3 payload and then I checked over the course of a few samples of 10 million data blocks, how many bytes I would need to look at before asymptotically there was really no benefit.  I then used this as an "audio signature".  Effectively, I need to look for 4 sequential blocks with identical audio signatures.
+So what I've done is I took the first few bytes of the mp3 payload and then I checked over the course of a few samples of 10 million data blocks, how many bytes I would need to look at before asymptotically there was really no benefit.  I then used this as an "audio signature".  Effectively, I need to look for 5 sequential blocks with identical audio signatures.
 
 Then I can presume that that region is the overlap and use those to stitch the audio together.
 
