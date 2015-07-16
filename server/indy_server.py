@@ -771,7 +771,7 @@ def db_register_intent(minute_list, duration):
 ## Storage and file related
 ##
 def file_prune():
-  """ Gets rid of files older than archivedays. """
+  """ Gets rid of files older than archivedays - cloud stores things if relevant """
 
   global g_config
 
@@ -779,6 +779,10 @@ def file_prune():
 
   duration = int(g_config['archivedays']) * ONE_DAY
   cutoff = time.time() - duration
+
+  cloud_cutoff = False
+  if g_config['cloud']:
+    cloud_cutoff = g_config['cloudarchive']
 
   # Dump old streams and slices
   count = 0
@@ -1556,7 +1560,18 @@ def read_config(config):
     'cascadebuffer': 15,
 
     # The (second) time between cascaded streams
-    'cascadetime': 60 * 15
+    'cascadetime': 60 * 15,
+
+    # Cloud credenials (ec2, azure etc)
+    'cloud': False,
+
+    # When to get things off local disk and store to the cloud
+    # This means that after this many days data is sent remote and then 
+    # retained for `archivedays`.  This makes the entire user-experience
+    # a bit slower of course, and has an incurred throughput cost - but
+    # it does save price VPS disk space which seems to come at an unusual
+    # premium.
+    'cloudarchive': 3
   }
 
   for k, v in defaults.items():
@@ -1566,6 +1581,16 @@ def read_config(config):
   # in case someone is specifying ~/radio 
   g_config['storage'] = os.path.expanduser(g_config['storage'])
 
+  if g_config['cloud']:
+    g_config['cloud'] = os.path.expanduser(g_config['cloud'])
+
+    if os.path.exists(g_config['cloud']):
+      # If there's a cloud conifiguration file then we read that too
+      cloud_config = ConfigParser.ConfigParser()
+      cloud_config.read(g_config['cloud'])
+      g_config += config_section_map('Azure', cloud_config)
+
+  print g_config
   if not os.path.isdir(g_config['storage']):
     try:
       # If I can't do this, that's fine.
