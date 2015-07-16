@@ -478,20 +478,31 @@ def audio_list_slice(list_in, start_minute, end_minute = -1, duration_minute = -
   if os.path.isfile(name_out):
     return name_out
 
-  crc32, offset = audio_crc(name_in)
-
-  frame_start = max(int(math.floor(start_sec / FRAME_LENGTH)), 0)
-  frame_end = min(int(math.ceil(end_sec / FRAME_LENGTH)), len(offset) - 1)
-
   out = open(name_out, 'wb+')
 
-  for item in list_in:
-    fin = file_get(item['name'])
+  for ix in len(list_in):
+    item = list_in[ix]
 
-  fin.seek(offset[frame_start])
-  out.write(fin.read(offset[frame_end] - offset[frame_start]))
+    # get the regular map
+    crc32, offset = audio_crc(item['name'])
 
-  fin.close()
+    if ix == 0:
+      frame_start = max(int(math.floor(start_sec / FRAME_LENGTH)), 0)
+    else:
+      frame_start = item['start_offset']
+
+    if ix == len(list_in) - 1:
+      frame_end = min(int(math.ceil(end_sec / FRAME_LENGTH)), len(offset) - 1)
+    else:
+      frame_end = len(offset) - 1
+
+    # try and get the mp3 referred to by the map file
+    fin = file_get(item['name'][:-4])
+
+    fin.seek(offset[frame_start])
+    out.write(fin.read(offset[frame_end] - offset[frame_start]))
+    fin.close()
+
   out.close()
 
   return name_out
@@ -551,6 +562,7 @@ def audio_stitch(file_list, force_stitch = False):
   args = [{
     'name': first['name'], 
     'start_byte': 0, 
+    'start_offset': 0,
     'end_byte': first['offset'][-1],
     'start_minute': 0,
     'duration_sec': (len(first['offset']) - 1) * FRAME_LENGTH
@@ -587,6 +599,7 @@ def audio_stitch(file_list, force_stitch = False):
         'name': second['name'], 
         'start_byte': second['offset'][pos], 
         'end_byte': second['offset'][-2],
+        'start_offset': pos,
         'start_minute': pos * FRAME_LENGTH,
         'duration_sec': (len(second['offset']) - pos - 1) * FRAME_LENGTH
       })
