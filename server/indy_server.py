@@ -797,12 +797,17 @@ def cloud_put(path):
   blob_service, container = cloud_connect()
 
   if blob_service:
-    return blob_service.put_block_blob_from_path(
-      container,
-      os.path.basename(path),
-      path,
-      max_connections=5,
-    )
+    try:
+      res = blob_service.put_block_blob_from_path(
+        container,
+        os.path.basename(path),
+        path,
+        max_connections=5,
+      )
+      return res
+
+    except:
+      logging.debug('Unable to put %s in the cloud.' % path)
 
   return False
 
