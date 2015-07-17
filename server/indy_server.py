@@ -65,19 +65,24 @@ FRAME_LENGTH = (1152.0 / 44100)
 MINUTES_PER_WEEK = 10080
 ONE_DAY = 60 * 60 * 24
 
+#
 # Some stations don't start you off with a valid mp3 header
 # (such as kdvs), so we have to just seek into the file
 # and look for one.  This is the number of bytes we try.
 # In practice, 217 appears to be enough, so we make it about
 # ten times that and cross our fingers
+#
 MAX_HEADER_ATTEMPTS = 2048
 
+#
 # Maintain a pidfile for the manager and the webserver (which
 # likes to become a zombie ... braaaainnns!) so we have to take
 # care of it separately and specially - like a little retard.
+#
 PIDFILE_MANAGER = 'pid-manager'
 PIDFILE_WEBSERVER = 'pid-webserver'
 
+#
 # The process delay is used throughout to measure things like the delay in
 # forking a subprocesses, waiting for DNS, and then starting a stream or
 # waiting for all the sub-processes like the web-server to clean up and free
@@ -89,6 +94,7 @@ PIDFILE_WEBSERVER = 'pid-webserver'
 #
 # Things are specified in multiples of this value ... for instance PROCESS_DELAY
 # / 4 or * 2.  4 is a good number.
+$
 PROCESS_DELAY = 4
 
 # From https://wiki.python.org/moin/ConfigParserExamples
@@ -509,10 +515,12 @@ def audio_list_slice(list_in, start_minute, duration_minute=-1):
   if os.path.isfile(name_out) and os.path.getsize(name_out) > 0:
     return name_out
 
+  #
   # We may need to pull things down from the cloud so it's better if we just return
   # the eventual mp3 name here and not block.  As it turns out, pulling the blobs from 
   # the cloud is rather fast on the vpss (a matter of seconds) so by the time the user
   # requests an mp3, it will probably exist.  If it doesn't, then eh, we'll figure it out.
+  #
   slice_process = Process(target=audio_list_slice_process, args=(list_in, name_out, duration_sec, start_sec))
   slice_process.start()
 
@@ -890,9 +898,13 @@ def file_get_size(fname):
     duration_min = int(ts[0])
 
     bitrate = int(db_get('bitrate') or 128)
-    # Estimating mp3 length is actually pretty easy if you don't have id3 headers.
+
+    #
+    # Estimating mp3 length is actually pretty easy if you don't have ID3 headers.
     # MP3s are rated at things like 128kb/s ... well there you go.
+    #
     # They consider a k to be 10^3, not 2^10
+    #
     return (bitrate / 8) * (duration_min * 60) * (10 ** 3)
 
   # If we can't find it based on the name, then we are kinda 
@@ -1360,10 +1372,12 @@ def server_manager(config):
     if type(duration) is str:
       return server_error('duration "%s" is not set correctly' % duration)
 
+    #
     # See https://github.com/kristopolous/DRR/issues/22:
     #
     # We're going to add 2 minutes to the duration to make sure that we get
     # the entire episode.
+    #
     duration += 2
 
     start_time_list = [time_to_utc(day, start) for day in weekday_list]
@@ -1567,9 +1581,11 @@ def stream_manager():
     g_download_pid += 1
     logging.info("Starting cascaded downloader #%d. Next up in %ds" % (g_download_pid, cascade_margin))
 
+    #
     # There may be a multi-second lapse time from the naming of the file to
     # the actual start of the download so we should err on that side by putting it
     # in the future by some margin
+    #
     fname = 'streams/%s-%d.mp3' % (callsign, time_sec_now(offset_sec=PROCESS_DELAY))
     process = Process(target=stream_download, args=(callsign, g_config['stream'], g_download_pid, fname))
     process.start()
@@ -1685,10 +1701,6 @@ def stream_manager():
 
     # Increment the amount of time this has been running
     db_incr('uptime', cycle_time)
-
-    #if b_shutdown:
-    #  logging.info("Manager process gone, shutting down.")
-    #  return True
 
     time.sleep(cycle_time)
 
