@@ -1074,12 +1074,11 @@ def server_generate_xml(showname, feed_list, duration, weekday_list, start, dura
       'pubDate': feed['start_date'].strftime("%Y-%m-%d %H:%M:%S"),
       'title': "%s - %s" % (showname, feed['start_date'].strftime("%Y.%m.%d")),
       'link': link,
-      'copyright': callsign,
-      'guid': file_name
+      'copyright': callsign
     }.items():
       ET.SubElement(item, k).text = v
 
-    ET.SubElement(item, 'guid', isPermaLink = "false").text = base_url
+    ET.SubElement(item, 'guid', isPermaLink = "false").text = file_name
 
     # fileSize and length will be guessed based on 209 bytes covering
     # frame_length seconds of audio (128k/44.1k no id3)
