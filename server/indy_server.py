@@ -850,7 +850,11 @@ def file_prune():
     elif cloud_cutoff and ctime < cloud_cutoff:
       logging.debug("Prune[cloud]: putting %s" % fname)
       cloud_put(fname)
-      os.unlink(fname)
+      try:
+        os.unlink(fname)
+      except:
+        logging.debug("Prune[cloud]: Couldn't remove %s" % fname)
+
 
   # The map names are different since there may or may not be a corresponding
   # cloud thingie associated with it.
