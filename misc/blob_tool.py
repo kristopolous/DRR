@@ -40,10 +40,11 @@ container = 'streams'
 blob_service = BlobService(config['storage_account_name'], config['primary_access_key'])
 
 # total storage 
-allprops = [ f.properties for f in blob_service.list_blobs('streams') ]
-disk_space = [ f.content_length for f in allprops ]
+all_files = [ f for f in blob_service.list_blobs('streams') ]
+all_props = [ f.properties for f in all_files ]
+disk_space = [ f.content_length for f in all_props ]
 
 print "total:", sum(disk_space) / (1024.0 ** 3)
 
-all_names = [ f.name for f in allprops ]
+all_names = [ f.name for f in all_files ]
 print all_names
