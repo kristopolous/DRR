@@ -1,9 +1,9 @@
 #!/usr/bin/python -O
 import argparse
+import sqlite3
 import os
 import re
 import sys
-import ConfigParser
 from azure.storage import BlobService
 
 # From https://wiki.python.org/moin/ConfigParserExamples
@@ -46,7 +46,7 @@ def get_size(station_list, blob_service):
   all_files = []
   by_station = {}
 
-  for station in statoin_list:
+  for station in station_list:
     print "Retrieving %s" % station
     by_station[station] = [ f for f in blob_service.list_blobs('streams', prefix=station) ]
     all_files += by_station[station]
@@ -62,9 +62,12 @@ def get_size(station_list, blob_service):
     total_space = sum([ f.properties.content_length for f in prop ])
     print station, len(prop), total_space / (1024.0 ** 3) 
 
-all_stations = 'kxlu kpcc kdvs wxyc wcbn wfmu kzsu kvrx'.split(' ')
-
 cfg = os.environ.get('CLOUD_CFG')
+
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
+conn = sqlite3.connect('../db/main.db')
+db = {'conn': conn, 'c': conn.cursor()}
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--station", default="all", help="station to query (default all)")
 parser.add_argument("-c", "--config", default=cfg, help="cloud credential file to use")
@@ -75,10 +78,14 @@ if args.config is None:
   print "Define the cloud configuration location with the CLOUD_CFG environment variable or using the -c option"
   sys.exit(-1)
 
-container, blob_service = cloud_connect(args.config)
+if args.station == 'all':
+  station_cur = db['c'].execute('select callsign from stations where active = 1')
+  station_list = [ f[0] for f in station_cur.fetchall() ]
 
-if args.station is not 'all':
-  station_list = [args.station]
+else:
+  station_list = args.station.split(',')
+
+container, blob_service = cloud_connect(args.config)
 
 if args.query == 'size':
   get_size(station_list, blob_service)
