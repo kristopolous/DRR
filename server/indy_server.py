@@ -657,7 +657,7 @@ def time_get_offset(force = False):
 
     when = int(time.time())
 
-    api_key='AIzaSyBkyEMoXrSYTtIi8bevEIrSxh1Iig5V_to'
+    api_key = 'AIzaSyBkyEMoXrSYTtIi8bevEIrSxh1Iig5V_to'
     url = "https://maps.googleapis.com/maps/api/timezone/json?location=%s,%s&timestamp=%d&key=%s" % (g_config['lat'], g_config['long'], when, api_key)
    
     stream = urllib2.urlopen(url)
