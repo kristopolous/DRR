@@ -1661,7 +1661,7 @@ def read_config(config):
     # a bit slower of course, and has an incurred throughput cost - but
     # it does save price VPS disk space which seems to come at an unusual
     # premium.
-    'cloudarchive': 3
+    'cloudarchive': 2
   }
 
   for k, v in defaults.items():
