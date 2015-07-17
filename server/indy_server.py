@@ -1602,6 +1602,11 @@ def stream_manager():
     time.sleep(cycle_time)
 
 
+def make_maps():
+  pid = change_proc_name("%s-mapmaker" % g_config['callsign'])
+  for fname in glob('streams/*.mp3'):
+    audio_crc(fname, only_check = True)
+
 def read_config(config):
   """
   Reads a configuration file. 
@@ -1755,8 +1760,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     read_config(args.config)      
 
-    for fname in glob('streams/*.mp3'):
-      audio_crc(fname, only_check = True)
+    map_pid = Process(target = make_maps, args=())
+    map_pid.start()
 
     pid = change_proc_name("%s-manager" % g_config['callsign'])
 
