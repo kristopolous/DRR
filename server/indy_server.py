@@ -428,21 +428,9 @@ def audio_stitch_and_slice(file_list, start_minute, duration_minute):
   return sliced_name
 
 
-def audio_list_slice(list_in, start_minute, duration_minute = -1):
-  """
-  Takes some stitch list, list_in and then create a new one based on the start and end times 
-  by finding the closest frames and just doing an extraction.
-  """
-  duration_sec = duration_minute * 60.0
-
-  first_file = list_in[0]['name']
-  callsign, unix_time = re.findall('(\w*)-(\d+)', first_file)[0]
-
-  name_out = "slices/%s-%d_%d.mp3" % (callsign, int(unix_time) + start_minute * 60, duration_minute)
-  start_sec = start_minute * 60.0
-
-  if os.path.isfile(name_out):
-    return name_out
+def audio_list_slice_process(list_in, name_out, duration_sec):
+  global g_config
+  pid = change_proc_name("%s-audioslice" % g_config['callsign'])
 
   out = open(name_out, 'wb+')
 
@@ -464,7 +452,6 @@ def audio_list_slice(list_in, start_minute, duration_minute = -1):
       frame_start = item['start_offset']
       duration_sec -= item['duration_sec'] 
 
-
     # try and get the mp3 referred to by the map file
     fin = file_get(item['name'][:-4])
 
@@ -473,6 +460,29 @@ def audio_list_slice(list_in, start_minute, duration_minute = -1):
     fin.close()
 
   out.close()
+
+def audio_list_slice(list_in, start_minute, duration_minute = -1):
+  """
+  Takes some stitch list, list_in and then create a new one based on the start and end times 
+  by finding the closest frames and just doing an extraction.
+  """
+  duration_sec = duration_minute * 60.0
+
+  first_file = list_in[0]['name']
+  callsign, unix_time = re.findall('(\w*)-(\d+)', first_file)[0]
+
+  name_out = "slices/%s-%d_%d.mp3" % (callsign, int(unix_time) + start_minute * 60, duration_minute)
+  start_sec = start_minute * 60.0
+
+  if os.path.isfile(name_out):
+    return name_out
+
+  # We may need to pull things down from the cloud so it's better if we just return
+  # the eventual mp3 name here and not block.  As it turns out, pulling the blobs from 
+  # the cloud is rather fast on the vpss (a matter of seconds) so by the time the user
+  # requests an mp3, it will probably exist.  If it doesn't, then eh, we'll figure it out.
+  slice_process = Process(target = audio_list_slice_process, args=(list_in, name_out, duration_sec))
+  slice_process.start()
 
   return name_out
 
@@ -946,6 +956,7 @@ def file_find_streams(start_list, duration):
         stream_list.append(audio_stream_info(fname))
 
   return stream_list
+
 
 def server_generate_xml(showname, feed_list, duration, weekday_list, start, duration_string):
   """
