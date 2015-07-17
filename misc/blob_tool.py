@@ -58,4 +58,5 @@ for f in all_files:
   bucketMap[station]['count'] += 1
   bucketMap[station]['space'] += f.properties.content_length
 
-print bucketMap
+for station, stats in bucketMap.items():
+  print station, stats['count'], stats['space'] / ( 1024.0 ** 3)
