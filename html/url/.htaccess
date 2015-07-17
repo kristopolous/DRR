@@ -1,0 +1,5 @@
+Options +FollowSymLinks
+RewriteEngine on
+
+RewriteCond %{REQUEST_FILENAME} !-f 
+RewriteRule ^(.+)$      url.php?callsign=$1 [L]
