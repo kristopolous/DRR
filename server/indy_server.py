@@ -482,7 +482,9 @@ def audio_list_slice_process(list_in, name_out, duration_sec, start_sec):
 
   # If we failed to do anything this is a tragedy
   # and we just dump the file
-  if os.path.getsize(name_out) == 0:
+  #
+  # We take files under some really nominal threshold as being invalid.
+  if os.path.getsize(name_out) < 1000:
     logging.warn("Unable to create %s - no valid slices" % name_out)
     os.unlink(name_out)
 
@@ -1125,7 +1127,7 @@ def server_generate_xml(showname, feed_list, duration, weekday_list, start, dura
     # frame_length seconds of audio (128k/44.1k no id3)
     content = ET.SubElement(item, '{%s}content' % nsmap['media'])
     content.attrib['url'] = link
-    content.attrib['fileSize'] = str(os.path.getsize(file_name))
+    content.attrib['fileSize'] = str(file_get_sizet(file_name))
     content.attrib['type'] = 'audio/mpeg3'
 
     # The length of the audio we will just take as the duration
