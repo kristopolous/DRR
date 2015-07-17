@@ -929,6 +929,15 @@ def file_prune():
   # Dump old streams and slices
   count = 0
   for fname in glob('*/*.mp3'):
+    #
+    # Depending on many factors this could be running for hours
+    # or even days.  We wnat to make sure this isn't a blarrrghhh
+    # zombie process or worse yet, still running and competing with
+    # other instances of itself.
+    #
+    if not manager_is_running():
+      shutdown()
+
     ctime = os.path.getctime(fname)
 
     # We observe the rules set up in the config.
