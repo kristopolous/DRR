@@ -804,11 +804,10 @@ def cloud_put(path):
         path,
         max_connections=5,
       )
+      return res
 
     except:
       logging.debug('Unable to put %s in the cloud.' % path)
-
-    return res
 
   return False
 
