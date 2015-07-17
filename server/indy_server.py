@@ -871,6 +871,28 @@ def cloud_get(path):
 
   return False
 
+def file_get_size(fname):
+  """ Gets a file size or just plain guesses it if it doesn't exist yet. """
+  if os.path.exists(fname):
+    return os.path.getsize(fname)
+
+  # Otherwise we try to parse the magical file which doesn't exist yet.
+  ts_re_duration = re.compile('_(\d*).mp3')
+  ts = ts_re_duration.findall(fname)
+
+  if len(ts):
+    duration_min = int(ts[0])
+
+    bitrate = int(db_get('bitrate') or 128)
+    # Estimating mp3 length is actually pretty easy if you don't have id3 headers.
+    # MP3s are rated at things like 128kb/s ... well there you go.
+    # They consider a k to be 10^3, not 2^10
+    return (bitrate / 8) * (duration_min * 60) * (10 ** 3)
+
+  # If we can't find it based on the name, then we are kinda 
+  # SOL and just return 0
+  return 0
+ 
 def file_prune():
   """ Gets rid of files older than archivedays - cloud stores things if relevant """
 
