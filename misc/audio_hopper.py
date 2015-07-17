@@ -58,8 +58,11 @@ def audio_crc(fname, blockcount = -1):
     if header:
 
       if header == '\xff\xfb' or header == '\xff\xfa':
-        first_header_seen = True
-        b = ord(f.read(1))
+        try:
+          b = ord(f.read(1))
+          # If we are at the EOF
+        except:
+          break
 
         samp_rate = freqTable[(b & 0x0f) >> 2]
         bit_rate = brTable[b >> 4]
@@ -70,7 +73,10 @@ def audio_crc(fname, blockcount = -1):
           frame_size = (144000 * bit_rate / samp_rate) + pad_bit
 
         except:
-          return
+          continue
+
+        if not first_header_seen:
+          first_header_seen = True
 
         # Rest of the header
         throw_away = f.read(1)
@@ -78,18 +84,13 @@ def audio_crc(fname, blockcount = -1):
 
         # Get the signature
         #print "%s %d" % (hex(frame_start), rsize)
-        if len(chain) > 4:
-          print "%s" % (' '.join([binascii.b2a_hex(block) for block in chain]))
-          chain.pop(0)
+        #if len(chain) > 4:
+        #  print "%s" % (' '.join([binascii.b2a_hex(block) for block in chain]))
+        #  chain.pop(0)
           
-        block = f.read(rsize)
-        chain.append(block)
-        #print "%s" % (binascii.b3a_hex(block))
-        #crc = binascii.crc32(block)
-
-        #frame_sig.append(crc)
-
-        #start_byte.append(frame_start)
+        sig = f.read(rsize)
+        frame_sig.append(sig)
+        start_byte.append(frame_start)
 
         # Move forward the frame f.read size + 4 byte header
         throw_away = f.read(frame_size - (rsize + 4))
@@ -231,10 +232,20 @@ def audio_stitch(file_list):
     audio_serialize(args)
     return True
 
-for f in glob("/home/chris/radio/wxyc/streams/*.mp3"):
-  if os.path.getsize(f) > 5000000:
-    p = audio_crc(f, 20000)
+fail_list = '/raid/analyze/wxyc-1436334009.mp3 /raid/analyze/wxyc-1436448501.mp3 /raid/analyze/wxyc-1436555370.mp3 /raid/analyze/wxyc-1436408965.mp3 /raid/analyze/wxyc-1436322244.mp3 /raid/analyze/wxyc-1436318625.mp3 /raid/analyze/wxyc-1436407155.mp3 /raid/analyze/wxyc-1437035272.mp3 /raid/analyze/wxyc-1436587070.mp3 /raid/analyze/wxyc-1436903564.mp3 /raid/analyze/wxyc-1437047317.mp3 /raid/analyze/wxyc-1436688334.mp3 /raid/analyze/wxyc-1436835377.mp3 /raid/analyze/wxyc-1436380054.mp3 /raid/analyze/wxyc-1437013904.mp3 /raid/analyze/wxyc-1436667752.mp3 /raid/analyze/wxyc-1436470209.mp3 /raid/analyze/wxyc-1436776080.mp3 /raid/analyze/wxyc-1436338534.mp3 /raid/analyze/wxyc-1436959726.mp3 /raid/analyze/wxyc-1436971489.mp3 /raid/analyze/wxyc-1436376449.mp3 /raid/analyze/wxyc-1436627758.mp3 /raid/analyze/wxyc-1436957012.mp3'
 
+#for f in glob("/raid/analyze/*.mp3"):
+for f in fail_list.split(' '):
+  fsize = os.path.getsize(f)
+  #try:
+  if fsize > 50000:
+    p = audio_crc(f)
+    if p:
+      print float(len(p[0])) / fsize, len(p[0]), fsize, f
+    else:
+      print "FAILURE: %s" % f
+
+sys.exit(0)
 # success case
 #make_map(sys.argv[1])
 #audio_crc(sys.argv[1])
