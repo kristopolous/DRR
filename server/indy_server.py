@@ -190,10 +190,16 @@ def audio_list_info(file_list):
 
   return info
 
-def audio_stream_info(fname):
+def audio_stream_info(fname, guess_time = False):
   """
   Determines the date the thing starts,
   the minute time it starts, and the duration
+
+  If guess_time is set, then that value is used 
+  as the audio time.  It can speed things up
+  by avoiding an opening of the file all together.
+  
+  It's sometimes an ok thing to do.
   """
   if type(fname) is not str:
     return audio_list_info(fname)
@@ -211,7 +217,7 @@ def audio_stream_info(fname):
     start_date = datetime.fromtimestamp(unix_time)
 
   try:
-    duration = audio_time(fname) 
+    duration = guess_time if guess_time else audio_time(fname) 
 
   except Exception as exc:
     # If we can't find a duration then we try to see if it's in the file name
@@ -379,7 +385,6 @@ def audio_crc(fname, blockcount = -1, only_check = False):
 
   return frame_sig, start_byte
 
-
 def audio_time(fname):
   """
   Determines the duration of an audio file by doing some estimates based on the offsets
@@ -392,7 +397,6 @@ def audio_time(fname):
   # and then presume that will be the framecount
   crc32, offset = audio_crc(fname)
 
-  frame_size = offset[1] - offset[0]
   return FRAME_LENGTH * len(offset)
 
 
@@ -474,6 +478,7 @@ def audio_list_slice_process(list_in, name_out, duration_sec, start_sec):
   if os.path.getsize(name_out) == 0:
     logging.warn("Unable to create %s - no valid slices" % name_out)
     os.unlink(name_out)
+
 
 def audio_list_slice(list_in, start_minute, duration_minute = -1):
   """
@@ -597,7 +602,6 @@ def time_to_utc(day_str, hour):
   and a 12 hour time hh:mm [ap]m and converts it to our absolute units
   with respect to the timestamp in the configuration file
   """
-
   global g_config
 
   try:
@@ -708,9 +712,7 @@ def db_set(key, value):
 
 
 def db_get(key, expiry=0):
-  """
-  Retrieves a value from the database, tentative on the expiry
-  """
+  """ Retrieves a value from the database, tentative on the expiry """
 
   db = db_connect()
 
@@ -797,7 +799,6 @@ def db_register_intent(minute_list, duration):
     return db['c'].lastrowid
 
   return None
-  
 
   
 ##
@@ -928,6 +929,8 @@ def file_find_streams(start_list, duration):
   directory that match it - regardless of duration ... so it may return
   partial shows results.
   """
+  global g_config
+
   stream_list = []
 
   if type(start_list) is int:
@@ -940,7 +943,8 @@ def file_find_streams(start_list, duration):
   file_list.sort() 
   stitch_list = []
 
-  # TODO: This needs to be chronologically
+  # TODO: This start list needs to be chronologically as opposed to 
+  # every monday, then every tuesday, etc ... for multi-day stream requests
   for start in start_list:
     end = (start + duration) % MINUTES_PER_WEEK
 
@@ -950,7 +954,7 @@ def file_find_streams(start_list, duration):
     current_week = 0
 
     for filename in file_list:
-      i = audio_stream_info(filename)
+      i = audio_stream_info(filename, guess_time = g_config['cascadetime'])
 
       if i['start_minute'] < next_valid_start_minute and i['week'] == current_week:
         stitch_list.append(filename)
