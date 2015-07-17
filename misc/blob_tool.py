@@ -67,7 +67,7 @@ all_stations = 'kxlu kpcc kdvs wxyc wcbn wfmu kzsu kvrx'.split(' ')
 cfg = os.environ.get('CLOUD_CFG')
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--station", default="all", help="station to query (default all)")
-parser.add_argument("-c", "--config", default=cfg, help="cloud credential file ot use")
+parser.add_argument("-c", "--config", default=cfg, help="cloud credential file to use")
 parser.add_argument("-q", "--query", default="size", help="query to send to the cloud")
 args = parser.parse_args()
 
