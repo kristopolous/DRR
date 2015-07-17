@@ -428,7 +428,7 @@ def audio_stitch_and_slice(file_list, start_minute, duration_minute):
   return sliced_name
 
 
-def audio_list_slice_process(list_in, name_out, duration_sec):
+def audio_list_slice_process(list_in, name_out, duration_sec, start_sec):
   global g_config
   pid = change_proc_name("%s-audioslice" % g_config['callsign'])
 
@@ -481,7 +481,7 @@ def audio_list_slice(list_in, start_minute, duration_minute = -1):
   # the eventual mp3 name here and not block.  As it turns out, pulling the blobs from 
   # the cloud is rather fast on the vpss (a matter of seconds) so by the time the user
   # requests an mp3, it will probably exist.  If it doesn't, then eh, we'll figure it out.
-  slice_process = Process(target = audio_list_slice_process, args=(list_in, name_out, duration_sec))
+  slice_process = Process(target = audio_list_slice_process, args=(list_in, name_out, duration_sec, start_sec))
   slice_process.start()
 
   return name_out
