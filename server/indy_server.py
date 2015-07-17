@@ -294,7 +294,6 @@ def audio_crc(fname, blockcount = -1, only_check = False):
     if header:
 
       if header == '\xff\xfb' or header == '\xff\xfa':
-        first_header_seen = True
 
         try:
           b = ord(f.read(1))
@@ -313,6 +312,14 @@ def audio_crc(fname, blockcount = -1, only_check = False):
           # If there's a /0 error
         except:
           continue
+
+        if not first_header_seen:
+          first_header_seen = True
+
+          # We try to record the CBR associated with this
+          # stream
+          if not db_get('bitrate', use_cache = True):
+            db_set('bitrate', bit_rate)
 
         # Rest of the header
         throw_away = f.read(1)
