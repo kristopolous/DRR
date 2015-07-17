@@ -233,7 +233,7 @@ def audio_stitch(file_list):
 
 for f in glob("/home/chris/radio/wxyc/streams/*.mp3"):
   if os.path.getsize(f) > 5000000:
-    p = audio_crc(f, 30000)
+    p = audio_crc(f, 20000)
 
 # success case
 #make_map(sys.argv[1])
