@@ -1373,7 +1373,7 @@ def stream_download(callsign, url, my_pid, fname):
 
     if g_params['isFirst'] == True:
       g_params['isFirst'] = False
-      if len(data) < 200:
+      if len(data) < 800:
         if re.match('https?://', data):
           # If we are getting a redirect then we don't mind, we
           # just put it in the stream and then we leave
@@ -1381,14 +1381,10 @@ def stream_download(callsign, url, my_pid, fname):
           return True
 
         # A pls style playlist
-        elif data[0] == '[':
+        elif re.findall('File\d', data, re.M):
           logging.info("Found a pls, using the File1 parameter");
-          # from http://stackoverflow.com/questions/21766451/how-to-read-config-from-string-or-list
-          buf = StringIO.StringIO(data)
-          Config = ConfigParser.ConfigParser()
-          Config.readfp(buf)
-          playlist = config_section_map('playlist', Config)
-          g_queue.put(('stream', playlist['file1'].strip()))
+          matches = re.findall('File1=(.*)\n', data, re.M)
+          g_queue.put(('stream', matches[0].strip()))
           return True
 
     g_queue.put(('heartbeat', True))
