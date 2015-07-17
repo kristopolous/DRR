@@ -125,7 +125,7 @@ def change_proc_name(what):
   return os.getpid()
 
 
-def shutdown(signal = 15, frame = False):
+def shutdown(signal=15, frame=False):
   """ Shutdown is hit on the keyboard interrupt """
   global g_db, g_queue, g_start_time, g_config
 
@@ -190,7 +190,7 @@ def audio_list_info(file_list):
 
   return info
 
-def audio_stream_info(fname, guess_time = False):
+def audio_stream_info(fname, guess_time=False):
   """
   Determines the date the thing starts,
   the minute time it starts, and the duration
@@ -237,7 +237,7 @@ def audio_stream_info(fname, guess_time = False):
   }
 
 
-def audio_crc(fname, blockcount = -1, only_check = False):
+def audio_crc(fname, blockcount=-1, only_check=False):
   """
   Opens an mp3 file, find all the blocks, the byte offset of the blocks, and if they
   are audio blocks, construct a crc32 mapping of some given beginning offset of the audio
@@ -417,7 +417,7 @@ def audio_stitch_and_slice(file_list, start_minute, duration_minute):
     return False
 
   # We presume that there is a file list we need to make 
-  stitched_list = audio_stitch(file_list, force_stitch = True)
+  stitched_list = audio_stitch(file_list, force_stitch=True)
 
   if len(stitched_list) > 1:
     info = audio_stream_info(stitched_list)
@@ -434,7 +434,11 @@ def audio_stitch_and_slice(file_list, start_minute, duration_minute):
   # make sure that we don't exceed the length of the file.
   duration_slice = min(duration_minute, start_slice + info['duration_sec'] / 60.0)
 
-  sliced_name = audio_list_slice(stitched_list, start_minute = start_slice, duration_minute = duration_slice)
+  sliced_name = audio_list_slice(
+    list_in=stitched_list, 
+    start_minute=start_slice, 
+    duration_minute=duration_slice
+  )
 
   return sliced_name
 
@@ -489,7 +493,7 @@ def audio_list_slice_process(list_in, name_out, duration_sec, start_sec):
     os.unlink(name_out)
 
 
-def audio_list_slice(list_in, start_minute, duration_minute = -1):
+def audio_list_slice(list_in, start_minute, duration_minute=-1):
   """
   Takes some stitch list, list_in and then create a new one based on the start and end times 
   by finding the closest frames and just doing an extraction.
@@ -509,13 +513,13 @@ def audio_list_slice(list_in, start_minute, duration_minute = -1):
   # the eventual mp3 name here and not block.  As it turns out, pulling the blobs from 
   # the cloud is rather fast on the vpss (a matter of seconds) so by the time the user
   # requests an mp3, it will probably exist.  If it doesn't, then eh, we'll figure it out.
-  slice_process = Process(target = audio_list_slice_process, args=(list_in, name_out, duration_sec, start_sec))
+  slice_process = Process(target=audio_list_slice_process, args=(list_in, name_out, duration_sec, start_sec))
   slice_process.start()
 
   return name_out
 
 
-def audio_stitch(file_list, force_stitch = False):
+def audio_stitch(file_list, force_stitch=False):
   """
   Takes a list of files and then attempt to seamlessly stitch them 
   together by looking at their crc32 checksums of the data payload in the blocks.
@@ -593,17 +597,17 @@ def time_to_minute(unix_time):
 
   return unix_time.weekday() * (24 * 60) + unix_time.hour * 60 + unix_time.minute
 
-def time_sec_now(offset_sec = 0):
+def time_sec_now(offset_sec=0):
   """ 
   Returns the unix time with respect to the timezone of the station being recorded.
   
   Accepts an optional offset_sec to forward the time into the future
   """
-  return int((datetime.utcnow() + timedelta(seconds = offset_sec, minutes = time_get_offset())).strftime('%s'))
+  return int((datetime.utcnow() + timedelta(seconds=offset_sec, minutes=time_get_offset())).strftime('%s'))
 
 def time_minute_now():
   """ Returns the mod 10080 week minute with respect to the timezone of the station being recorded """
-  return time_to_minute(datetime.utcnow() + timedelta(minutes = time_get_offset()))
+  return time_to_minute(datetime.utcnow() + timedelta(minutes=time_get_offset()))
 
 def time_to_utc(day_str, hour):
   """
@@ -646,7 +650,7 @@ def time_to_utc(day_str, hour):
   return local
 
 
-def time_get_offset(force = False):
+def time_get_offset(force=False):
   """
   Contacts the goog, giving a longitude and lattitude and gets the time 
   offset with regard to the UTC.  There's a sqlite cache entry for the offset.
@@ -654,7 +658,7 @@ def time_get_offset(force = False):
   Returns an int second offset
   """
 
-  offset = db_get('offset', expiry = ONE_DAY)
+  offset = db_get('offset', expiry=ONE_DAY)
   if not offset or force:
 
     when = int(time.time())
@@ -680,7 +684,7 @@ def time_get_offset(force = False):
 ##
 ## Database Related functions
 ##
-def db_incr(key, value = 1):
+def db_incr(key, value=1):
   """
   Increments some key in the database by some value.  It is used
   to maintain statistical counters.
@@ -723,7 +727,7 @@ def db_set(key, value):
   return value
 
 
-def db_get(key, expiry = 0, use_cache = False):
+def db_get(key, expiry=0, use_cache=False):
   """ Retrieves a value from the database, tentative on the expiry """
   global g_params
 
@@ -864,7 +868,7 @@ def cloud_get(path):
         container,
         fname,
         'streams/%s' % fname,
-        max_connections = 8,
+        max_connections=8,
       )
       return True
 
@@ -993,7 +997,7 @@ def file_find_streams(start_list, duration):
     current_week = 0
 
     for filename in file_list:
-      i = audio_stream_info(filename, guess_time = g_config['cascadetime'])
+      i = audio_stream_info(filename, guess_time=g_config['cascadetime'])
 
       if i['start_minute'] < next_valid_start_minute and i['week'] == current_week:
         stitch_list.append(filename)
@@ -1064,7 +1068,7 @@ def server_generate_xml(showname, feed_list, duration, weekday_list, start, dura
     'feedburner': 'http://rssnamespace.org/feedburner/ext/1.0'
   }
 
-  root = ET.Element("rss", nsmap = nsmap)
+  root = ET.Element("rss", nsmap=nsmap)
   root.attrib['version'] = '2.0'
 
   channel = ET.SubElement(root, "channel")
@@ -1121,13 +1125,13 @@ def server_generate_xml(showname, feed_list, duration, weekday_list, start, dura
     }.items():
       ET.SubElement(item, k).text = v
 
-    ET.SubElement(item, 'guid', isPermaLink = "false").text = file_name
+    ET.SubElement(item, 'guid', isPermaLink="false").text = file_name
 
     # fileSize and length will be guessed based on 209 bytes covering
     # frame_length seconds of audio (128k/44.1k no id3)
     content = ET.SubElement(item, '{%s}content' % nsmap['media'])
     content.attrib['url'] = link
-    content.attrib['fileSize'] = str(file_get_sizet(file_name))
+    content.attrib['fileSize'] = str(file_get_size(file_name))
     content.attrib['type'] = 'audio/mpeg3'
 
     # The length of the audio we will just take as the duration
@@ -1138,7 +1142,7 @@ def server_generate_xml(showname, feed_list, duration, weekday_list, start, dura
 
   tree = ET.ElementTree(root)
 
-  return Response(ET.tostring(tree, xml_declaration=True, encoding="utf-8"), mimetype = 'text/xml')
+  return Response(ET.tostring(tree, xml_declaration=True, encoding="utf-8"), mimetype='text/xml')
 
 
 def server_error(errstr):
@@ -1159,12 +1163,14 @@ def server_manager(config):
       raise RuntimeError('Not running with the Werkzeug Server')
     func()
 
+
   # from http://blog.asgaard.co.uk/2012/08/03/http-206-partial-content-for-flask-python
   @app.after_request
   def after_request(response):
     """ Supports 206 partial content requests for podcast streams """
     response.headers.add('Accept-Ranges', 'bytes')
     return response
+
 
   def send_file_partial(path):
     """ 
@@ -1200,10 +1206,12 @@ def server_manager(config):
       data, 
       206,
       mimetype = 'audio/mpeg',
-      direct_passthrough = True)
+      direct_passthrough=True
+    )
     rv.headers.add('Content-Range', 'bytes {0}-{1}/{2}'.format(byte1, byte1 + length - 1, size))
 
     return rv
+
 
   # From http://stackoverflow.com/questions/13317536/get-a-list-of-all-routes-defined-in-the-app
   @app.route("/site-map")
@@ -1222,6 +1230,7 @@ def server_manager(config):
 
     return Response('\n'.join(output), mimetype='text/plain')
 
+
   @app.route('/slices/<path:path>')
   def send_stream(path):
     """
@@ -1238,6 +1247,7 @@ def server_manager(config):
       return "File not found. Perhaps the stream is old?", 404
 
     return send_file_partial("%s/%s" % (base_dir, path))
+
 
   @app.route('/restart')
   def restart():
@@ -1312,6 +1322,7 @@ def server_manager(config):
 
     return jsonify(stats), 200
   
+
   @app.route('/<weekday>/<start>/<duration>/<showname>')
   def stream(weekday, start, duration, showname):
     """
@@ -1377,12 +1388,12 @@ def server_manager(config):
 
     # Then, taking those two things, make a feed list from them.
     return server_generate_xml(
-      showname = showname, 
-      feed_list = feed_list, 
-      duration = duration, 
-      weekday_list = weekday_list, 
-      start = start, 
-      duration_string = duration_string
+      showname=showname, 
+      feed_list=feed_list, 
+      duration=duration, 
+      weekday_list=weekday_list, 
+      start=start, 
+      duration_string=duration_string
     )
 
   if __name__ == '__main__':
@@ -1402,7 +1413,7 @@ def server_manager(config):
     while time.time() - start < patience:
       try:
         print "Listening on %s" % config['port']
-        app.run(threaded = True, port = int(config['port']), host = '0.0.0.0')
+        app.run(threaded=True, port=int(config['port']), host='0.0.0.0')
         break
 
       except Exception as exc:
@@ -1543,7 +1554,7 @@ def stream_manager():
   process = False
   process_next = False
 
-  server_pid = Process(target = server_manager, args=(g_config,))
+  server_pid = Process(target=server_manager, args=(g_config,))
   server_pid.start()
 
   fname = False
@@ -1559,8 +1570,8 @@ def stream_manager():
     # There may be a multi-second lapse time from the naming of the file to
     # the actual start of the download so we should err on that side by putting it
     # in the future by some margin
-    fname = 'streams/%s-%d.mp3' % (callsign, time_sec_now(offset_sec = PROCESS_DELAY))
-    process = Process(target = stream_download, args = (callsign, g_config['stream'], g_download_pid, fname))
+    fname = 'streams/%s-%d.mp3' % (callsign, time_sec_now(offset_sec=PROCESS_DELAY))
+    process = Process(target=stream_download, args=(callsign, g_config['stream'], g_download_pid, fname))
     process.start()
     return [fname, process]
 
@@ -1574,7 +1585,7 @@ def stream_manager():
     yesterday = time.time() - ONE_DAY
     if last_prune < yesterday:
       # We just assume it can do its business in under a day
-      prune_process = Process(target = file_prune)
+      prune_process = Process(target=file_prune)
       prune_process.start()
       last_prune = time.time()
 
@@ -1685,7 +1696,7 @@ def stream_manager():
 def make_maps():
   pid = change_proc_name("%s-mapmaker" % g_config['callsign'])
   for fname in glob('streams/*.mp3'):
-    audio_crc(fname, only_check = True)
+    audio_crc(fname, only_check=True)
 
 def read_config(config):
   """
@@ -1840,7 +1851,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     read_config(args.config)      
 
-    map_pid = Process(target = make_maps, args=())
+    map_pid = Process(target=make_maps, args=())
     map_pid.start()
 
     pid = change_proc_name("%s-manager" % g_config['callsign'])
