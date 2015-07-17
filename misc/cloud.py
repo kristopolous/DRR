@@ -4,6 +4,7 @@ import sqlite3
 import os
 import re
 import sys
+import ConfigParser
 from azure.storage import BlobService
 
 # From https://wiki.python.org/moin/ConfigParserExamples

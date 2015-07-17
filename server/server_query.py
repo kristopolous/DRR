@@ -20,7 +20,6 @@ def getAddrInfoWrapper(host, port, family=0, socktype=0, proto=0, flags=0):
 # Replace the original socket.getaddrinfo by our version
 socket.getaddrinfo = getAddrInfoWrapper
 
-from glob import glob
 import urllib2
 import sqlite3
 import time
