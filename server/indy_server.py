@@ -694,6 +694,7 @@ def db_set(key, value):
 
   Returns the value that was sent
   """
+  global g_params
 
   db = db_connect()
   
@@ -708,11 +709,17 @@ def db_set(key, value):
 
   db['conn'].commit()
 
+  g_params[key] = value
+
   return value
 
 
-def db_get(key, expiry=0):
+def db_get(key, expiry = 0, use_cache = False):
   """ Retrieves a value from the database, tentative on the expiry """
+  global g_params
+
+  if use_cache and key in g_params:
+    return g_params[key]
 
   db = db_connect()
 
@@ -724,6 +731,7 @@ def db_get(key, expiry=0):
   res = db['c'].execute('select value, created_at from kv where key = ?', (key, )).fetchone()
 
   if res:
+    g_params[key] = res[0]
     return res[0]
 
   return False
