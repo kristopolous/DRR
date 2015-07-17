@@ -94,7 +94,7 @@ PIDFILE_WEBSERVER = 'pid-webserver'
 #
 # Things are specified in multiples of this value ... for instance PROCESS_DELAY
 # / 4 or * 2.  4 is a good number.
-$
+#
 PROCESS_DELAY = 4
 
 # From https://wiki.python.org/moin/ConfigParserExamples
