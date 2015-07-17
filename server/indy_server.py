@@ -448,6 +448,7 @@ def audio_list_slice_process(list_in, name_out, duration_sec, start_sec):
     if ix == 0:
       frame_start = max(int(math.floor(start_sec / FRAME_LENGTH)), 0)
       duration_sec -= (item['duration_sec'] - start_sec)
+
     else:
       frame_start = item['start_offset']
       duration_sec -= item['duration_sec'] 
@@ -455,11 +456,24 @@ def audio_list_slice_process(list_in, name_out, duration_sec, start_sec):
     # try and get the mp3 referred to by the map file
     fin = file_get(item['name'][:-4])
 
-    fin.seek(offset[frame_start])
-    out.write(fin.read(offset[frame_end] - offset[frame_start]))
-    fin.close()
+    if fin:
+      fin.seek(offset[frame_start])
+      out.write(fin.read(offset[frame_end] - offset[frame_start]))
+      fin.close()
+
+    # If we fail to get the mp3 file then we can suppose that
+    # the map file is bad so we just wince and remove it.
+    else:
+      os.unlink(item['name'])
+      logging.warn("Unable to find %s's corresponding mp3, deleting" % item['name'])
 
   out.close()
+
+  # If we failed to do anything this is a tragedy
+  # and we just dump the file
+  if os.path.getsize(name_out) == 0:
+    logging.warn("Unable to create %s - no valid slices" % name_out)
+    os.unlink(name_out)
 
 def audio_list_slice(list_in, start_minute, duration_minute = -1):
   """
@@ -474,7 +488,7 @@ def audio_list_slice(list_in, start_minute, duration_minute = -1):
   name_out = "slices/%s-%d_%d.mp3" % (callsign, int(unix_time) + start_minute * 60, duration_minute)
   start_sec = start_minute * 60.0
 
-  if os.path.isfile(name_out):
+  if os.path.isfile(name_out) and os.path.getsize(name_out) > 0:
     return name_out
 
   # We may need to pull things down from the cloud so it's better if we just return
@@ -827,12 +841,17 @@ def cloud_get(path):
 
   if blob_service:
     fname = os.path.basename(path)
-    return blob_service.get_blob_to_path(
-      container,
-      fname,
-      '/tmp/%s' % fname,
-      max_connections = 8,
-    )
+    try:
+      blob_service.get_blob_to_path(
+        container,
+        fname,
+        'streams/%s' % fname,
+        max_connections = 8,
+      )
+      return True
+
+    except:
+      logging.debug('Unable to retreive %s from the cloud.' % path)
 
   return False
 
@@ -896,8 +915,11 @@ def file_get(path):
     return open(path, 'rb')
 
   else:
-    cloud_get(path)
-    return open(path, 'rb')
+    res = cloud_get(path)
+    if res:
+      return open(path, 'rb')
+
+    return False
 
     
 def file_find_streams(start_list, duration):
