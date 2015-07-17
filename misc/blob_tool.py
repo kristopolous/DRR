@@ -1,5 +1,6 @@
 #!/usr/bin/python -O
 import os
+import re
 import sys
 import ConfigParser
 from azure.storage import BlobService
@@ -46,5 +47,15 @@ disk_space = [ f.content_length for f in all_props ]
 
 print "total:", sum(disk_space) / (1024.0 ** 3)
 
-all_names = [ f.name for f in all_files ]
-print all_names
+# by station
+bucketMap = {}
+for f in all_files:
+  name = f.name
+  station = re.findall('^(\w*)-', name)[0]
+  if station not in bucketMap:
+    bucketMap[station] = {'space': 0, 'count': 0}
+
+  bucketMap[station]['count'] += 1
+  bucketMap[station]['space'] += f.properties.content_length
+
+print bucketMap
