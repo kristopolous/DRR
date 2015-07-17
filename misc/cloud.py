@@ -46,11 +46,15 @@ def get_files(station_list, blob_service):
 def get_size(station_list, blob_service):
   all_files = []
   by_station = {}
+  ix = 1
 
   for station in station_list:
-    print "Retrieving %s" % station
+    sys.stdout.write( "[ %d / %d ] %s " % (ix, len(station_list), station) )
+    sys.stdout.flush()
     by_station[station] = [ f for f in blob_service.list_blobs('streams', prefix=station) ]
+    sys.stdout.write( "... %d\n" % len(by_station[station]) )
     all_files += by_station[station]
+    ix += 1
 
   all_props = [ f.properties for f in all_files ]
   disk_space = [ f.content_length for f in all_props ]
