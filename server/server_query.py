@@ -72,7 +72,7 @@ for station in all_stations:
     # Take out the \n (we'll be putting it in below)
     sys.stdout.write("%s " % url)
 
-    stream = urllib2.urlopen("http://%s/%s" % (url, args.query), timeout = 15)
+    stream = urllib2.urlopen("http://%s/%s" % (url, args.query), timeout=15)
     data = stream.read()
 
     stop = time.time()
