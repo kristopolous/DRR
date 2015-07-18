@@ -925,12 +925,12 @@ def file_prune():
 
   db = db_connect()
 
-  duration = int(g_config['archivedays']) * ONE_DAY
+  duration = g_config['archivedays'] * ONE_DAY
   cutoff = time.time() - duration
 
   cloud_cutoff = False
   if g_config['cloud']:
-    cloud_cutoff = time.time() - int(g_config['cloudarchive']) * ONE_DAY
+    cloud_cutoff = time.time() - g_config['cloudarchive'] * ONE_DAY
 
   # Dump old streams and slices
   count = 0
@@ -1567,8 +1567,8 @@ def stream_manager():
 
   callsign = g_config['callsign']
 
-  cascade_time = int(g_config['cascadetime'])
-  cascade_buffer = int(g_config['cascadebuffer'])
+  cascade_time = g_config['cascadetime']
+  cascade_buffer = g_config['cascadebuffer']
   cascade_margin = cascade_time - cascade_buffer
 
   last_prune = 0
@@ -1579,7 +1579,7 @@ def stream_manager():
   should_record = mode_full
 
   # Number of seconds to be cycling
-  cycle_time = int(g_config['cycletime'])
+  cycle_time = g_config['cycletime']
 
   process = False
   process_next = False
@@ -1614,8 +1614,7 @@ def stream_manager():
     #
     flag = False
 
-    yesterday = time.time() - ONE_DAY
-    if last_prune < yesterday:
+    if last_prune < (time.time() - ONE_DAY * g_config['pruneevery']):
       # We just assume it can do its business in under a day
       prune_process = Process(target=file_prune)
       prune_process.start()
@@ -1755,16 +1754,16 @@ def read_config(config):
     'storage': "%s/radio" % os.path.expanduser('~'),
 
     # The (day) time to expire an intent to record
-    'expireafter': '45',
+    'expireafter': 45,
 
     # The TCP port to run the server on
     'port': '5000',
 
     # The (day) duration we should be archiving things.
-    'archivedays': '14',
+    'archivedays': 14,
 
     # The (second) time in looking to see if our stream is running
-    'cycletime': '7',
+    'cycletime': 7,
 
     # The (second) time to start a stream BEFORE the lapse of the cascade-time
     'cascadebuffer': 15,
@@ -1775,18 +1774,26 @@ def read_config(config):
     # Cloud credenials (ec2, azure etc)
     'cloud': False,
 
+    #
     # When to get things off local disk and store to the cloud
     # This means that after this many days data is sent remote and then 
     # retained for `archivedays`.  This makes the entire user-experience
     # a bit slower of course, and has an incurred throughput cost - but
     # it does save price VPS disk space which seems to come at an unusual
     # premium.
-    'cloudarchive': 2
+    #
+    'cloudarchive': 2,
+    
+    # Run the pruning every this many days (float)
+    'pruneevery': 0.5
   }
 
   for k, v in defaults.items():
     if k not in g_config:
       g_config[k] = v
+    else:
+      if type(v) is int: g_config[k] = int(g_config[k])
+      elif type(v) is float: g_config[k] = float(g_config[k])
 
   # in case someone is specifying ~/radio 
   g_config['storage'] = os.path.expanduser(g_config['storage'])
