@@ -969,6 +969,7 @@ def file_prune():
       os.unlink(fname)
 
   logging.info("Found %d files older than %s days." % (count, g_config['archivedays']))
+  return 0
 
 
 def file_get(path):
@@ -1718,6 +1719,8 @@ def make_maps():
   pid = change_proc_name("%s-mapmaker" % g_config['callsign'])
   for fname in glob('streams/*.mp3'):
     audio_crc(fname, only_check=True)
+
+  return 0
 
 def read_config(config):
   """
