@@ -1,6 +1,7 @@
 #!/usr/bin/python -O
 import argparse
 import os
+import re
 import ConfigParser
 import sys
 import socket
@@ -44,7 +45,7 @@ if args.callsign == 'all':
   station_list = db['c'].execute('select * from stations where active = 1')
 
 else:
-  station_list = db['c'].execute('select * from stations where active = 1 and callsign = "%s"' % args.callsign)
+  station_list = db['c'].execute('select * from stations where active = 1 and callsign in ("%s")' % re.sub(',', '","', args.callsign)) 
 
 all_stations = station_list.fetchall()
 
