@@ -574,7 +574,8 @@ def audio_stitch(file_list, force_stitch=False):
             logging.warn("Indices @%d do not match between %s and %s" % (pos, first['name'], second['name']))
 
         # If we got here it means that everything matches
-        break if isFound else continue
+        if isFound: break 
+        else: continue
 
     except Exception as exc:
       logging.warn("Cannot find indices between %s and %s" % (first['name'], second['name']))
