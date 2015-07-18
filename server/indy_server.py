@@ -567,15 +567,14 @@ def audio_stitch(file_list, force_stitch=False):
       while True:
         pos = second['crc32'].index(first['crc32'][-2], pos + 1)
 
+        isFound = True
         for i in xrange(5, 1, -1):
           if second['crc32'][pos - i + 2] != first['crc32'][-i]:
             isFound = False
             logging.warn("Indices @%d do not match between %s and %s" % (pos, first['name'], second['name']))
-            continue
 
         # If we got here it means that everything matches
-        isFound = True
-        break
+        break if isFound else continue
 
     except Exception as exc:
       logging.warn("Cannot find indices between %s and %s" % (first['name'], second['name']))
