@@ -1718,6 +1718,10 @@ def stream_manager():
 def make_maps():
   pid = change_proc_name("%s-mapmaker" % g_config['callsign'])
   for fname in glob('streams/*.mp3'):
+
+    if not manager_is_running():
+      shutdown()
+
     audio_crc(fname, only_check=True)
 
   return 0
