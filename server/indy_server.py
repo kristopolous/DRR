@@ -13,13 +13,13 @@ import gzip
 import re
 import setproctitle as SP
 import signal
-import sqlite3
 import struct
 import sys
 import time
 import socket
 import StringIO
 import threading
+import lib.db as DB
 
 #
 # This is needed to force ipv4 on ipv6 devices. It's sometimes needed
@@ -50,7 +50,6 @@ from multiprocessing import Process, Queue
 g_start_time = time.time()
 g_queue = Queue()
 g_config = {}
-g_db = {}
 g_download_pid = 0
 g_manager_pid = 0
 g_params = {}
@@ -133,7 +132,7 @@ def change_proc_name(what):
 
 def shutdown(signal=15, frame=False):
   """ Shutdown is hit on the keyboard interrupt """
-  global g_db, g_queue, g_start_time, g_config
+  global g_queue, g_start_time, g_config
 
   # Try to manually shutdown the webserver
   if os.path.isfile(PIDFILE_WEBSERVER):
@@ -152,9 +151,7 @@ def shutdown(signal=15, frame=False):
 
   print "[%s:%d] Shutting down" % (title, os.getpid())
 
-  for instance in g_db.items():
-    if 'conn' in instance:
-      instance['conn'].close()
+  DB.shutdown()
 
   logging.info("[%s:%d] Shutting down through signal %d" % (title, os.getpid(), signal))
 
@@ -324,8 +321,8 @@ def audio_crc(fname, blockcount=-1, only_check=False):
 
           # We try to record the CBR associated with this
           # stream
-          if not db_get('bitrate', use_cache = True):
-            db_set('bitrate', bit_rate)
+          if not DB.get('bitrate', use_cache = True):
+            DB.set('bitrate', bit_rate)
 
         # Rest of the header
         throw_away = f.read(1)
@@ -672,7 +669,7 @@ def time_get_offset(force=False):
   Returns an int second offset
   """
 
-  offset = db_get('offset', expiry=ONE_DAY)
+  offset = DB.get('offset', expiry=ONE_DAY)
   if not offset or force:
 
     when = int(time.time())
@@ -687,7 +684,7 @@ def time_get_offset(force=False):
     if opts['status'] == 'OK': 
       logging.info("Location: %s | offset: %s" % (opts['timeZoneId'], opts['rawOffset']))
       offset = (int(opts['rawOffset']) + int(opts['dstOffset'])) / 60
-      db_set('offset', offset)
+      DB.set('offset', offset)
 
     else:
       offset = 0
@@ -695,147 +692,6 @@ def time_get_offset(force=False):
   return int(offset)
 
 
-##
-## Database Related functions
-##
-def db_incr(key, value=1):
-  """
-  Increments some key in the database by some value.  It is used
-  to maintain statistical counters.
-  """
-
-  db = db_connect()
-
-  try:
-    db['c'].execute('insert into kv(value, key) values(?, ?)', (value, key))
-
-  except Exception as exc:
-    db['c'].execute('update kv set value = value + ? where key = ?', (value, key))
-
-  db['conn'].commit()
-
-
-def db_set(key, value):
-  """ 
-  Sets (or replaces) a given key to a specific value.  
-
-  Returns the value that was sent
-  """
-  global g_params
-
-  db = db_connect()
-  
-  # From http://stackoverflow.com/questions/418898/sqlite-upsert-not-insert-or-replace
-  res = db['c'].execute('''
-    INSERT OR REPLACE INTO kv (key, value, created_at) 
-      VALUES ( 
-        COALESCE((SELECT key FROM kv WHERE key = ?), ?),
-        ?,
-        current_timestamp 
-    )''', (key, key, value))
-
-  db['conn'].commit()
-
-  g_params[key] = value
-
-  return value
-
-
-def db_get(key, expiry=0, use_cache=False):
-  """ Retrieves a value from the database, tentative on the expiry """
-  global g_params
-
-  if use_cache and key in g_params:
-    return g_params[key]
-
-  db = db_connect()
-
-  if expiry > 0:
-    # If we let things expire, we first sweep for it
-    db['c'].execute('delete from kv where key = ? and created_at < (current_timestamp - ?)', (key, expiry))
-    db['conn'].commit()
-
-  res = db['c'].execute('select value, created_at from kv where key = ?', (key, )).fetchone()
-
-  if res:
-    g_params[key] = res[0]
-    return res[0]
-
-  return False
-
-
-def db_connect():
-  """
-  A "singleton pattern" or some other fancy $10-world style of maintaining 
-  the database connection throughout the execution of the script.
-
-  Returns the database instance
-  """
-  global g_db
-
-  #
-  # We need to have one instance per thread, as this is what
-  # sqlite's driver dictates ... so we do this based on thread id.
-  #
-  # We don't have to worry about the different memory sharing models here.
-  # Really, just think about it ... it's totally irrelevant.
-  #
-  thread_id = threading.current_thread().ident
-  if thread_id not in g_db:
-    g_db[thread_id] = {}
-
-  instance = g_db[thread_id]
-
-  if 'conn' not in instance:
-    conn = sqlite3.connect('config.db')
-    instance['conn'] = conn
-    instance['c'] = conn.cursor()
-
-    instance['c'].execute("""CREATE TABLE IF NOT EXISTS intents(
-      id    INTEGER PRIMARY KEY, 
-      key   TEXT UNIQUE,
-      start INTEGER, 
-      end   INTEGER, 
-      read_count  INTEGER DEFAULT 0,
-      created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-      accessed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )""");
-
-    instance['c'].execute("""CREATE TABLE IF NOT EXISTS kv(
-      id    INTEGER PRIMARY KEY, 
-      key   TEXT UNIQUE,
-      value TEXT,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )""");
-
-    instance['conn'].commit()
-
-  return instance
-
-
-def db_register_intent(minute_list, duration):
-  """
-  Tells the server to record on a specific minute for a specific duration when
-  not in full mode.  Otherwise, this is just here for statistical purposes.
-  """
-  db = db_connect()
-
-  for minute in minute_list:
-    key = str(minute) + ':' + str(duration)
-    res = db['c'].execute('select id from intents where key = ?', (key, )).fetchone()
-
-    if res == None:
-      db['c'].execute('insert into intents(key, start, end) values(?, ?, ?)', (key, minute, minute + duration))
-
-    else:
-      db['c'].execute('update intents set read_count = read_count + 1, accessed_at = (current_timestamp) where id = ?', (res[0], )) 
-
-    db['conn'].commit()
-    return db['c'].lastrowid
-
-  return None
-
-  
 ##
 ## Storage and file related
 ##
@@ -903,7 +759,7 @@ def file_get_size(fname):
   if len(ts):
     duration_min = int(ts[0])
 
-    bitrate = int(db_get('bitrate') or 128)
+    bitrate = int(DB.get('bitrate') or 128)
 
     #
     # Estimating mp3 length is actually pretty easy if you don't have ID3 headers.
@@ -923,7 +779,7 @@ def file_prune():
   global g_config
   pid = change_proc_name("%s-cleanup" % g_config['callsign'])
 
-  db = db_connect()
+  db = DB.connect()
 
   duration = g_config['archivedays'] * ONE_DAY
   cutoff = time.time() - duration
@@ -1334,7 +1190,7 @@ def server_manager(config):
     """ Reports various statistical metrics on a particular server """
     global g_start_time
 
-    db = db_connect()
+    db = DB.connect()
 
     stats = {
       'intents': [record for record in db['c'].execute('select * from intents').fetchall()],
@@ -1411,7 +1267,7 @@ def server_manager(config):
 
     # This will register the intent if needed for future recordings
     # (that is if we are in ondemand mode)
-    db_register_intent(start_time_list, duration)
+    DB.register_intent(start_time_list, duration)
 
     # Look for streams that we have which match this query and duration.
     feed_list = file_find_streams(start_time_list, duration)
@@ -1459,7 +1315,7 @@ def stream_should_be_recording():
   """ Queries the database and see if we ought to be recording at this moment """
   global g_config
 
-  db = db_connect()
+  db = DB.connect()
 
   current_minute = time_minute_now()
 
@@ -1715,7 +1571,7 @@ def stream_manager():
       process_next = False 
 
     # Increment the amount of time this has been running
-    db_incr('uptime', cycle_time)
+    DB.incr('uptime', cycle_time)
 
     time.sleep(cycle_time)
 
@@ -1874,7 +1730,7 @@ def read_config(config):
   # Increment the number of times this has been run so we can track the stability of remote 
   # servers and instances.
   #
-  db_incr('runcount')
+  DB.incr('runcount')
 
   signal.signal(signal.SIGINT, shutdown)
 
