@@ -6,12 +6,18 @@ import marshal
 import re
 import time as TS
 import logging
+import lib.misc as misc
 from datetime import datetime, timedelta, date
 from multiprocessing import Process, Queue
 
 # Most common frame-length ... in practice, I haven't 
 # seen other values in the real world
 FRAME_LENGTH = (1152.0 / 44100)
+g_config = {}
+
+def set_config(config):
+  global g_config
+  g_config = config
 
 def get_map(fname):
   """ Retrieves a map file associated with the mp3 """
@@ -293,7 +299,7 @@ def stitch_and_slice(file_list, start_minute, duration_minute):
 
 def list_slice_process(list_in, name_out, duration_sec, start_sec):
   global g_config
-  pid = change_proc_name("%s-audioslice" % g_config['callsign'])
+  pid = misc.change_proc_name("%s-audioslice" % g_config['callsign'])
 
   out = open(name_out, 'wb+')
 

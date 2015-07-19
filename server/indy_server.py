@@ -9,17 +9,15 @@ import math
 import os
 import pycurl
 import re
-import setproctitle as SP
 import signal
-import struct
 import sys
 import time
 import socket
-import StringIO
-import threading
+import setproctitle as SP
 import lib.db as DB
 import lib.audio as audio
 import lib.time as TS
+import lib.misc as misc
 
 #
 # This is needed to force ipv4 on ipv6 devices. It's sometimes needed
@@ -86,40 +84,6 @@ PIDFILE_WEBSERVER = 'pid-webserver'
 # / 4 or * 2.  4 is a good number.
 #
 PROCESS_DELAY = 4
-
-# From https://wiki.python.org/moin/ConfigParserExamples
-def config_section_map(section, Config):
-  """
-  Takes a section in a config file and makes a dictionary
-  out of it.
-
-  Returns that dictionary
-  """
-  dict1 = {}
-  options = Config.options(section)
-
-  for option in options:
-    try:
-      dict1[option] = Config.get(section, option)
-      if dict1[option] == -1:
-        logging.info("skip: %s" % option)
-
-    except Exception as exc:
-      logging.warning("exception on %s!" % option)
-      dict1[option] = None
-
-  return dict1  
-
-
-def change_proc_name(what):
-  """
-  Sets a more human-readable process name for the various 
-  parts of the system to be viewed in top/htop
-  """
-  SP.setproctitle(what)
-  print "[%s:%d] Starting" % (what, os.getpid())
-  return os.getpid()
-
 
 def shutdown(signal=15, frame=False):
   """ Shutdown is hit on the keyboard interrupt """
@@ -241,7 +205,7 @@ def file_prune():
   """ Gets rid of files older than archivedays - cloud stores things if relevant """
 
   global g_config
-  pid = change_proc_name("%s-cleanup" % g_config['callsign'])
+  pid = misc.change_proc_name("%s-cleanup" % g_config['callsign'])
 
   db = DB.connect()
 
@@ -747,7 +711,7 @@ def server_manager(config):
     )
 
   if __name__ == '__main__':
-    pid = change_proc_name("%s-webserver" % config['callsign'])
+    pid = misc.change_proc_name("%s-webserver" % config['callsign'])
     with open(PIDFILE_WEBSERVER, 'w+') as f:
       f.write(str(pid))
 
@@ -802,7 +766,7 @@ def stream_download(callsign, url, my_pid, fname):
   """
   global g_params
 
-  change_proc_name("%s-download" % callsign)
+  misc.change_proc_name("%s-download" % callsign)
 
   nl = {'stream': False}
 
@@ -1041,7 +1005,7 @@ def stream_manager():
 
 
 def make_maps():
-  pid = change_proc_name("%s-mapmaker" % g_config['callsign'])
+  pid = misc.change_proc_name("%s-mapmaker" % g_config['callsign'])
   for fname in glob('streams/*.mp3'):
 
     if not manager_is_running():
@@ -1060,7 +1024,7 @@ def read_config(config):
 
   Config = ConfigParser.ConfigParser()
   Config.read(config)
-  g_config = config_section_map('Main', Config)
+  g_config = misc.config_section_map('Main', Config)
   
   defaults = {
     # The log level to be put into the indycast.log file.
@@ -1125,7 +1089,7 @@ def read_config(config):
       # If there's a cloud conifiguration file then we read that too
       cloud_config = ConfigParser.ConfigParser()
       cloud_config.read(g_config['cloud'])
-      g_config['azure'] = config_section_map('Azure', cloud_config)
+      g_config['azure'] = misc.config_section_map('Azure', cloud_config)
 
   if not os.path.isdir(g_config['storage']):
     try:
@@ -1211,11 +1175,12 @@ if __name__ == "__main__":
     parser.add_argument('--version', action='version', version='indycast %s :: July 2015' % __version__)
     args = parser.parse_args()
     read_config(args.config)      
+    audio.set_config(g_config)
 
     map_pid = Process(target=make_maps, args=())
     map_pid.start()
 
-    pid = change_proc_name("%s-manager" % g_config['callsign'])
+    pid = misc.change_proc_name("%s-manager" % g_config['callsign'])
 
     # This is the pid that should be killed to shut the system
     # down.
