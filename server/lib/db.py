@@ -122,6 +122,15 @@ def connect():
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )""");
 
+    instance['c'].execute("""CREATE TABLE IF NOT EXISTS streams(
+      id    INTEGER PRIMARY KEY, 
+      name  TEXT UNIQUE,
+      start TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+      end   TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      accessed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )""");
+
     instance['conn'].commit()
 
   return instance
