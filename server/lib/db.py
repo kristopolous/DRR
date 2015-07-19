@@ -64,6 +64,7 @@ def connect():
 
 
 def shutdown():
+  """ Closes the individual database connections in each thread. """
   global g_db
 
   for instance in g_db.items():
@@ -79,10 +80,10 @@ def incr(key, value=1):
   db = connect()
 
   try:
-    db['c'].execute('insert into kv(value, key) values(?, ?)', (value, key))
+    db['c'].execute('insert into kv(value, key) values(?, ?)', (value, key, ))
 
   except Exception as exc:
-    db['c'].execute('update kv set value = value + ? where key = ?', (value, key))
+    db['c'].execute('update kv set value = value + ? where key = ?', (value, key, ))
 
   db['conn'].commit()
 
@@ -104,7 +105,7 @@ def set(key, value):
         COALESCE((SELECT key FROM kv WHERE key = ?), ?),
         ?,
         current_timestamp 
-    )''', (key, key, value))
+    )''', (key, key, value, ))
 
   db['conn'].commit()
 
@@ -147,10 +148,14 @@ def register_stream(name, start_ts, end_ts):
   This is all that ought to be needed to know if the streams should attempt to be stitched.
   """
   db = connect()
+  res = db['c'].execute('select id from streams where name = ?', (name, )).fetchone()
 
-  db['c'].execute('insert into streams(name, start, end) values(?, ?, ?)', name, start_ts, end_ts)
-  db['conn'].commit()
-  return db['c'].lastrowid
+  if res == None:
+    db['c'].execute('insert into streams(name, start, end) values(?, ?, ?)', (name, start_ts, end_ts, ))
+    db['conn'].commit()
+    return db['c'].lastrowid
+
+  return res[0]
  
 
 def register_intent(minute_list, duration):
@@ -165,7 +170,7 @@ def register_intent(minute_list, duration):
     res = db['c'].execute('select id from intents where key = ?', (key, )).fetchone()
 
     if res == None:
-      db['c'].execute('insert into intents(key, start, end) values(?, ?, ?)', (key, minute, minute + duration))
+      db['c'].execute('insert into intents(key, start, end) values(?, ?, ?)', (key, minute, minute + duration, ))
 
     else:
       db['c'].execute('update intents set read_count = read_count + 1, accessed_at = (current_timestamp) where id = ?', (res[0], )) 
