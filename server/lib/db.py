@@ -5,6 +5,10 @@ import sqlite3
 g_db = {}
 g_params = {}
 
+def all(table):
+  db = DB.connect()
+  return [record for record in db['c'].execute('select * from ?', table).fetchall()]
+
 def connect():
   """
   A "singleton pattern" or some other fancy $10-world style of maintaining 
@@ -157,6 +161,13 @@ def register_stream(name, start_ts, end_ts):
 
   return res[0]
  
+def find_streams(start_time = False, end_time = False):
+  """
+  Find streams 
+  """
+  db = connect()
+  res = db['c'].execute('select * from streams').fetchall()
+
 
 def register_intent(minute_list, duration):
   """
