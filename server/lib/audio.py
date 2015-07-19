@@ -1,6 +1,5 @@
 #!/usr/bin/python -O
 import os
-import binascii
 import db as DB
 import gzip
 import marshal
@@ -9,7 +8,6 @@ import time as TS
 import logging
 import lib.misc as misc
 from datetime import datetime, timedelta, date
-from multiprocessing import Process, Queue
 
 # Most common frame-length ... in practice, I haven't 
 # seen other values in the real world
@@ -225,6 +223,7 @@ def crc(fname, blockcount=-1, only_check=False):
         next
 
       elif first_header_seen or header_attempts > MAX_HEADER_ATTEMPTS:
+        import binascii
         print "%d[%d/%d]%s:%s:%s %s %d" % (len(frame_sig), header_attempts, MAX_HEADER_ATTEMPTS, binascii.b2a_hex(header), binascii.b2a_hex(f.read(5)), fname, hex(f.tell()), len(start_byte) * (1152.0 / 44100) / 60)
 
         # This means that perhaps we didn't guess the start correct so we try this again
@@ -254,7 +253,16 @@ def crc(fname, blockcount=-1, only_check=False):
     with gzip.open(map_name, 'wb') as f:
       f.write(marshal.dumps([frame_sig, start_byte]))
 
+  info = stream_info(fname, guess_time=FRAME_LENGTH * len(frame_sig))
+
+  DB.register_stream(
+    name=fname,
+    start_ts=info['start_date'],
+    end_ts=info['start_date'] + timedelta(seconds=info['duration_sec'])
+  )
+
   return frame_sig, start_byte
+
 
 def time(fname):
   """
@@ -379,6 +387,7 @@ def list_slice(list_in, start_minute, duration_minute=-1):
   # the cloud is rather fast on the vpss (a matter of seconds) so by the time the user
   # requests an mp3, it will probably exist.  If it doesn't, then eh, we'll figure it out.
   #
+  from multiprocessing import Process
   slice_process = Process(target=list_slice_process, args=(list_in, name_out, duration_sec, start_sec))
   slice_process.start()
 
