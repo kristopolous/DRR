@@ -4,6 +4,14 @@ import db as DB
 import gzip
 import marshal
 import re
+import time as TS
+import logging
+from datetime import datetime, timedelta, date
+from multiprocessing import Process, Queue
+
+# Most common frame-length ... in practice, I haven't 
+# seen other values in the real world
+FRAME_LENGTH = (1152.0 / 44100)
 
 def get_map(fname):
   """ Retrieves a map file associated with the mp3 """
@@ -18,7 +26,7 @@ def get_map(fname):
   return None, None
     
 def list_info(file_list):
-  info = audio_stream_info(file_list[0]['name'])
+  info = stream_info(file_list[0]['name'])
 
   # Some things are the same such as the
   # week, start_minute, start_date
@@ -26,7 +34,7 @@ def list_info(file_list):
   for item in file_list:
     info['duration_sec'] += item['duration_sec']
 
-  info['end_minute'] = (info['duration_sec'] / 60.0 + info['duration_sec']) % MINUTES_PER_WEEK
+  info['end_minute'] = (info['duration_sec'] / 60.0 + info['duration_sec']) % TS.MINUTES_PER_WEEK
 
   return info
 
@@ -42,7 +50,7 @@ def stream_info(fname, guess_time=False):
   It's sometimes an ok thing to do.
   """
   if type(fname) is not str:
-    return audio_list_info(fname)
+    return list_info(fname)
 
   ts_re = re.compile('-(\d*)[.|_]')
   ts = ts_re.findall(fname)
@@ -53,11 +61,11 @@ def stream_info(fname, guess_time=False):
 
   if ts:
     unix_time = int(ts[0])
-    start_minute = time_to_minute(unix_time)
+    start_minute = TS.to_minute(unix_time)
     start_date = datetime.fromtimestamp(unix_time)
 
   try:
-    duration = guess_time if guess_time else audio_time(fname) 
+    duration = guess_time if guess_time else time(fname) 
 
   except Exception as exc:
     # If we can't find a duration then we try to see if it's in the file name
@@ -72,7 +80,7 @@ def stream_info(fname, guess_time=False):
     'name': fname, 
     'start_minute': start_minute, 
     'start_date': start_date, 
-    'end_minute': (duration / 60.0 + start_minute) % MINUTES_PER_WEEK,
+    'end_minute': (duration / 60.0 + start_minute) % TS.MINUTES_PER_WEEK,
     'duration_sec': duration
   }
 
