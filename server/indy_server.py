@@ -1,6 +1,5 @@
 #!/usr/bin/python -O
 import argparse
-import binascii
 import ConfigParser
 import json
 import logging
@@ -52,15 +51,6 @@ g_download_pid = 0
 g_manager_pid = 0
 g_params = {}
 __version__ = os.popen("git describe").read().strip()
-
-#
-# Some stations don't start you off with a valid mp3 header
-# (such as kdvs), so we have to just seek into the file
-# and look for one.  This is the number of bytes we try.
-# In practice, 217 appears to be enough, so we make it about
-# ten times that and cross our fingers
-#
-MAX_HEADER_ATTEMPTS = 2048
 
 #
 # Maintain a pidfile for the manager and the webserver (which

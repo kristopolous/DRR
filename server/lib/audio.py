@@ -1,5 +1,6 @@
 #!/usr/bin/python -O
 import os
+import binascii
 import db as DB
 import gzip
 import marshal
@@ -13,6 +14,15 @@ from multiprocessing import Process, Queue
 # Most common frame-length ... in practice, I haven't 
 # seen other values in the real world
 FRAME_LENGTH = (1152.0 / 44100)
+
+#
+# Some stations don't start you off with a valid mp3 header
+# (such as kdvs), so we have to just seek into the file
+# and look for one.  This is the number of bytes we try.
+# In practice, 217 appears to be enough, so we make it about
+# ten times that and cross our fingers
+#
+MAX_HEADER_ATTEMPTS = 2048
 g_config = {}
 
 def set_config(config):
