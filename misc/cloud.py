@@ -6,34 +6,13 @@ import re
 import sys
 import ConfigParser
 from azure.storage import BlobService
+import lib.misc as misc
 
-# From https://wiki.python.org/moin/ConfigParserExamples
-def config_section_map(section, Config):
-  """
-  Takes a section in a config file and makes a dictionary
-  out of it.
-
-  Returns that dictionary
-  """
-  dict1 = {}
-  options = Config.options(section)
-
-  for option in options:
-    try:
-      dict1[option] = Config.get(section, option)
-      if dict1[option] == -1:
-        logging.info("skip: %s" % option)
-
-    except Exception as exc:
-      logging.warning("exception on %s!" % option)
-      dict1[option] = None
-
-  return dict1  
 
 def cloud_connect(config):
   cloud_config = ConfigParser.ConfigParser()
   cloud_config.read(config)
-  config = config_section_map('Azure', cloud_config)
+  config = misc.config_section_map('Azure', cloud_config)
 
   container = 'streams'
   return container, BlobService(config['storage_account_name'], config['primary_access_key'])
