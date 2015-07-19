@@ -5,9 +5,45 @@ import sqlite3
 g_db = {}
 g_params = {}
 
+# This is a way to get the column names after grabbing everything
+# I guess it's also good practice
+SCHEMA = {
+  'intents': [
+     ('id', 'INTEGER PRIMARY KEY'),
+     ('key', 'TEXT UNIQUE'),
+     ('start', 'INTEGER'),
+     ('end', 'INTEGER'), 
+     ('read_count', 'INTEGER DEFAULT 0'),
+     ('created_at', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'),
+     ('accessed_at', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'),
+   ],
+  'kv': [
+     ('id', 'INTEGER PRIMARY KEY'),
+     ('key', 'TEXT UNIQUE'),
+     ('value', 'TEXT'),
+     ('created_at', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'),
+   ],
+  'streams': [
+     ('id', 'INTEGER PRIMARY KEY'), 
+     ('name', 'TEXT UNIQUE'),
+     ('start', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'),
+     ('end', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'),
+     ('created_at', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'),
+     ('accessed_at', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'),
+   ]
+}
+
 def all(table):
+  """ Returns all entries from the sqlite3 database for a given table """
   db = DB.connect()
   return [record for record in db['c'].execute('select * from ?', table).fetchall()]
+
+def schema(table):
+  """ Returns the schema for a given table """
+  if table not in SCHEMA:
+    return None 
+
+  return [ key for key, value in SCHEMA[table] ]
 
 def connect():
   """
@@ -36,31 +72,9 @@ def connect():
     instance['conn'] = conn
     instance['c'] = conn.cursor()
 
-    instance['c'].execute("""CREATE TABLE IF NOT EXISTS intents(
-      id    INTEGER PRIMARY KEY, 
-      key   TEXT UNIQUE,
-      start INTEGER, 
-      end   INTEGER, 
-      read_count  INTEGER DEFAULT 0,
-      created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-      accessed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )""");
-
-    instance['c'].execute("""CREATE TABLE IF NOT EXISTS kv(
-      id    INTEGER PRIMARY KEY, 
-      key   TEXT UNIQUE,
-      value TEXT,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )""");
-
-    instance['c'].execute("""CREATE TABLE IF NOT EXISTS streams(
-      id    INTEGER PRIMARY KEY, 
-      name  TEXT UNIQUE,
-      start TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-      end   TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      accessed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )""");
+    for table, schema in SCHEMA.items():
+      dfn = ','.join(["%s %s" % (key, klass) for key, klass in schema])
+      instance['c'].execute("CREATE TABLE IF NOT EXISTS %s(%s)" % (table, dfn))
 
     instance['conn'].commit()
 
