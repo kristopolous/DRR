@@ -467,7 +467,7 @@ def audio_list_slice_process(list_in, name_out, duration_sec, start_sec):
       frame_end = len(offset) - 1
 
     if ix == 0:
-      frame_start = max(int(math.floor(start_sec / FRAME_LENGTH)), 0)
+      frame_start = min(max(int(math.floor(start_sec / FRAME_LENGTH)), 0), len(offset) - 1)
       duration_sec -= (item['duration_sec'] - start_sec)
 
     else:
