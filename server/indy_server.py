@@ -13,6 +13,7 @@ import sys
 import time
 import socket
 import setproctitle as SP
+import sqlite3
 import lib.db as DB
 import lib.audio as audio
 import lib.time as TS
@@ -611,13 +612,13 @@ def server_manager(config):
     db = DB.connect()
 
     stats = {
-      'intents': [record for record in db['c'].execute('select * from intents').fetchall()],
+      'intents': DB.all('intents'),
       'hits': db['c'].execute('select sum(read_count) from intents').fetchone()[0],
-      'kv': [record for record in db['c'].execute('select * from kv').fetchall()],
+      'kv': DB.all('kv'),
       'uptime': int(time.time() - g_start_time),
       'free': os.popen("df -h / | tail -1").read().strip(),
       'disk': sum(os.path.getsize(f) for f in os.listdir('.') if os.path.isfile(f)),
-      #'streams': file_find_streams(-1, 0),
+      'streams': DB.all('streams'),
       'version': __version__,
       'config': config
     }
@@ -992,6 +993,18 @@ def stream_manager():
     DB.incr('uptime', cycle_time)
 
     time.sleep(cycle_time)
+
+
+def register_streams():
+  pid = misc.change_proc_name("%s-streamregister" % g_config['callsign'])
+  for fname in glob('streams/*.mp3') + glob('streams/*.map'):
+
+    if not manager_is_running():
+      shutdown()
+
+    audio.crc(fname, only_check=True)
+
+  return 0
 
 
 def make_maps():
