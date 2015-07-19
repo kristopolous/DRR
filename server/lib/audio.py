@@ -27,6 +27,7 @@ def set_config(config):
   global g_config
   g_config = config
 
+
 def get_map(fname):
   """ Retrieves a map file associated with the mp3 """
   map_name = fname if fname.endswith('.map') else fname + '.map'
@@ -38,8 +39,12 @@ def get_map(fname):
     return ret
 
   return None, None
+
     
 def list_info(file_list):
+  """
+  A version of the stream_info that accepts a list
+  """
   info = stream_info(file_list[0]['name'])
 
   # Some things are the same such as the
@@ -51,6 +56,7 @@ def list_info(file_list):
   info['end_minute'] = (info['duration_sec'] / 60.0 + info['duration_sec']) % TS.MINUTES_PER_WEEK
 
   return info
+
 
 def stream_info(fname, guess_time=False):
   """

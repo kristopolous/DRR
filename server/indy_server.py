@@ -997,6 +997,8 @@ def stream_manager():
 
 def register_streams():
   pid = misc.change_proc_name("%s-streamregister" % g_config['callsign'])
+  """ First we get the streams """
+  all_streams = DB.all('streams')
   for fname in glob('streams/*.mp3') + glob('streams/*.map'):
 
     if not manager_is_running():
