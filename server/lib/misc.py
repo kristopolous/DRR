@@ -20,20 +20,20 @@ manager_pid = 0
 queue = Queue()
 
 start_time = time.time()
-g_config = {}
+config = {}
 pid = {}
 
 def kill(who):
   global queue
   queue.put(('terminate', who))
 
-def set_config(config):
-  global g_config
-  g_config = config
+def set_config(config_in):
+  global config
+  config = config_in
 
 def shutdown(signal=15, frame=False):
   """ Shutdown is hit on the keyboard interrupt """
-  global queue, start_time, g_config
+  global queue, start_time, config
 
   # Try to manually shutdown the webserver
   if os.path.isfile(PIDFILE_WEBSERVER):
@@ -60,7 +60,7 @@ def shutdown(signal=15, frame=False):
 
   logging.info("[%s:%d] Shutting down through signal %d" % (title, os.getpid(), signal))
 
-  if title == ('%s-manager' % g_config['callsign']):
+  if title == ('%s-manager' % config['callsign']):
     global pid
     for key, value in pid.items():
       try:
@@ -70,7 +70,7 @@ def shutdown(signal=15, frame=False):
 
     logging.info("Uptime: %ds", time.time() - start_time)
 
-  elif title != ('%s-webserver' % g_config['callsign']) and os.path.isfile(PIDFILE_MANAGER):
+  elif title != ('%s-webserver' % config['callsign']) and os.path.isfile(PIDFILE_MANAGER):
     os.unlink(PIDFILE_MANAGER)
 
   queue.put(('shutdown', True))

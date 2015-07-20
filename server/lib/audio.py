@@ -402,7 +402,6 @@ def list_slice(list_in, name_out, duration_sec, start_sec):
     os.unlink(name_out)
 
 
-
 def stitch(file_list, force_stitch=False):
   """
   Takes a list of files and then attempt to seamlessly stitch them 
