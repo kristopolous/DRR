@@ -320,31 +320,39 @@ def file_find_streams(start_list, duration):
   condition_query = "(%s)" % ') or ('.join(condition_list)
   stream_list = DB.map(db['c'].execute("select * from streams where %s" % condition_query).fetchall(), 'streams')
 
-  print stream_list
+  # We want to make sure that we break down the stream_list into days.  We can't JUST look at the week
+  # number since we permit feed requests for shows which may have multiple days.  Since this is leaky
+  # data that we don't keep via our separation of concerns, we use a little hack to figure this out.
+  by_episode = []
+  episode = []
+  cutoff_minute = 0
+  current_week = 0
 
   for entry in stream_list:
-    i = audio.stream_info(filename, guess_time=g_config['cascadetime'])
+    # look at start minute, if it's > 12 * cascade time (by default 3 hours), then we presume this is a new episode.
+    if entry['start_minute'] > cutoff_minute or entry['week_number'] != current_week:
+      if len(episode):
+        by_episode.append(episode)
 
-    if i['start_minute'] < next_valid_start_minute and i['week'] == current_week:
-      stitch_list.append(filename)
-      continue
+      episode = []
 
-    # We are only looking for starting edges of the stream
-    #
-    # If we started recording before this is fine as long as we ended recording after our start
-    if (i['start_minute'] < start and i['end_minute'] > start) or (i['start_minute'] > start and i['start_minute'] < end):
+    cutoff_minute = entry['start_minute'] + (12 * g_config['cascadetime']) % TS.MINUTES_PER_WEEK
+    current_week = entry['week_number']
 
-      fname = audio.stitch_and_slice(stitch_list, start, duration)
-      stitch_list = [filename]
-      next_valid_start_minute = (start + duration) % TS.MINUTES_PER_WEEK
-      current_week = i['week']
+    # We know by definition that every entry in our stream_list is a valid thing we need
+    # to look at.  We just need to make sure we break them down by episode
+    episode.append(entry)
 
-      if fname:
-        stream_list.append(audio.stream_info(fname))
+  if len(episode):
+    by_episode.append(episode)
 
-  fname = audio.stitch_and_slice(stitch_list, start, duration)
-  if fname:
+  for ep in by_episode:
+    print ep
+    # We get the name that it will be and then append that
+    fname = audio.stream_name(ep, start, duration)
+
     stream_list.append(audio.stream_info(fname))
+
 
   return stream_list
 
