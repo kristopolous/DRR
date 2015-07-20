@@ -66,7 +66,7 @@ def all(table, field_list='*'):
     field_list = ','.join(field_list)
 
   query = db['c'].execute('select %s from %s order by id asc' % (field_list, table))
-  if column_count == 1:
+  if column_count is 1 and field_list != '*':
     return [record[0] for record in query.fetchall()]
 
   else:
