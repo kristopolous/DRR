@@ -69,7 +69,7 @@ def stream_info(fname, guess_time=False):
   
   It's sometimes an ok thing to do.
   """
-  if type(fname) is not str:
+  if type(fname) is list:
     return list_info(fname)
 
   ts_re = re.compile('-(\d*)[.|_]')
@@ -298,76 +298,55 @@ def time(fname):
   return FRAME_LENGTH * len(offset)
 
 
+def stitch_and_slice_process(file_list, start_minute, duration_minute):
+  """
+  Given a file_list in a directory and a duration, this function will seek out
+  adjacent files if necessary and serialize them accordingly, and then return the
+  file name of an audio slice that is the combination of them.
+  """
+  name_out = stream_name(file_list, start_minute, duration_minute) 
+
+  if os.path.isfile(name_out) and os.path.getsize(name_out) > 0:
+    return None
+
+  # We presume that there is a file list we need to make 
+  stitched_list = stitch(file_list, force_stitch=True)
+
+  if len(stitched_list) > 1:
+    info = stream_info(stitched_list)
+
+  else:
+    logging.warn("Unable to stitch file list")
+    return False
+
+  # After we've stitched together the audio then we start our slice
+  # by figuring our the start_minute of the slice, versus ours
+  start_slice = max(start_minute - info['start_minute'], 0)
+
+  # Now we need to take the duration of the stream we want, in minutes, and then
+  # make sure that we don't exceed the length of the file.
+  duration_slice = min(duration_minute, start_slice + info['duration_sec'] / 60.0)
+
+  sliced_name = list_slice(
+    list_in=stitched_list, 
+    start_minute=start_slice, 
+    duration_minute=duration_slice
+  )
+
+  return None
+
+
 def stitch_and_slice(file_list, start_minute, duration_minute):
+  from multiprocessing import Process
+  slice_process = Process(target=stitch_and_slice_process, args=(file_list, start_minute, duration_minute, ))
+  slice_process.start()
+
+
+def list_slice(list_in, name_out, duration_sec, start_sec):
   """
-  Given a file_list in a directory and a duration, this function will seek out
-  adjacent files if necessary and serialize them accordingly, and then return the
-  file name of an audio slice that is the combination of them.
+  Takes some stitch list, list_in and then create a new one based on the start and end times 
+  by finding the closest frames and just doing an extraction.
   """
-
-  # We presume that there is a file list we need to make 
-  stitched_list = stitch(file_list, force_stitch=True)
-
-  if len(stitched_list) > 1:
-    info = stream_info(stitched_list)
-
-  else:
-    logging.warn("Unable to stitch file list")
-    return False
-
-  # After we've stitched together the audio then we start our slice
-  # by figuring our the start_minute of the slice, versus ours
-  start_slice = max(start_minute - info['start_minute'], 0)
-
-  # Now we need to take the duration of the stream we want, in minutes, and then
-  # make sure that we don't exceed the length of the file.
-  duration_slice = min(duration_minute, start_slice + info['duration_sec'] / 60.0)
-
-  sliced_name = list_slice(
-    list_in=stitched_list, 
-    start_minute=start_slice, 
-    duration_minute=duration_slice
-  )
-
-  return sliced_name
-
-def stitch_and_slice_old(file_list, start_minute, duration_minute):
-  """
-  Given a file_list in a directory and a duration, this function will seek out
-  adjacent files if necessary and serialize them accordingly, and then return the
-  file name of an audio slice that is the combination of them.
-  """
-  if not file_list:
-    return False
-
-  # We presume that there is a file list we need to make 
-  stitched_list = stitch(file_list, force_stitch=True)
-
-  if len(stitched_list) > 1:
-    info = stream_info(stitched_list)
-
-  else:
-    logging.warn("Unable to stitch file list")
-    return False
-
-  # After we've stitched together the audio then we start our slice
-  # by figuring our the start_minute of the slice, versus ours
-  start_slice = max(start_minute - info['start_minute'], 0)
-
-  # Now we need to take the duration of the stream we want, in minutes, and then
-  # make sure that we don't exceed the length of the file.
-  duration_slice = min(duration_minute, start_slice + info['duration_sec'] / 60.0)
-
-  sliced_name = list_slice(
-    list_in=stitched_list, 
-    start_minute=start_slice, 
-    duration_minute=duration_slice
-  )
-
-  return sliced_name
-
-
-def list_slice_process(list_in, name_out, duration_sec, start_sec):
   global g_config
   pid = misc.change_proc_name("%s-audioslice" % g_config['callsign'])
 
@@ -417,28 +396,6 @@ def list_slice_process(list_in, name_out, duration_sec, start_sec):
     os.unlink(name_out)
 
 
-def list_slice(list_in, start_minute, duration_minute=-1):
-  """
-  Takes some stitch list, list_in and then create a new one based on the start and end times 
-  by finding the closest frames and just doing an extraction.
-  """
-  name_out = stream_name(list_in, start_minute, duration_minute) 
-
-  if os.path.isfile(name_out) and os.path.getsize(name_out) > 0:
-    return name_out
-
-  #
-  # We may need to pull things down from the cloud so it's better if we just return
-  # the eventual mp3 name here and not block.  As it turns out, pulling the blobs from 
-  # the cloud is rather fast on the vpss (a matter of seconds) so by the time the user
-  # requests an mp3, it will probably exist.  If it doesn't, then eh, we'll figure it out.
-  #
-  from multiprocessing import Process
-  slice_process = Process(target=list_slice_process, args=(list_in, name_out, duration_minute * 60.0, start_minute * 60.0))
-  slice_process.start()
-
-  return name_out
-
 
 def stitch(file_list, force_stitch=False):
   """
@@ -449,6 +406,7 @@ def stitch(file_list, force_stitch=False):
   first = {'name': file_list[0]}
   duration = 0
 
+  fin = file_get(item['name'])
   crc32, offset = crc(first['name'])
 
   first['crc32'] = crc32

@@ -318,7 +318,7 @@ def file_find_streams(start_list, duration):
     condition_list.append('start_minute < %d and end_minute >= %d' % (end_search, end_search))
 
   condition_query = "(%s)" % ') or ('.join(condition_list)
-  stream_list = DB.map(db['c'].execute("select * from streams where %s" % condition_query).fetchall(), 'streams')
+  entry_list = DB.map(db['c'].execute("select * from streams where %s" % condition_query).fetchall(), 'streams')
 
   # We want to make sure that we break down the stream_list into days.  We can't JUST look at the week
   # number since we permit feed requests for shows which may have multiple days.  Since this is leaky
@@ -328,7 +328,7 @@ def file_find_streams(start_list, duration):
   cutoff_minute = 0
   current_week = 0
 
-  for entry in stream_list:
+  for entry in entry_list:
     # look at start minute, if it's > 12 * cascade time (by default 3 hours), then we presume this is a new episode.
     if entry['start_minute'] > cutoff_minute or entry['week_number'] != current_week:
       if len(episode):
@@ -347,12 +347,9 @@ def file_find_streams(start_list, duration):
     by_episode.append(episode)
 
   for ep in by_episode:
-    print ep
     # We get the name that it will be and then append that
     fname = audio.stream_name(ep, start, duration)
-
     stream_list.append(audio.stream_info(fname))
-
 
   return stream_list
 
