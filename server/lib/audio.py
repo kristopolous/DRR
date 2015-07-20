@@ -84,8 +84,10 @@ def stream_info(fname, guess_time=False):
     unix_time = int(ts[0])
     start_minute = TS.to_minute(unix_time)
     start_date = datetime.fromtimestamp(unix_time)
+
   else:
-    print "Failure for %s" % fname
+    print "Failure for '%s'" % fname
+    raise Exception
 
   try:
     duration = guess_time if guess_time else time(fname) 

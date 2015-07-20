@@ -287,66 +287,6 @@ def file_find_streams(start_list, duration):
 
   return stream_list
 
-def file_find_streams_old(start_list, duration):
-  """
-  Given a start week minute this looks for streams in the storage 
-  directory that match it - regardless of duration ... so it may return
-  partial shows results.
-  """
-  global g_config
-
-  stream_list = []
-
-  if type(start_list) is int:
-    start_list = [start_list]
-
-  file_list = glob('streams/*.map')
-
-  # Sort nominally - since we have unix time in the name, this should come out
-  # as sorted by time for us for free.
-  file_list.sort() 
-  stitch_list = []
-
-  # TODO: This start list needs to be chronologically as opposed to 
-  # every monday, then every tuesday, etc ... for multi-day stream requests
-  for start in start_list:
-    end = (start + duration) % TS.MINUTES_PER_WEEK
-
-    # We want to make sure we only get the edges so we need to have state
-    # between the iterations.
-    next_valid_start_minute = 0
-    current_week = 0
-
-    for filename in file_list:
-      i = audio.stream_info(filename, guess_time=g_config['cascadetime'])
-
-      if i['start_minute'] < next_valid_start_minute and i['week'] == current_week:
-        stitch_list.append(filename)
-        continue
-
-      # We are only looking for starting edges of the stream
-      #
-      # If we started recording before this is fine as long as we ended recording after our start
-      if start == -1 or (i['start_minute'] < start and i['end_minute'] > start) or (i['start_minute'] > start and i['start_minute'] < end):
-        if start == -1:
-          fname = filename
-
-        else:
-          fname = audio.stitch_and_slice(stitch_list, start, duration)
-          stitch_list = [filename]
-          next_valid_start_minute = (start + duration) % TS.MINUTES_PER_WEEK
-          current_week = i['week']
-
-        if fname:
-          stream_list.append(audio.stream_info(fname))
-
-    if start != -1:
-      fname = audio.stitch_and_slice(stitch_list, start, duration)
-      if fname:
-        stream_list.append(audio.stream_info(fname))
-
-  return stream_list
-
 
 def server_generate_xml(showname, feed_list, duration, weekday_list, start, duration_string):
   """
@@ -1014,6 +954,8 @@ def stream_manager():
 
 
 def register_streams():
+  """ Find the local streams and make sure they are all registered in the sqlite3 database """
+
   pid = misc.change_proc_name("%s-streamregister" % g_config['callsign'])
 
   # Get the existing streams as a set
@@ -1022,24 +964,27 @@ def register_streams():
   # There should be a smarter way to do this ... you'd think.
   one_str = ':'.join(glob('streams/*.mp3') + glob('streams/*.map'))
   all_files = Set(one_str.replace('.map', '').split(':'))
+ 
+  diff = all_files.difference(all_registered)
 
   # This is a list of files we haven't scanned yet...
-  for fname in all_files.difference(all_registered):
-    info = audio.stream_info(fname)
+  if diff: 
+    for fname in diff:
+      info = audio.stream_info(fname)
 
-    DB.register_stream(
-      name=fname,
-      week_number=info['week'],
-      start_minute=int(info['start_minute']),
-      end_minute=int(info['end_minute']),
-      start_unix=info['start_date'],
-      end_unix=info['start_date'] + timedelta(seconds=info['duration_sec'])
-    )
+      DB.register_stream(
+        name=fname,
+        week_number=info['week'],
+        start_minute=int(info['start_minute']),
+        end_minute=int(info['end_minute']),
+        start_unix=info['start_date'],
+        end_unix=info['start_date'] + timedelta(seconds=info['duration_sec'])
+      )
 
-    if not manager_is_running():
-      shutdown()
+      if not manager_is_running():
+        shutdown()
 
-    audio.crc(fname, only_check=True)
+      audio.crc(fname, only_check=True)
 
   return 0
 
