@@ -71,7 +71,7 @@ PROCESS_DELAY = 4
 ##
 ## Storage and file related
 ##
-def file_find_streams(start_list, duration):
+def file_find_and_make_slices(start_list, duration):
   """
   Given a start week minute this looks for streams in the storage 
   directory that match it - regardless of duration ... so it may return
@@ -145,6 +145,24 @@ def file_find_streams(start_list, duration):
     # We get the name that it will be and then append that
     fname = audio.stream_name(ep, start, duration)
     stream_list.append(audio.stream_info(fname))
+
+  # Start the creation of the mp3s
+  for episode in by_episode:
+    # We blur the test start to a bigger window
+    test_start = (episode[0]['start_minute'] / (60 * 4))
+
+    for start in start_list:
+      # Blur the query start to the same window
+      query_start = start / (60 * 4)
+
+      # This shouldn't be necessary but let's do it anyway
+      if abs(query_start - test_start) <= 1:
+        # Under these conditions we can say that this episode
+        # can be associated with this particular start time
+
+        print start, duration, episode
+        audio.stitch_and_slice(episode, start, duration)
+        break
 
   return stream_list
 
@@ -392,12 +410,12 @@ def server_manager(config):
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
     os.system('git pull') 
-    os.system('pip install --user -r requirements.txt') 
 
     # See what the version is after the pull
     newversion = os.popen("git describe").read().strip()
 
     if newversion != __version__:
+      os.system('pip install --user -r requirements.txt') 
       # from http://blog.petrzemek.net/2014/03/23/restarting-a-python-script-within-itself/
       shutdown_server()
       misc.queue.put(('restart', True))
@@ -503,7 +521,10 @@ def server_manager(config):
     DB.register_intent(start_time_list, duration)
 
     # Look for streams that we have which match this query and duration.
-    feed_list = file_find_streams(start_time_list, duration)
+    # This will also create slices if necessary in a sub process.
+    # The list of files that returns will include this not-yet-created
+    # file-name as essentially a "promise" to when it will be made.
+    feed_list = file_find_and_make_slices(start_time_list, duration)
 
     # Then, taking those two things, make a feed list from them.
     return server_generate_xml(
