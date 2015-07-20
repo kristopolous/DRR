@@ -7,6 +7,7 @@ import re
 import time as TS
 import logging
 import lib.misc as misc
+import lib.file as cloud
 from datetime import datetime, timedelta, date
 
 # Most common frame-length ... in practice, I haven't 
@@ -83,6 +84,8 @@ def stream_info(fname, guess_time=False):
     unix_time = int(ts[0])
     start_minute = TS.to_minute(unix_time)
     start_date = datetime.fromtimestamp(unix_time)
+  else:
+    print "Failure for %s" % fname
 
   try:
     duration = guess_time if guess_time else time(fname) 
@@ -307,6 +310,7 @@ def stitch_and_slice_process(file_list, start_minute, duration_minute):
   name_out = stream_name(file_list, start_minute, duration_minute) 
 
   if os.path.isfile(name_out) and os.path.getsize(name_out) > 0:
+    print "File %s found" % name_out
     return None
 
   # We presume that there is a file list we need to make 
@@ -372,7 +376,7 @@ def list_slice(list_in, name_out, duration_sec, start_sec):
       duration_sec -= item['duration_sec'] 
 
     # try and get the mp3 referred to by the map file
-    fin = file_get(item['name'][:-4])
+    fin = cloud.get(item['name'][:-4])
 
     if fin:
       fin.seek(offset[frame_start])
@@ -406,7 +410,7 @@ def stitch(file_list, force_stitch=False):
   first = {'name': file_list[0]}
   duration = 0
 
-  fin = file_get(item['name'])
+  fin = cloud.get(item['name'])
   crc32, offset = crc(first['name'])
 
   first['crc32'] = crc32

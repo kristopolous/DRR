@@ -18,6 +18,7 @@ import lib.db as DB
 import lib.audio as audio
 import lib.time as TS
 import lib.misc as misc
+import lib.file as cloud
 
 #
 # This is needed to force ipv4 on ipv6 devices. It's sometimes needed
@@ -115,58 +116,6 @@ def shutdown(signal=15, frame=False):
 ##
 ## Storage and file related
 ##
-def cloud_connect():
-  from azure.storage import BlobService
-  global g_config
-  container = 'streams'
-
-  blob_service = BlobService(g_config['azure']['storage_account_name'], g_config['azure']['primary_access_key'])
-  blob_service.create_container(container, x_ms_blob_public_access='container')
-  return blob_service, container
-
-def cloud_unlink(path):
-  fname = os.path.basename(path)
-  blob_service, container = cloud_connect()
-  return blob_service.delete_blob(container, path)
-
-def cloud_put(path):
-  blob_service, container = cloud_connect()
-
-  if blob_service:
-    try:
-      res = blob_service.put_block_blob_from_path(
-        container,
-        os.path.basename(path),
-        path,
-        max_connections=5,
-      )
-      return res
-
-    except:
-      logging.debug('Unable to put %s in the cloud.' % path)
-
-  return False
-
-
-def cloud_get(path):
-  blob_service, container = cloud_connect()
-
-  if blob_service:
-    fname = os.path.basename(path)
-    try:
-      blob_service.get_blob_to_path(
-        container,
-        fname,
-        'streams/%s' % fname,
-        max_connections=8,
-      )
-      return True
-
-    except:
-      logging.debug('Unable to retreive %s from the cloud.' % path)
-
-  return False
-
 
 def file_get_size(fname):
   """ Gets a file size or just plain guesses it if it doesn't exist yet. """
@@ -231,7 +180,7 @@ def file_prune():
 
     elif cloud_cutoff and ctime < cloud_cutoff:
       logging.debug("Prune[cloud]: putting %s" % fname)
-      cloud_put(fname)
+      cloud.put(fname)
       try:
         os.unlink(fname)
       except:
@@ -247,7 +196,7 @@ def file_prune():
     # If there's a cloud account at all then we need to unlink the 
     # equivalent mp3 file
     if cloud_cutoff:
-      cloud_unlink(fname[:-4])
+      cloud.unlink(fname[:-4])
 
     # now only after we've deleted from the cloud can we delete the local file
     os.unlink(fname)
@@ -259,21 +208,6 @@ def file_prune():
   logging.info("Found %d files older than %s days." % (count, g_config['archivedays']))
   return 0
 
-
-def file_get(path):
-  """
-  If the file exists locally then we return it, otherwise
-  we go out to the network store and retrieve it
-  """
-  if os.path.exists(path):
-    return open(path, 'rb')
-
-  else:
-    res = cloud_get(path)
-    if res:
-      return open(path, 'rb')
-
-    return False
 
     
 def file_find_streams(start_list, duration):
@@ -1102,7 +1036,6 @@ def register_streams():
       end_unix=info['start_date'] + timedelta(seconds=info['duration_sec'])
     )
 
-
     if not manager_is_running():
       shutdown()
 
@@ -1272,6 +1205,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     read_config(args.config)      
     audio.set_config(g_config)
+    cloud.set_config(g_config)
 
     register_pid = Process(target=register_streams, args=())
     register_pid.start()
