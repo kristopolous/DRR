@@ -254,7 +254,6 @@ def crc(fname, blockcount=-1, only_check=False):
   f.close()
   # If we get here that mans that we don't have a map
   # file yet.  So we just creat it.
-  map_name = fname + '.map'
   if not os.path.exists(map_name):
     with gzip.open(map_name, 'wb') as f:
       f.write(marshal.dumps([frame_sig, start_byte]))
