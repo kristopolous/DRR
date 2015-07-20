@@ -4,10 +4,10 @@ import db as DB
 import gzip
 import marshal
 import re
-import time as TS
 import logging
 import lib.misc as misc
 import lib.file as cloud
+import lib.ts as TS
 from datetime import datetime, timedelta, date
 
 # Most common frame-length ... in practice, I haven't 
