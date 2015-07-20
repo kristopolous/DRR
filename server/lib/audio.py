@@ -408,10 +408,10 @@ def stitch(file_list, force_stitch=False):
   together by looking at their crc32 checksums of the data payload in the blocks.
   """
 
-  first = {'name': file_list[0]}
+  first = file_list[0]
   duration = 0
 
-  fin = cloud.get(item['name'])
+  cloud.get(first['name'], do_open=False)
   crc32, offset = crc(first['name'])
 
   first['crc32'] = crc32
@@ -428,10 +428,9 @@ def stitch(file_list, force_stitch=False):
 
   duration += len(first['offset']) * FRAME_LENGTH
 
-  for name in file_list[1:]:
-    second = {'name': name}
-
-    crc32, offset = crc(name)
+  for second in file_list[1:]:
+    cloud.get(second['name'], do_open=False)
+    crc32, offset = crc(second['name'])
 
     second['crc32'] = crc32
     second['offset'] = offset

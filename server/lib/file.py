@@ -15,18 +15,20 @@ def set_config(config):
   global g_config
   g_config = config
 
-def get(path):
+def get(path, do_open=True):
   """
   If the file exists locally then we return it, otherwise
   we go out to the network store and retrieve it
   """
   if os.path.exists(path):
-    return open(path, 'rb')
+    if do_open: return open(path, 'rb')
+    return True
 
   else:
     res = download(path)
     if res:
-      return open(path, 'rb')
+      if do_open: return open(path, 'rb')
+      return True
 
   return False
 
