@@ -131,7 +131,7 @@ def prune():
   db['conn'].commit()
 
   logging.info("Found %d files older than %s days." % (count, g_config['archivedays']))
-  return 0
+  misc.kill('prune') 
 
 
 def get_size(fname):

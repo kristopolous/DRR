@@ -706,6 +706,14 @@ def stream_manager():
         # We now don't toggle to flag in order to shutdown the
         # old process and start a new one
 
+      elif what == 'terminate':
+        if value in misc.pid:
+          print "-- terminate %s" % value
+          misc.pid[value].terminate()
+          del(misc.pid[value])
+        else:
+          print "Can't term %s" % value
+
       elif what == 'shutdown':
         print "-- shutdown"
         b_shutdown = True
@@ -826,7 +834,7 @@ def register_streams():
 
       audio.crc(fname, only_check=True)
 
-  return 0
+  misc.kill('register')
 
 
 def read_config(config):
@@ -994,8 +1002,8 @@ if __name__ == "__main__":
     cloud.set_config(g_config)
     misc.set_config(g_config)
 
-    register_pid = Process(target=register_streams, args=())
-    register_pid.start()
+    misc.pid['register'] = Process(target=register_streams, args=())
+    misc.pid['register'].start()
 
     pid = misc.change_proc_name("%s-manager" % g_config['callsign'])
 
