@@ -261,11 +261,16 @@ def crc(fname, blockcount=-1, only_check=False):
 
   info = stream_info(fname, guess_time=FRAME_LENGTH * len(frame_sig))
 
+  """
   DB.register_stream(
     name=fname,
-    start_ts=info['start_date'],
-    end_ts=info['start_date'] + timedelta(seconds=info['duration_sec'])
+    week_number=info['week'],
+    start_minute=int(info['start_minute']),
+    end_minute=int(info['end_minute']),
+    start_unix=info['start_date'],
+    end_unix=info['start_date'] + timedelta(seconds=info['duration_sec'])
   )
+  """
 
   return frame_sig, start_byte
 

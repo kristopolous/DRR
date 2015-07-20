@@ -26,8 +26,11 @@ SCHEMA = {
   'streams': [
      ('id', 'INTEGER PRIMARY KEY'), 
      ('name', 'TEXT UNIQUE'),
-     ('start', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'),
-     ('end', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'),
+     ('start_unix', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'),
+     ('end_unix', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'),
+     ('start_minute', 'INTEGER DEFAULT 0'),
+     ('end_minute', 'INTEGER DEFAULT 0'),
+     ('week_number', 'INTEGER DEFAULT 0'),
      ('created_at', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'),
      ('accessed_at', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'),
    ]
@@ -170,7 +173,7 @@ def get(key, expiry=0, use_cache=False):
   return False
 
 
-def register_stream(name, start_ts, end_ts):
+def register_stream(name, start_unix, end_unix, start_minute, end_minute, week_number):
   """
   Registers a stream as existing to be found later when trying to stitch and slice files together.
   This is all that ought to be needed to know if the streams should attempt to be stitched.
@@ -179,7 +182,11 @@ def register_stream(name, start_ts, end_ts):
   res = db['c'].execute('select id from streams where name = ?', (name, )).fetchone()
 
   if res == None:
-    db['c'].execute('insert into streams(name, start, end) values(?, ?, ?)', (name, start_ts, end_ts, ))
+    db['c'].execute("""insert into streams (
+        name,         start_unix, end_unix, 
+        start_minute, end_minute, week_number
+    ) values(?, ?, ?, ?, ?, ?)""", (name, start_unix, end_unix, start_minute, end_minute, week_number, ))
+
     db['conn'].commit()
     return db['c'].lastrowid
 

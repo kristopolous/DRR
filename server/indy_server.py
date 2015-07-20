@@ -44,6 +44,7 @@ import flask
 from subprocess import call
 import subprocess
 from multiprocessing import Process, Queue
+from sets import Set
 
 g_start_time = time.time()
 g_queue = Queue()
@@ -997,10 +998,27 @@ def stream_manager():
 
 def register_streams():
   pid = misc.change_proc_name("%s-streamregister" % g_config['callsign'])
-  """ First we get the streams """
-  all_streams = DB.all('streams', ['name'])
-  print all_streams
-  for fname in glob('streams/*.mp3') + glob('streams/*.map'):
+
+  # Get the existing streams as a set
+  all_registered = Set(DB.all('streams', ['name']))
+
+  # There should be a smarter way to do this ... you'd think.
+  one_str = ':'.join(glob('streams/*.mp3') + glob('streams/*.map'))
+  all_files = Set(one_str.replace('.map', '').split(':'))
+
+  # This is a list of files we haven't scanned yet...
+  for fname in all_files.difference(all_registered):
+    info = audio.stream_info(fname)
+
+    DB.register_stream(
+      name=fname,
+      week_number=info['week'],
+      start_minute=int(info['start_minute']),
+      end_minute=int(info['end_minute']),
+      start_unix=info['start_date'],
+      end_unix=info['start_date'] + timedelta(seconds=info['duration_sec'])
+    )
+
 
     if not manager_is_running():
       shutdown()
