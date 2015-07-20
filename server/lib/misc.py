@@ -21,6 +21,7 @@ queue = Queue()
 
 start_time = time.time()
 g_config = {}
+pid = {}
 
 def set_config(config):
   global g_config
@@ -56,6 +57,13 @@ def shutdown(signal=15, frame=False):
   logging.info("[%s:%d] Shutting down through signal %d" % (title, os.getpid(), signal))
 
   if title == ('%s-manager' % g_config['callsign']):
+    global pid
+    for key, value in pid.items():
+      try:
+        value.terminate()
+      except:
+        pass
+
     logging.info("Uptime: %ds", time.time() - start_time)
 
   elif title != ('%s-webserver' % g_config['callsign']) and os.path.isfile(PIDFILE_MANAGER):
