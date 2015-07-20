@@ -47,20 +47,10 @@ import subprocess
 from multiprocessing import Process, Queue
 from sets import Set
 
-g_start_time = time.time()
-g_queue = Queue()
 g_config = {}
 g_download_pid = 0
 g_params = {}
 __version__ = os.popen("git describe").read().strip()
-
-#
-# Maintain a pidfile for the manager and the webserver (which
-# likes to become a zombie ... braaaainnns!) so we have to take
-# care of it separately and specially - like a little retard.
-#
-PIDFILE_MANAGER = 'pid-manager'
-PIDFILE_WEBSERVER = 'pid-webserver'
 
 #
 # The process delay is used throughout to measure things like the delay in
@@ -76,44 +66,6 @@ PIDFILE_WEBSERVER = 'pid-webserver'
 # / 4 or * 2.  4 is a good number.
 #
 PROCESS_DELAY = 4
-
-def shutdown(signal=15, frame=False):
-  """ Shutdown is hit on the keyboard interrupt """
-  global g_queue, g_start_time, g_config
-
-  # Try to manually shutdown the webserver
-  if os.path.isfile(PIDFILE_WEBSERVER):
-    with open(PIDFILE_WEBSERVER, 'r') as f:
-      webserver = f.readline()
-
-      try:  
-        os.kill(int(webserver), signal)
-
-      except:
-        pass
-
-    try:  
-      os.unlink(PIDFILE_WEBSERVER)
-
-    except:
-      pass
-
-  title = SP.getproctitle()
-
-  print "[%s:%d] Shutting down" % (title, os.getpid())
-
-  DB.shutdown()
-
-  logging.info("[%s:%d] Shutting down through signal %d" % (title, os.getpid(), signal))
-
-  if title == ('%s-manager' % g_config['callsign']):
-    logging.info("Uptime: %ds", time.time() - g_start_time)
-
-  elif title != ('%s-webserver' % g_config['callsign']) and os.path.isfile(PIDFILE_MANAGER):
-    os.unlink(PIDFILE_MANAGER)
-
-  g_queue.put(('shutdown', True))
-  sys.exit(0)
 
 
 ##
@@ -322,8 +274,6 @@ def server_error(errstr):
 
 def server_manager(config):
   """ Main flask process that manages the end points """
-  global g_queue
-
   app = Flask(__name__)
 
   # from http://flask.pocoo.org/snippets/67/
@@ -426,7 +376,7 @@ def server_manager(config):
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
     shutdown_server()
-    g_queue.put(('restart', True))
+    misc.queue.put(('restart', True))
     return "restarting..."
 
     os.chdir(cwd)
@@ -450,7 +400,7 @@ def server_manager(config):
     if newversion != __version__:
       # from http://blog.petrzemek.net/2014/03/23/restarting-a-python-script-within-itself/
       shutdown_server()
-      g_queue.put(('restart', True))
+      misc.queue.put(('restart', True))
       return "Upgrading from %s to %s" % (__version__, newversion)
 
     os.chdir(cwd)
@@ -463,10 +413,9 @@ def server_manager(config):
     A low resource version of the /stats call ... this is invoked
     by the server health check 
     """
-    global g_start_time
 
     return jsonify({
-      'uptime': int(time.time() - g_start_time),
+      'uptime': int(time.time() - misc.start_time),
       'version': __version__
     }), 200
 
@@ -474,15 +423,13 @@ def server_manager(config):
   @app.route('/stats')
   def stats():
     """ Reports various statistical metrics on a particular server """
-    global g_start_time
-
     db = DB.connect()
 
     stats = {
       'intents': DB.all('intents'),
       'hits': db['c'].execute('select sum(read_count) from intents').fetchone()[0],
       'kv': DB.all('kv'),
-      'uptime': int(time.time() - g_start_time),
+      'uptime': int(time.time() - misc.start_time),
       'free': os.popen("df -h / | tail -1").read().strip(),
       'disk': sum(os.path.getsize(f) for f in os.listdir('.') if os.path.isfile(f)),
       'streams': DB.all('streams'),
@@ -570,7 +517,7 @@ def server_manager(config):
 
   if __name__ == '__main__':
     pid = misc.change_proc_name("%s-webserver" % config['callsign'])
-    with open(PIDFILE_WEBSERVER, 'w+') as f:
+    with open(misc.PIDFILE_WEBSERVER, 'w+') as f:
       f.write(str(pid))
 
     """
@@ -632,7 +579,7 @@ def stream_download(callsign, url, my_pid, fname):
     sys.exit(0)
 
   def cback(data): 
-    global g_config, g_queue, g_params
+    global g_config, g_params
 
     if g_params['isFirst'] == True:
       g_params['isFirst'] = False
@@ -640,17 +587,17 @@ def stream_download(callsign, url, my_pid, fname):
         if re.match('https?://', data):
           # If we are getting a redirect then we don't mind, we
           # just put it in the stream and then we leave
-          g_queue.put(('stream', data.strip()))
+          misc.queue.put(('stream', data.strip()))
           return True
 
         # A pls style playlist
         elif re.findall('File\d', data, re.M):
           logging.info("Found a pls, using the File1 parameter");
           matches = re.findall('File1=(.*)\n', data, re.M)
-          g_queue.put(('stream', matches[0].strip()))
+          misc.queue.put(('stream', matches[0].strip()))
           return True
 
-    g_queue.put(('heartbeat', True))
+    misc.queue.put(('heartbeat', True))
 
     if not nl['stream']:
       try:
@@ -663,7 +610,7 @@ def stream_download(callsign, url, my_pid, fname):
     nl['stream'].write(data)
 
     if not misc.manager_is_running():
-      shutdown()
+      misc.shutdown()
 
   # signal.signal(signal.SIGTERM, dl_stop)
   c = pycurl.Curl()
@@ -689,7 +636,7 @@ def stream_manager():
   Manager process which makes sure that the
   streams are running appropriately
   """
-  global g_queue, g_config
+  global g_config
 
   callsign = g_config['callsign']
 
@@ -748,8 +695,8 @@ def stream_manager():
 
     TS.get_offset()
 
-    while not g_queue.empty():
-      what, value = g_queue.get(False)
+    while not misc.queue.empty():
+      what, value = misc.queue.get(False)
 
       # The curl proces discovered a new stream to be
       # used instead.
@@ -875,7 +822,7 @@ def register_streams():
       )
 
       if not misc.manager_is_running():
-        shutdown()
+        misc.shutdown()
 
       audio.crc(fname, only_check=True)
 
@@ -1001,8 +948,8 @@ def read_config(config):
 
   # If there is an existing pid-manager, that means that 
   # there is probably another version running.
-  if os.path.isfile(PIDFILE_MANAGER):
-    with open(PIDFILE_MANAGER, 'r') as f:
+  if os.path.isfile(misc.PIDFILE_MANAGER):
+    with open(misc.PIDFILE_MANAGER, 'r') as f:
       oldserver = f.readline()
 
       try:  
@@ -1027,7 +974,7 @@ def read_config(config):
   #
   DB.incr('runcount')
 
-  signal.signal(signal.SIGINT, shutdown)
+  signal.signal(signal.SIGINT, misc.shutdown)
 
 
 if __name__ == "__main__":
@@ -1042,8 +989,10 @@ if __name__ == "__main__":
     parser.add_argument('--version', action='version', version='indycast %s :: July 2015' % __version__)
     args = parser.parse_args()
     read_config(args.config)      
+
     audio.set_config(g_config)
     cloud.set_config(g_config)
+    misc.set_config(g_config)
 
     register_pid = Process(target=register_streams, args=())
     register_pid.start()
@@ -1053,7 +1002,7 @@ if __name__ == "__main__":
     # This is the pid that should be killed to shut the system
     # down.
     misc.manager_is_running(pid)
-    with open(PIDFILE_MANAGER, 'w+') as f:
+    with open(misc.PIDFILE_MANAGER, 'w+') as f:
       f.write(str(pid))
 
     stream_manager()

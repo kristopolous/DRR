@@ -2,8 +2,68 @@
 import setproctitle as SP
 import ConfigParser
 import os
+import time
+import logging
+import sys
+import lib.db as DB
+from multiprocessing import Process, Queue
 
-g_manager_pid = 0
+#
+# Maintain a pidfile for the manager and the webserver (which
+# likes to become a zombie ... braaaainnns!) so we have to take
+# care of it separately and specially - like a little retard.
+#
+PIDFILE_MANAGER = 'pid-manager'
+PIDFILE_WEBSERVER = 'pid-webserver'
+
+manager_pid = 0
+queue = Queue()
+
+start_time = time.time()
+g_config = {}
+
+def set_config(config):
+  global g_config
+  g_config = config
+
+def shutdown(signal=15, frame=False):
+  """ Shutdown is hit on the keyboard interrupt """
+  global queue, start_time, g_config
+
+  # Try to manually shutdown the webserver
+  if os.path.isfile(PIDFILE_WEBSERVER):
+    with open(PIDFILE_WEBSERVER, 'r') as f:
+      webserver = f.readline()
+
+      try:  
+        os.kill(int(webserver), signal)
+
+      except:
+        pass
+
+    try:  
+      os.unlink(PIDFILE_WEBSERVER)
+
+    except:
+      pass
+
+  title = SP.getproctitle()
+
+  print "[%s:%d] Shutting down" % (title, os.getpid())
+
+  DB.shutdown()
+
+  logging.info("[%s:%d] Shutting down through signal %d" % (title, os.getpid(), signal))
+
+  if title == ('%s-manager' % g_config['callsign']):
+    logging.info("Uptime: %ds", time.time() - start_time)
+
+  elif title != ('%s-webserver' % g_config['callsign']) and os.path.isfile(PIDFILE_MANAGER):
+    os.unlink(PIDFILE_MANAGER)
+
+  queue.put(('shutdown', True))
+  sys.exit(0)
+
 
 def manager_is_running(pid=False):
   """
@@ -11,13 +71,13 @@ def manager_is_running(pid=False):
   shutdown.  It works by sending a signal(0) to a pid and seeing
   if that fails
   """
-  global g_manager_pid
+  global manager_pid
   if pid:
-    g_manager_pid = pid
+    manager_pid = pid
     return pid
 
   try:
-    os.kill(g_manager_pid, 0)
+    os.kill(manager_pid, 0)
     return True
 
   except:
