@@ -93,8 +93,7 @@ def prune():
     # other instances of itself.
     #
     if not misc.manager_is_running():
-      sys.exit(0)
-      #shutdown()
+      misc.shutdown()
 
     ctime = os.path.getctime(fname)
 

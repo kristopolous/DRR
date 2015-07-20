@@ -68,8 +68,10 @@ def all(table, field_list='*'):
   query = db['c'].execute('select %s from %s order by id asc' % (field_list, table))
   if column_count == 1:
     return [record[0] for record in query.fetchall()]
+
   else:
     return [record for record in query.fetchall()]
+
 
 def schema(table):
   """ Returns the schema for a given table """
@@ -77,6 +79,7 @@ def schema(table):
     return None 
 
   return [ key for key, value in SCHEMA[table] ]
+
 
 def connect():
   """
@@ -121,6 +124,7 @@ def shutdown():
   for instance in g_db.items():
     if 'conn' in instance:
       instance['conn'].close()
+
 
 def incr(key, value=1):
   """
@@ -212,10 +216,9 @@ def register_stream(name, start_unix, end_unix, start_minute, end_minute, week_n
 
   return res[0]
  
+
 def find_streams(start_time = False, end_time = False):
-  """
-  Find streams 
-  """
+  """ Find streams """
   db = connect()
   res = db['c'].execute('select * from streams').fetchall()
 
