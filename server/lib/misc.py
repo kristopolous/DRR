@@ -23,6 +23,10 @@ start_time = time.time()
 g_config = {}
 pid = {}
 
+def kill(who):
+  global queue
+  queue.put(('terminate', who))
+
 def set_config(config):
   global g_config
   g_config = config
@@ -90,6 +94,7 @@ def manager_is_running(pid=False):
 
   except:
     return False
+
 
 def change_proc_name(what):
   """
