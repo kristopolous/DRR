@@ -36,6 +36,23 @@ SCHEMA = {
    ]
 }
 
+def map(row_list, table):
+  mapped = []
+  my_schema = schema(table)
+
+  if type(row_list[0]) is str:
+    row_list = [row_list]
+
+  for row in row_list:
+    mapped_row = {}
+    for ix in range(len(my_schema)):
+      mapped_row[my_schema[ix]] = row[ix]
+
+    mapped.append(mapped_row)
+
+  return mapped
+
+
 def all(table, field_list='*'):
   """ Returns all entries from the sqlite3 database for a given table """
   db = connect()

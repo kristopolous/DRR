@@ -167,6 +167,7 @@ def cloud_get(path):
 
   return False
 
+
 def file_get_size(fname):
   """ Gets a file size or just plain guesses it if it doesn't exist yet. """
   if os.path.exists(fname):
@@ -208,12 +209,12 @@ def file_prune():
   if g_config['cloud']:
     cloud_cutoff = time.time() - g_config['cloudarchive'] * TS.ONE_DAY
 
-  # Dump old streams and slices
+  # Put thingies into the cloud.
   count = 0
   for fname in glob('*/*.mp3'):
     #
     # Depending on many factors this could be running for hours
-    # or even days.  We wnat to make sure this isn't a blarrrghhh
+    # or even days.  We want to make sure this isn't a blarrrghhh
     # zombie process or worse yet, still running and competing with
     # other instances of itself.
     #
@@ -239,16 +240,21 @@ def file_prune():
 
   # The map names are different since there may or may not be a corresponding
   # cloud thingie associated with it.
-  for fname in glob('*/*.map'):
-    if ctime < cutoff:
+  db = DB.connect()
+  unlink_list = db['c'].execute('select name from streams where created_at < (current_timestamp - ?)', (duration, )).fetchall()
 
-      # If there's a cloud account at all then we need to unlink the 
-      # equivalent mp3 file
-      if cloud_cutoff:
-        cloud_unlink(fname[:-4])
+  for fname in unlink_list:
+    # If there's a cloud account at all then we need to unlink the 
+    # equivalent mp3 file
+    if cloud_cutoff:
+      cloud_unlink(fname[:-4])
 
-      # now only after we've deleted from the cloud can we delete the local file
-      os.unlink(fname)
+    # now only after we've deleted from the cloud can we delete the local file
+    os.unlink(fname)
+
+  # After we remove these streams then we delete them from the db.
+  db['c'].execute('delete from streams where name in ("%s")' % ('","'.join(unlink_list)))
+  db['conn'].commit()
 
   logging.info("Found %d files older than %s days." % (count, g_config['archivedays']))
   return 0
@@ -271,6 +277,78 @@ def file_get(path):
 
     
 def file_find_streams(start_list, duration):
+  """
+  Given a start week minute this looks for streams in the storage 
+  directory that match it - regardless of duration ... so it may return
+  partial shows results.
+  """
+  global g_config
+
+  stream_list = []
+
+  if type(start_list) is int:
+    start_list = [start_list]
+
+  # Sort nominally - since we have unix time in the name, this should come out
+  # as sorted by time for us for free.
+  stitch_list = []
+  db = DB.connect()
+
+  # So we have a start list, we are about to query our database using the start_minute
+  # and end_minute field ... to get end_minue we need to make use of our duration.
+  #
+  # timeline ->
+  #
+  #          ###################           << Region we want
+  # start_sea#ch    end_search #           << Search
+  #          V                 V
+  # |     |     |     |     |     |     |  << Minute
+  #          a     b     b     c
+  #
+  # so we want 
+  #     (a) start_minute < start_search and end_minute >= start_search  ||
+  #     (b) start_minute > start_search and end_minute <= end_search  ||
+  #     (c) start_minute < end_search and end_minute >= end_search
+  #     
+  condition_list = []
+  for start in start_list:
+    end_search = (start + duration) % TS.MINUTES_PER_WEEK
+    condition_list.append('start_minute < %d and end_minute >= %d' % (start, start))
+    condition_list.append('start_minute > %d and end_minute <= %d' % (start, end_search))
+    condition_list.append('start_minute < %d and end_minute >= %d' % (end_search, end_search))
+
+  condition_query = "(%s)" % ') or ('.join(condition_list)
+  stream_list = DB.map(db['c'].execute("select * from streams where %s" % condition_query).fetchall(), 'streams')
+
+  print stream_list
+
+  for entry in stream_list:
+    i = audio.stream_info(filename, guess_time=g_config['cascadetime'])
+
+    if i['start_minute'] < next_valid_start_minute and i['week'] == current_week:
+      stitch_list.append(filename)
+      continue
+
+    # We are only looking for starting edges of the stream
+    #
+    # If we started recording before this is fine as long as we ended recording after our start
+    if (i['start_minute'] < start and i['end_minute'] > start) or (i['start_minute'] > start and i['start_minute'] < end):
+
+      fname = audio.stitch_and_slice(stitch_list, start, duration)
+      stitch_list = [filename]
+      next_valid_start_minute = (start + duration) % TS.MINUTES_PER_WEEK
+      current_week = i['week']
+
+      if fname:
+        stream_list.append(audio.stream_info(fname))
+
+  fname = audio.stitch_and_slice(stitch_list, start, duration)
+  if fname:
+    stream_list.append(audio.stream_info(fname))
+
+  return stream_list
+
+def file_find_streams_old(start_list, duration):
   """
   Given a start week minute this looks for streams in the storage 
   directory that match it - regardless of duration ... so it may return
@@ -1028,18 +1106,6 @@ def register_streams():
   return 0
 
 
-def make_maps():
-  pid = misc.change_proc_name("%s-mapmaker" % g_config['callsign'])
-  for fname in glob('streams/*.mp3'):
-
-    if not manager_is_running():
-      shutdown()
-
-    audio.crc(fname, only_check=True)
-
-  return 0
-
-
 def read_config(config):
   """
   Reads a configuration file. 
@@ -1202,9 +1268,8 @@ if __name__ == "__main__":
     read_config(args.config)      
     audio.set_config(g_config)
 
-    register_streams()
-    map_pid = Process(target=make_maps, args=())
-    map_pid.start()
+    register_pid = Process(target=register_streams, args=())
+    register_pid.start()
 
     pid = misc.change_proc_name("%s-manager" % g_config['callsign'])
 
