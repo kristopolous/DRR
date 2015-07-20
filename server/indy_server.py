@@ -689,8 +689,8 @@ def stream_manager():
 
     if last_prune < (time.time() - TS.ONE_DAY * g_config['pruneevery']):
       # We just assume it can do its business in under a day
-      prune_process = Process(target=cloud.prune)
-      prune_process.start()
+      misc.pid['prune'] = Process(target=cloud.prune)
+      misc.pid['prune'].start()
       last_prune = time.time()
 
     TS.get_offset()
