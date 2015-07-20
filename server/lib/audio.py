@@ -1,10 +1,11 @@
 #!/usr/bin/python -O
 import os
-import db as DB
+import math
 import gzip
 import marshal
 import re
 import logging
+import db as DB
 import lib.misc as misc
 import lib.file as cloud
 import lib.ts as TS
@@ -148,7 +149,7 @@ def crc(fname, blockcount=-1, only_check=False):
   # There's an additional precautions of looking for a string of 4 matches which
   # mitigates this even further
   #
-  read_size = 4
+  read_size = 8
 
   freqTable = [ 44100, 48000, 32000, 0 ]
 
@@ -335,8 +336,9 @@ def stitch_and_slice_process(file_list, start_minute, duration_minute):
 
   sliced_name = list_slice(
     list_in=stitched_list, 
-    start_minute=start_slice, 
-    duration_minute=duration_slice
+    name_out=name_out,
+    start_sec=start_slice*60, 
+    duration_sec=duration_slice*60,
   )
 
   return None
@@ -378,7 +380,7 @@ def list_slice(list_in, name_out, duration_sec, start_sec):
       duration_sec -= item['duration_sec'] 
 
     # try and get the mp3 referred to by the map file
-    fin = cloud.get(item['name'][:-4])
+    fin = cloud.get(item['name'].replace('.map',''))
 
     if fin:
       fin.seek(offset[frame_start])
@@ -411,7 +413,7 @@ def stitch(file_list, force_stitch=False):
   first = file_list[0]
   duration = 0
 
-  cloud.get(first['name'], do_open=False)
+  res = cloud.get(first['name'], do_open=False)
   crc32, offset = crc(first['name'])
 
   first['crc32'] = crc32
@@ -429,7 +431,11 @@ def stitch(file_list, force_stitch=False):
   duration += len(first['offset']) * FRAME_LENGTH
 
   for second in file_list[1:]:
-    cloud.get(second['name'], do_open=False)
+    res = cloud.get(second['name'], do_open=False)
+
+    if not res:
+      continue
+
     crc32, offset = crc(second['name'])
 
     second['crc32'] = crc32

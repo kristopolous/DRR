@@ -148,6 +148,8 @@ def file_find_and_make_slices(start_list, duration):
 
   # Start the creation of the mp3s
   for episode in by_episode:
+    #print [ (ep['name'], ep['start_minute']) for ep in episode ]
+
     # We blur the test start to a bigger window
     test_start = (episode[0]['start_minute'] / (60 * 4))
 
@@ -160,7 +162,7 @@ def file_find_and_make_slices(start_list, duration):
         # Under these conditions we can say that this episode
         # can be associated with this particular start time
 
-        print start, duration, episode
+        #print start, duration, episode
         audio.stitch_and_slice(episode, start, duration)
         break
 
