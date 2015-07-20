@@ -40,6 +40,9 @@ def map(row_list, table):
   mapped = []
   my_schema = schema(table)
 
+  if not row_list:
+    return row_list
+
   if type(row_list[0]) is str:
     row_list = [row_list]
 
