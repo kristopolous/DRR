@@ -92,7 +92,11 @@ def shutdown(signal=15, frame=False):
       except:
         pass
 
-    os.unlink(PIDFILE_WEBSERVER)
+    try:  
+      os.unlink(PIDFILE_WEBSERVER)
+
+    except:
+      pass
 
   title = SP.getproctitle()
 
