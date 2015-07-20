@@ -33,10 +33,20 @@ SCHEMA = {
    ]
 }
 
-def all(table):
+def all(table, field_list='*'):
   """ Returns all entries from the sqlite3 database for a given table """
-  db = DB.connect()
-  return [record for record in db['c'].execute('select * from ?', table).fetchall()]
+  db = connect()
+
+  column_count = 1
+  if type(field_list) is not str:
+    column_count = len(field_list)
+    field_list = ','.join(field_list)
+
+  query = db['c'].execute('select %s from %s order by id asc' % (field_list, table))
+  if column_count == 1:
+    return [record[0] for record in query.fetchall()]
+  else:
+    return [record for record in query.fetchall()]
 
 def schema(table):
   """ Returns the schema for a given table """

@@ -998,7 +998,8 @@ def stream_manager():
 def register_streams():
   pid = misc.change_proc_name("%s-streamregister" % g_config['callsign'])
   """ First we get the streams """
-  all_streams = DB.all('streams')
+  all_streams = DB.all('streams', ['name'])
+  print all_streams
   for fname in glob('streams/*.mp3') + glob('streams/*.map'):
 
     if not manager_is_running():
@@ -1019,6 +1020,7 @@ def make_maps():
     audio.crc(fname, only_check=True)
 
   return 0
+
 
 def read_config(config):
   """
@@ -1182,6 +1184,7 @@ if __name__ == "__main__":
     read_config(args.config)      
     audio.set_config(g_config)
 
+    register_streams()
     map_pid = Process(target=make_maps, args=())
     map_pid.start()
 
