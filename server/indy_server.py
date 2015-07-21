@@ -170,7 +170,7 @@ def file_find_and_make_slices(start_list, duration):
   return stream_list
 
 
-def server_generate_xml(showname, feed_list, duration, weekday_list, start, duration_string):
+def server_generate_xml(showname, feed_list, duration_min, weekday_list, start, duration_string):
   """
   This takes a number of params:
  
@@ -248,9 +248,9 @@ def server_generate_xml(showname, feed_list, duration, weekday_list, start, dura
 
     item = ET.SubElement(channel, 'item')
 
-    itunes_duration = "%02d:00" % (duration % 60)
-    if duration > 60:
-      itunes_duration = "%d:%s" % (int(math.floor(duration / 60 )), itunes_duration)    
+    itunes_duration = "%02d:00" % (duration_min % 60)
+    if duration_min > 60:
+      itunes_duration = "%d:%s" % (int(math.floor(duration_min / 60 )), itunes_duration)    
 
     for k,v in {
       '{%s}explicit' % nsmap['itunes']: 'no', 
@@ -280,7 +280,7 @@ def server_generate_xml(showname, feed_list, duration, weekday_list, start, dura
     # The length of the audio we will just take as the duration
     content = ET.SubElement(item, 'enclosure')
     content.attrib['url'] = link
-    content.attrib['length'] = str(duration * 60)
+    content.attrib['length'] = str(duration_min * 60)
     content.attrib['type'] = 'audio/mpeg3'
 
   tree = ET.ElementTree(root)
@@ -461,8 +461,8 @@ def server_manager(config):
     return jsonify(stats), 200
   
 
-  @app.route('/<weekday>/<start>/<duration>/<showname>')
-  def stream(weekday, start, duration, showname):
+  @app.route('/<weekday>/<start>/<duration_string>/<showname>')
+  def stream(weekday, start, duration_string, showname):
     """
     Returns an xml file based on the weekday, start and duration
     from the front end.
@@ -471,32 +471,32 @@ def server_manager(config):
     # Supports multiple weekdays
     weekday_list = weekday.split(',')
 
-    duration_string = duration
-
     # Duration is expressed either in minutes or in \d+hr\d+ minute
     re_minute = re.compile('^(\d+)$')
     re_hr_solo = re.compile('^(\d+)hr$', re.I)
     re_hr_min = re.compile('^(\d+)hr(\d+).*$', re.I)
 
-    res = re_minute.match(duration)
+    duration_min = False
+
+    res = re_minute.match(duration_string)
     if res:
-      duration = int(res.groups()[0])
+      duration_min = int(res.groups()[0])
 
     else:
-      res = re_hr_solo.match(duration)
+      res = re_hr_solo.match(duration_string)
 
       if res:
-        duration = int(res.groups()[0]) * 60
+        duration_min = int(res.groups()[0]) * 60
 
       else:
-        res = re_hr_min.match(duration)
+        res = re_hr_min.match(duration_string)
 
         if res:
-          duration = int(res.groups()[0]) * 60 + int(res.groups()[1])
+          duration_min = int(res.groups()[0]) * 60 + int(res.groups()[1])
 
     # This means we failed to parse
-    if type(duration) is str:
-      return server_error('duration "%s" is not set correctly' % duration)
+    if not duration_min:
+      return server_error('duration "%s" is not set correctly' % duration_string)
 
     #
     # See https://github.com/kristopolous/DRR/issues/22:
@@ -521,19 +521,19 @@ def server_manager(config):
 
     # This will register the intent if needed for future recordings
     # (that is if we are in ondemand mode)
-    DB.register_intent(start_time_list, duration)
+    DB.register_intent(start_time_list, duration_min)
 
     # Look for streams that we have which match this query and duration.
     # This will also create slices if necessary in a sub process.
     # The list of files that returns will include this not-yet-created
     # file-name as essentially a "promise" to when it will be made.
-    feed_list = file_find_and_make_slices(start_time_list, duration)
+    feed_list = file_find_and_make_slices(start_time_list, duration_min)
 
     # Then, taking those two things, make a feed list from them.
     return server_generate_xml(
       showname=showname, 
       feed_list=feed_list, 
-      duration=duration, 
+      duration_min=duration_min, 
       weekday_list=weekday_list, 
       start=start, 
       duration_string=duration_string
