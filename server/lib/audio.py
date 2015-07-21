@@ -411,10 +411,20 @@ def stitch(file_list, force_stitch=False):
   together by looking at their crc32 checksums of the data payload in the blocks.
   """
 
-  first = file_list[0]
   duration = 0
 
-  res = cloud.get(first['name'], do_open=False)
+  start_index = 0
+
+  while start_index < len(file_list):
+    first = file_list[start_index]
+    res = cloud.get(first['name'], do_open=False)
+    start_index += 1
+    if res: break
+
+  if start_index == len(file_index):
+    logging.error("Unable to find any files matching in the list for stitching.")
+    return False
+
   crc32, offset = crc(first['name'])
 
   first['crc32'] = crc32
@@ -431,7 +441,7 @@ def stitch(file_list, force_stitch=False):
 
   duration += len(first['offset']) * FRAME_LENGTH
 
-  for second in file_list[1:]:
+  for second in file_list[start_index:]:
     res = cloud.get(second['name'], do_open=False)
 
     if not res:
