@@ -316,9 +316,10 @@ def stitch_and_slice_process(file_list, start_minute, duration_minute):
     logging.warn("Unable to stitch file list")
     return False
 
+  print info, start_minute
   # After we've stitched together the audio then we start our slice
   # by figuring our the start_minute of the slice, versus ours
-  start_slice = max(start_minute - info['start_minute'], 0)
+  start_slice = start_minute #max(start_minute - info['start_minute'], 0)
 
   # Now we need to take the duration of the stream we want, in minutes, and then
   # make sure that we don't exceed the length of the file.
@@ -327,8 +328,8 @@ def stitch_and_slice_process(file_list, start_minute, duration_minute):
   sliced_name = list_slice(
     list_in=stitched_list, 
     name_out=name_out,
-    start_sec=start_slice*60, 
-    duration_sec=duration_slice*60,
+    start_sec=start_slice*60.0, 
+    duration_sec=duration_slice*60.0,
   )
 
   return None
@@ -349,6 +350,7 @@ def list_slice(list_in, name_out, duration_sec, start_sec):
 
   out = open(name_out, 'wb+')
 
+  print 'slice', duration_sec, start_sec
   for ix in range(0, len(list_in)):
     item = list_in[ix]
 
