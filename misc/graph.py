@@ -53,7 +53,7 @@ flag = False
 
 mapper = [0] * 10080
 for start, stop in region_list:
-  for i in range(start, stop):
+  for i in range(int(start), int(stop)):
     mapper[i] += 1
 
 result = filter(lambda x: x == 0, mapper)
