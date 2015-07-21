@@ -1700,11 +1700,21 @@ form#donate {
 #rss-top {
   text-align: left;
 }
+/* from http://stackoverflow.com/questions/10698900/css-two-column-full-width */
+#rss-img {
+  float: left;
+  width: 64px;
+  min-height: 64px;
+}
 #rss-header {
   line-height: 1em;
-  display: inline-block;
   text-align: left;
   font-weight: normal;
+  margin-left: 64px;
+  min-height: 64px;
+}
+#rss-title {
+  text-align: left;
 }
 #rss-time { 
   display: block; 
