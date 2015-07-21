@@ -24,12 +24,6 @@ FRAME_LENGTH = (1152.0 / 44100)
 # ten times that and cross our fingers
 #
 MAX_HEADER_ATTEMPTS = 2048
-g_config = {}
-
-def set_config(config):
-  global g_config
-  g_config = config
-
 
 def get_map(fname):
   """ Retrieves a map file associated with the mp3 """
@@ -346,8 +340,7 @@ def list_slice(list_in, name_out, duration_sec, start_sec):
   Takes some stitch list, list_in and then create a new one based on the start and end times 
   by finding the closest frames and just doing an extraction.
   """
-  global g_config
-  pid = misc.change_proc_name("%s-audioslice" % g_config['callsign'])
+  pid = misc.change_proc_name("%s-audioslice" % misc.config['callsign'])
 
   out = open(name_out, 'wb+')
 
