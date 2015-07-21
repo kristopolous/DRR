@@ -31,6 +31,19 @@ def set_config(config):
   g_config = config
 
 
+def get_map(fname):
+  """ Retrieves a map file associated with the mp3 """
+  map_name = fname if fname.endswith('.map') else fname + '.map'
+
+  if os.path.exists(map_name):
+    f = gzip.open(map_name, 'r')
+    ret = marshal.loads(f.read())
+    f.close()
+    return ret
+
+  return None, None
+
+    
 def list_info(file_list):
   """ A version of the stream_info that accepts a list """
   info = stream_info(file_list[0]['name'])
@@ -112,6 +125,17 @@ def crc(fname, blockcount=-1):
   are audio blocks, construct a crc32 mapping of some given beginning offset of the audio
   data ... this is intended for stitching.
   """
+  # Simply make sure that there is a map associated with the
+  # mp3.  Otherwise create one.
+  map_name = fname if fname.endswith('.map') else fname + '.map'
+
+  if only_check and os.path.exists(map_name):
+    return True
+
+  crc32, offset = get_map(fname)
+  if crc32 is not None:
+    return crc32, offset
+
   frame_sig = []
   start_byte = []
   first_header_seen = False
