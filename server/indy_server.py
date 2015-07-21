@@ -109,7 +109,7 @@ def file_find_and_make_slices(start_list, duration):
   for start in start_list:
     end_search = (start + duration) % TS.MINUTES_PER_WEEK
     condition_list.append('start_minute < %d and end_minute >= %d' % (start, start))
-    condition_list.append('start_minute > %d and end_minute <= %d' % (start, end_search))
+    condition_list.append('start_minute > %d and end_minute >= %d and end_minute <= %d' % (start, start, end_search))
     condition_list.append('start_minute < %d and end_minute >= %d' % (end_search, end_search))
 
   condition_query = "(%s)" % ') or ('.join(condition_list)
@@ -141,14 +141,13 @@ def file_find_and_make_slices(start_list, duration):
   if len(episode):
     by_episode.append(episode)
 
-  for ep in by_episode:
-    # We get the name that it will be and then append that
-    fname = audio.stream_name(ep, start, duration)
-    stream_list.append(audio.stream_info(fname))
-
+  #print len(by_episode), condition_query
   # Start the creation of the mp3s
   for episode in by_episode:
-    #print [ (ep['name'], ep['start_minute']) for ep in episode ]
+    #print [ (ep['name'], ep['start_minute'], ep['end_minute']) for ep in episode ]
+    # We get the name that it will be and then append that
+    fname = audio.stream_name(episode, start, duration)
+    stream_list.append(audio.stream_info(fname))
 
     # We blur the test start to a bigger window
     test_start = (episode[0]['start_minute'] / (60 * 4))
