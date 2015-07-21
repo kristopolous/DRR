@@ -285,16 +285,14 @@ def get_time(fname):
 
   Returns the audio time in seconds
   """
-  # In this fast method we get the first two frames, find out the offset
-  # difference between them, take the length of the file, divide it by that
-  # and then presume that will be the framecount
-  bitrate = int(DB.get('bitrate', use_cache=True))
-  if os.path.exists(fname) and bitrate > 0:
-    return os.path.getsize(fname) / (bitrate * (1000 / 8))
+  if fname.endswith('map'):
+    crc32, offset = get_map(fname)
+    return FRAME_LENGTH * len(offset)
 
-  crc32, offset = crc(fname)
-
-  return FRAME_LENGTH * len(offset)
+  else:
+    bitrate = int(DB.get('bitrate', use_cache=True))
+    if os.path.exists(fname) and bitrate > 0:
+      return os.path.getsize(fname) / (bitrate * (1000 / 8))
 
 
 def stitch_and_slice_process(file_list, start_minute, duration_minute):
