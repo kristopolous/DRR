@@ -163,6 +163,7 @@ def file_find_and_make_slices(start_list, duration):
         # We get the name that it will be and then append that
         stream_list.append(audio.stream_info(fname))
 
+        print offset_start, duration, episode
         audio.stitch_and_slice(episode, offset_start, duration)
         break
 
