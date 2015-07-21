@@ -49,6 +49,7 @@ def unlink(path):
 
 
 def put(path):
+  """ Place a file, given a path, in the cloud """
   blob_service, container = connect()
 
   if blob_service:
@@ -192,6 +193,7 @@ def get_size(fname):
 
  
 def download(path):
+  """ Download a file from the cloud and put it in a servicable place """
   blob_service, container = connect()
 
   if blob_service:
