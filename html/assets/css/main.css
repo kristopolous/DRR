@@ -264,27 +264,11 @@
 		height: 0;
 	}
 
-	.row.uniform > * > :first-child {
-		margin-top: 0;
-	}
-
-	.row.uniform > * > :last-child {
-		margin-bottom: 0;
-	}
-
 	.row.\30 \25 > * {
 		padding: 0px 0 0 0px;
 	}
 
 	.row.\30 \25 {
-		margin: 0px 0 -1px 0px;
-	}
-
-	.row.uniform.\30 \25 > * {
-		padding: 0px 0 0 0px;
-	}
-
-	.row.uniform.\30 \25 {
 		margin: 0px 0 -1px 0px;
 	}
 
@@ -296,27 +280,11 @@
 		margin: -30px 0 -1px -30px;
 	}
 
-	.row.uniform > * {
-		padding: 30px 0 0 30px;
-	}
-
-	.row.uniform {
-		margin: -30px 0 -1px -30px;
-	}
-
 	.row.\32 00\25 > * {
 		padding: 60px 0 0 60px;
 	}
 
 	.row.\32 00\25 {
-		margin: -60px 0 -1px -60px;
-	}
-
-	.row.uniform.\32 00\25 > * {
-		padding: 60px 0 0 60px;
-	}
-
-	.row.uniform.\32 00\25 {
 		margin: -60px 0 -1px -60px;
 	}
 
@@ -328,14 +296,6 @@
 		margin: -45px 0 -1px -45px;
 	}
 
-	.row.uniform.\31 50\25 > * {
-		padding: 45px 0 0 45px;
-	}
-
-	.row.uniform.\31 50\25 {
-		margin: -45px 0 -1px -45px;
-	}
-
 	.row.\35 0\25 > * {
 		padding: 15px 0 0 15px;
 	}
@@ -344,27 +304,11 @@
 		margin: -15px 0 -1px -15px;
 	}
 
-	.row.uniform.\35 0\25 > * {
-		padding: 15px 0 0 15px;
-	}
-
-	.row.uniform.\35 0\25 {
-		margin: -15px 0 -1px -15px;
-	}
-
 	.row.\32 5\25 > * {
 		padding: 7.5px 0 0 7.5px;
 	}
 
 	.row.\32 5\25 {
-		margin: -7.5px 0 -1px -7.5px;
-	}
-
-	.row.uniform.\32 5\25 > * {
-		padding: 7.5px 0 0 7.5px;
-	}
-
-	.row.uniform.\32 5\25 {
 		margin: -7.5px 0 -1px -7.5px;
 	}
 
@@ -509,27 +453,11 @@
 			margin: -30px 0 -1px -30px;
 		}
 
-		.row.uniform > * {
-			padding: 30px 0 0 30px;
-		}
-
-		.row.uniform {
-			margin: -30px 0 -1px -30px;
-		}
-
 		.row.\32 00\25 > * {
 			padding: 60px 0 0 60px;
 		}
 
 		.row.\32 00\25 {
-			margin: -60px 0 -1px -60px;
-		}
-
-		.row.uniform.\32 00\25 > * {
-			padding: 60px 0 0 60px;
-		}
-
-		.row.uniform.\32 00\25 {
 			margin: -60px 0 -1px -60px;
 		}
 
@@ -541,14 +469,6 @@
 			margin: -45px 0 -1px -45px;
 		}
 
-		.row.uniform.\31 50\25 > * {
-			padding: 45px 0 0 45px;
-		}
-
-		.row.uniform.\31 50\25 {
-			margin: -45px 0 -1px -45px;
-		}
-
 		.row.\35 0\25 > * {
 			padding: 15px 0 0 15px;
 		}
@@ -557,27 +477,11 @@
 			margin: -15px 0 -1px -15px;
 		}
 
-		.row.uniform.\35 0\25 > * {
-			padding: 15px 0 0 15px;
-		}
-
-		.row.uniform.\35 0\25 {
-			margin: -15px 0 -1px -15px;
-		}
-
 		.row.\32 5\25 > * {
 			padding: 7.5px 0 0 7.5px;
 		}
 
 		.row.\32 5\25 {
-			margin: -7.5px 0 -1px -7.5px;
-		}
-
-		.row.uniform.\32 5\25 > * {
-			padding: 7.5px 0 0 7.5px;
-		}
-
-		.row.uniform.\32 5\25 {
 			margin: -7.5px 0 -1px -7.5px;
 		}
 
@@ -724,27 +628,11 @@
 			margin: -30px 0 -1px -30px;
 		}
 
-		.row.uniform > * {
-			padding: 30px 0 0 30px;
-		}
-
-		.row.uniform {
-			margin: -30px 0 -1px -30px;
-		}
-
 		.row.\32 00\25 > * {
 			padding: 60px 0 0 60px;
 		}
 
 		.row.\32 00\25 {
-			margin: -60px 0 -1px -60px;
-		}
-
-		.row.uniform.\32 00\25 > * {
-			padding: 60px 0 0 60px;
-		}
-
-		.row.uniform.\32 00\25 {
 			margin: -60px 0 -1px -60px;
 		}
 
@@ -756,14 +644,6 @@
 			margin: -45px 0 -1px -45px;
 		}
 
-		.row.uniform.\31 50\25 > * {
-			padding: 45px 0 0 45px;
-		}
-
-		.row.uniform.\31 50\25 {
-			margin: -45px 0 -1px -45px;
-		}
-
 		.row.\35 0\25 > * {
 			padding: 15px 0 0 15px;
 		}
@@ -772,27 +652,11 @@
 			margin: -15px 0 -1px -15px;
 		}
 
-		.row.uniform.\35 0\25 > * {
-			padding: 15px 0 0 15px;
-		}
-
-		.row.uniform.\35 0\25 {
-			margin: -15px 0 -1px -15px;
-		}
-
 		.row.\32 5\25 > * {
 			padding: 7.5px 0 0 7.5px;
 		}
 
 		.row.\32 5\25 {
-			margin: -7.5px 0 -1px -7.5px;
-		}
-
-		.row.uniform.\32 5\25 > * {
-			padding: 7.5px 0 0 7.5px;
-		}
-
-		.row.uniform.\32 5\25 {
 			margin: -7.5px 0 -1px -7.5px;
 		}
 
@@ -939,27 +803,11 @@
 			margin: -30px 0 -1px -30px;
 		}
 
-		.row.uniform > * {
-			padding: 30px 0 0 30px;
-		}
-
-		.row.uniform {
-			margin: -30px 0 -1px -30px;
-		}
-
 		.row.\32 00\25 > * {
 			padding: 60px 0 0 60px;
 		}
 
 		.row.\32 00\25 {
-			margin: -60px 0 -1px -60px;
-		}
-
-		.row.uniform.\32 00\25 > * {
-			padding: 60px 0 0 60px;
-		}
-
-		.row.uniform.\32 00\25 {
 			margin: -60px 0 -1px -60px;
 		}
 
@@ -971,14 +819,6 @@
 			margin: -45px 0 -1px -45px;
 		}
 
-		.row.uniform.\31 50\25 > * {
-			padding: 45px 0 0 45px;
-		}
-
-		.row.uniform.\31 50\25 {
-			margin: -45px 0 -1px -45px;
-		}
-
 		.row.\35 0\25 > * {
 			padding: 15px 0 0 15px;
 		}
@@ -987,27 +827,11 @@
 			margin: -15px 0 -1px -15px;
 		}
 
-		.row.uniform.\35 0\25 > * {
-			padding: 15px 0 0 15px;
-		}
-
-		.row.uniform.\35 0\25 {
-			margin: -15px 0 -1px -15px;
-		}
-
 		.row.\32 5\25 > * {
 			padding: 7.5px 0 0 7.5px;
 		}
 
 		.row.\32 5\25 {
-			margin: -7.5px 0 -1px -7.5px;
-		}
-
-		.row.uniform.\32 5\25 > * {
-			padding: 7.5px 0 0 7.5px;
-		}
-
-		.row.uniform.\32 5\25 {
 			margin: -7.5px 0 -1px -7.5px;
 		}
 
@@ -1154,27 +978,11 @@
 			margin: -20px 0 -1px -20px;
 		}
 
-		.row.uniform > * {
-			padding: 20px 0 0 20px;
-		}
-
-		.row.uniform {
-			margin: -20px 0 -1px -20px;
-		}
-
 		.row.\32 00\25 > * {
 			padding: 40px 0 0 40px;
 		}
 
 		.row.\32 00\25 {
-			margin: -40px 0 -1px -40px;
-		}
-
-		.row.uniform.\32 00\25 > * {
-			padding: 40px 0 0 40px;
-		}
-
-		.row.uniform.\32 00\25 {
 			margin: -40px 0 -1px -40px;
 		}
 
@@ -1186,14 +994,6 @@
 			margin: -30px 0 -1px -30px;
 		}
 
-		.row.uniform.\31 50\25 > * {
-			padding: 30px 0 0 30px;
-		}
-
-		.row.uniform.\31 50\25 {
-			margin: -30px 0 -1px -30px;
-		}
-
 		.row.\35 0\25 > * {
 			padding: 10px 0 0 10px;
 		}
@@ -1202,27 +1002,11 @@
 			margin: -10px 0 -1px -10px;
 		}
 
-		.row.uniform.\35 0\25 > * {
-			padding: 10px 0 0 10px;
-		}
-
-		.row.uniform.\35 0\25 {
-			margin: -10px 0 -1px -10px;
-		}
-
 		.row.\32 5\25 > * {
 			padding: 5px 0 0 5px;
 		}
 
 		.row.\32 5\25 {
-			margin: -5px 0 -1px -5px;
-		}
-
-		.row.uniform.\32 5\25 > * {
-			padding: 5px 0 0 5px;
-		}
-
-		.row.uniform.\32 5\25 {
 			margin: -5px 0 -1px -5px;
 		}
 
@@ -1369,27 +1153,11 @@
 			margin: -20px 0 -1px -20px;
 		}
 
-		.row.uniform > * {
-			padding: 20px 0 0 20px;
-		}
-
-		.row.uniform {
-			margin: -20px 0 -1px -20px;
-		}
-
 		.row.\32 00\25 > * {
 			padding: 40px 0 0 40px;
 		}
 
 		.row.\32 00\25 {
-			margin: -40px 0 -1px -40px;
-		}
-
-		.row.uniform.\32 00\25 > * {
-			padding: 40px 0 0 40px;
-		}
-
-		.row.uniform.\32 00\25 {
 			margin: -40px 0 -1px -40px;
 		}
 
@@ -1401,14 +1169,6 @@
 			margin: -30px 0 -1px -30px;
 		}
 
-		.row.uniform.\31 50\25 > * {
-			padding: 30px 0 0 30px;
-		}
-
-		.row.uniform.\31 50\25 {
-			margin: -30px 0 -1px -30px;
-		}
-
 		.row.\35 0\25 > * {
 			padding: 10px 0 0 10px;
 		}
@@ -1417,27 +1177,11 @@
 			margin: -10px 0 -1px -10px;
 		}
 
-		.row.uniform.\35 0\25 > * {
-			padding: 10px 0 0 10px;
-		}
-
-		.row.uniform.\35 0\25 {
-			margin: -10px 0 -1px -10px;
-		}
-
 		.row.\32 5\25 > * {
 			padding: 5px 0 0 5px;
 		}
 
 		.row.\32 5\25 {
-			margin: -5px 0 -1px -5px;
-		}
-
-		.row.uniform.\32 5\25 > * {
-			padding: 5px 0 0 5px;
-		}
-
-		.row.uniform.\32 5\25 {
 			margin: -5px 0 -1px -5px;
 		}
 
@@ -1584,27 +1328,11 @@
 			margin: -20px 0 -1px -20px;
 		}
 
-		.row.uniform > * {
-			padding: 20px 0 0 20px;
-		}
-
-		.row.uniform {
-			margin: -20px 0 -1px -20px;
-		}
-
 		.row.\32 00\25 > * {
 			padding: 40px 0 0 40px;
 		}
 
 		.row.\32 00\25 {
-			margin: -40px 0 -1px -40px;
-		}
-
-		.row.uniform.\32 00\25 > * {
-			padding: 40px 0 0 40px;
-		}
-
-		.row.uniform.\32 00\25 {
 			margin: -40px 0 -1px -40px;
 		}
 
@@ -1616,14 +1344,6 @@
 			margin: -30px 0 -1px -30px;
 		}
 
-		.row.uniform.\31 50\25 > * {
-			padding: 30px 0 0 30px;
-		}
-
-		.row.uniform.\31 50\25 {
-			margin: -30px 0 -1px -30px;
-		}
-
 		.row.\35 0\25 > * {
 			padding: 10px 0 0 10px;
 		}
@@ -1632,27 +1352,11 @@
 			margin: -10px 0 -1px -10px;
 		}
 
-		.row.uniform.\35 0\25 > * {
-			padding: 10px 0 0 10px;
-		}
-
-		.row.uniform.\35 0\25 {
-			margin: -10px 0 -1px -10px;
-		}
-
 		.row.\32 5\25 > * {
 			padding: 5px 0 0 5px;
 		}
 
 		.row.\32 5\25 {
-			margin: -5px 0 -1px -5px;
-		}
-
-		.row.uniform.\32 5\25 > * {
-			padding: 5px 0 0 5px;
-		}
-
-		.row.uniform.\32 5\25 {
 			margin: -5px 0 -1px -5px;
 		}
 
@@ -2154,19 +1858,6 @@
 				width: 1em;
 				z-index: 1;
 			}
-
-      /*
-			.image.icon:hover:before {
-				-moz-transform: translateZ(1em);
-				-webkit-transform: translateZ(1em);
-				-ms-transform: translateZ(1em);
-				transform: translateZ(1em);
-			}
-
-			.image.icon:hover:after {
-				opacity: 1;
-			}
-      */
 
 	span.image.icon {
 		cursor: default;
