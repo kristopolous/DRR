@@ -146,7 +146,7 @@ if(isset($_GET['callsign'])) {
 
           <p>We also accept <a href=https://github.com/kristopolous/DRR/wiki/How-To-Donate>donations of VPS nodes</a> and money. Thanks for supporting indy radio in the 21st century.
           <div class="active-list">
-            <a href='https://github.com/kristopolous/DRR/wiki/Join-the-Federation' class='button'>Join The Federation</a> or
+            <a href='https://github.com/kristopolous/DRR/wiki/Join-the-Federation' class='button'>Join The Federation</a> <span id='or'>or</span> 
             <a name="donate"></a>
             <form action="https://www.paypal.com/cgi-bin/webscr" method="post" id="donate">
               <input type="hidden" name="cmd" value="_s-xclick">
