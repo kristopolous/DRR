@@ -711,7 +711,7 @@ def stream_manager():
 
     if last_prune < (time.time() - TS.ONE_DAY * g_config['pruneevery']):
       # We just assume it can do its business in under a day
-      misc.pid['prune'] = Process(target=cloud.prune)
+      misc.pid['prune'] = Process(target=cloud.prune, args=(misc.lock,))
       misc.pid['prune'].start()
       last_prune = time.time()
 
@@ -823,10 +823,12 @@ def stream_manager():
     time.sleep(cycle_time)
 
 
-def register_streams():
+def register_streams(lock):
   """ Find the local streams and make sure they are all registered in the sqlite3 database """
 
   pid = misc.change_proc_name("%s-streamregister" % g_config['callsign'])
+
+  lock.acquire()
 
   # Get the existing streams as a set
   all_registered = Set(DB.all('streams', ['name']))
@@ -856,6 +858,7 @@ def register_streams():
 
       audio.crc(fname, only_check=True)
 
+  lock.release()
   misc.kill('register')
 
 
@@ -1024,7 +1027,7 @@ if __name__ == "__main__":
     cloud.set_config(g_config)
     misc.set_config(g_config)
 
-    misc.pid['register'] = Process(target=register_streams, args=())
+    misc.pid['register'] = Process(target=register_streams, args=(misc.lock,))
     misc.pid['register'].start()
 
     pid = misc.change_proc_name("%s-manager" % g_config['callsign'])

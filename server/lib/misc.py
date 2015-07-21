@@ -6,7 +6,7 @@ import time
 import logging
 import sys
 import lib.db as DB
-from multiprocessing import Process, Queue
+from multiprocessing import Process, Queue, Lock
 
 #
 # Maintain a pidfile for the manager and the webserver (which
@@ -22,6 +22,7 @@ queue = Queue()
 start_time = time.time()
 config = {}
 pid = {}
+lock = Lock()
 
 def kill(who):
   global queue

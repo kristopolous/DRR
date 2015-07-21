@@ -73,12 +73,13 @@ def put(path):
   return False
 
 
-def prune():
+def prune(lock):
   """ Gets rid of files older than archivedays - cloud stores things if relevant """
 
   global g_config
   pid = misc.change_proc_name("%s-cleanup" % g_config['callsign'])
 
+  lock.acquire()
   db = DB.connect()
 
   duration = g_config['archivedays'] * TS.ONE_DAY
@@ -136,6 +137,7 @@ def prune():
   db['conn'].commit()
 
   logging.info("Found %d files older than %s days." % (count, g_config['archivedays']))
+  lock.release()
   misc.kill('prune') 
 
 
