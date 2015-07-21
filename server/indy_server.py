@@ -160,8 +160,9 @@ def file_find_and_make_slices(start_list, duration):
         # Under these conditions we can say that this episode
         # can be associated with this particular start time
 
-        #print start, duration, episode
-        audio.stitch_and_slice(episode, start, duration)
+        print start, duration, episode
+        #print  start - episode[0]['start_minute'], duration
+        audio.stitch_and_slice(episode, start - episode[0]['start_minute'], duration)
         break
 
   return stream_list
