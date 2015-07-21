@@ -56,6 +56,10 @@ for start, stop in region_list:
   for i in range(start, stop):
     mapper[i] += 1
 
+result = filter(lambda x: x == 0, mapper)
+print ""
+print "coverage:", 100 * (1 - (len(result) / 10080.0))
+
 def ts_row(parts):
   last_hr = -1 
   sys.stdout.write("+-")
