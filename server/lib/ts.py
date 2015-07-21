@@ -2,12 +2,19 @@
 import re
 import db as DB
 import logging
+import time
+import misc 
 from datetime import datetime, timedelta, date
 
 # Everything is presumed to be weekly and on the minute
 # scale. We use this to do wrap around when necessary
 MINUTES_PER_WEEK = 10080
 ONE_DAY = 60 * 60 * 24
+
+def now():
+  """ Returns the time.time() equivalent given the offset of the station """
+  return datetime.utcnow() + timedelta(minutes=get_offset())
+
 
 def to_minute(unix_time):
   """ Takes a given unix time and finds the week minute corresponding to it. """
@@ -16,17 +23,20 @@ def to_minute(unix_time):
 
   return unix_time.weekday() * (24.0 * 60) + unix_time.hour * 60 + unix_time.minute + (unix_time.second / 60.0)
 
+
 def sec_now(offset_sec=0):
   """ 
   Returns the unix time with respect to the timezone of the station being recorded.
   
   Accepts an optional offset_sec to forward the time into the future
   """
-  return int((datetime.utcnow() + timedelta(seconds=offset_sec, minutes=get_offset())).strftime('%s'))
+  return int((now() + timedelta(seconds=offset_sec)).strftime('%s'))
+
 
 def minute_now():
   """ Returns the mod 10080 week minute with respect to the timezone of the station being recorded """
-  return to_minute(datetime.utcnow() + timedelta(minutes=get_offset()))
+  return to_minute(now())
+
 
 def to_utc(day_str, hour):
   """
@@ -34,8 +44,6 @@ def to_utc(day_str, hour):
   and a 12 hour time hh:mm [ap]m and converts it to our absolute units
   with respect to the timestamp in the configuration file
   """
-  global g_config
-
   try:
     day_number = ['mon','tue','wed','thu','fri','sat','sun'].index(day_str.lower())
 
@@ -74,14 +82,13 @@ def get_offset(force=False):
 
   Returns an int second offset
   """
-
   offset = DB.get('offset', expiry=ONE_DAY)
   if not offset or force:
 
     when = int(time.time())
 
     api_key = 'AIzaSyBkyEMoXrSYTtIi8bevEIrSxh1Iig5V_to'
-    url = "https://maps.googleapis.com/maps/api/timezone/json?location=%s,%s&timestamp=%d&key=%s" % (g_config['lat'], g_config['long'], when, api_key)
+    url = "https://maps.googleapis.com/maps/api/timezone/json?location=%s,%s&timestamp=%d&key=%s" % (misc.config['lat'], misc.config['long'], when, api_key)
    
     stream = urllib2.urlopen(url)
     data = stream.read()
