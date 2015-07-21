@@ -69,15 +69,22 @@ for station in all_stations:
   try:
     start = time.time()
 
-    # Take out the \n (we'll be putting it in below)
-    sys.stdout.write("%s " % url)
+    # If we are just looking at one station, then we may want to 
+    # look at this data as JSON, so we suppress any superfluous output
+    if len(all_stations) > 1:
+      # Take out the \n (we'll be putting it in below)
+      sys.stdout.write("%s " % url)
 
     stream = urllib2.urlopen("http://%s/%s" % (url, args.query), timeout=15)
     data = stream.read()
 
     stop = time.time()
 
-    print "[ %d ]\n%s" % (stop - start, data)
+    if len(all_stations) == 1:
+      print data
+       
+    else:
+      print "[ %d ]\n%s" % (stop - start, data)
 
     db['c'].execute('update stations set active = 1, latency = latency + ?, pings = pings + 1, last_seen = current_timestamp where id = ?', ( str(stop - start), str(station[ID]) ))
 
