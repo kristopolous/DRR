@@ -176,13 +176,13 @@ if(isset($_GET['callsign'])) {
     </div>
     <script type='text/template' id='tpl-podcast'>
       <span id='rss-top'>
-        <span>
+        <div id='rss-img'>
           <img src='/images/rss_64.png'>
-        </span>
-        <span id='rss-header'>
+        </div>
+        <div id='rss-header'>
           <h3 id='rss-title'><%= name %></h3>
           <span id='rss-time'><%= day %> at <%= time %> on <%= station %></span>
-        </span>
+        </div>
       </span>
       <span id='podcast-link'>
         <%= parts.join(' <br> ') %>
