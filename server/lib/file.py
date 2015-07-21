@@ -88,8 +88,8 @@ def register_streams():
     DB.register_stream(
       name=fname,
       week_number=info['week'],
-      start_minute=int(info['start_minute']),
-      end_minute=int(info['end_minute']),
+      start_minute=float(info['start_minute']),
+      end_minute=float(info['end_minute']),
       start_unix=info['start_date'],
       end_unix=info['start_date'] + timedelta(seconds=info['duration_sec'])
     )

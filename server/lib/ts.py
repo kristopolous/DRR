@@ -14,7 +14,7 @@ def to_minute(unix_time):
   if type(unix_time) is int:
     unix_time = datetime.fromtimestamp(unix_time)
 
-  return unix_time.weekday() * (24 * 60) + unix_time.hour * 60 + unix_time.minute
+  return unix_time.weekday() * (24.0 * 60) + unix_time.hour * 60 + unix_time.minute + (unix_time.second / 60.0)
 
 def sec_now(offset_sec=0):
   """ 
