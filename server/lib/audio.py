@@ -314,13 +314,13 @@ def stitch_and_slice_process(file_list, start_minute, duration_minute):
   name_out = stream_name(file_list, start_minute, duration_minute) 
 
   if os.path.isfile(name_out) and os.path.getsize(name_out) > 0:
-    print "File %s found" % name_out
+    logging.info("[stitch] File %s found" % name_out)
     return None
 
   # We presume that there is a file list we need to make 
   stitched_list = stitch(file_list, force_stitch=True)
 
-  if len(stitched_list) > 1:
+  if stitched_list and len(stitched_list) > 1:
     info = stream_info(stitched_list)
 
   else:
@@ -421,12 +421,13 @@ def stitch(file_list, force_stitch=False):
     start_index += 1
     if res: break
 
-  if start_index == len(file_index):
+  if start_index == len(file_list):
     logging.error("Unable to find any files matching in the list for stitching.")
     return False
 
   crc32, offset = crc(first['name'])
 
+  # print first, start_index
   first['crc32'] = crc32
   first['offset'] = offset
 

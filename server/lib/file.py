@@ -20,7 +20,10 @@ def get(path, do_open=True):
   If the file exists locally then we return it, otherwise
   we go out to the network store and retrieve it
   """
-  if os.path.exists(path):
+
+  # Let's make sure it exists and isn't some nonsense size
+  # Which I've arbitrary set as a few thousand bytes
+  if os.path.exists(path) and os.path.getsize(path) > 3000:
     if do_open: return open(path, 'rb')
     return True
 
