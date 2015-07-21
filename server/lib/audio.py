@@ -45,9 +45,7 @@ def get_map(fname):
 
     
 def list_info(file_list):
-  """
-  A version of the stream_info that accepts a list
-  """
+  """ A version of the stream_info that accepts a list """
   info = stream_info(file_list[0]['name'])
 
   # Some things are the same such as the
@@ -92,7 +90,7 @@ def stream_info(fname, guess_time=False):
     raise Exception
 
   try:
-    duration = guess_time if guess_time else time(fname) 
+    duration = guess_time if guess_time else get_time(fname) 
 
   except Exception as exc:
     # If we can't find a duration then we try to see if it's in the file name
@@ -202,7 +200,7 @@ def crc(fname, blockcount=-1, only_check=False):
 
           # We try to record the CBR associated with this
           # stream
-          if not DB.get('bitrate', use_cache = True):
+          if not DB.get('bitrate', use_cache=True):
             DB.set('bitrate', bit_rate)
 
         # Rest of the header
@@ -290,16 +288,19 @@ def crc(fname, blockcount=-1, only_check=False):
   return frame_sig, start_byte
 
 
-def time(fname):
+def get_time(fname):
   """
   Determines the duration of an audio file by doing some estimates based on the offsets
 
   Returns the audio time in seconds
   """
-
   # In this fast method we get the first two frames, find out the offset
   # difference between them, take the length of the file, divide it by that
   # and then presume that will be the framecount
+  bitrate = int(DB.get('bitrate', use_cache=True))
+  if os.path.exists(fname) and bitrate > 0:
+    return os.path.getsize(fname) / (bitrate * (1000 / 8))
+
   crc32, offset = crc(fname)
 
   return FRAME_LENGTH * len(offset)
