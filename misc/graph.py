@@ -45,6 +45,7 @@ stats = json.loads(sys.stdin.read())
 parts = ((width - 4) / 24) * 24
 
 region_list = sorted([ (row[4], row[5]) for row in stats['streams']])
+#print region_list
 ptr = 0
 
 minutes_per_day = 60 * 24
