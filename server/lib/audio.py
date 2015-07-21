@@ -93,7 +93,7 @@ def stream_info(fname, guess_time=False):
     if ts:
       duration = int(ts[0]) * 60
 
-  if type(duration) is not int:
+  if not isinstance(duration, (int, long, float)):
     duration = 0
 
   return {
