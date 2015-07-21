@@ -99,6 +99,9 @@ def stream_info(fname, guess_time=False):
     if ts:
       duration = int(ts[0]) * 60
 
+  if type(duration) is not int:
+    duration = 0
+
   return {
     # The week number 
     'week': start_date.isocalendar()[1], 
@@ -285,8 +288,9 @@ def get_time(fname):
 
   Returns the audio time in seconds
   """
-  if fname.endswith('map'):
-    crc32, offset = get_map(fname)
+  map_name = fname + '.map'
+  if os.path.exists(map_name):
+    crc32, offset = get_map(map_name)
     return FRAME_LENGTH * len(offset)
 
   else:
