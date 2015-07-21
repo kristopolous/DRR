@@ -116,7 +116,7 @@ def stream_name(list_in, start_minute, duration_minute):
   return "slices/%s-%d_%d.mp3" % (callsign, int(unix_time) + start_minute * 60, duration_minute)
 
 
-def crc(fname, blockcount=-1):
+def crc(fname, blockcount=-1, only_check=False):
   """
   Opens an mp3 file, find all the blocks, the byte offset of the blocks, and if they
   are audio blocks, construct a crc32 mapping of some given beginning offset of the audio
