@@ -70,7 +70,7 @@ PROCESS_DELAY = 4
 ##
 ## Storage and file related
 ##
-def file_find_and_make_slices(start_list, duration):
+def file_find_and_make_slices(start_list, duration_min):
   """
   Given a start week minute this looks for streams in the storage 
   directory that match it - regardless of duration ... so it may return
@@ -106,12 +106,15 @@ def file_find_and_make_slices(start_list, duration):
   #     
   condition_list = []
   for start in start_list:
-    end_search = (start + duration) % TS.MINUTES_PER_WEEK
+    end_search = (start + duration_min) % TS.MINUTES_PER_WEEK
     condition_list.append('start_minute < %d and end_minute >= %d' % (start, start))
     condition_list.append('start_minute > %d and end_minute >= %d and end_minute <= %d' % (start, start, end_search))
     condition_list.append('start_minute < %d and end_minute >= %d' % (end_search, end_search))
 
-  condition_query = "(%s)" % ') or ('.join(condition_list)
+  condition_query = "((%s))" % ') or ('.join(condition_list)
+  condition_query += " and start_unix < datetime(%d, 'unixepoch', 'localtime')" % (TS.sec_now() - duration_min * 60)
+
+  # print condition_query
   entry_list = DB.map(db['c'].execute("select * from streams where %s order by week_number * 10080 + start_minute asc" % condition_query).fetchall(), 'streams')
 
   # We want to make sure that we break down the stream_list into days.  We can't JUST look at the week
@@ -158,13 +161,13 @@ def file_find_and_make_slices(start_list, duration):
 
         # The start_minute is based on the week
         offset_start = week_start - episode[0]['start_minute']
-        fname = audio.stream_name(episode, offset_start, duration)
+        fname = audio.stream_name(episode, offset_start, duration_min)
 
         # We get the name that it will be and then append that
         stream_list.append(audio.stream_info(fname))
 
-        print offset_start, duration, episode
-        audio.stitch_and_slice(episode, offset_start, duration)
+        # print offset_start, duration_min, episode
+        audio.stitch_and_slice(episode, offset_start, duration_min)
         break
 
   return stream_list
@@ -504,7 +507,7 @@ def server_manager(config):
     # We're going to add 2 minutes to the duration to make sure that we get
     # the entire episode.
     #
-    duration += 2
+    duration_min += 2
 
     start_time_list = [TS.to_utc(day, start) for day in weekday_list]
     
