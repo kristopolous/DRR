@@ -31,19 +31,6 @@ def set_config(config):
   g_config = config
 
 
-def get_map(fname):
-  """ Retrieves a map file associated with the mp3 """
-  map_name = fname if fname.endswith('.map') else fname + '.map'
-
-  if os.path.exists(map_name):
-    f = gzip.open(map_name, 'r')
-    ret = marshal.loads(f.read())
-    f.close()
-    return ret
-
-  return None, None
-
-    
 def list_info(file_list):
   """ A version of the stream_info that accepts a list """
   info = stream_info(file_list[0]['name'])
@@ -119,23 +106,12 @@ def stream_name(list_in, start_minute, duration_minute):
   return "slices/%s-%d_%d.mp3" % (callsign, int(unix_time) + start_minute * 60, duration_minute)
 
 
-def crc(fname, blockcount=-1, only_check=False):
+def crc(fname, blockcount=-1):
   """
   Opens an mp3 file, find all the blocks, the byte offset of the blocks, and if they
   are audio blocks, construct a crc32 mapping of some given beginning offset of the audio
   data ... this is intended for stitching.
   """
-  # Simply make sure that there is a map associated with the
-  # mp3.  Otherwise create one.
-  map_name = fname if fname.endswith('.map') else fname + '.map'
-
-  if only_check and os.path.exists(map_name):
-    return True
-
-  crc32, offset = get_map(fname)
-  if crc32 is not None:
-    return crc32, offset
-
   frame_sig = []
   start_byte = []
   first_header_seen = False
@@ -266,24 +242,6 @@ def crc(fname, blockcount=-1, only_check=False):
       break
 
   f.close()
-  # If we get here that mans that we don't have a map
-  # file yet.  So we just creat it.
-  if not os.path.exists(map_name):
-    with gzip.open(map_name, 'wb') as f:
-      f.write(marshal.dumps([frame_sig, start_byte]))
-
-  info = stream_info(fname, guess_time=FRAME_LENGTH * len(frame_sig))
-
-  """
-  DB.register_stream(
-    name=fname,
-    week_number=info['week'],
-    start_minute=int(info['start_minute']),
-    end_minute=int(info['end_minute']),
-    start_unix=info['start_date'],
-    end_unix=info['start_date'] + timedelta(seconds=info['duration_sec'])
-  )
-  """
 
   return frame_sig, start_byte
 
