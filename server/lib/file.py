@@ -3,24 +3,19 @@ import os
 import re
 import time 
 import logging
-import lib.misc as misc
+import misc 
 import lib.db as DB
 import lib.ts as TS
+import audio
+from sets import Set
 from glob import glob
 from datetime import datetime, timedelta, date
-
-g_config = {}
-
-def set_config(config):
-  global g_config
-  g_config = config
 
 def get(path, do_open=True):
   """
   If the file exists locally then we return it, otherwise
   we go out to the network store and retrieve it
   """
-
   # Let's make sure it exists and isn't some nonsense size
   # Which I've arbitrary set as a few thousand bytes
   if os.path.exists(path) and os.path.getsize(path) > 3000:
@@ -39,10 +34,9 @@ def get(path, do_open=True):
 def connect():
   """ Connect to the cloud service """
   from azure.storage import BlobService
-  global g_config
   container = 'streams'
 
-  blob_service = BlobService(g_config['azure']['storage_account_name'], g_config['azure']['primary_access_key'])
+  blob_service = BlobService(misc.config['azure']['storage_account_name'], misc.config['azure']['primary_access_key'])
   blob_service.create_container(container, x_ms_blob_public_access='container')
   return blob_service, container
 
@@ -72,22 +66,52 @@ def put(path):
 
   return False
 
+def register_streams():
+  """ Find the local streams and make sure they are all registered in the sqlite3 database """
 
-def prune(lock):
+  # Get the existing streams as a set
+  all_registered = Set(DB.all('streams', ['name']))
+
+  # There should be a smarter way to do this ... you'd think.
+  one_str = ':'.join(glob('streams/*.mp3') + glob('streams/*.map'))
+  all_files = Set(one_str.replace('.map', '').split(':'))
+ 
+  diff = all_files.difference(all_registered)
+
+  # This is a list of files we haven't scanned yet...
+  if not diff: return True
+
+  for fname in diff:
+    info = audio.stream_info(fname)
+
+    DB.register_stream(
+      name=fname,
+      week_number=info['week'],
+      start_minute=int(info['start_minute']),
+      end_minute=int(info['end_minute']),
+      start_unix=info['start_date'],
+      end_unix=info['start_date'] + timedelta(seconds=info['duration_sec'])
+    )
+
+    if not misc.manager_is_running():
+      print "Manager is gone, shutting down"
+      misc.shutdown()
+
+
+def prune():
   """ Gets rid of files older than archivedays - cloud stores things if relevant """
 
-  global g_config
-  pid = misc.change_proc_name("%s-cleanup" % g_config['callsign'])
+  pid = misc.change_proc_name("%s-cleanup" % misc.config['callsign'])
 
-  lock.acquire()
+  register_streams()
   db = DB.connect()
 
-  duration = g_config['archivedays'] * TS.ONE_DAY
+  duration = misc.config['archivedays'] * TS.ONE_DAY
   cutoff = time.time() - duration
 
   cloud_cutoff = False
-  if g_config['cloud']:
-    cloud_cutoff = time.time() - g_config['cloudarchive'] * TS.ONE_DAY
+  if misc.config['cloud']:
+    cloud_cutoff = time.time() - misc.config['cloudarchive'] * TS.ONE_DAY
 
   # Put thingies into the cloud.
   count = 0
@@ -136,8 +160,7 @@ def prune(lock):
   db['c'].execute('delete from streams where name in ("%s")' % ('","'.join(unlink_list)))
   db['conn'].commit()
 
-  logging.info("Found %d files older than %s days." % (count, g_config['archivedays']))
-  lock.release()
+  logging.info("Found %d files older than %s days." % (count, misc.config['archivedays']))
   misc.kill('prune') 
 
 

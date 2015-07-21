@@ -45,7 +45,6 @@ import flask
 from subprocess import call
 import subprocess
 from multiprocessing import Process, Queue
-from sets import Set
 
 g_config = {}
 g_download_pid = 0
@@ -711,7 +710,7 @@ def stream_manager():
 
     if last_prune < (time.time() - TS.ONE_DAY * g_config['pruneevery']):
       # We just assume it can do its business in under a day
-      misc.pid['prune'] = Process(target=cloud.prune, args=(misc.lock,))
+      misc.pid['prune'] = Process(target=cloud.prune)
       misc.pid['prune'].start()
       last_prune = time.time()
 
@@ -821,47 +820,6 @@ def stream_manager():
     DB.incr('uptime', cycle_time)
 
     time.sleep(cycle_time)
-
-
-def register_streams(lock):
-  """ Find the local streams and make sure they are all registered in the sqlite3 database """
-
-  pid = misc.change_proc_name("%s-streamregister" % g_config['callsign'])
-
-  lock.acquire()
-
-  # Get the existing streams as a set
-  all_registered = Set(DB.all('streams', ['name']))
-
-  # There should be a smarter way to do this ... you'd think.
-  one_str = ':'.join(glob('streams/*.mp3') + glob('streams/*.map'))
-  all_files = Set(one_str.replace('.map', '').split(':'))
- 
-  diff = all_files.difference(all_registered)
-
-  # This is a list of files we haven't scanned yet...
-  if diff: 
-    for fname in diff:
-      info = audio.stream_info(fname)
-
-      DB.register_stream(
-        name=fname,
-        week_number=info['week'],
-        start_minute=int(info['start_minute']),
-        end_minute=int(info['end_minute']),
-        start_unix=info['start_date'],
-        end_unix=info['start_date'] + timedelta(seconds=info['duration_sec'])
-      )
-
-      if not misc.manager_is_running():
-        print "Manager is gone, shutting down"
-        misc.shutdown()
-
-      #audio.crc(fname, only_check=True)
-
-  lock.release()
-  misc.kill('register')
-
 
 def read_config(config):
   """
@@ -1024,12 +982,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     read_config(args.config)      
 
-    audio.set_config(g_config)
-    cloud.set_config(g_config)
     misc.set_config(g_config)
-
-    misc.pid['register'] = Process(target=register_streams, args=(misc.lock,))
-    misc.pid['register'].start()
 
     pid = misc.change_proc_name("%s-manager" % g_config['callsign'])
 
