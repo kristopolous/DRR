@@ -425,7 +425,7 @@ def stitch(file_list, force_stitch=False):
     'name': first['name'], 
     'start_byte': 0, 
     'start_offset': 0,
-    'end_byte': first['offset'][-1],
+    'end_byte': first['offset'][-2],
     'start_minute': 0,
     'duration_sec': (len(first['offset']) - 1) * FRAME_LENGTH
   }]
@@ -471,7 +471,7 @@ def stitch(file_list, force_stitch=False):
         'start_byte': second['offset'][pos], 
         'end_byte': second['offset'][-2],
         'start_offset': pos,
-        'start_minute': pos * FRAME_LENGTH,
+        'start_minute': (pos * FRAME_LENGTH) / 60.0,
         'duration_sec': (len(second['offset']) - pos - 1) * FRAME_LENGTH
       })
 
@@ -481,6 +481,7 @@ def stitch(file_list, force_stitch=False):
 
     break
 
+  # print 'stitch', args
   return args
 
 
