@@ -56,7 +56,7 @@ def map(row_list, table):
   return mapped
 
 
-def all(table, field_list='*'):
+def all(table, field_list='*', sort_by='id'):
   """ Returns all entries from the sqlite3 database for a given table """
   db = connect()
 
@@ -65,7 +65,7 @@ def all(table, field_list='*'):
     column_count = len(field_list)
     field_list = ','.join(field_list)
 
-  query = db['c'].execute('select %s from %s order by id asc' % (field_list, table))
+  query = db['c'].execute('select %s from %s order by %s asc' % (field_list, table, sort_by))
   if column_count is 1 and field_list != '*':
     return [record[0] for record in query.fetchall()]
 

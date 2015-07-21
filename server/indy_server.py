@@ -450,7 +450,7 @@ def server_manager(config):
       'uptime': int(time.time() - misc.start_time),
       'free': os.popen("df -h / | tail -1").read().strip(),
       'disk': sum(os.path.getsize(f) for f in os.listdir('.') if os.path.isfile(f)),
-      'streams': DB.all('streams'),
+      'streams': DB.all('streams', sort_by='start_unix'),
       'version': __version__,
       'config': config
     }
