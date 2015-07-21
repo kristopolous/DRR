@@ -113,7 +113,7 @@ def file_find_and_make_slices(start_list, duration):
     condition_list.append('start_minute < %d and end_minute >= %d' % (end_search, end_search))
 
   condition_query = "(%s)" % ') or ('.join(condition_list)
-  entry_list = DB.map(db['c'].execute("select * from streams where %s" % condition_query).fetchall(), 'streams')
+  entry_list = DB.map(db['c'].execute("select * from streams where %s order by week_number * 10080 + start_minute asc" % condition_query).fetchall(), 'streams')
 
   # We want to make sure that we break down the stream_list into days.  We can't JUST look at the week
   # number since we permit feed requests for shows which may have multiple days.  Since this is leaky
