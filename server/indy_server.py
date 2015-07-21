@@ -849,7 +849,7 @@ def read_config(config):
     'expireafter': 45,
 
     # The TCP port to run the server on
-    'port': '5000',
+    'port': 5000,
 
     # The (day) duration we should be archiving things.
     'archivedays': 21,
