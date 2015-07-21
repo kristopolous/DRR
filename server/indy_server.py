@@ -854,9 +854,10 @@ def register_streams(lock):
       )
 
       if not misc.manager_is_running():
+        print "Manager is gone, shutting down"
         misc.shutdown()
 
-      audio.crc(fname, only_check=True)
+      #audio.crc(fname, only_check=True)
 
   lock.release()
   misc.kill('register')
