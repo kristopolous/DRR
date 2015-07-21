@@ -850,7 +850,7 @@ def read_config(config):
     'port': '5000',
 
     # The (day) duration we should be archiving things.
-    'archivedays': 14,
+    'archivedays': 21,
 
     # The (second) time in looking to see if our stream is running
     'cycletime': 7,
