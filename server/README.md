@@ -10,6 +10,7 @@ There's a few things of interest here:
 
   1. indy_server.py
   1. configs/
+  1. libs/
 
 ## indy_server.py
 
@@ -77,4 +78,13 @@ an overview of some of the more obscure parameters supported.
 Inside the configs directory are the current configuration files for all the supported stations.
 You could do a pull request to add one, or [send an email](mailto:indycast@googlegroups.com) to [the mailing list](https://groups.google.com/d/forum/indycast).
 
+## libs/
+
+These are parts of the server broken down into handy pocket-sized modules.
+
+  * ts.py - Deals with localizing time functions
+  * audio.py - All the mp3 slicing and stitching magic is done here
+  * file.py - The negotiations with when to put things on the cloud, register streams in the database, and remove them
+  * db.py - An (intentionally) leaky wrapper for the sqlite3 database
+  * misc.py - Miscellaneous "global" tools that all the other libs use.
 
