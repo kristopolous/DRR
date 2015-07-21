@@ -143,26 +143,27 @@ def file_find_and_make_slices(start_list, duration):
   #print len(by_episode), condition_query
   # Start the creation of the mp3s
   for episode in by_episode:
-    #print [ (ep['name'], ep['start_minute'], ep['end_minute']) for ep in episode ]
-    # We get the name that it will be and then append that
-    fname = audio.stream_name(episode, start, duration)
-    stream_list.append(audio.stream_info(fname))
 
     # We blur the test start to a bigger window
     test_start = (episode[0]['start_minute'] / (60 * 4))
 
-    for start in start_list:
+    for week_start in start_list:
       # Blur the query start to the same window
-      query_start = start / (60 * 4)
+      query_start = week_start / (60 * 4)
 
       # This shouldn't be necessary but let's do it anyway
       if abs(query_start - test_start) <= 1:
         # Under these conditions we can say that this episode
         # can be associated with this particular start time
 
-        print start, duration, episode
-        #print  start - episode[0]['start_minute'], duration
-        audio.stitch_and_slice(episode, start - episode[0]['start_minute'], duration)
+        # The start_minute is based on the week
+        offset_start = week_start - episode[0]['start_minute']
+        fname = audio.stream_name(episode, offset_start, duration)
+
+        # We get the name that it will be and then append that
+        stream_list.append(audio.stream_info(fname))
+
+        audio.stitch_and_slice(episode, offset_start, duration)
         break
 
   return stream_list
