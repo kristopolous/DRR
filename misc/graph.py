@@ -49,8 +49,12 @@ region_list = sorted([ (row[4], row[5]) for row in stats['streams']])
 ptr = 0
 
 minutes_per_day = 60 * 24
-start = 0
 flag = False
+
+mapper = [0] * 10080
+for start, stop in region_list:
+  for i in range(start, stop):
+    mapper[i] += 1
 
 def ts_row(parts):
   last_hr = -1 
@@ -75,21 +79,25 @@ def ts_row(parts):
 ts_row(parts)
 
 last_hr = -1 
+start = 0
 for day in ['M', 'T', 'W', 'T', 'F', 'S', 'S']:
   sys.stdout.write("%s " % day)
 
   for ix in range(parts):
     lower = start + (minutes_per_day * ix / parts)
     upper = start + (minutes_per_day * (ix + 1) / parts)
+    mid = (upper - lower) / 2 + lower
 
     hr = 48 * ix / parts
-    while region_list[ptr][1] < lower and ptr < len(region_list) - 1:
-      #print region_list[ptr]
-      ptr += 1
 
-    if (upper < region_list[ptr][1] and upper > region_list[ptr][0]) or (region_list[ptr][0] > lower and region_list[ptr][0] < upper) or (region_list[ptr][1] > lower and region_list[ptr][1] < upper):
+    if mapper[mid] == 1:
+      sys.stdout.write('*')
+    elif mapper[mid] == 2:
+      sys.stdout.write('=')
+    elif mapper[mid] == 3:
+      sys.stdout.write('E')
+    elif mapper[mid] > 3:
       sys.stdout.write('#')
-
     else:
       #print lower,upper,region_list[ptr]
       if hr != last_hr:
