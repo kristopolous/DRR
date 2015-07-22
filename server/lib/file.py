@@ -84,6 +84,9 @@ def register_streams():
   if not diff: return True
 
   for fname in diff:
+    if len(fname) == 0:
+      next
+
     info = audio.stream_info(fname)
 
     DB.register_stream(
