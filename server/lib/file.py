@@ -107,8 +107,11 @@ def prune():
   register_streams()
   db = DB.connect()
 
+  """
+  # This was needed to fix an old bug in an automated way
   db['c'].execute('delete from streams where end_minute - start_minute < 2 and end_minute - start_minute >= 0')
   db['conn'].commit()
+  """
 
   duration = misc.config['archivedays'] * TS.ONE_DAY
   cutoff = time.time() - duration
@@ -145,6 +148,14 @@ def prune():
       except:
         logging.debug("Prune[cloud]: Couldn't remove %s" % fname)
 
+  for fname in glob('*/*.map'):
+    ctime = os.path.getctime(fname)
+
+    # We observe the rules set up in the config.
+    if ctime < cutoff:
+      logging.debug("Prune: %s" % fname)
+      os.unlink(fname)
+      count += 1 
 
   # The map names are different since there may or may not be a corresponding
   # cloud thingie associated with it.
