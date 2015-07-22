@@ -76,8 +76,6 @@ def file_find_and_make_slices(start_list, duration_min):
   directory that match it - regardless of duration ... so it may return
   partial shows results.
   """
-  global g_config
-
   stream_list = []
 
   if type(start_list) is int:
@@ -112,7 +110,9 @@ def file_find_and_make_slices(start_list, duration_min):
     condition_list.append('start_minute < %d and end_minute >= %d' % (end_search, end_search))
 
   condition_query = "((%s))" % ') or ('.join(condition_list)
-  condition_query += " and start_unix < datetime(%d, 'unixepoch', 'localtime')" % (TS.sec_now() - duration_min * 60)
+
+  # see https://github.com/kristopolous/DRR/issues/50
+  condition_query += " and start_unix < datetime(%d, 'unixepoch', 'localtime')" % (TS.sec_now() - duration_min * 60 - misc.config['cascadetime'])
 
   # print condition_query
   entry_list = DB.map(db['c'].execute("select * from streams where %s order by week_number * 10080 + start_minute asc" % condition_query).fetchall(), 'streams')
@@ -133,7 +133,7 @@ def file_find_and_make_slices(start_list, duration_min):
 
       episode = []
 
-    cutoff_minute = entry['start_minute'] + (12 * g_config['cascadetime']) % TS.MINUTES_PER_WEEK
+    cutoff_minute = entry['start_minute'] + (12 * misc.config['cascadetime']) % TS.MINUTES_PER_WEEK
     current_week = entry['week_number']
 
     # We know by definition that every entry in our stream_list is a valid thing we need
@@ -185,8 +185,6 @@ def server_generate_xml(showname, feed_list, duration_min, weekday_list, start, 
 
   In the xml file we will lie about the duration to make life easier
   """
-  global g_config
-
   day_map = {
     'sun': 'Sunday',
     'mon': 'Monday',
@@ -204,8 +202,8 @@ def server_generate_xml(showname, feed_list, duration_min, weekday_list, start, 
     # an oxford comma, how cute.
     week_string = "%s and %s" % (', '.join(day_list[:-1]), day_list[-1])
 
-  base_url = 'http://%s.indycast.net:%s/' % (g_config['callsign'], g_config['port'])
-  callsign = g_config['callsign']
+  base_url = 'http://%s.indycast.net:%s/' % (misc.config['callsign'], misc.config['port'])
+  callsign = misc.config['callsign']
 
   nsmap = {
     'dc': 'http://purl.org/dc/elements/1.1/',
