@@ -10,6 +10,7 @@ import audio
 from sets import Set
 from glob import glob
 from datetime import datetime, timedelta, date
+from multiprocessing import Process, Queue
 
 def get(path, do_open=True):
   """
@@ -100,18 +101,22 @@ def register_streams():
 
 
 def prune():
+  pid = Process(target=prune_process, args=(misc.lockMap,))
+  pid.start()
+  return pid
+
+def prune_process(lockMap):
   """ Gets rid of files older than archivedays - cloud stores things if relevant """
+
+  # If another prune is running then we just bail
+  if not lockMap['prune'].acquire(False):
+    logging.warn("Tried to run another prune whilst one is running. Aborting")
+    return True
 
   pid = misc.change_proc_name("%s-cleanup" % misc.config['callsign'])
 
   register_streams()
   db = DB.connect()
-
-  """
-  # This was needed to fix an old bug in an automated way
-  db['c'].execute('delete from streams where end_minute - start_minute < 2 and end_minute - start_minute >= 0')
-  db['conn'].commit()
-  """
 
   duration = misc.config['archivedays'] * TS.ONE_DAY
   cutoff = time.time() - duration
@@ -143,8 +148,10 @@ def prune():
     elif cloud_cutoff and ctime < cloud_cutoff:
       logging.debug("Prune[cloud]: putting %s" % fname)
       put(fname)
+
       try:
         os.unlink(fname)
+
       except:
         logging.debug("Prune[cloud]: Couldn't remove %s" % fname)
 
@@ -176,6 +183,7 @@ def prune():
   db['conn'].commit()
 
   logging.info("Found %d files older than %s days." % (count, misc.config['archivedays']))
+  lockMap['prune'].release()
   misc.kill('prune') 
 
 
