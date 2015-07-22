@@ -373,6 +373,12 @@ def server_manager(config):
     return Response('\n'.join(output), mimetype='text/plain')
 
 
+  @app.route('/prune')
+  def prune():
+    cloud.prune()
+    return "Pruning started"
+
+
   @app.route('/slices/<path:path>')
   def send_stream(path):
     """
@@ -714,8 +720,7 @@ def stream_manager():
 
     if last_prune < (time.time() - TS.ONE_DAY * g_config['pruneevery']):
       # We just assume it can do its business in under a day
-      misc.pid['prune'] = Process(target=cloud.prune)
-      misc.pid['prune'].start()
+      misc.pid['prune'] = cloud.prune()
       last_prune = time.time()
 
     TS.get_offset()
