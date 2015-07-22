@@ -1,0 +1,9 @@
+[Main]
+callsign=wzrd
+lat=41.878114
+long=-87.629798
+mode=full
+stream=http://peridot.streamguys.com:5750/live
+port=8830
+loglevel=debug
+cloud=~/cloudcreds.cfg
