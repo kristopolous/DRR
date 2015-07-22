@@ -6,6 +6,26 @@ import time
 import misc 
 from datetime import datetime, timedelta, date
 
+import socket
+
+#
+# This is needed to force ipv4 on ipv6 devices. It's sometimes needed
+# if there isn't a clean ipv6 route to get to the big wild internet.
+# In these cases, a pure ipv6 route simply will not work.  People aren't
+# always in full control of every hop ... so it's much safer to force
+# ipv4 then optimistically cross our fingers.
+#
+origGetAddrInfo = socket.getaddrinfo
+
+def getAddrInfoWrapper(host, port, family=0, socktype=0, proto=0, flags=0):
+  return origGetAddrInfo(host, port, socket.AF_INET, socktype, proto, flags)
+
+# Replace the original socket.getaddrinfo by our version
+socket.getaddrinfo = getAddrInfoWrapper
+
+import urllib2
+import urllib
+
 # Everything is presumed to be weekly and on the minute
 # scale. We use this to do wrap around when necessary
 MINUTES_PER_WEEK = 10080
