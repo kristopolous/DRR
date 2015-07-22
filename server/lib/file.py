@@ -107,6 +107,9 @@ def prune():
   register_streams()
   db = DB.connect()
 
+  db['c'].execute('delete from streams where end_minute - start_minute < 2 and end_minute - start_minute >= 0')
+  db['conn'].commit()
+
   duration = misc.config['archivedays'] * TS.ONE_DAY
   cutoff = time.time() - duration
 
