@@ -278,13 +278,13 @@ def server_generate_xml(showname, feed_list, duration_min, weekday_list, start, 
     content = ET.SubElement(item, '{%s}content' % nsmap['media'])
     content.attrib['url'] = link
     content.attrib['fileSize'] = str(cloud.get_size(file_name))
-    content.attrib['type'] = 'audio/mpeg3'
+    content.attrib['type'] = 'audio/mpeg'
 
     # The length of the audio we will just take as the duration
     content = ET.SubElement(item, 'enclosure')
     content.attrib['url'] = link
-    content.attrib['length'] = str(duration_min * 60)
-    content.attrib['type'] = 'audio/mpeg3'
+    content.attrib['length'] = str(cloud.get_size(file_name))
+    content.attrib['type'] = 'audio/mpeg'
 
   tree = ET.ElementTree(root)
 
