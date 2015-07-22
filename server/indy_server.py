@@ -11,7 +11,6 @@ import re
 import signal
 import sys
 import time
-import socket
 import setproctitle as SP
 import sqlite3
 import lib.db as DB
@@ -19,6 +18,7 @@ import lib.audio as audio
 import lib.ts as TS
 import lib.misc as misc
 import lib.file as cloud
+import socket
 
 #
 # This is needed to force ipv4 on ipv6 devices. It's sometimes needed
