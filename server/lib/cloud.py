@@ -80,7 +80,7 @@ def register_streams():
   all_registered = Set(DB.all('streams', ['name']))
 
   # There should be a smarter way to do this ... you'd think.
-  one_str = ':'.join(glob('streams/*.mp3') + glob('streams/*.map'))
+  one_str = ':'.join(glob('%s/*.mp3' % misc.DIR_STREAMS) + glob('%s/*.map' % misc.DIR_STREAMS))
   all_files = Set(one_str.replace('.map', '').split(':'))
  
   diff = all_files.difference(all_registered)
@@ -111,13 +111,17 @@ def register_streams():
 
 
 def prune():
+  """ Gets rid of files older than archivedays - cloud stores things if relevant """
   pid = Process(target=prune_process, args=(misc.lockMap,))
   pid.start()
   return pid
 
-def prune_process(lockMap):
-  """ Gets rid of files older than archivedays - cloud stores things if relevant """
 
+def prune_process(lockMap):
+  """ 
+  This is internal, call prune() directly. This is a normally blocking
+  process that is prepared by prune(), making it easily callable asynchronously 
+  """
   # If another prune is running then we just bail
   if not lockMap['prune'].acquire(False):
     logging.warn("Tried to run another prune whilst one is running. Aborting")
@@ -165,7 +169,7 @@ def prune_process(lockMap):
       except:
         logging.debug("Prune[cloud]: Couldn't remove %s" % fname)
 
-  for fname in glob('*/*.map'):
+  for fname in glob('*/*.map') + glob('%s/*.gz' % misc.DIR_BACKUPS):
     ctime = os.path.getctime(fname)
 
     # We observe the rules set up in the config.
@@ -233,7 +237,7 @@ def download(path):
       blob_service.get_blob_to_path(
         container,
         fname,
-        'streams/%s' % fname,
+        '%s/%s' % (misc.DIR_STREAMS, fname),
         max_connections=8,
       )
       return True
