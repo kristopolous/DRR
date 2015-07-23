@@ -19,14 +19,14 @@ def get_size(station_list, blob_service):
   by_station = {}
   ix = 1
 
-  print " Station  Files  Space (GB)"
-  print "----------------------------"
+  print " Station   Files   Space (GB)"
+  print "-----------------------------"
   for station in sorted(station_list):
     sys.stdout.write( "%2d: %s " % (len(station_list) - ix + 1, station) )
     sys.stdout.flush()
     by_station[station] = [ f for f in blob_service.list_blobs('streams', prefix=station) ]
     total_space = sum([ f.properties.content_length for f in by_station[station] ])
-    sys.stdout.write( " %4d %8.3f\n" % (len(by_station[station]),  total_space / (1024.0 ** 3)) )
+    sys.stdout.write( " %5d %9.3f\n" % (len(by_station[station]),  total_space / (1024.0 ** 3)) )
     all_files += by_station[station]
     ix += 1
 
@@ -34,8 +34,8 @@ def get_size(station_list, blob_service):
   disk_space = [ f.content_length for f in all_props ]
 
   gb = sum(disk_space) / (1024.0 ** 3)
-  print "----------------------------"
-  print " %-8s %d %8.3f GB" % ("Total", len(all_files), gb)
+  print "-----------------------------"
+  print " %-8s %5d %9.3f GB" % ("Total", len(all_files), gb)
   print " %-7s  $%.02f/month" % ("Cost", gb * 0.024)
   print
   print " *using $0.024/GB azure pricing"
