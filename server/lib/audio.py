@@ -80,8 +80,8 @@ def stream_info(fname, guess_time=False):
     start_date = datetime.fromtimestamp(unix_time)
 
   else:
-    print "Failure for '%s'" % fname
-    raise Exception
+    logging.warn("Failure to find info for '%s'" % fname)
+    return False
 
   try:
     duration = guess_time if guess_time else get_time(fname) 

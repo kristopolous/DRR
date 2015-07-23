@@ -88,6 +88,8 @@ def register_streams():
       next
 
     info = audio.stream_info(fname)
+    if not info:
+      continue
 
     DB.register_stream(
       name=fname,
