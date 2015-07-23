@@ -32,8 +32,10 @@ def get(path, do_open=True):
   return False
 
 
-def connect(config=misc.config):
+def connect(config=False):
   """ Connect to the cloud service """
+  if not config: config = misc.config
+
   from azure.storage import BlobService
   container = 'streams'
 
