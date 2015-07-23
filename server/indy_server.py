@@ -738,11 +738,11 @@ def stream_manager():
 
       elif what == 'terminate':
         if value in misc.pid:
-          print "-- terminate %s" % value
           misc.pid[value].terminate()
           del(misc.pid[value])
+
         else:
-          print "Can't term %s" % value
+          logging.error("Can't term %s" % value)
 
       elif what == 'shutdown':
         print "-- shutdown"

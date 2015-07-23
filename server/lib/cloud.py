@@ -189,7 +189,6 @@ def prune_process(lockMap):
 
   logging.info("Found %d files older than %s days." % (count, misc.config['archivedays']))
   lockMap['prune'].release()
-  misc.kill('prune') 
 
 
 def get_size(fname):
