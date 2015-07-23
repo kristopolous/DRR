@@ -32,6 +32,10 @@ def set_config(config_in):
   global config
   config = config_in
 
+def donothing(signal, frame=False):
+  """ Catches signals that we would rather just ignore """
+  return True
+
 def shutdown(signal=15, frame=False):
   """ Shutdown is hit on the keyboard interrupt """
   global queue, start_time, config

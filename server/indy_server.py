@@ -976,6 +976,7 @@ def read_config(config):
   DB.incr('runcount')
 
   signal.signal(signal.SIGINT, misc.shutdown)
+  signal.signal(signal.SIGHUP, misc.donothing)
 
 
 if __name__ == "__main__":
