@@ -53,6 +53,9 @@ def unlink(path):
 
 def put(path):
   """ Place a file, given a path, in the cloud """
+  if 'test' in misc.config['azure']:
+    logging.info ("I would have uploaded %s but I'm in test mode" % path)
+
   blob_service, container = connect()
 
   if blob_service:
