@@ -7,7 +7,7 @@
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 */
 
-html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend,  caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, pre, a, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend,  caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
   margin: 0;
   padding: 0;
   border: 0;
@@ -15,7 +15,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, pre, a
   font: inherit;
   vertical-align: baseline;
 }
-article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+article, aside, details, footer, header, hgroup, menu, nav, section {
   display: block;
 }
 body {
@@ -24,11 +24,9 @@ body {
 ol, ul {
   list-style: none;
 }
-
 body {
   -webkit-text-size-adjust: none;
 }
-
 *, *:before, *:after {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -162,7 +160,6 @@ a {
   color: #4eb980;
   text-decoration: none;
 }
-
 a:hover {
   border-bottom-color: transparent;
 }
@@ -190,21 +187,11 @@ h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
   color: inherit;
   text-decoration: none;
 }
-
-h2 {
-  font-size: 1.75em;
-}
-h3 {
-  font-size: 1.5em;
-}
-section.special, article.special {
-  text-align: center;
-}
-
+h2 { font-size: 1.75em; }
+h3 { font-size: 1.5em; }
 header {
   text-align: center;
 }
-
 header p {
   position: relative;
   top: -1em;
@@ -222,7 +209,6 @@ header.major {
   padding: 4em 0;
   position: relative;
 }
-
 header.major:before, header.major:after {
   background: rgba(224, 224, 224, 0.75);
   content: '';
@@ -232,19 +218,15 @@ header.major:before, header.major:after {
   position: absolute;
   width: 100%;
 }
-
 header.major:before {
   top: 10px;
 }
-
 header.major:after {
   bottom: 10px;
 }
-
 header.major h2 {
   margin: 0;
 }
-
 header.major p {
   top: 0;
   margin: 1.5em 0 0 0;
@@ -254,17 +236,14 @@ header.major p {
   border-top: solid 1px rgba(224, 224, 224, 0.75);
   display: inline-block;
 }
-
 header.major.last {
   border-bottom: 0;
   margin-bottom: 0;
   padding-bottom: 0;
 }
-
 header.major.last:after {
   display: none;
 }
-
 header.major.last h2 {
   margin-bottom: 1em;
 }
@@ -281,7 +260,6 @@ footer.major {
   padding: 4em 0;
   position: relative;
 }
-
 footer.major:before, footer.major:after {
   background: rgba(224, 224, 224, 0.75);
   content: '';
@@ -391,12 +369,6 @@ select {
 .image img {
   display: block;
 }
-
-.image.feature img {
-  display: block;
-  width: 100%;
-}
-
 .image.icon {
   -moz-perspective: 500px;
   -webkit-perspective: 500px;
@@ -929,10 +901,7 @@ input[type="submit"].small,
     font-size: 1.25em;
   }
 
-  #header {
-    padding: 8em 0 16em 0;
-  }
-
+  #header { padding: 8em 0 16em 0; }
   #header h1 { font-size: 2.25em; }
 
   #header p {
@@ -1315,12 +1284,23 @@ form#donate {
   margin-top: 2px;
   border-radius: 0 8px 8px 0;
 }
+#ampm a{
+  line-height: 38px;
+}
 #ampm li {
   width: 3em;
   margin-bottom: 0;
 }
 small { 
   font-size: 0.7em;
+}
+#day > :first-child a,
+#duration > :first-child a {
+  border-radius: 8px 0 0 8px;
+}
+#day > :last-child a,
+#duration > :last-child a {
+  border-radius: 0 8px 8px 0;
 }
 @media screen and (max-width: 1280px) {
   #description {
