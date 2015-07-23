@@ -394,7 +394,7 @@ def server_manager(config):
     we'll just call this an error to make our lives easier.
     """
 
-    base_dir = config['storage'] + 'slices/'
+    base_dir = "%s%s/" % (config['storage'], misc.DIR_SLICES)
     fname = base_dir + path
 
     # If the file doesn't exist, then we need to slice it and create it based on our query.
@@ -713,7 +713,7 @@ def stream_manager():
     # the actual start of the download so we should err on that side by putting it
     # in the future by some margin
     #
-    fname = 'streams/%s-%d.mp3' % (callsign, TS.sec_now(offset_sec=PROCESS_DELAY))
+    fname = '%s/%s-%d.mp3' % (misc.DIR_STREAMS, callsign, TS.sec_now(offset_sec=PROCESS_DELAY))
     process = Process(target=stream_download, args=(callsign, g_config['stream'], g_download_pid, fname))
     process.start()
     return [fname, process]

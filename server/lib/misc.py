@@ -16,6 +16,10 @@ from multiprocessing import Process, Queue, Lock
 PIDFILE_MANAGER = 'pid-manager'
 PIDFILE_WEBSERVER = 'pid-webserver'
 
+DIR_BACKUPS = 'backups'
+DIR_STREAMS = 'streams'
+DIR_SLICES = 'slices'
+
 manager_pid = 0
 queue = Queue()
 

@@ -114,7 +114,7 @@ def stream_name(list_in, start_minute, duration_minute):
   callsign, unix_time = re.findall('(\w*)-(\d+)', first_file)[0]
 
   # print unix_time, start_minute
-  return "slices/%s-%d_%d.mp3" % (callsign, int(unix_time) + start_minute * 60, duration_minute)
+  return "%s/%s-%d_%d.mp3" % (misc.DIR_SLICES, callsign, int(unix_time) + start_minute * 60, duration_minute)
 
 
 def crc(fname, blockcount=-1, only_check=False):
