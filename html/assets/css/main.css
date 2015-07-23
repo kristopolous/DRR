@@ -7,8 +7,6 @@
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 */
 
-/* Reset */
-
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
   margin: 0;
   padding: 0;
@@ -162,7 +160,7 @@ body.is-loading * {
   animation: none !important;
 }
 
-body, input, select, textarea {
+body, input, select {
   color: #6e6e6e;
   font-family: 'Source Sans Pro', sans-serif;
   font-size: 16pt;
@@ -183,20 +181,16 @@ a {
 a:hover {
   border-bottom-color: transparent;
 }
-
 strong, b {
   font-weight: 600;
   color: #5b5b5b;
 }
-
 em, i {
   font-style: italic;
 }
-
 p, ul, ol, dl, table, blockquote, form {
   margin: 0 0 2em 0;
 }
-
 h1, h2, h3, h4, h5, h6 {
   color: #5b5b5b;
   font-weight: 700;
@@ -339,8 +333,7 @@ label {
 }
 
 input[type="text"],
-select,
-textarea {
+select {
   -moz-appearance: none;
   -webkit-appearance: none;
   -ms-appearance: none;
@@ -363,8 +356,7 @@ textarea {
 }
 
 input[type="text"]:focus,
-select:focus,
-textarea:focus {
+select:focus {
   background: rgba(224, 224, 224, 0.15);
   border-color: #4eb980;
 }
@@ -373,11 +365,6 @@ input[type="text"],
 select {
   line-height: 1em;
 }
-
-textarea {
-  padding: 0.5em 0.75em;
-}
-
 ::-webkit-input-placeholder {
   color: inherit;
   opacity: 0.5;
@@ -889,8 +876,7 @@ input[type="submit"].small,
 }
 
 #footer input[type="text"]:focus,
-#footer select:focus,
-#footer textarea:focus {
+#footer select:focus {
   border-color: #ffffff;
 }
 
@@ -952,7 +938,7 @@ input[type="submit"].small,
 }
 
 @media screen and (max-width: 1680px) {
-  body, input, select, textarea {
+  body, input, select {
     font-size: 14pt;
   }
 
@@ -978,7 +964,7 @@ input[type="submit"].small,
 }
 
 @media screen and (max-width: 1280px) {
-  body, input, select, textarea {
+  body, input, select {
     font-size: 13pt;
   }
 
@@ -1052,7 +1038,7 @@ input[type="submit"].small,
 }
 
 @media screen and (max-width: 980px) {
-  body, input, select, textarea {
+  body, input, select {
     font-size: 12pt;
   }
 }
