@@ -84,9 +84,7 @@ if(isset($_GET['callsign'])) {
             </ul>
             <div id='time'>
               <label for="start">Starting at</label>
-              <input class="text" size=4 type="text" name="start" id="start" value="" placeholder="ex: 3:30 PM" />
-
-              <ul class="week-group group inline" id="ampm">
+              <input class="text" size=4 type="text" name="start" id="start" value="" placeholder="ex: 3:30 PM" /><ul class="week-group group inline" id="ampm">
                 <li><a class="button">am</a></li>
                 <li><a class="button">pm</a></li>
               </ul>
