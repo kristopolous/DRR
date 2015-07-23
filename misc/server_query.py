@@ -5,6 +5,7 @@ import re
 import ConfigParser
 import sys
 import socket
+import lib.misc as misc
 
 #
 # This is needed to force ipv4 on ipv6 devices. It's sometimes needed
@@ -25,13 +26,19 @@ import urllib2
 import sqlite3
 import time
 import random
+from glob import glob
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
-conn = sqlite3.connect('../db/main.db')
-db = {'conn': conn, 'c': conn.cursor()}
+try:
+  conn = sqlite3.connect('../db/main.db')
+  db = {'conn': conn, 'c': conn.cursor()}
+  # this trick robbed from http://stackoverflow.com/questions/702834/whats-the-common-practice-for-enums-in-python
+  ID, CALLSIGN, DESCRIPTION, BASE_URL, LAST_SEEN, FIRST_SEEN, PINGS, DROPS, LATENCY, ACTIVE, LOG, NOTES = range(12)
 
-# this trick robbed from http://stackoverflow.com/questions/702834/whats-the-common-practice-for-enums-in-python
-ID, CALLSIGN, DESCRIPTION, BASE_URL, LAST_SEEN, FIRST_SEEN, PINGS, DROPS, LATENCY, ACTIVE, LOG, NOTES = range(12)
+except:
+  db = False
+  CALLSIGN = 'callsign'
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-q", "--query", default="heartbeat", help="query to send to the servers (if heartbeat then this daemonizes)")
@@ -40,14 +47,32 @@ parser.add_argument('-l', '--list', action='store_true', help='show stations')
 parser.add_argument('-n', '--notrandom', action='store_true', help='do not reandomize order')
 args = parser.parse_args()
 
+config_list = []
+if not db:
+  for station_config in glob('../server/configs/*txt'):
+    Config = ConfigParser.ConfigParser()
+    Config.read(station_config)
+    config = misc.config_section_map('Main', Config)
+    config_list.append(config)
+
 # retrieve a list of the active stations
 if args.callsign == 'all':
-  station_list = db['c'].execute('select * from stations where active = 1')
+  if db:
+    station_list = db['c'].execute('select * from stations where active = 1')
+    all_stations = station_list.fetchall()
+  else:
+    all_stations = config_list
 
 else:
-  station_list = db['c'].execute('select * from stations where active = 1 and callsign in ("%s")' % re.sub(',', '","', args.callsign)) 
-
-all_stations = station_list.fetchall()
+  if db:
+    station_list = db['c'].execute('select * from stations where active = 1 and callsign in ("%s")' % re.sub(',', '","', args.callsign)) 
+    all_stations = station_list.fetchall()
+  else:
+    all_stations = []
+    callsign_list = args.callsign.split(',')
+    for config in config_list.items():
+      if config['callsign'] in callsign_list:
+        all_stations.append(config)
 
 if args.list:
   # Just list all the supported stations
@@ -63,7 +88,11 @@ if not args.notrandom:
   random.shuffle(all_stations)
 
 for station in all_stations:
-  url = station[BASE_URL]
+  if db:
+    url = station[BASE_URL]
+  else:
+    url = "%s.indycast.net:%s" % (station[CALLSIGN], station['port'])
+
   hasFailure = False
 
   try:
@@ -86,7 +115,8 @@ for station in all_stations:
     else:
       print "[ %d ]\n%s" % (stop - start, data)
 
-    db['c'].execute('update stations set active = 1, latency = latency + ?, pings = pings + 1, last_seen = current_timestamp where id = ?', ( str(stop - start), str(station[ID]) ))
+    if db:
+      db['c'].execute('update stations set active = 1, latency = latency + ?, pings = pings + 1, last_seen = current_timestamp where callsign = ?', ( str(stop - start), str(station[CALLSIGN]) ))
 
   except Exception as e:
     hasFailure = str(e)
@@ -97,8 +127,10 @@ for station in all_stations:
     # Stop the timer and register it as a drop.
     stop = time.time()
     print "[ %d ] Failure: %s\n" % (stop - start, hasFailure)
-    db['c'].execute('update stations set drops = drops + 1 where id = ?', str(station[ID]))
 
-if args.query == 'heartbeat':
+    if db:
+      db['c'].execute('update stations set drops = drops + 1 where id = ?', str(station[ID]))
+
+if args.query == 'heartbeat' and db:
   db['conn'].commit()
 
