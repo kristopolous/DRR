@@ -7,7 +7,7 @@
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 */
 
-html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend,  caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
   margin: 0;
   padding: 0;
   border: 0;
@@ -21,23 +21,8 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 body {
   line-height: 1;
 }
-
 ol, ul {
   list-style: none;
-}
-
-blockquote, q {
-  quotes: none;
-}
-
-blockquote:before, blockquote:after, q:before, q:after {
-  content: '';
-  content: none;
-}
-
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
 }
 
 body {
@@ -188,7 +173,7 @@ strong, b {
 em, i {
   font-style: italic;
 }
-p, ul, ol, dl, table, blockquote, form {
+p, ul, ol, dl, form {
   margin: 0 0 2em 0;
 }
 h1, h2, h3, h4, h5, h6 {
@@ -212,12 +197,6 @@ h2 {
 h3 {
   font-size: 1.5em;
 }
-blockquote {
-  border-left: solid 0.5em rgba(224, 224, 224, 0.75);
-  font-style: italic;
-  padding: 1em 0 1em 2em;
-}
-
 section.special, article.special {
   text-align: center;
 }
@@ -465,7 +444,6 @@ span.image.icon {
   display: none;
 }
 
-
 ul.icons {
   cursor: default;
 }
@@ -533,7 +511,7 @@ input[type="submit"],
   overflow:hidden;
 }
 #station li {
-  margin-bottom: 0.25em;
+  margin: 0.15em;
 }
 .week-group li, .radio-group li{ 
   display: inline-block;
@@ -953,9 +931,7 @@ input[type="submit"].small,
     padding: 8em 0 16em 0;
   }
 
-  #header h1 {
-    font-size: 2.25em;
-  }
+  #header h1 { font-size: 2.25em; }
 
   #header p {
     font-size: 1.25em;
@@ -976,9 +952,7 @@ input[type="submit"].small,
     padding: 3em 0;
   }
 
-  header.major p {
-    font-size: 1.15em;
-  }
+  header.major p { font-size: 1.15em; }
 
   footer.major {
     margin-top: 4em;
@@ -1339,7 +1313,7 @@ form#donate {
   margin-top: 2px;
   border-radius: 0 8px 8px 0;
 }
-#ampm li{
+#ampm li {
   width: 3em;
   margin-bottom: 0;
 }
