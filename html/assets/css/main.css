@@ -1420,6 +1420,7 @@ form#donate {
   display: inline-block;
   text-align: left;
   vertical-align: top;
+  height: 42px;
   border-radius: 8px;
 }
 #ampm {
