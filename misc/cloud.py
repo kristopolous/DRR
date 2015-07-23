@@ -38,7 +38,7 @@ def get_size(station_list, blob_service):
   print " %-8s %d %8.3f GB" % ("Total", len(all_files), gb)
   print " %-7s  $%.02f/month" % ("Cost", gb * 0.024)
   print
-  print " *using 0.024c per GB azure pricing"
+  print " *using $0.024/GB azure pricing"
 
 
 cfg = os.environ.get('CLOUD_CFG')
