@@ -17,7 +17,7 @@ import lib.db as DB
 import lib.audio as audio
 import lib.ts as TS
 import lib.misc as misc
-import lib.file as cloud
+import lib.cloud as cloud
 import socket
 
 #
