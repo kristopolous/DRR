@@ -373,8 +373,15 @@ def server_manager(config):
     return Response('\n'.join(output), mimetype='text/plain')
 
 
+  @app.route('/db')
+  def database():
+    filename = '%s/%s-%s.gz' % (misc.DIR_BACKUPS, misc.config['callsign'], time.strftime('%Y%m%d-%H%M', time.localtime()))
+    os.popen('sqlite3 config.db .dump | gzip -9 > %s' % filename)
+    return send_file_partial(filename)
+
   @app.route('/prune')
   def prune():
+    """ Starts the prune process which cleans up and offloads mp3s """
     cloud.prune()
     return "Pruning started"
 
@@ -928,7 +935,7 @@ def read_config(config):
     os.mkdir(g_config['storage'])
 
   # We have a few sub directories for storing things
-  for subdir in ['streams', 'slices']:
+  for subdir in [misc.DIR_STREAMS, misc.DIR_SLICES, misc.DIR_BACKUPS]:
     if not os.path.isdir(g_config['storage'] + subdir):
       os.mkdir(g_config['storage'] + subdir)
 
