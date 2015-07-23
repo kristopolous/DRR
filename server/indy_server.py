@@ -881,7 +881,7 @@ def read_config(config):
     # it does save price VPS disk space which seems to come at an unusual
     # premium.
     #
-    'cloudarchive': 1.25,
+    'cloudarchive': 1.05,
     
     # Run the pruning every this many days (float)
     'pruneevery': 0.5
