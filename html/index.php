@@ -60,7 +60,7 @@ if(isset($_GET['callsign'])) {
             <ul class="radio-group group" id="station">
 <?php
   foreach(active_stations() as $station) {
-    echo '<li><a desc="' . $station['description'] . '" class="button">' . ($station['callsign']) . '</a></li> ';
+    echo '<li><a desc="' . $station['description'] . '" class="button">' . ($station['callsign']) . '</a></li>';
   }
 ?>
             </ul>
