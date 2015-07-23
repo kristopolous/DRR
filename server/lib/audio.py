@@ -7,9 +7,9 @@ import re
 import struct
 import logging
 import db as DB
-import lib.misc as misc
-import lib.file as cloud
-import lib.ts as TS
+import misc
+import cloud
+import ts as TS
 from datetime import datetime, timedelta, date
 
 # Most common frame-length ... in practice, I haven't 
