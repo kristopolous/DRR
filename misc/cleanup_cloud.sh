@@ -10,7 +10,7 @@
 # 
 # In fact, here is where that's determined.
 #
-station_list=${1:-`./server_query.py -l`}
+station_list=${1:-`./server_query.py -l | shuf`}
 
 #
 # This is the basename and path that we use in order to
@@ -37,22 +37,15 @@ echo "Running backup on all hosts to get database list..."
 #
 # The most recent backup can be found by just doing this:
 # 
-# backup_dir=~/backups/indycast/`ls -1t ~/backups/indycast | tail -1`
+backup_dir=~/backups/indycast/`ls -1t ~/backups/indycast | head -1`
 #
 # Otherwise we can do it each time.
-backup_dir=`./backup.sh 1`
-
-# Go into the back up directory and expand all the stations
-# in a subprocess.
-cd $backup_dir
-
-# Parallelize this
-ls *gz | xargs -P 6 gunzip
+#backup_dir=`./backup.sh 1`
 
 # Now for each station we take all the stream names.
 for station in $station_list; do
 
-    echo -n "${station}: "
+    echo -n "${station} - "
 
     #
     # Gets the SQL list of files by going into the 
@@ -60,29 +53,32 @@ for station in $station_list; do
     # a temporary database that we query on and then
     # send the output to a temporary file.
     #
-    cd $backup_dir 
+    db_path=$backup_dir/${station}.gz
 
-      [ -e ${TMP_BASE}db ] && rm ${TMP_BASE}db
+    if [ ! -e $db_path ]; then
+      echo "Unable to find DB for $station in $db_path ... I can't do anything here"
+      continue
+    fi
 
-      if [ ! -e $station ]; then
-        echo "Unable to find DB for $station ... I can't do anything for this"
-        continue
-      fi
+    # Load the SQL dump into a temporary file
+    [ -e ${TMP_BASE}db ] && rm ${TMP_BASE}db
+    zcat $db_path | sqlite3 ${TMP_BASE}db 
 
-      # Load the SQL dump into a temporary file
-      sqlite3 ${TMP_BASE}db < $station
+    echo -n "SQL:"
+    sqlite3 ${TMP_BASE}db 'select replace(name, "streams/", "") from streams' > ${TMP_BASE}sql
+    sql_count=`cat ${TMP_BASE}sql | wc -l`
+    echo -n $sql_count
 
-      echo -n "SQL "
-      sqlite3 ${TMP_BASE}db 'select replace(name, "streams/", "") from streams' > ${TMP_BASE}sql
-
-    cd $script_dir
+    if [ $sql_count -lt 10 ]; then
+      echo "Found under 10 entries ... we will assume this is an error."
+      continue
+    fi
 
     # Find all the files on the cloud for this station.
-    echo -n "Cloud "
+    echo -n " Cloud:"
     ./cloud.py -q list -s $station > ${TMP_BASE}cloud
-    cloud_count=`wc -l ${TMP_BASE}cloud | awk ' { print $1 } '`
-
-    echo -n "SetDiff "
+    cloud_count=`cat ${TMP_BASE}cloud | wc -l`
+    echo -n "$cloud_count SetDiff:"
 
     # See what the difference of these two lists are.
     cat ${TMP_BASE}cloud ${TMP_BASE}sql | sort | uniq -u > ${TMP_BASE}intersection
@@ -90,22 +86,23 @@ for station in $station_list; do
     # These would be the ones that appeared only once, and only in the cloud list.
     # This would be the thing we should dump.
     cat ${TMP_BASE}intersection ${TMP_BASE}cloud | sort | uniq -d > ${TMP_BASE}remove
-    remove_count=`wc -l ${TMP_BASE}remove | awk ' { print $1 } '`
+    remove_count=`cat ${TMP_BASE}remove | wc -l`
+    echo -n $remove_count
 
     if [ "$remove_count" -eq "0" ]; then
-      echo "[ Nothing to remove ]"
+      echo "...Nothing to remove."
       continue
     fi
 
     # We are going to make sure and confirm that there's nothing we are screwing up
     # before moving forward.
-    echo -n "Checking..."
+    echo -n " Checking..."
     ./server_query.py -c $station -q stats > ${TMP_BASE}stats
     exists=`cat ${TMP_BASE}stats | wc -l`
 
     echo -n "$exists:"
     if [ $exists -lt 10 ]; then
-      echo "Unable to get a reliable stats number ... bailing"
+      echo "Unable to get a reliable stats number ... bailing on this station"
       continue
     fi
 
@@ -127,12 +124,15 @@ for station in $station_list; do
       # user can then decide whether this sounds like a reasonably sane number of things
       # to delete or whether it looks like there may be some bug somewhere.
       #
-      echo -n "${station}: About to remove $remove_count of $cloud_count files. Proceed [y/(n)]? "
+      echo -n "${station} - About to remove $remove_count of $cloud_count files. Proceed [y/(s)kip/(a)bort]? "
       read -e query
 
       if [ "$query" = "y" ]; then
           echo "Very well then..."
           cat ${TMP_BASE}remove | ./cloud.py -q unlink
+      elif [ "$query" = "s" ]; then
+          echo "Skipping..."
+          continue
       else
           echo "Aborting"
           exit -1
