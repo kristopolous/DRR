@@ -359,7 +359,7 @@ def server_manager(config):
 
   @app.route('/db')
   def database():
-    """ backs up the current sqlite3 db and sends it over the net. """
+    """ Backs up the current sqlite3 db and sends it over the net. """
     filename = '%s/%s-%s.gz' % (misc.DIR_BACKUPS, misc.config['callsign'], time.strftime('%Y%m%d-%H%M', time.localtime()))
     os.popen('sqlite3 config.db .dump | gzip -9 > %s' % filename)
     return send_file_partial(filename)
@@ -684,7 +684,7 @@ def stream_manager():
 
   # A wrapper function to start a donwnload process
   def download_start(fname):
-    """ Starts a process that manages the downloading of a stream."""
+    """ Starts a process that manages the downloading of a stream. """
     global g_download_pid
 
     g_download_pid += 1
@@ -725,16 +725,8 @@ def stream_manager():
         # We now don't toggle to flag in order to shutdown the
         # old process and start a new one
 
-      elif what == 'terminate':
-        if value in misc.pid:
-          misc.pid[value].terminate()
-          del(misc.pid[value])
-
-        else:
-          logging.error("Can't term %s" % value)
-
       elif what == 'shutdown':
-        print "-- shutdown"
+        print "-- shutdown requested"
         b_shutdown = True
 
       elif what == 'restart':
@@ -818,6 +810,7 @@ def stream_manager():
     DB.incr('uptime', cycle_time)
 
     time.sleep(cycle_time)
+
 
 def read_config(config):
   """

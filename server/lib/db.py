@@ -37,6 +37,9 @@ SCHEMA = {
 }
 
 def map(row_list, table):
+  """ 
+  Using the schema of a table, map the row_list to a list of dicts.
+  """
   mapped = []
   my_schema = schema(table)
 
@@ -57,7 +60,7 @@ def map(row_list, table):
 
 
 def all(table, field_list='*', sort_by='id'):
-  """ Returns all entries from the sqlite3 database for a given table """
+  """ Returns all entries from the sqlite3 database for a given table. """
   db = connect()
 
   column_count = 1
@@ -74,7 +77,7 @@ def all(table, field_list='*', sort_by='id'):
 
 
 def schema(table):
-  """ Returns the schema for a given table """
+  """ Returns the schema for a given table. """
   if table not in SCHEMA:
     return None 
 
@@ -86,7 +89,7 @@ def connect():
   A "singleton pattern" or some other fancy $10-world style of maintaining 
   the database connection throughout the execution of the script.
 
-  Returns the database instance
+  Returns the database instance.
   """
   global g_db
 
@@ -131,7 +134,6 @@ def incr(key, value=1):
   Increments some key in the database by some value.  It is used
   to maintain statistical counters.
   """
-
   db = connect()
 
   try:
@@ -147,7 +149,7 @@ def set(key, value):
   """ 
   Sets (or replaces) a given key to a specific value.  
 
-  Returns the value that was sent
+  Returns the value that was sent.
   """
   global g_params
 
@@ -217,12 +219,6 @@ def register_stream(name, start_unix, end_unix, start_minute, end_minute, week_n
   return res[0]
  
 
-def find_streams(start_time = False, end_time = False):
-  """ Find streams """
-  db = connect()
-  res = db['c'].execute('select * from streams').fetchall()
-
-
 def register_intent(minute_list, duration):
   """
   Tells the server to record on a specific minute for a specific duration when
@@ -245,4 +241,3 @@ def register_intent(minute_list, duration):
 
   return None
 
-  
