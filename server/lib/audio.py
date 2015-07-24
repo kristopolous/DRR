@@ -299,9 +299,16 @@ def stitch_and_slice_process(file_list, start_minute, duration_minute):
   """ The process wrapper around stitch_and_slice to do it asynchronously. """
   name_out = stream_name(file_list, start_minute, duration_minute) 
 
-  if os.path.isfile(name_out) and os.path.getsize(name_out) > 0:
-    logging.info("[stitch] File %s found" % name_out)
-    return None
+  if os.path.isfile(name_out):
+    fsize = os.path.getsize(name_out)
+    # A "correct" filesize should be measured as more than 65% of what the
+    # math would be. So first we can guess that.
+    bitrate = int(DB.get('bitrate', use_cache=True) or 128)
+    estimate = (bitrate / 8) * (duration_min * 60) * (10 ** 3)
+
+    if 0.65 * estimate < size:
+      logging.info("[stitch] File %s found" % name_out)
+      return None
 
   # We presume that there is a file list we need to make 
   stitched_list = stitch(file_list, force_stitch=True)
