@@ -17,7 +17,21 @@ import lib.misc as misc
 origGetAddrInfo = socket.getaddrinfo
 
 def getAddrInfoWrapper(host, port, family=0, socktype=0, proto=0, flags=0):
-  return origGetAddrInfo(host, port, socket.AF_INET, socktype, proto, flags)
+  attempts = 1
+  max_attempts = 10
+
+  while attempts < max_attempts:
+    try:
+      res = origGetAddrInfo(host, port, socket.AF_INET, socktype, proto, flags)
+      return res
+
+    except:
+      print "[%d/%d] Unable to resolve %s on %d ... sleeping a bit" % (attempts, max_attempts, host, port)
+      time.sleep(1)
+      attempts += 1
+
+  # If we have tried this a few times and nothing happens, then we just bail
+  raise Exception
 
 # Replace the original socket.getaddrinfo by our version
 socket.getaddrinfo = getAddrInfoWrapper
