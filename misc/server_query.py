@@ -70,7 +70,8 @@ else:
   else:
     all_stations = []
     callsign_list = args.callsign.split(',')
-    for config in config_list.items():
+
+    for config in config_list:
       if config['callsign'] in callsign_list:
         all_stations.append(config)
 
