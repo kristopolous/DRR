@@ -76,5 +76,6 @@ elif args.query == 'unlink':
   print "Reading files to unlink from stdin"
 
   for line in sys.stdin:
+    line = line.strip()
     print "Removing %s" % line
-    cloud.unlink(line)
+    cloud.unlink(line, config=config)
