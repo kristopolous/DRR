@@ -362,6 +362,7 @@ def server_manager(config):
     """ Backs up the current sqlite3 db and sends it over the net. """
     filename = '%s/%s-%s.gz' % (misc.DIR_BACKUPS, misc.config['callsign'], time.strftime('%Y%m%d-%H%M', time.localtime()))
     os.popen('sqlite3 config.db .dump | gzip -9 > %s' % filename)
+    time.sleep(1)
     return send_file_partial(filename)
 
 
