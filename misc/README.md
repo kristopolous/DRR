@@ -1,10 +1,14 @@
 # Miscellaneous tools
 
  * audio_hopper.py - This is where most of the map and mp3 parsing testing happens.  
+ * backup.sh - Queries each station for a gzipped SQLite3 dump of their current database, putting them in a dated directory
  * cloud.py - A way to query the MS azure cloud storage that's being used.
- * indycast.pub - The public key you should add to your server in the authorized_keys files if you want to be part of the federation
+ * cleanup_cloud.sh - Cross-references the cloud and a station's database, removing files that aren't accounted for.
  * get_stream.sh - Gets a remote mp3 and puts it locally
+ * indycast.pub - The public key you should add to your server in the authorized_keys files if you want to be part of the federation
  * server_query.py - Queries the server(s) for information (see below)
+
+The tools ending in .py all have documentation using python's argparser.  All tools are internally documented in their code - along with providing descriptions of what they do and how to use them at the top of the file.
 
 ## server_query.py
 
