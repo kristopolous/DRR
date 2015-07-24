@@ -300,13 +300,13 @@ def stitch_and_slice_process(file_list, start_minute, duration_minute):
   name_out = stream_name(file_list, start_minute, duration_minute) 
 
   if os.path.isfile(name_out):
-    fsize = os.path.getsize(name_out)
+    file_size = os.path.getsize(name_out)
     # A "correct" filesize should be measured as more than 65% of what the
     # math would be. So first we can guess that.
     bitrate = int(DB.get('bitrate', use_cache=True) or 128)
-    estimate = (bitrate / 8) * (duration_min * 60) * (10 ** 3)
+    estimate = (bitrate / 8) * (duration_minute * 60) * (10 ** 3)
 
-    if 0.65 * estimate < size:
+    if 0.65 * estimate < file_size:
       logging.info("[stitch] File %s found" % name_out)
       return None
 
