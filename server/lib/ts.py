@@ -73,24 +73,24 @@ def to_utc(day_str, hour):
 
   local = day_number * (60 * 24)
 
-  time_re_solo = re.compile('(\d{1,2})([ap])m', re.I)
-  time_re_min = re.compile('(\d{1,2}):(\d{2})([ap])m', re.I)
+  time_re_solo = re.compile('^(\d{1,2})([ap]m|)$', re.I)
+  time_re_min = re.compile('^(\d{1,2}):(\d{2})([ap]m|)', re.I)
 
-  time = time_re_solo.match(hour)
-  if time:
-    local += int(time.groups()[0]) * 60
+  my_time = time_re_solo.match(hour)
+  if my_time:
+    local += int(my_time.groups()[0]) * 60
 
   else:
-    time = time_re_min.match(hour)
+    my_time = time_re_min.match(hour)
 
-    if time:
-      local += int(time.groups()[0]) * 60
-      local += int(time.groups()[1])
+    if my_time:
+      local += int(my_time.groups()[0]) * 60
+      local += int(my_time.groups()[1])
 
-  if not time:
+  if not my_time:
     return False
 
-  if time.groups()[-1] == 'p':
+  if my_time.groups()[-1] == 'pm':
     local += (12 * 60)
 
   return local
