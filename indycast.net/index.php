@@ -92,7 +92,7 @@ if(isset($_GET['callsign'])) {
             </div>
             <label for="duration">For how long</label>
             <ul class="week-group group" id="duration">
-              <li><a data="30min" class="button">30 min</a></li>
+              <li><a data="30" class="button">30 min</a></li>
               <li><a data="1hr" class="button">1 hr</a></li>
               <li><a data="1hr30" class="button">1&frac12; hrs</a></li>
               <li><a data="2hr" class="button">2 hrs</a></li>
