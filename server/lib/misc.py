@@ -9,6 +9,21 @@ import lib.db as DB
 from multiprocessing import Process, Queue, Lock
 
 #
+# The process delay is used throughout to measure things like the delay in
+# forking a subprocesses, waiting for DNS, and then starting a stream or
+# waiting for all the sub-processes like the web-server to clean up and free
+# the tcp port they are listening on, and shut down.  
+#
+# Making this generous shouldn't be discouraged as it is also used as a metric
+# to calculate the number of accomodations that are to be given to make service
+# continuous.
+#
+# Things are specified in multiples of this value ... for instance PROCESS_DELAY
+# / 4 or * 2.  4 is a good number.
+#
+PROCESS_DELAY = 4
+
+#
 # Maintain a pidfile for the manager and the webserver (which
 # likes to become a zombie ... braaaainnns!) so we have to take
 # care of it separately and specially - like a little retard.

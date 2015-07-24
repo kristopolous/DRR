@@ -46,26 +46,9 @@ from subprocess import call
 import subprocess
 from multiprocessing import Process, Queue
 
-g_config = {}
 g_download_pid = 0
 g_params = {}
 __version__ = os.popen("git describe").read().strip()
-
-#
-# The process delay is used throughout to measure things like the delay in
-# forking a subprocesses, waiting for DNS, and then starting a stream or
-# waiting for all the sub-processes like the web-server to clean up and free
-# the tcp port they are listening on, and shut down.  
-#
-# Making this generous shouldn't be discouraged as it is also used as a metric
-# to calculate the number of accomodations that are to be given to make service
-# continuous.
-#
-# Things are specified in multiples of this value ... for instance PROCESS_DELAY
-# / 4 or * 2.  4 is a good number.
-#
-PROCESS_DELAY = 4
-
 
 ##
 ## Storage and file related
@@ -194,6 +177,7 @@ def server_generate_xml(showname, feed_list, duration_min, weekday_list, start, 
     'fri': 'Friday',
     'sat': 'Saturday'
   }
+  
   day_list = [ day_map[weekday] for weekday in weekday_list ]
   if len(day_list) == 1:
     week_string = day_list[0]
@@ -290,12 +274,12 @@ def server_generate_xml(showname, feed_list, duration_min, weekday_list, start, 
 
 
 def server_error(errstr):
-  """ Returns a server error as a JSON result """
+  """ Returns a server error as a JSON result. """
   return jsonify({'result': False, 'error':errstr}), 500
     
 
 def server_manager(config):
-  """ Main flask process that manages the end points """
+  """ Main flask process that manages the end points. """
   app = Flask(__name__)
 
   # from http://flask.pocoo.org/snippets/67/
@@ -309,7 +293,7 @@ def server_manager(config):
   # from http://blog.asgaard.co.uk/2012/08/03/http-206-partial-content-for-flask-python
   @app.after_request
   def after_request(response):
-    """ Supports 206 partial content requests for podcast streams """
+    """ Supports 206 partial content requests for podcast streams. """
     response.headers.add('Accept-Ranges', 'bytes')
     return response
 
@@ -347,7 +331,7 @@ def server_manager(config):
     rv = Response(
       data, 
       206,
-      mimetype = 'audio/mpeg',
+      mimetype='audio/mpeg',
       direct_passthrough=True
     )
     rv.headers.add('Content-Range', 'bytes {0}-{1}/{2}'.format(byte1, byte1 + length - 1, size))
@@ -358,7 +342,7 @@ def server_manager(config):
   # From http://stackoverflow.com/questions/13317536/get-a-list-of-all-routes-defined-in-the-app
   @app.route("/site-map")
   def site_map():
-    """ Shows all the end points supported by the current server """
+    """ Shows all the end points supported by the current server. """
     output = []
     for rule in app.url_map.iter_rules():
 
@@ -375,13 +359,15 @@ def server_manager(config):
 
   @app.route('/db')
   def database():
+    """ backs up the current sqlite3 db and sends it over the net. """
     filename = '%s/%s-%s.gz' % (misc.DIR_BACKUPS, misc.config['callsign'], time.strftime('%Y%m%d-%H%M', time.localtime()))
     os.popen('sqlite3 config.db .dump | gzip -9 > %s' % filename)
     return send_file_partial(filename)
 
+
   @app.route('/prune')
   def prune():
-    """ Starts the prune process which cleans up and offloads mp3s """
+    """ Starts the prune process which cleans up and offloads mp3s. """
     cloud.prune()
     return "Pruning started"
 
@@ -406,7 +392,7 @@ def server_manager(config):
 
   @app.route('/restart')
   def restart():
-    """ Restarts an instance """
+    """ Restarts an instance. """
     cwd = os.getcwd()
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -421,7 +407,7 @@ def server_manager(config):
   def upgrade():
     """
     Goes to the source directory, pulls down the latest from git
-    and if the versions are different, the application restarts
+    and if the versions are different, the application restarts.
     """
     cwd = os.getcwd()
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -433,6 +419,7 @@ def server_manager(config):
 
     if newversion != __version__:
       os.system('pip install --user -r requirements.txt') 
+
       # from http://blog.petrzemek.net/2014/03/23/restarting-a-python-script-within-itself/
       shutdown_server()
       misc.queue.put(('restart', True))
@@ -446,12 +433,10 @@ def server_manager(config):
   def heartbeat():
     """
     A low resource version of the /stats call ... this is invoked
-    by the server health check 
+    by the server health check.
     """
-
     return jsonify({
       'uptime': int(time.time() - misc.start_time),
-      'version': __version__
     }), 200
 
 
@@ -563,7 +548,7 @@ def server_manager(config):
     before the previous one has cleaned up all the socket work.  So if the time is under our
     patience threshold then we sleep a second and just try again, hoping that it will work.
     """
-    patience = PROCESS_DELAY * 2
+    patience = misc.PROCESS_DELAY * 2
     attempt = 1
 
     start = time.time()
@@ -577,14 +562,13 @@ def server_manager(config):
         if time.time() - start < patience:
           print "[attempt: %d] Error, can't start server ... perhaps %s is already in use?" % (attempt, config['port'])
           attempt += 1
-          time.sleep(PROCESS_DELAY / 4)
+          time.sleep(misc.PROCESS_DELAY / 4)
 
 ##
 ## Stream management functions
 ##
 def stream_should_be_recording():
-  """ Queries the database and see if we ought to be recording at this moment """
-  global g_config
+  """ Queries the database and see if we ought to be recording at this moment. """
 
   db = DB.connect()
 
@@ -595,7 +579,7 @@ def stream_should_be_recording():
       start >= ? and 
       end <= ? and 
       accessed_at > datetime('now','-%s days')
-    """ % g_config['expireafter'], 
+    """ % misc.config['expireafter'], 
     (current_minute, current_minute)
   ).fetchone()[0]
 
@@ -605,7 +589,7 @@ def stream_should_be_recording():
 def stream_download(callsign, url, my_pid, fname):
   """ 
   Curl interfacing which downloads the stream to disk. 
-  Follows redirects and parses out basic m3u
+  Follows redirects and parses out basic m3u.
   """
   global g_params
 
@@ -617,7 +601,7 @@ def stream_download(callsign, url, my_pid, fname):
     sys.exit(0)
 
   def cback(data): 
-    global g_config, g_params
+    global g_params
 
     if g_params['isFirst'] == True:
       g_params['isFirst'] = False
@@ -672,30 +656,28 @@ def stream_download(callsign, url, my_pid, fname):
 def stream_manager():
   """
   Manager process which makes sure that the
-  streams are running appropriately
+  streams are running appropriately.
   """
-  global g_config
+  callsign = misc.config['callsign']
 
-  callsign = g_config['callsign']
-
-  cascade_time = g_config['cascadetime']
-  cascade_buffer = g_config['cascadebuffer']
+  cascade_time = misc.config['cascadetime']
+  cascade_buffer = misc.config['cascadebuffer']
   cascade_margin = cascade_time - cascade_buffer
 
   last_prune = 0
   last_success = 0
 
-  mode_full = (g_config['mode'].lower() == 'full')
+  mode_full = (misc.config['mode'].lower() == 'full')
   b_shutdown = False
   should_record = mode_full
 
   # Number of seconds to be cycling
-  cycle_time = g_config['cycletime']
+  cycle_time = misc.config['cycletime']
 
   process = False
   process_next = False
 
-  server_pid = Process(target=server_manager, args=(g_config,))
+  server_pid = Process(target=server_manager, args=(misc.config,))
   server_pid.start()
 
   fname = False
@@ -703,8 +685,8 @@ def stream_manager():
   # A wrapper function to start a donwnload process
   def download_start(fname):
     """ Starts a process that manages the downloading of a stream."""
-
     global g_download_pid
+
     g_download_pid += 1
     logging.info("Starting cascaded downloader #%d. Next up in %ds" % (g_download_pid, cascade_margin))
 
@@ -713,8 +695,8 @@ def stream_manager():
     # the actual start of the download so we should err on that side by putting it
     # in the future by some margin
     #
-    fname = '%s/%s-%d.mp3' % (misc.DIR_STREAMS, callsign, TS.sec_now(offset_sec=PROCESS_DELAY))
-    process = Process(target=stream_download, args=(callsign, g_config['stream'], g_download_pid, fname))
+    fname = '%s/%s-%d.mp3' % (misc.DIR_STREAMS, callsign, TS.sec_now(offset_sec=misc.PROCESS_DELAY))
+    process = Process(target=stream_download, args=(callsign, misc.config['stream'], g_download_pid, fname))
     process.start()
     return [fname, process]
 
@@ -725,7 +707,7 @@ def stream_manager():
     #
     flag = False
 
-    if last_prune < (time.time() - TS.ONE_DAY * g_config['pruneevery']):
+    if last_prune < (time.time() - TS.ONE_DAY * misc.config['pruneevery']):
       # We just assume it can do its business in under a day
       misc.pid['prune'] = cloud.prune()
       last_prune = time.time()
@@ -738,7 +720,7 @@ def stream_manager():
       # The curl proces discovered a new stream to be
       # used instead.
       if what == 'stream':
-        g_config['stream'] = value
+        misc.config['stream'] = value
         logging.info("Using %s as the stream now" % value)
         # We now don't toggle to flag in order to shutdown the
         # old process and start a new one
@@ -842,11 +824,9 @@ def read_config(config):
   Reads a configuration file. 
   Currently documented at https://github.com/kristopolous/DRR/wiki/Join-the-Federation
   """
-  global g_config
-
   Config = ConfigParser.ConfigParser()
   Config.read(config)
-  g_config = misc.config_section_map('Main', Config)
+  misc.config = misc.config_section_map('Main', Config)
   
   defaults = {
     # The log level to be put into the indycast.log file.
@@ -895,64 +875,64 @@ def read_config(config):
   }
 
   for k, v in defaults.items():
-    if k not in g_config:
-      g_config[k] = v
+    if k not in misc.config:
+      misc.config[k] = v
     else:
-      if type(v) is int: g_config[k] = int(g_config[k])
-      elif type(v) is float: g_config[k] = float(g_config[k])
+      if type(v) is int: misc.config[k] = int(misc.config[k])
+      elif type(v) is float: misc.config[k] = float(misc.config[k])
 
   # in case someone is specifying ~/radio 
-  g_config['storage'] = os.path.expanduser(g_config['storage'])
+  misc.config['storage'] = os.path.expanduser(misc.config['storage'])
 
-  if g_config['cloud']:
-    g_config['cloud'] = os.path.expanduser(g_config['cloud'])
+  if misc.config['cloud']:
+    misc.config['cloud'] = os.path.expanduser(misc.config['cloud'])
 
-    if os.path.exists(g_config['cloud']):
+    if os.path.exists(misc.config['cloud']):
       # If there's a cloud conifiguration file then we read that too
       cloud_config = ConfigParser.ConfigParser()
-      cloud_config.read(g_config['cloud'])
-      g_config['azure'] = misc.config_section_map('Azure', cloud_config)
+      cloud_config.read(misc.config['cloud'])
+      misc.config['azure'] = misc.config_section_map('Azure', cloud_config)
 
-  if not os.path.isdir(g_config['storage']):
+  if not os.path.isdir(misc.config['storage']):
     try:
       # If I can't do this, that's fine.
-      os.mkdir(g_config['storage'])
+      os.mkdir(misc.config['storage'])
 
     except Exception as exc:
       # We make it from the current directory
-      g_config['storage'] = defaults['storage']
+      misc.config['storage'] = defaults['storage']
 
-      if not os.path.isdir(g_config['storage']):
-        os.mkdir(g_config['storage'])
+      if not os.path.isdir(misc.config['storage']):
+        os.mkdir(misc.config['storage'])
 
   # Go to the callsign level in order to store multiple station feeds on a single
   # server in a single parent directory without forcing the user to decide what goes
   # where.
-  g_config['storage'] += '/%s/' % g_config['callsign']
-  g_config['storage'] = re.sub('\/+', '/', g_config['storage'])
+  misc.config['storage'] += '/%s/' % misc.config['callsign']
+  misc.config['storage'] = re.sub('\/+', '/', misc.config['storage'])
 
-  if not os.path.isdir(g_config['storage']):
-    os.mkdir(g_config['storage'])
+  if not os.path.isdir(misc.config['storage']):
+    os.mkdir(misc.config['storage'])
 
   # We have a few sub directories for storing things
   for subdir in [misc.DIR_STREAMS, misc.DIR_SLICES, misc.DIR_BACKUPS]:
-    if not os.path.isdir(g_config['storage'] + subdir):
-      os.mkdir(g_config['storage'] + subdir)
+    if not os.path.isdir(misc.config['storage'] + subdir):
+      os.mkdir(misc.config['storage'] + subdir)
 
   # Now we try to do all this stuff again
-  if os.path.isdir(g_config['storage']):
+  if os.path.isdir(misc.config['storage']):
     #
     # There's a bug after we chdir, where the multiprocessing is trying to grab the same 
     # invocation as the initial argv[0] ... so we need to make sure that if a user did 
     # ./blah this will be maintained.
     #
-    if not os.path.isfile(g_config['storage'] + __file__):
-      os.symlink(os.path.abspath(__file__), g_config['storage'] + __file__)
+    if not os.path.isfile(misc.config['storage'] + __file__):
+      os.symlink(os.path.abspath(__file__), misc.config['storage'] + __file__)
 
-    os.chdir(g_config['storage'])
+    os.chdir(misc.config['storage'])
 
   else:
-    logging.warning("Can't find %s. Using current directory." % g_config['storage'])
+    logging.warning("Can't find %s. Using current directory." % misc.config['storage'])
 
   # If there is an existing pid-manager, that means that 
   # there is probably another version running.
@@ -964,22 +944,20 @@ def read_config(config):
         os.kill(int(oldserver), 15)
         # We give it a few seconds to shut everything down
         # before trying to proceed
-        time.sleep(PROCESS_DELAY / 2)
+        time.sleep(misc.PROCESS_DELAY / 2)
 
       except:
         pass
    
   # From https://docs.python.org/2/howto/logging.html
-  numeric_level = getattr(logging, g_config['loglevel'].upper(), None)
+  numeric_level = getattr(logging, misc.config['loglevel'].upper(), None)
   if not isinstance(numeric_level, int):
     raise ValueError('Invalid log level: %s' % loglevel)
 
   logging.basicConfig(level=numeric_level, filename='indycast.log', datefmt='%Y-%m-%d %H:%M:%S',format='%(asctime)s %(message)s')
 
-  #
   # Increment the number of times this has been run so we can track the stability of remote 
   # servers and instances.
-  #
   DB.incr('runcount')
 
   signal.signal(signal.SIGINT, misc.shutdown)
@@ -990,7 +968,7 @@ if __name__ == "__main__":
 
   # From http://stackoverflow.com/questions/25504149/why-does-running-the-flask-dev-server-run-itself-twice
   if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
-    server_manager(g_config)
+    server_manager(misc.config)
 
   else: 
     parser = argparse.ArgumentParser()
@@ -999,9 +977,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     read_config(args.config)      
 
-    misc.set_config(g_config)
-
-    pid = misc.change_proc_name("%s-manager" % g_config['callsign'])
+    pid = misc.change_proc_name("%s-manager" % misc.config['callsign'])
 
     # This is the pid that should be killed to shut the system
     # down.

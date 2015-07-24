@@ -108,6 +108,7 @@ def stream_info(fname, guess_time=False):
 
 
 def stream_name(list_in, start_minute, duration_minute):
+  """ Get the stream name from list and start minute over a given duration. """
   duration_sec = duration_minute * 60.0
 
   first_file = list_in[0]['name']
@@ -117,10 +118,10 @@ def stream_name(list_in, start_minute, duration_minute):
   return "%s/%s-%d_%d.mp3" % (misc.DIR_SLICES, callsign, int(unix_time) + start_minute * 60, duration_minute)
 
 
-def crc(fname, blockcount=-1, only_check=False):
+def signature(fname, blockcount=-1, only_check=False):
   """
   Opens an mp3 file, find all the blocks, the byte offset of the blocks, and if they
-  are audio blocks, construct a crc32 mapping of some given beginning offset of the audio
+  are audio blocks, construct a signature mapping of some given beginning offset of the audio
   data ... this is intended for stitching.
   """
   # Simply make sure that there is a map associated with the
@@ -130,9 +131,9 @@ def crc(fname, blockcount=-1, only_check=False):
   if only_check and os.path.exists(map_name):
     return True
 
-  crc32, offset = get_map(fname)
-  if crc32 is not None:
-    return crc32, offset
+  siglist, offset = get_map(fname)
+  if siglist is not None:
+    return siglist, offset
 
   frame_sig = []
   start_byte = []
@@ -205,9 +206,9 @@ def crc(fname, blockcount=-1, only_check=False):
         throw_away = f.read(1)
 
         # Get the signature
-        crc = f.read(read_size)
+        sig = f.read(read_size)
 
-        frame_sig.append(crc)
+        frame_sig.append(sig)
 
         start_byte.append(frame_start)
 
@@ -285,7 +286,7 @@ def get_time(fname):
   """
   map_name = fname + '.map'
   if os.path.exists(map_name):
-    crc32, offset = get_map(map_name)
+    siglist, offset = get_map(map_name)
     return FRAME_LENGTH * len(offset)
 
   else:
@@ -355,7 +356,7 @@ def list_slice(list_in, name_out, duration_sec, start_sec):
     item = list_in[ix]
 
     # get the regular map
-    crc32, offset = crc(item['name'])
+    siglist, offset = signature(item['name'])
 
     if ix == len(list_in) - 1:
       frame_end = min(int(math.ceil(duration_sec / FRAME_LENGTH)), len(offset) - 1)
@@ -398,7 +399,7 @@ def list_slice(list_in, name_out, duration_sec, start_sec):
 def stitch(file_list, force_stitch=False):
   """
   Takes a list of files and then attempt to seamlessly stitch them 
-  together by looking at their crc32 checksums of the data payload in the blocks.
+  together by looking at their signature checksums of the data payload in the blocks.
   """
 
   duration = 0
@@ -415,10 +416,10 @@ def stitch(file_list, force_stitch=False):
     logging.error("Unable to find any files matching in the list for stitching.")
     return False
 
-  crc32, offset = crc(first['name'])
+  siglist, offset = signature(first['name'])
 
   # print first, start_index
-  first['crc32'] = crc32
+  first['siglist'] = siglist
   first['offset'] = offset
 
   args = [{
@@ -438,9 +439,9 @@ def stitch(file_list, force_stitch=False):
     if not res:
       continue
 
-    crc32, offset = crc(second['name'])
+    siglist, offset = signature(second['name'])
 
-    second['crc32'] = crc32
+    second['siglist'] = siglist
     second['offset'] = offset
 
     isFound = True
@@ -448,11 +449,11 @@ def stitch(file_list, force_stitch=False):
     pos = -1
     try:
       while True:
-        pos = second['crc32'].index(first['crc32'][-2], pos + 1)
+        pos = second['siglist'].index(first['siglist'][-2], pos + 1)
 
         isFound = True
         for i in xrange(5, 1, -1):
-          if second['crc32'][pos - i + 2] != first['crc32'][-i]:
+          if second['siglist'][pos - i + 2] != first['siglist'][-i]:
             isFound = False
             logging.warn("Indices @%d do not match between %s and %s" % (pos, first['name'], second['name']))
             break
