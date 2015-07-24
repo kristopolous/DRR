@@ -111,7 +111,7 @@ for station in all_stations:
     stop = time.time()
 
     if len(all_stations) == 1:
-      print data
+      sys.stdout.write(data)
        
     else:
       print "[ %d ]\n%s" % (stop - start, data)
