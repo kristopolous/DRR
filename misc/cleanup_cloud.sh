@@ -3,44 +3,63 @@
 # This rather sophisticated thing will take old files off the cloud that
 # the servers do not know about.
 #
+# Without arguments it will go through all the stations. 
+#
+# An optional argument would be a quoted string of stations
+# to use.
+# 
+# In fact, here is where that's determined.
+#
+station_list=${1:-`./server_query.py -l`}
 
+#
 # This is the basename and path that we use in order to
 # store all of our files.  This process isn't very space 
 # intensive but we do need a few files.  It's better to
 # name them consistently and make sure that we know where
 # they all are for debugging.
+#
 TMP_BASE="/tmp/list-"
 
-# First we backup everything to get the databases
-
-#backup_dir=~/backups/indycast/20150724-1447
-echo "Running backup on all hosts to get database list..."
-backup_dir=`./backup.sh 1`
 script_dir=`pwd`
 
+#
+# First we backup everything to get the databases.
+#
+# This creates a corresponding database dump on each server
+# which gets removed in the config['archivedays'] number of days.
+#
+# Although these files are small, it's probably best not to run
+# this process flippantly.  
+#
+
+echo "Running backup on all hosts to get database list..."
+#
+# The most recent backup can be found by just doing this:
+# 
+# backup_dir=~/backups/indycast/`ls -1t ~/backups/indycast | tail -1`
+#
+# Otherwise we can do it each time.
+backup_dir=`./backup.sh 1`
+
 # Go into the back up directory and expand all the stations
-# in a subprocess
-(
-    cd $backup_dir
+# in a subprocess.
+cd $backup_dir
 
-    # Parallelize this
-    ls *gz | xargs -P 6 gunzip
+# Parallelize this
+ls *gz | xargs -P 6 gunzip
 
-    # I do not want to be told if there are errors here.
-    # I really do not care that much.
-) >& /dev/null
-
-station_list=${1:-`./server_query.py -l`}
-
-# Now for each station we take all the stream names
+# Now for each station we take all the stream names.
 for station in $station_list; do
 
     echo -n "${station}: "
 
+    #
     # Gets the SQL list of files by going into the 
     # backup directory and loading the sql dump into
     # a temporary database that we query on and then
-    # send the output to a temporary file
+    # send the output to a temporary file.
+    #
     cd $backup_dir 
 
       [ -e ${TMP_BASE}db ] && rm ${TMP_BASE}db
@@ -58,13 +77,14 @@ for station in $station_list; do
 
     cd $script_dir
 
-    # Find all the files on the cloud for this station
+    # Find all the files on the cloud for this station.
     echo -n "Cloud "
     ./cloud.py -q list -s $station > ${TMP_BASE}cloud
     cloud_count=`wc -l ${TMP_BASE}cloud | awk ' { print $1 } '`
 
     echo -n "SetDiff "
-    # See what the difference of these two lists are
+
+    # See what the difference of these two lists are.
     cat ${TMP_BASE}cloud ${TMP_BASE}sql | sort | uniq -u > ${TMP_BASE}intersection
 
     # These would be the ones that appeared only once, and only in the cloud list.
@@ -78,7 +98,7 @@ for station in $station_list; do
     fi
 
     # We are going to make sure and confirm that there's nothing we are screwing up
-    # before moving forward
+    # before moving forward.
     echo -n "Checking..."
     ./server_query.py -c $station -q stats > ${TMP_BASE}stats
     exists=`cat ${TMP_BASE}stats | wc -l`
@@ -90,7 +110,7 @@ for station in $station_list; do
     fi
 
     # If we take our remove list and use it as a grep list through the stats, the
-    # wc -l of it should be zero
+    # wc -l of it should be zero.
     overlap=`grep -f ${TMP_BASE}remove ${TMP_BASE}stats | wc -l`
 
     echo -n "$overlap "
@@ -98,6 +118,7 @@ for station in $station_list; do
     if [ "$overlap" -eq "0" ]; then
       echo "Pass"
 
+      #
       # Now we manually prompt the user because this is a pretty irreversible little thing we
       # are about to do.
       #
