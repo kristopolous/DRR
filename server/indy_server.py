@@ -363,7 +363,7 @@ def server_manager(config):
     filename = '%s/%s-%s.gz' % (misc.DIR_BACKUPS, misc.config['callsign'], time.strftime('%Y%m%d-%H%M', time.localtime()))
     os.popen('sqlite3 config.db .dump | gzip -9 > %s' % filename)
     time.sleep(1)
-    return send_file_partial(filename)
+    return flask.send_file(filename)
 
 
   @app.route('/prune')
