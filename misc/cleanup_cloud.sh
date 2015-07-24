@@ -13,8 +13,10 @@ TMP_BASE="/tmp/list-"
 
 # First we backup everything to get the databases
 
-backup_dir=~/backups/indycast/20150724-1447
-#backup_dir=`./backup.sh 1`
+#backup_dir=~/backups/indycast/20150724-1447
+echo "Running backup on all hosts to get database list..."
+backup_dir=`./backup.sh 1`
+script_dir=`pwd`
 
 # Go into the back up directory and expand all the stations
 # in a subprocess
@@ -28,8 +30,10 @@ backup_dir=~/backups/indycast/20150724-1447
     # I really do not care that much.
 ) >& /dev/null
 
+station_list=${1:-`./server_query.py -l`}
+
 # Now for each station we take all the stream names
-for station in `./server_query.py -l`; do
+for station in $station_list; do
 
     echo -n "${station}: "
 
@@ -37,17 +41,22 @@ for station in `./server_query.py -l`; do
     # backup directory and loading the sql dump into
     # a temporary database that we query on and then
     # send the output to a temporary file
-    (
-      cd $backup_dir
+    cd $backup_dir 
 
       [ -e ${TMP_BASE}db ] && rm ${TMP_BASE}db
+
+      if [ ! -e $station ]; then
+        echo "Unable to find DB for $station ... I can't do anything for this"
+        continue
+      fi
 
       # Load the SQL dump into a temporary file
       sqlite3 ${TMP_BASE}db < $station
 
       echo -n "SQL "
       sqlite3 ${TMP_BASE}db 'select replace(name, "streams/", "") from streams' > ${TMP_BASE}sql
-    )
+
+    cd $script_dir
 
     # Find all the files on the cloud for this station
     echo -n "Cloud "
@@ -72,6 +81,13 @@ for station in `./server_query.py -l`; do
     # before moving forward
     echo -n "Checking..."
     ./server_query.py -c $station -q stats > ${TMP_BASE}stats
+    exists=`cat ${TMP_BASE}stats | wc -l`
+
+    echo -n "$exists:"
+    if [ $exists -lt 10 ]; then
+      echo "Unable to get a reliable stats number ... bailing"
+      continue
+    fi
 
     # If we take our remove list and use it as a grep list through the stats, the
     # wc -l of it should be zero
