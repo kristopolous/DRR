@@ -482,6 +482,15 @@ def server_manager(config):
     if res:
       duration_min = int(res.groups()[0])
 
+      # This means that the input is just numeric.
+      # This is fine for now, but we use this to construct prose such as
+      # "So and so is a xxx show recorded" ... in this case, a unit is
+      # nice to have there for legibility purposes.  Since we are doing
+      # with our parsing of the string, we can just ammend the unit
+      # to the end
+      if re.match('^(\d+)$', duration_string):
+        duration_string += 'min'
+
     else:
       res = re_hr_solo.match(duration_string)
 
