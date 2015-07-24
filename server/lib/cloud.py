@@ -89,8 +89,16 @@ def register_streams():
   # This is a list of files we haven't scanned yet...
   if not diff: return True
 
+  cutoff = time.mktime((datetime.now() - timedelta(minutes=1, seconds=misc.config['cascadetime'])).timetuple())
+
   for fname in diff:
     if len(fname) == 0:
+      next
+
+    # This basically means we could still be writing
+    # this file.
+
+    if os.path.getctime(fname) > cutoff:
       next
 
     info = audio.stream_info(fname)

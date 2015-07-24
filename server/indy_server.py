@@ -523,6 +523,10 @@ def server_manager(config):
     # (that is if we are in ondemand mode)
     DB.register_intent(start_time_list, duration_min)
 
+    # Make sure that we have all of our streams registered before trying
+    # to infer what we can send to the user.
+    cloud.register_streams()
+
     # Look for streams that we have which match this query and duration.
     # This will also create slices if necessary in a sub process.
     # The list of files that returns will include this not-yet-created
