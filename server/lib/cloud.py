@@ -44,10 +44,10 @@ def connect(config=False):
   return blob_service, container
 
 
-def unlink(path):
+def unlink(path, config=False):
   """ Remove a file from the cloud service. """
   fname = os.path.basename(path)
-  blob_service, container = connect()
+  blob_service, container = connect(config)
   return blob_service.delete_blob(container, path)
 
 
