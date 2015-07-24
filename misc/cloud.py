@@ -71,3 +71,10 @@ if args.query == 'size':
 
 elif args.query == 'list':
   get_files(station_list, blob_service)
+
+elif args.query == 'unlink':
+  print "Reading files to unlink from stdin"
+
+  for line in sys.stdin:
+    print "Removing %s" % line
+    cloud.unlink(line)
