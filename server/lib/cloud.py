@@ -15,7 +15,7 @@ from multiprocessing import Process, Queue
 def get(path, do_open=True):
   """
   If the file exists locally then we return it, otherwise
-  we go out to the network store and retrieve it
+  we go out to the network store and retrieve it.
   """
   # Let's make sure it exists and isn't some nonsense size
   # Which I've arbitrary set as a few thousand bytes
@@ -33,7 +33,7 @@ def get(path, do_open=True):
 
 
 def connect(config=False):
-  """ Connect to the cloud service """
+  """ Connect to the cloud service. """
   if not config: config = misc.config
 
   from azure.storage import BlobService
@@ -45,14 +45,14 @@ def connect(config=False):
 
 
 def unlink(path):
-  """ Remove a file from the cloud service """
+  """ Remove a file from the cloud service. """
   fname = os.path.basename(path)
   blob_service, container = connect()
   return blob_service.delete_blob(container, path)
 
 
 def put(path):
-  """ Place a file, given a path, in the cloud """
+  """ Place a file, given a path, in the cloud. """
   if 'test' in misc.config['azure']:
     logging.info ("I would have uploaded %s but I'm in test mode" % path)
 
@@ -73,8 +73,9 @@ def put(path):
 
   return False
 
+
 def register_streams():
-  """ Find the local streams and make sure they are all registered in the sqlite3 database """
+  """ Find the local streams and make sure they are all registered in the sqlite3 database. """
 
   # Get the existing streams as a set
   all_registered = Set(DB.all('streams', ['name']))
@@ -111,7 +112,7 @@ def register_streams():
 
 
 def prune():
-  """ Gets rid of files older than archivedays - cloud stores things if relevant """
+  """ Gets rid of files older than archivedays - cloud stores things if relevant. """
   pid = Process(target=prune_process, args=(misc.lockMap,))
   pid.start()
   return pid
@@ -228,7 +229,7 @@ def get_size(fname):
 
  
 def download(path):
-  """ Download a file from the cloud and put it in a servicable place """
+  """ Download a file from the cloud and put it in a servicable place. """
   blob_service, container = connect()
 
   if blob_service:

@@ -13,7 +13,7 @@ import ts as TS
 from datetime import datetime, timedelta, date
 
 # Most common frame-length ... in practice, I haven't 
-# seen other values in the real world
+# seen other values in the real world.
 FRAME_LENGTH = (1152.0 / 44100)
 
 #
@@ -21,12 +21,12 @@ FRAME_LENGTH = (1152.0 / 44100)
 # (such as kdvs), so we have to just seek into the file
 # and look for one.  This is the number of bytes we try.
 # In practice, 217 appears to be enough, so we make it about
-# ten times that and cross our fingers
+# ten times that and cross our fingers.
 #
 MAX_HEADER_ATTEMPTS = 2048
 
 def get_map(fname):
-  """ Retrieves a map file associated with the mp3 """
+  """ Retrieves a map file associated with the mp3. """
   map_name = fname if fname.endswith('.map') else fname + '.map'
 
   if os.path.exists(map_name):
@@ -39,7 +39,7 @@ def get_map(fname):
 
     
 def list_info(file_list):
-  """ A version of the stream_info that accepts a list """
+  """ A version of the stream_info that accepts a list. """
   info = stream_info(file_list[0]['name'])
 
   # Some things are the same such as the
@@ -282,7 +282,7 @@ def get_time(fname):
   """
   Determines the duration of an audio file by doing some estimates based on the offsets
 
-  Returns the audio time in seconds
+  Returns the audio time in seconds.
   """
   map_name = fname + '.map'
   if os.path.exists(map_name):
@@ -296,11 +296,7 @@ def get_time(fname):
 
 
 def stitch_and_slice_process(file_list, start_minute, duration_minute):
-  """
-  Given a file_list in a directory and a duration, this function will seek out
-  adjacent files if necessary and serialize them accordingly, and then return the
-  file name of an audio slice that is the combination of them.
-  """
+  """ The process wrapper around stitch_and_slice to do it asynchronously. """
   name_out = stream_name(file_list, start_minute, duration_minute) 
 
   if os.path.isfile(name_out) and os.path.getsize(name_out) > 0:
@@ -337,6 +333,11 @@ def stitch_and_slice_process(file_list, start_minute, duration_minute):
 
 
 def stitch_and_slice(file_list, start_minute, duration_minute):
+  """
+  Given a file_list in a directory and a duration, this function will seek out
+  adjacent files if necessary and serialize them accordingly, and then return the
+  file name of an audio slice that is the combination of them.
+  """
   from multiprocessing import Process
   slice_process = Process(target=stitch_and_slice_process, args=(file_list, start_minute, duration_minute, ))
   slice_process.start()
@@ -351,7 +352,7 @@ def list_slice(list_in, name_out, duration_sec, start_sec):
 
   out = open(name_out, 'wb+')
 
-  print 'slice', duration_sec, start_sec
+  # print 'slice', duration_sec, start_sec
   for ix in range(0, len(list_in)):
     item = list_in[ix]
 
@@ -482,7 +483,5 @@ def stitch(file_list, force_stitch=False):
 
     break
 
-  # print 'stitch', args
   return args
-
 
