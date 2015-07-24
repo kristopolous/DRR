@@ -472,7 +472,7 @@ def server_manager(config):
     weekday_list = weekday.split(',')
 
     # Duration is expressed either in minutes or in \d+hr\d+ minute
-    re_minute = re.compile('^(\d+)$')
+    re_minute = re.compile('^(\d+)(?:min|)$')
     re_hr_solo = re.compile('^(\d+)hr$', re.I)
     re_hr_min = re.compile('^(\d+)hr(\d+).*$', re.I)
 
