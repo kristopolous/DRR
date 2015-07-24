@@ -124,11 +124,18 @@ for station in $station_list; do
       # user can then decide whether this sounds like a reasonably sane number of things
       # to delete or whether it looks like there may be some bug somewhere.
       #
-      echo -n "${station} - About to remove $remove_count of $cloud_count files. Proceed [y/(s)kip/(a)bort]? "
+
+      # If it's a small number of things to remove, then just print the list to stdout
+      if [ $remove_count -lt "5" ]; then
+        echo "${station} - Remove list:"
+        cat ${TMP_BASE}remove 
+      fi
+
+      echo -n "${station} - About to remove $remove_count of $cloud_count files. Proceed [(y)es / (s)kip / (a)bort]? "
       read -e query
 
       if [ "$query" = "y" ]; then
-          echo "Very well then..."
+          echo "${station} - Very well then...removing."
           cat ${TMP_BASE}remove | ./cloud.py -q unlink
       elif [ "$query" = "s" ]; then
           echo "Skipping..."
