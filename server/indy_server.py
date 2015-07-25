@@ -452,6 +452,7 @@ def server_manager(config):
       'kv': DB.all('kv'),
       'uptime': int(time.time() - misc.start_time),
       'free': os.popen("df -h / | tail -1").read().strip(),
+      'load': os.popen("uptime").read().strip(),
       'disk': sum(os.path.getsize(f) for f in os.listdir('.') if os.path.isfile(f)),
       'streams': DB.all('streams', sort_by='start_unix'),
       'version': __version__,
