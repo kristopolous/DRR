@@ -38,7 +38,7 @@ if(isset($_GET['callsign'])) {
     <div id="header">
       <h1>Indycast Radio</h1>
       <p>Podcasting <?= $callsign ? strtoupper($callsign) : "the World's Independent Radio" ?>
-      <? if ($callsign) { ?> <br/><small>(<a href="/">and more</a>)</small> <? } ?></p>
+      <?php if ($callsign) { ?><br/><small>(<a href="/">and more</a>)</small><?php } ?></p>
     </div>
 
     <div id="main">
@@ -51,23 +51,21 @@ if(isset($_GET['callsign'])) {
         </h2>
       </header>
 
-      <div class="box alt container">
-<? if(!$callsign) { ?>
+      <div class="box alt container"><?php 
+      if(!$callsign) { ?>
         <section class="feature left">
           <a href="#" class="image icon fa-signal"><img src="/images/pic01.jpg" alt="" /><div id="description"></div></a>
           <div class="content">
             <h3>Choose the station</h3>
-            <ul class="radio-group group" id="station">
-<?php
-  foreach(active_stations() as $station) {
-    echo '<li><a desc="' . $station['description'] . '" class="button">' . ($station['callsign']) . '</a></li>';
-  }
-?>
-            </ul>
+            <ul class="radio-group group" id="station"><?php
+              foreach(active_stations() as $station) {
+                echo '<li><a desc="' . $station['description'] . '" class="button">' . ($station['callsign']) . '</a></li>';
+              }
+            ?></ul>
             <a href="#volunteer">Volunteer to add a station!</a>
           </div>
         </section>
-<? } ?>
+        <?php } ?>
         <section class="feature right">
           <a href="#" class="image icon fa-clock-o"><img src="/images/pic02.jpg" alt="" /></a>
           <div class="content">
@@ -108,7 +106,6 @@ if(isset($_GET['callsign'])) {
           </div>
         </section>
       </div>
-
       <footer class="major container">
         <div id="podcast-done">
           <h3>Your podcast link</h3>
@@ -138,7 +135,7 @@ if(isset($_GET['callsign'])) {
           <p>People like you. Voluntarily.</p>
 
           <h3>Join the Federation</h3>
-          <p>Generally each station gets its own server.  For instance, kxlu.indycast.net and kdvs.indycast.net are different servers responsible for each station.</p>
+          <p>Generally each station gets its own server. For instance, kxlu.indycast.net and kdvs.indycast.net are different servers responsible for each station.</p>
 
           <p><a href='https://github.com/kristopolous/DRR/wiki/Join-the-Federation'>If you'd like to add or support a station, join the federation</a>.</p>
 
@@ -187,8 +184,8 @@ if(isset($_GET['callsign'])) {
     <script src="/assets/js/evda.min.js"></script>
     <!--[if lte IE 8]><script src="/assets/js/ie/respond.min.js"></script><![endif]-->
     <script src="/assets/js/indycast.js"></script>
-    <? if ($callsign) { ?>
+    <?php if ($callsign) { ?>
       <script> ev('station', '<?= $callsign ?>'); </script>
-    <? } ?>
+    <?php } ?>
   </body>
 </html>
