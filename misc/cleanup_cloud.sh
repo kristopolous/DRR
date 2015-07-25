@@ -38,6 +38,7 @@ echo "Running backup on all hosts to get database list..."
 # The most recent backup can be found by just doing this:
 # 
 backup_dir=~/backups/indycast/`ls -1t ~/backups/indycast | head -1`
+
 #
 # Otherwise we can do it each time.
 #backup_dir=`./backup.sh 1`
@@ -45,109 +46,111 @@ backup_dir=~/backups/indycast/`ls -1t ~/backups/indycast | head -1`
 # Now for each station we take all the stream names.
 for station in $station_list; do
 
-    echo -n "${station} - "
+  echo -n "${station} - "
+
+  #
+  # Gets the SQL list of files by going into the 
+  # backup directory and loading the sql dump into
+  # a temporary database that we query on and then
+  # send the output to a temporary file.
+  #
+  db_path=$backup_dir/${station}.gz
+
+  if [ ! -e $db_path ]; then
+    echo "Unable to find DB for $station in $db_path ... I can't do anything here"
+    continue
+  fi
+
+  # Load the SQL dump into a temporary file
+  [ -e ${TMP_BASE}db ] && rm ${TMP_BASE}db
+  zcat $db_path | sqlite3 ${TMP_BASE}db 
+
+  echo -n "SQL:"
+  sqlite3 ${TMP_BASE}db 'select replace(name, "streams/", "") from streams' > ${TMP_BASE}sql
+  sql_count=`cat ${TMP_BASE}sql | wc -l`
+  echo -n $sql_count
+
+  if [ $sql_count -lt 10 ]; then
+    echo "Found under 10 entries ... we will assume this is an error."
+    continue
+  fi
+
+  # Find all the files on the cloud for this station.
+  echo -n " Cloud:"
+  ./cloud.py -q list -s $station > ${TMP_BASE}cloud
+  cloud_count=`cat ${TMP_BASE}cloud | wc -l`
+  echo -n "$cloud_count SetDiff:"
+
+  # See what the difference of these two lists are.
+  cat ${TMP_BASE}cloud ${TMP_BASE}sql | sort | uniq -u > ${TMP_BASE}intersection
+
+  # These would be the ones that appeared only once, and only in the cloud list.
+  # This would be the thing we should dump.
+  cat ${TMP_BASE}intersection ${TMP_BASE}cloud | sort | uniq -d > ${TMP_BASE}remove
+  remove_count=`cat ${TMP_BASE}remove | wc -l`
+  echo -n $remove_count
+
+  if [ "$remove_count" -eq "0" ]; then
+    echo "...Nothing to remove."
+    continue
+  fi
+
+  # We are going to make sure and confirm that there's nothing we are screwing up
+  # before moving forward.
+  echo -n " Checking..."
+  ./server_query.py -c $station -q stats > ${TMP_BASE}stats
+  exists=`cat ${TMP_BASE}stats | wc -l`
+
+  echo -n "$exists:"
+  if [ $exists -lt 10 ]; then
+    echo "Unable to get a reliable stats number ... bailing on this station"
+    continue
+  fi
+
+  # If we take our remove list and use it as a grep list through the stats, the
+  # wc -l of it should be zero.
+  overlap=`grep -f ${TMP_BASE}remove ${TMP_BASE}stats | wc -l`
+
+  echo -n "$overlap "
+
+  if [ "$overlap" -eq "0" ]; then
+    echo "Pass"
 
     #
-    # Gets the SQL list of files by going into the 
-    # backup directory and loading the sql dump into
-    # a temporary database that we query on and then
-    # send the output to a temporary file.
+    # Now we manually prompt the user because this is a pretty irreversible little thing we
+    # are about to do.
     #
-    db_path=$backup_dir/${station}.gz
+    # Just to make sure, we're going to tell the user how many files we'd like to remove
+    # and then place it with respect to the total number of files for that station.  The
+    # user can then decide whether this sounds like a reasonably sane number of things
+    # to delete or whether it looks like there may be some bug somewhere.
+    #
 
-    if [ ! -e $db_path ]; then
-      echo "Unable to find DB for $station in $db_path ... I can't do anything here"
-      continue
+    # If it's a small number of things to remove, then just print the list to stdout
+    if [ $remove_count -lt "5" ]; then
+      echo "${station} - Remove list:"
+      cat ${TMP_BASE}remove 
     fi
 
-    # Load the SQL dump into a temporary file
-    [ -e ${TMP_BASE}db ] && rm ${TMP_BASE}db
-    zcat $db_path | sqlite3 ${TMP_BASE}db 
+    echo -n "${station} - About to remove $remove_count of $cloud_count files. Proceed [(y)es / (s)kip / (a)bort]? "
+    read -e query
 
-    echo -n "SQL:"
-    sqlite3 ${TMP_BASE}db 'select replace(name, "streams/", "") from streams' > ${TMP_BASE}sql
-    sql_count=`cat ${TMP_BASE}sql | wc -l`
-    echo -n $sql_count
+    if [ "$query" = "y" ]; then
+      echo "${station} - Very well then...removing."
+      cat ${TMP_BASE}remove | ./cloud.py -q unlink
 
-    if [ $sql_count -lt 10 ]; then
-      echo "Found under 10 entries ... we will assume this is an error."
+    elif [ "$query" = "s" ]; then
+      echo "Skipping..."
       continue
-    fi
-
-    # Find all the files on the cloud for this station.
-    echo -n " Cloud:"
-    ./cloud.py -q list -s $station > ${TMP_BASE}cloud
-    cloud_count=`cat ${TMP_BASE}cloud | wc -l`
-    echo -n "$cloud_count SetDiff:"
-
-    # See what the difference of these two lists are.
-    cat ${TMP_BASE}cloud ${TMP_BASE}sql | sort | uniq -u > ${TMP_BASE}intersection
-
-    # These would be the ones that appeared only once, and only in the cloud list.
-    # This would be the thing we should dump.
-    cat ${TMP_BASE}intersection ${TMP_BASE}cloud | sort | uniq -d > ${TMP_BASE}remove
-    remove_count=`cat ${TMP_BASE}remove | wc -l`
-    echo -n $remove_count
-
-    if [ "$remove_count" -eq "0" ]; then
-      echo "...Nothing to remove."
-      continue
-    fi
-
-    # We are going to make sure and confirm that there's nothing we are screwing up
-    # before moving forward.
-    echo -n " Checking..."
-    ./server_query.py -c $station -q stats > ${TMP_BASE}stats
-    exists=`cat ${TMP_BASE}stats | wc -l`
-
-    echo -n "$exists:"
-    if [ $exists -lt 10 ]; then
-      echo "Unable to get a reliable stats number ... bailing on this station"
-      continue
-    fi
-
-    # If we take our remove list and use it as a grep list through the stats, the
-    # wc -l of it should be zero.
-    overlap=`grep -f ${TMP_BASE}remove ${TMP_BASE}stats | wc -l`
-
-    echo -n "$overlap "
-
-    if [ "$overlap" -eq "0" ]; then
-      echo "Pass"
-
-      #
-      # Now we manually prompt the user because this is a pretty irreversible little thing we
-      # are about to do.
-      #
-      # Just to make sure, we're going to tell the user how many files we'd like to remove
-      # and then place it with respect to the total number of files for that station.  The
-      # user can then decide whether this sounds like a reasonably sane number of things
-      # to delete or whether it looks like there may be some bug somewhere.
-      #
-
-      # If it's a small number of things to remove, then just print the list to stdout
-      if [ $remove_count -lt "5" ]; then
-        echo "${station} - Remove list:"
-        cat ${TMP_BASE}remove 
-      fi
-
-      echo -n "${station} - About to remove $remove_count of $cloud_count files. Proceed [(y)es / (s)kip / (a)bort]? "
-      read -e query
-
-      if [ "$query" = "y" ]; then
-          echo "${station} - Very well then...removing."
-          cat ${TMP_BASE}remove | ./cloud.py -q unlink
-      elif [ "$query" = "s" ]; then
-          echo "Skipping..."
-          continue
-      else
-          echo "Aborting"
-          exit -1
-      fi
 
     else
-      echo "Fail (Abort)"
+      echo "Aborting"
       exit -1
     fi
+
+  else
+    echo "Fail (Abort)"
+    exit -1
+  fi
 
 done
