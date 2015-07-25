@@ -1,5 +1,5 @@
 [Main]
-callsign=kzsu
+callsign=kusf
 long=-122.166076
 lat=37.424106
 mode=full
