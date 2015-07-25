@@ -115,11 +115,11 @@ $(function() {
   });
 
   // #23 - multiday recordings
-  $("#day a").click(function(){
+  $("#day a").on('click touchend', function(){
     ev.setToggle('day', this.innerHTML);
   });
 
-  $(".group a").click(function(){
+  $(".group a").on('click touchend', function(){
     var node = $(this).parentsUntil("div").last();
     ev(node[0].id, this.getAttribute('data') || this.innerHTML);
   });
