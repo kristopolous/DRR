@@ -1,4 +1,26 @@
-#!/usr/bin/python
+#!/usr/bin/python -O
+"""
+Given a stats query, this generates an ascii art chart which shows how good the coverage is of 
+the station over a week modulus.  This helps test the healthiness of the stream and the 
+server's connection to the stream.  The way to invoke this is as follows:
+
+  $ ./server_query.py -q stats -c [callsign, such as kpcc] | ./graph.py
+  coverage: 99.7123015873
+  +-0---1---2---3---4---5---6---7---8---9---10--11--12--13--14--15--16--17--18--19--20--21--22--23--+
+  M .======================*===================================E================*==================E|
+  T E#EEEEEE=EEEEEEE=EEEEEEEEEEEEEEEEE=EEEEEEEE=EEEEEEEEEE=EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE|
+  W EEEEEEEEEEEEEEEEEEEEEEEE=EEEEEEEEEEEEEEEEEEEEEEEE=EEEEEEEEEEEEEEEEEEEEEE=EEEEEEEEEEEEEEEEEEEEEEE|
+  T E=EEEEEEEEE#EEEEEEEEEEEEEEEEEEEE#EEE=EEEEEEEEE#######EEEEEEEEEEEE############EEE#EEEEEE#EE=EE=EE|
+  F EEEEEEEEEEEEEEE=EEEEE=EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE=EEEEEEE#EEEEEEEEEEEE===*=======*==E#####|
+  S ###E=EEEE=EEEE=EEEEEEEEEEEEEEEE==EEEEEE=EEEEEEE=E=EEEEE==EEEEEEE=*.******************===========|
+  S =================*=======================================================================*======|
+  +-0---1---2---3---4---5---6---7---8---9---10--11--12--13--14--15--16--17--18--19--20--21--22--23--+
+
+  This tells us that we are getting 99.71% time coverage over the period that we are archiving.   
+  Ideally this should be 100 of course ... but heck, this at least measures it.
+
+"""
+
 import json
 import sys
 
@@ -31,11 +53,6 @@ def getTerminalSize():
   if not cr:
     cr = (env.get('LINES', 25), env.get('COLUMNS', 80))
 
-    ### Use get(key[, default]) instead of a try/catch
-    #try:
-    #    cr = (env['LINES'], env['COLUMNS'])
-    #except:
-    #    cr = (25, 80)
   return int(cr[1]), int(cr[0])
 
 width, height = getTerminalSize()

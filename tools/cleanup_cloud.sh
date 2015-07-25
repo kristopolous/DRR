@@ -35,7 +35,7 @@ script_dir=`pwd`
 
 if [ -z "$DOWNLOAD" ]; then
   # The most recent backup can be found by just doing this:
-  echo "Using most recent backup. Start like $ DOWNLOAD=1 ./cleanup_cloud.sh to force"
+  echo "Using most recent backup. Start like '$ DOWNLOAD=1 ./cleanup_cloud.sh' to generate a new backup."
   backup_dir=~/backups/indycast/`ls -1t ~/backups/indycast | head -1`
 else
   echo "Running backup on all hosts to get database list..."
@@ -71,7 +71,7 @@ for station in $station_list; do
   echo -n $sql_count
 
   if [ $sql_count -lt 10 ]; then
-    echo "Found under 10 entries ... we will assume this is an error."
+    echo " Found under 10 entries ... taking no further action to be safe. [continuing]"
     continue
   fi
 
@@ -100,7 +100,7 @@ for station in $station_list; do
   echo -n $remove_count
 
   if [ "$remove_count" -eq "0" ]; then
-    echo "...Nothing to remove."
+    echo "   OK"
     continue
   fi
 
