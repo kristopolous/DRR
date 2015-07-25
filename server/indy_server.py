@@ -461,6 +461,7 @@ def server_manager(config):
   @app.route('/stats')
   def stats():
     """ Reports various statistical metrics on a particular server """
+    misc.am_i_official()
     db = DB.connect()
 
     stats = {
