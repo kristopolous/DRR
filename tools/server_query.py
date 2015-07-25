@@ -131,7 +131,7 @@ for station in all_stations:
     print "[ %d ] Failure: %s\n" % (stop - start, hasFailure)
 
     if db:
-      db['c'].execute('update stations set drops = drops + 1 where callsign = ?', ( str(station[CALLSIGN]) ))
+      db['c'].execute('update stations set drops = drops + 1 where callsign = "%s"' % station[CALLSIGN] )
 
 if args.query == 'heartbeat' and db:
   db['conn'].commit()
