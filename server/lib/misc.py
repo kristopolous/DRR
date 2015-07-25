@@ -6,6 +6,41 @@ import time
 import logging
 import sys
 import lib.db as DB
+import socket
+
+#
+# This is needed to force ipv4 on ipv6 devices. It's sometimes needed
+# if there isn't a clean ipv6 route to get to the big wild internet.
+# In these cases, a pure ipv6 route simply will not work.  People aren't
+# always in full control of every hop ... so it's much safer to force
+# ipv4 then optimistically cross our fingers.
+#
+origGetAddrInfo = socket.getaddrinfo
+
+def getAddrInfoWrapper(host, port, family=0, socktype=0, proto=0, flags=0):
+  attempts = 1
+  max_attempts = 10
+
+  while attempts < max_attempts:
+    try:
+      res = origGetAddrInfo(host, port, socket.AF_INET, socktype, proto, flags)
+      return res
+
+    except:
+      print "[%d/%d] Unable to resolve %s on %d ... sleeping a bit" % (attempts, max_attempts, host, port)
+      time.sleep(1)
+      attempts += 1
+
+  # If we have tried this a few times and nothing happens, then we just bail
+  raise Exception
+
+
+# Replace the original socket.getaddrinfo by our version
+socket.getaddrinfo = getAddrInfoWrapper
+
+import urllib2
+import urllib
+
 from multiprocessing import Process, Queue, Lock
 
 #
@@ -46,6 +81,28 @@ lockMap = {'prune': Lock()}
 def donothing(signal, frame=False):
   """ Catches signals that we would rather just ignore """
   return True
+
+
+def am_i_official():
+  """ 
+  Takes the callsign and port and queries the server for its per-instance uuid
+  If those values match our uuid then we claim that we are the official instance
+  and can do various privileged things.  Otherwise, we try not to intrude.
+  """
+  global config
+
+  if 'official' not in config:
+    endpoint = "http://%s.indycast.net:%d/uuid" % (config['callsign'], config['port'])
+    try: 
+      stream = urllib2.urlopen(endpoint)
+      data = stream.read()
+      config['official'] = (data.strip() == config['uuid'])
+
+    except:
+      # Default on the safe side
+      config['official'] = False
+
+  return config['official']
 
 
 def shutdown(signal=15, frame=False):

@@ -56,6 +56,9 @@ def put(path):
   if 'test' in misc.config['azure']:
     logging.info ("I would have uploaded %s but I'm in test mode" % path)
 
+  if not misc.am_i_official():
+    logging.info ("I would have uploaded %s but I'm not the official %s server" % (path, misc.config['callsign']) )
+
   blob_service, container = connect()
 
   if blob_service:
@@ -123,6 +126,12 @@ def register_streams():
 
 def prune():
   """ Gets rid of files older than archivedays - cloud stores things if relevant. """
+
+  # We want to run the am_i_official so that the thread that keeps forking the prune
+  # process bequeths a cached version of whether it is official or not.
+  misc.am_i_official()
+
+  # Now when the child calls it it won't hit the network for every prune.
   pid = Process(target=prune_process, args=(misc.lockMap,))
   pid.start()
   return pid
