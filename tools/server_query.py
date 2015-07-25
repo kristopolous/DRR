@@ -42,16 +42,15 @@ import time
 import random
 from glob import glob
 
+CALLSIGN = 'callsign'
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 try:
   conn = sqlite3.connect('../db/main.db')
   db = {'conn': conn, 'c': conn.cursor()}
   # this trick robbed from http://stackoverflow.com/questions/702834/whats-the-common-practice-for-enums-in-python
-  ID, CALLSIGN, DESCRIPTION, BASE_URL, LAST_SEEN, FIRST_SEEN, PINGS, DROPS, LATENCY, ACTIVE, LOG, NOTES = range(12)
 
 except:
   db = False
-  CALLSIGN = 'callsign'
 
 
 parser = argparse.ArgumentParser()
@@ -62,32 +61,23 @@ parser.add_argument('-n', '--notrandom', action='store_true', help='do not reand
 args = parser.parse_args()
 
 config_list = []
-if not db:
-  for station_config in glob('../server/configs/*txt'):
-    Config = ConfigParser.ConfigParser()
-    Config.read(station_config)
-    config = misc.config_section_map('Main', Config)
-    config_list.append(config)
+for station_config in glob('../server/configs/*txt'):
+  Config = ConfigParser.ConfigParser()
+  Config.read(station_config)
+  config = misc.config_section_map('Main', Config)
+  config_list.append(config)
 
 # retrieve a list of the active stations
 if args.callsign == 'all':
-  if db:
-    station_list = db['c'].execute('select * from stations where active = 1')
-    all_stations = station_list.fetchall()
-  else:
-    all_stations = config_list
+  all_stations = config_list
 
 else:
-  if db:
-    station_list = db['c'].execute('select * from stations where active = 1 and callsign in ("%s")' % re.sub(',', '","', args.callsign)) 
-    all_stations = station_list.fetchall()
-  else:
-    all_stations = []
-    callsign_list = args.callsign.split(',')
+  all_stations = []
+  callsign_list = args.callsign.split(',')
 
-    for config in config_list:
-      if config['callsign'] in callsign_list:
-        all_stations.append(config)
+  for config in config_list:
+    if config['callsign'] in callsign_list:
+      all_stations.append(config)
 
 if args.list:
   # Just list all the supported stations
@@ -103,10 +93,7 @@ if not args.notrandom:
   random.shuffle(all_stations)
 
 for station in all_stations:
-  if db:
-    url = station[BASE_URL]
-  else:
-    url = "%s.indycast.net:%s" % (station[CALLSIGN], station['port'])
+  url = "%s.indycast.net:%s" % (station[CALLSIGN], station['port'])
 
   hasFailure = False
 
