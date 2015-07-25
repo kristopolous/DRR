@@ -80,6 +80,10 @@ for station in $station_list; do
   ./cloud.py -q list -s $station > ${TMP_BASE}cloud
   cloud_count=`cat ${TMP_BASE}cloud | wc -l`
   echo -n "$cloud_count SetDiff:"
+  if [ "$cloud_count" -lt "5" ]; then
+    echo "The cloud count is under 5, which sounds fishy. So we'll skip this."
+    continue
+  fi
 
   # See what the difference of these two lists are.
   cat ${TMP_BASE}cloud ${TMP_BASE}sql | sort | uniq -u > ${TMP_BASE}intersection
