@@ -78,6 +78,11 @@ for station in $station_list; do
   # Find all the files on the cloud for this station.
   echo -n " Cloud:"
   ./cloud.py -q list -s $station > ${TMP_BASE}cloud
+  if [ $? -ne "0" ]; then
+    echo "The script exited unexpectedly. Bailing"
+    exit 1
+  fi
+
   cloud_count=`cat ${TMP_BASE}cloud | wc -l`
   echo -n "$cloud_count SetDiff:"
   if [ "$cloud_count" -lt "5" ]; then
@@ -103,6 +108,10 @@ for station in $station_list; do
   # before moving forward.
   echo -n " Checking..."
   ./server_query.py -c $station -q stats > ${TMP_BASE}stats
+  if [ $? -ne "0" ]; then
+    echo "The script exited unexpectedly. Bailing"
+    exit 1
+  fi
   exists=`cat ${TMP_BASE}stats | wc -l`
 
   echo -n "$exists:"
