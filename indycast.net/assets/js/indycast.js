@@ -1,5 +1,8 @@
 
 var 
+  // #57 - see why ipad needs to double click
+  isiDevice = navigator.userAgent.match(/ip(hone|od|ad)/i),
+  listenEvent = isiDevice ? 'touchend' : 'click',
   ev = EvDa({start: '', name: '', station: '', ampm: '', day: []}),
   fullName = {
     sun: 'Sundays', mon: 'Mondays', tue: 'Tuesdays', wed: 'Wednesdays',
@@ -114,14 +117,20 @@ $(function() {
     $("#description").html("<h2>" + this.innerHTML + "</h2>" + htmldo(this.getAttribute('desc'))).show();
   });
 
+
   // #23 - multiday recordings
-  $("#day a").on('click touchend', function(){
+  $("#day a").on(listenEvent, function(){
     ev.setToggle('day', this.innerHTML);
   });
 
-  $(".group a").on('click touchend', function(){
-    var node = $(this).parentsUntil("div").last();
-    ev(node[0].id, this.getAttribute('data') || this.innerHTML);
+  $(".group a").on(listenEvent, function(){
+    var mthis = this;
+
+    // This tricks stupid iDevices into not fucking around and screwing with the user.
+    setTimeout(function(){
+      var node = $(mthis).parentsUntil("div").last();
+      ev(node[0].id, mthis.getAttribute('data') || mthis.innerHTML);
+    },0)
   });
 
   $("#start,#name").bind('blur focus change keyup',function(){
