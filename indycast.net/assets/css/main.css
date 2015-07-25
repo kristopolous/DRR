@@ -628,7 +628,7 @@ input[type="submit"].fit,
 
 .feature .content {
   display: inline-block;
-  padding: 3.5em;
+  padding: 1.5em 3.5em;
   vertical-align: middle;
   width: 48%;
 }
@@ -640,32 +640,23 @@ input[type="submit"].fit,
 .feature .content :last-child {
   margin: 0;
 }
-
-.feature.left {
-  text-align: left;
-}
-
+.feature.left { text-align: left; }
 .feature.left .image {
   float: left;
 }
-
 .feature.left .image img {
   right: 0;
   top: 0;
 }
-
 .feature.left .content {
   padding-right: 0;
 }
-
 .feature.right { text-align: right; }
 .feature.right .image { float: right; }
-
 .feature.right .image img {
   left: 0;
   top: 0;
 }
-
 .feature.right .content {
   padding-left: 0;
 }
@@ -680,7 +671,6 @@ input[type="submit"].fit,
   position: relative;
   text-align: center;
 }
-
 #header:before, #header:after {
   background: rgba(224, 224, 224, 0.75);
   content: '';
@@ -705,7 +695,6 @@ input[type="submit"].fit,
   border-bottom-color: rgba(255, 255, 255, 0.35);
   color: rgba(255, 255, 255, 0.8);
 }
-
 #header a:hover {
   border-bottom-color: transparent;
   color: #4eb980;
@@ -752,7 +741,6 @@ input[type="submit"].fit,
   position: relative;
   text-align: center;
 }
-
 #footer:before {
   background: rgba(224, 224, 224, 0.75);
   content: '';
@@ -767,15 +755,12 @@ input[type="submit"].fit,
 #footer a {
   color: #ffffff;
 }
-
 #footer strong, #footer b {
   color: #ffffff;
 }
-
 #footer h1, #footer h2, #footer h3, #footer h4, #footer h5, #footer h6 {
   color: #ffffff;
 }
-
 #footer header p {
   color: rgba(255, 255, 255, 0.5);
 }
@@ -786,13 +771,11 @@ input[type="submit"].fit,
   box-shadow: inset 0 0 0 1px #ffffff;
   color: #4eb980;
 }
-
 #footer input[type="submit"]:hover,
 #footer .button:hover {
   background: rgba(224, 224, 224, 0.15);
   color: #ffffff;
 }
-
 #footer input[type="text"]:focus,
 #footer select:focus {
   border-color: #ffffff;
@@ -811,14 +794,12 @@ input[type="submit"].fit,
   line-height: 1em;
   margin: 3em 0 0 0;
 }
-
 #footer .copyright li {
   border-left: dotted 1px;
   display: inline-block;
   margin-left: 1em;
   padding-left: 1em;
 }
-
 #footer .copyright li:first-child {
   padding: 0;
   margin: 0;
@@ -848,7 +829,6 @@ input[type="submit"].fit,
   width: 1px;
   z-index: -1;
 }
-
 #main header.major,
 #main footer.major {
   background: #ffffff;
