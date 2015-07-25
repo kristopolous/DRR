@@ -7,7 +7,7 @@
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 */
 
-html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, pre, a, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend,  caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, pre, a, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend,  caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
   margin: 0;
   padding: 0;
   border: 0;
@@ -32,7 +32,6 @@ body {
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
 }
-
 .container {
   margin-left: auto;
   margin-right: auto;
@@ -163,10 +162,6 @@ a {
 a:hover {
   border-bottom-color: transparent;
 }
-strong, b {
-  font-weight: 600;
-  color: #5b5b5b;
-}
 em, i {
   font-style: italic;
 }
@@ -199,7 +194,6 @@ header p {
   text-transform: uppercase;
   letter-spacing: 0.075em;
 }
-
 header.major {
   border-bottom-width: 1px;
   border-color: rgba(224, 224, 224, 0.75);
@@ -247,7 +241,6 @@ header.major.last:after {
 header.major.last h2 {
   margin-bottom: 1em;
 }
-
 footer {
   text-align: center;
 }
@@ -566,12 +559,9 @@ input[type="submit"].alt,
 input[type="text"].error {
   border-color: red;
 }
-
-input[type="submit"].alt:hover,
 .button.alt:hover {
   background: rgba(224, 224, 224, 0.15);
 }
-
 input[type="submit"].alt:active,
 .button.alt:active {
   background: rgba(224, 224, 224, 0.35);
@@ -581,8 +571,6 @@ input[type="submit"].fit,
 .button.fit {
   width: 100%;
 }
-
-input[type="submit"].small,
 .button.small {
   font-size: 0.8em;
 }
@@ -670,13 +658,8 @@ input[type="submit"].small,
   padding-right: 0;
 }
 
-.feature.right {
-  text-align: right;
-}
-
-.feature.right .image {
-  float: right;
-}
+.feature.right { text-align: right; }
+.feature.right .image { float: right; }
 
 .feature.right .image img {
   left: 0;
@@ -686,7 +669,6 @@ input[type="submit"].small,
 .feature.right .content {
   padding-left: 0;
 }
-
 #header {
   background-attachment: scroll,							scroll,					fixed;
   background-image: url("images/top-3200.svg"), url('images/radio.png'), url("images/overlay.png"), url("../../images/header.jpg");
@@ -736,37 +718,15 @@ input[type="submit"].small,
 #header h1, #header h2, #header h3, #header h4, #header h5, #header h6 {
   color: #ffffff;
 }
-
 #header input[type="submit"],
 #header .button {
   background: #ffffff;
   color: #544d55;
 }
-
-#header .logo {
-  background: #4eb980;
-  border-radius: 100%;
-  color: #ffffff;
-  cursor: default;
-  display: inline-block;
-  font-size: 2.25em;
-  height: 2.35em;
-  line-height: 2.35em;
-  margin: 0 0 0.75em 0;
-  text-align: center;
-  width: 2.35em;
-}
-
-#header .logo.fa-paper-plane-o:before {
-  left: -0.075em;
-  position: relative;
-}
-
 #header h1 {
   font-size: 2.5em;
   margin: 0;
 }
-
 #header p {
   font-size: 1.5em;
   line-height: 1.5em;
@@ -837,7 +797,6 @@ input[type="submit"].small,
 #footer select:focus {
   border-color: #ffffff;
 }
-
 #footer .formerize-placeholder {
   color: rgba(255, 255, 255, 0.3) !important;
 }
@@ -1079,10 +1038,6 @@ input[type="submit"].small,
 
   #header:after {
     height: 20px;
-  }
-
-  #header .logo {
-    font-size: 1.5em;
   }
 
   #header h1 {
