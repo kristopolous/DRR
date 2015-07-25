@@ -146,12 +146,7 @@ if(isset($_GET['callsign'])) {
           <div class="active-list">
             <a href='https://github.com/kristopolous/DRR/wiki/Join-the-Federation' class='button'>Join The Federation</a> <span id='or'>or</span> 
             <a name="donate"></a>
-            <form action="https://www.paypal.com/cgi-bin/webscr" method="post" id="donate">
-              <input type="hidden" name="cmd" value="_s-xclick">
-              <input type="hidden" name="hosted_button_id" value="X4J4BD86VTXWS">
-              <input class="button fit" type="submit" value="Donate via PayPal" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-              <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-            </form>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" id="donate"><input type="hidden" name="cmd" value="_s-xclick"><input type="hidden" name="hosted_button_id" value="X4J4BD86VTXWS"><input class="button fit" type="submit" value="Donate via PayPal" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!"><img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1"></form>
           </div>
         </div>
 
@@ -189,11 +184,8 @@ if(isset($_GET['callsign'])) {
 
     <script src='/assets/js/underscore-min.js'></script>
     <script src="/assets/js/jquery.min.js"></script>
-<!--    <script src="/assets/js/skel.min.js"></script>
-    <script src="/assets/js/util.min.js"></script> -->
     <script src="/assets/js/evda.min.js"></script>
     <!--[if lte IE 8]><script src="/assets/js/ie/respond.min.js"></script><![endif]-->
-<!--    <script src="/assets/js/main.min.js"></script>-->
     <script src="/assets/js/indycast.js"></script>
     <? if ($callsign) { ?>
       <script> ev('station', '<?= $callsign ?>'); </script>

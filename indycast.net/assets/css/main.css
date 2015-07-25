@@ -18,6 +18,10 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, pre, a
 article, aside, details, footer, header, hgroup, menu, nav, section {
   display: block;
 }
+form {
+  margin: 0;
+  line-height: 1;
+}
 body {
   line-height: 1;
 }
@@ -162,7 +166,7 @@ a {
 em, i {
   font-style: italic;
 }
-p, ul, ol, dl, form {
+p, ul, ol {
   margin: 0 0 2em 0;
 }
 h1, h2, h3, h4, h5, h6 {
@@ -510,9 +514,13 @@ input[type="submit"],
 }
 #donate { 
   display: inline-block;
+  vertical-align: bottom;
+  line-height: 0;
+  margin-bottom: -0.35em;
 }
 .active-list {
-  text-align: center
+  text-align: center;
+  margin-bottom: 2em;
 }
 .active-list .button {
   line-height: 1.5em;
@@ -759,10 +767,6 @@ input[type="submit"].fit,
 }
 #footer .formerize-placeholder {
   color: rgba(255, 255, 255, 0.3) !important;
-}
-
-#footer form {
-  margin: 3em 0;
 }
 
 #footer .copyright {
