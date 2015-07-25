@@ -18,6 +18,7 @@ import lib.audio as audio
 import lib.ts as TS
 import lib.misc as misc
 import lib.cloud as cloud
+import uuid
 import socket
 
 #
@@ -30,10 +31,21 @@ import socket
 origGetAddrInfo = socket.getaddrinfo
 
 def getAddrInfoWrapper(host, port, family=0, socktype=0, proto=0, flags=0):
-  return origGetAddrInfo(host, port, socket.AF_INET, socktype, proto, flags)
+  attempts = 1
+  max_attempts = 10
 
-# Replace the original socket.getaddrinfo by our version
-socket.getaddrinfo = getAddrInfoWrapper
+  while attempts < max_attempts:
+    try:
+      res = origGetAddrInfo(host, port, socket.AF_INET, socktype, proto, flags)
+      return res
+
+    except:
+      print "[%d/%d] Unable to resolve %s on %d ... sleeping a bit" % (attempts, max_attempts, host, port)
+      time.sleep(1)
+      attempts += 1
+
+  # If we have tried this a few times and nothing happens, then we just bail
+  raise Exception
 
 import urllib2
 import urllib
@@ -338,6 +350,11 @@ def server_manager(config):
 
     return rv
 
+
+  @app.route('/uuid')
+  def uuid():
+    """ Returns this servers uuid """
+    return misc.config['uuid'], 200
 
   # From http://stackoverflow.com/questions/13317536/get-a-list-of-all-routes-defined-in-the-app
   @app.route("/site-map")
@@ -968,6 +985,10 @@ def read_config(config):
   # Increment the number of times this has been run so we can track the stability of remote 
   # servers and instances.
   DB.incr('runcount')
+
+  # This is how we discover if we are the official server or not.
+  # Look at the /uuid endpoint to see how this magic works.
+  misc.config['uuid'] = uuid.uuid4()
 
   signal.signal(signal.SIGINT, misc.shutdown)
   signal.signal(signal.SIGHUP, misc.donothing)
