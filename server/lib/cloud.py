@@ -170,7 +170,8 @@ def prune_process(lockMap):
       os.unlink(fname)
       count += 1 
 
-    elif cloud_cutoff and ctime < cloud_cutoff:
+    # We want to make sure we aren't archiving the slices
+    elif cloud_cutoff and ctime < cloud_cutoff and not fname.startswith('slice'):
       logging.debug("Prune[cloud]: putting %s" % fname)
       put(fname)
 
