@@ -136,21 +136,29 @@ for station in $station_list; do
       cat ${TMP_BASE}remove 
     fi
 
-    echo -n "${station} - About to remove $remove_count of $cloud_count files. Proceed [(y)es / (s)kip / (a)bort]? "
-    read -e query
+    while [ 0 ]; do
+      echo -n "${station} - About to remove $remove_count of $cloud_count files. Proceed [(y)es / (l)ist / (s)kip / (a)bort]? "
+      read query
 
-    if [ "$query" = "y" ]; then
-      echo "${station} - Very well then...removing."
-      cat ${TMP_BASE}remove | ./cloud.py -q unlink
+      if [ "$query" = "y" ]; then
+        echo "${station} - Very well then...removing."
+        cat ${TMP_BASE}remove | ./cloud.py -q unlink
+        break
 
-    elif [ "$query" = "s" ]; then
-      echo "Skipping..."
-      continue
+      elif [ "$query" = "s" ]; then
+        echo "Skipping..."
+        break
 
-    else
-      echo "Aborting"
-      exit -1
-    fi
+      elif [ "$query" = "l" ]; then
+        echo "${station} - Remove list:"
+        cat ${TMP_BASE}remove 
+
+      else
+        echo "Aborting"
+        exit -1
+      fi
+
+    done
 
   else
     echo "Fail (Abort)"
