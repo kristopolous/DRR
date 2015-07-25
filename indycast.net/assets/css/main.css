@@ -513,6 +513,9 @@ input[type="submit"],
   margin-right: 1px;
   border-radius: 0;
 }
+#duration a {
+  white-space: nowrap;
+}
 .radio-group .button {
   font-size: 14px;
   min-width: 6em;
