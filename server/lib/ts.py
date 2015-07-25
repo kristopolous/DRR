@@ -93,19 +93,29 @@ def to_utc(day_str, hour):
 
   my_time = time_re_solo.match(hour)
   if my_time:
-    local += int(my_time.groups()[0]) * 60
+    hr = int(my_time.groups()[0])
+    local += hr * 60
 
   else:
     my_time = time_re_min.match(hour)
 
     if my_time:
-      local += int(my_time.groups()[0]) * 60
+      hr = int(my_time.groups()[0])
+      local += hr * 60
       local += int(my_time.groups()[1])
 
   if not my_time:
     return False
 
-  if my_time.groups()[-1] == 'pm':
+  # time is tricky if the hr is 12
+  ampm = my_time.groups()[-1]
+  if hr == 12:
+    # 12AM is actually 1 hour BEFORE 1AM
+    if ampm == 'am': local -= (12 * 60)
+
+    # If it's 12PM then we don't need to do
+    # the math below.
+  elif my_time.groups()[-1] == 'pm':
     local += (12 * 60)
 
   return local
