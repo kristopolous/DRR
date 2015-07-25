@@ -4,6 +4,6 @@ long=-83.045754
 lat=42.331427
 mode=full
 stream=http://www.wcbn.org/wcbn-hi.m3u
-port=8830
+port=8834
 loglevel=debug
 cloud=~/cloudcreds.cfg
