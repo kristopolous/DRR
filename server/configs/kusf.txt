@@ -1,0 +1,8 @@
+[Main]
+callsign=kzsu
+long=-122.166076
+lat=37.424106
+mode=full
+stream=http://216.235.81.101/play?s=kusf
+port=9030
+cloud=~/cloudcreds.cfg
