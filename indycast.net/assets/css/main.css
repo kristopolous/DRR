@@ -482,6 +482,9 @@ input[type="submit"],
   border: 1px solid white;
   overflow:hidden;
 }
+#station {
+  margin-bottom: 0.5em;
+}
 #station li {
   margin: 0.15em;
 }
