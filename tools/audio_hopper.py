@@ -232,7 +232,25 @@ def audio_stitch(file_list):
     audio_serialize(args)
     return True
 
-fail_list = '/raid/analyze/wxyc-1436334009.mp3 /raid/analyze/wxyc-1436448501.mp3 /raid/analyze/wxyc-1436555370.mp3 /raid/analyze/wxyc-1436408965.mp3 /raid/analyze/wxyc-1436322244.mp3 /raid/analyze/wxyc-1436318625.mp3 /raid/analyze/wxyc-1436407155.mp3 /raid/analyze/wxyc-1437035272.mp3 /raid/analyze/wxyc-1436587070.mp3 /raid/analyze/wxyc-1436903564.mp3 /raid/analyze/wxyc-1437047317.mp3 /raid/analyze/wxyc-1436688334.mp3 /raid/analyze/wxyc-1436835377.mp3 /raid/analyze/wxyc-1436380054.mp3 /raid/analyze/wxyc-1437013904.mp3 /raid/analyze/wxyc-1436667752.mp3 /raid/analyze/wxyc-1436470209.mp3 /raid/analyze/wxyc-1436776080.mp3 /raid/analyze/wxyc-1436338534.mp3 /raid/analyze/wxyc-1436959726.mp3 /raid/analyze/wxyc-1436971489.mp3 /raid/analyze/wxyc-1436376449.mp3 /raid/analyze/wxyc-1436627758.mp3 /raid/analyze/wxyc-1436957012.mp3'
+def audiotag(source, length_sec, out):
+  length_ms = length_sec * 1000
+  # Make sure our size to inject is 8 bytes long
+  tlen_payload = ("%s%s" % ('\x00' * 8, str(length_ms)))[-9:]
+  print tlen_payload
+  tlen = 'TLEN\x00\x00\x00\x08\x40%s' % (tlen_payload)
+  print len(tlen)
+
+  # Our ID3 length is a constant since we are just doing this to make itunes happy.
+  block = 'ID3\x03\x00\x00\x00\x00\x00\x12%s' % tlen
+  with open(out, 'wb') as out:
+    out.write(block)
+    with open(source, 'rb') as infile:
+      out.write(infile.read())
+
+audiotag('/home/chris/radio/kpcc/streams/kpcc-1437707563.mp3', 2 * 60 * 60, '/tmp/audio')
+
+sys.exit(0)
+#fail_list = '/raid/analyze/wxyc-1436334009.mp3 /raid/analyze/wxyc-1436448501.mp3 /raid/analyze/wxyc-1436555370.mp3 /raid/analyze/wxyc-1436408965.mp3 /raid/analyze/wxyc-1436322244.mp3 /raid/analyze/wxyc-1436318625.mp3 /raid/analyze/wxyc-1436407155.mp3 /raid/analyze/wxyc-1437035272.mp3 /raid/analyze/wxyc-1436587070.mp3 /raid/analyze/wxyc-1436903564.mp3 /raid/analyze/wxyc-1437047317.mp3 /raid/analyze/wxyc-1436688334.mp3 /raid/analyze/wxyc-1436835377.mp3 /raid/analyze/wxyc-1436380054.mp3 /raid/analyze/wxyc-1437013904.mp3 /raid/analyze/wxyc-1436667752.mp3 /raid/analyze/wxyc-1436470209.mp3 /raid/analyze/wxyc-1436776080.mp3 /raid/analyze/wxyc-1436338534.mp3 /raid/analyze/wxyc-1436959726.mp3 /raid/analyze/wxyc-1436971489.mp3 /raid/analyze/wxyc-1436376449.mp3 /raid/analyze/wxyc-1436627758.mp3 /raid/analyze/wxyc-1436957012.mp3'
 
 #for f in glob("/raid/analyze/*.mp3"):
 for f in fail_list.split(' '):
@@ -251,7 +269,7 @@ sys.exit(0)
 #audio_crc(sys.argv[1])
 
 #sys.exit(0)
-#isSuccess = audio_stitch(["/var/radio/kpcc-1435670337.mp3","/var/radio/kpcc-1435671243.mp3","/var/radio/kpcc-1435672147.mp3","/var/radio/kpcc-1435673051.mp3","/var/radio/kpcc-1435673955.mp3","/var/radio/kpcc-1435674859.mp3","/var/radio/kpcc-1435675763.mp3","/var/radio/kpcc-1435676667.mp3","/var/radio/kpcc-1435677571.mp3","/var/radio/kpcc-1435678475.mp3","/var/radio/kpcc-1435679379.mp3"])
+isSuccess = audio_stitch(["/var/radio/kpcc-1435670337.mp3","/var/radio/kpcc-1435671243.mp3"])
 
 # failure case
 #stitch_attempt('/var/radio/kpcc-1435670339.mp3', '/var/radio/kpcc-1435669435.mp3')
