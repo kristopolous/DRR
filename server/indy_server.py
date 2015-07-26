@@ -198,7 +198,7 @@ def server_generate_xml(showname, feed_list, duration_min, weekday_list, start, 
     # an oxford comma, how cute.
     week_string = "%s and %s" % (', '.join(day_list[:-1]), day_list[-1])
 
-  base_url = 'http://%s.indycast.net:%s/' % (misc.config['callsign'], misc.config['port'])
+  base_url = 'http://%s.indycast.net:%d/' % (misc.config['callsign'], misc.config['port'])
   callsign = misc.config['callsign']
 
   nsmap = {
@@ -338,7 +338,7 @@ def server_manager(config):
     data = None
     with open(path, 'rb') as f:
       f.seek(byte1)
-      data = f.read(length)
+      data = f.read(length + 1)
 
     rv = Response(
       data, 
@@ -346,7 +346,7 @@ def server_manager(config):
       mimetype='audio/mpeg',
       direct_passthrough=True
     )
-    rv.headers.add('Content-Range', 'bytes {0}-{1}/{2}'.format(byte1, byte1 + length - 1, size))
+    rv.headers.add('Content-Range', 'bytes {0}-{1}/{2}'.format(byte1, byte1 + length, size))
 
     return rv
 
