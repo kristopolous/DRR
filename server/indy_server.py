@@ -475,7 +475,7 @@ def server_manager(config):
       'disk': sum(os.path.getsize(f) for f in os.listdir('.') if os.path.isfile(f)),
       'streams': DB.all('streams', sort_by='start_unix'),
       'version': __version__,
-      'config': config
+      'config': misc.public_config()
     }
 
     return jsonify(stats), 200
@@ -910,6 +910,7 @@ def read_config(config):
 
   # in case someone is specifying ~/radio 
   misc.config['storage'] = os.path.expanduser(misc.config['storage'])
+  misc.config['_private'] = {}
 
   if misc.config['cloud']:
     misc.config['cloud'] = os.path.expanduser(misc.config['cloud'])
@@ -918,7 +919,7 @@ def read_config(config):
       # If there's a cloud conifiguration file then we read that too
       cloud_config = ConfigParser.ConfigParser()
       cloud_config.read(misc.config['cloud'])
-      misc.config['azure'] = misc.config_section_map('Azure', cloud_config)
+      misc.config['_private']['azure'] = misc.config_section_map('Azure', cloud_config)
 
   if not os.path.isdir(misc.config['storage']):
     try:

@@ -34,7 +34,7 @@ def get(path, do_open=True):
 
 def connect(config=False):
   """ Connect to the cloud service. """
-  if not config: config = misc.config
+  if not config: config = misc.config['_private']
 
   from azure.storage import BlobService
   container = 'streams'
@@ -53,7 +53,7 @@ def unlink(path, config=False):
 
 def put(path):
   """ Place a file, given a path, in the cloud. """
-  if 'test' in misc.config['azure']:
+  if 'test' in misc.config['_private']['azure']:
     logging.info ("I would have uploaded %s but I'm in test mode" % path)
 
   if not misc.am_i_official():

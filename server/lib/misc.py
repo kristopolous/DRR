@@ -105,6 +105,11 @@ def am_i_official():
   return config['official']
 
 
+def public_config():
+  """ Returns a configuration, removing sensitive information """
+  global config 
+  return {k: v for k, v in config.items() if k != '_private'}
+
 def shutdown(signal=15, frame=False):
   """ Shutdown is hit on the keyboard interrupt """
   global queue, start_time, config
