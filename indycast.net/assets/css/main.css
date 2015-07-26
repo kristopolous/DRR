@@ -565,7 +565,7 @@ input[type="submit"].fit,
 
 .feature .content {
   display: inline-block;
-  padding: 1.5em 3.5em;
+  padding: 0em 3.5em;
   vertical-align: middle;
   width: 48%;
 }
@@ -795,7 +795,7 @@ input[type="submit"].fit,
 
   .feature { height: 18em; }
   .feature .content {
-    padding: 2.5em;
+    padding: 0 2.5em;
   }
 
   #header {
@@ -1046,7 +1046,7 @@ form#donate {
   display: none;
   background: rgba(0,0,0,0.55);
 }
-#time * {
+#time-controls * {
   text-align: right;
 }
 #ampm a{
@@ -1143,11 +1143,11 @@ small {
   border-radius: 0 8px 8px 0;
 }
 @media screen and (max-width: 1280px) {
+  label { 
+    text-align: right;
+  }
   #description {
     bottom: 0;
-  }
-  #time label {
-    text-align: center;
   }
   #rss-time { 
     font-size: 0.75em
