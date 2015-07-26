@@ -250,6 +250,8 @@ def server_generate_xml(showname, feed_list, duration_min, weekday_list, start, 
       itunes_duration = "%d:%s" % (int(math.floor(duration_min / 60 )), itunes_duration)    
 
     for k,v in {
+      'title': "%s - %s" % (showname, feed['start_date'].strftime("%Y.%m.%d")),
+      'description': "%s recorded on %s" % (showname, feed['start_date'].strftime("%Y-%m-%d %H:%M:%S")),
       '{%s}explicit' % nsmap['itunes']: 'no', 
       '{%s}author' % nsmap['itunes']: callsign,
       '{%s}duration' % nsmap['itunes']: itunes_duration,
@@ -257,9 +259,7 @@ def server_generate_xml(showname, feed_list, duration_min, weekday_list, start, 
       '{%s}creator' % nsmap['dc']: callsign.upper(),
       '{%s}origEnclosureLink' % nsmap['feedburner']: link,
       '{%s}origLink' % nsmap['feedburner']: base_url,
-      'description': "%s recorded on %s" % (showname, feed['start_date'].strftime("%Y-%m-%d %H:%M:%S")),
       'pubDate': feed['start_date'].strftime("%Y-%m-%d %H:%M:%S"),
-      'title': "%s - %s" % (showname, feed['start_date'].strftime("%Y.%m.%d")),
       'link': link,
       'copyright': callsign
     }.items():
@@ -282,7 +282,7 @@ def server_generate_xml(showname, feed_list, duration_min, weekday_list, start, 
 
   tree = ET.ElementTree(root)
 
-  return Response(ET.tostring(tree, xml_declaration=True, encoding="utf-8"), mimetype='text/xml')
+  return Response(ET.tostring(tree, xml_declaration=True, encoding="UTF-8"), mimetype='text/xml')
 
 
 def server_error(errstr):
