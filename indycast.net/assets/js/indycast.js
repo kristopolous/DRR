@@ -117,6 +117,12 @@ $(function() {
     $("#description").html("<h2>" + this.innerHTML + "</h2>" + htmldo(this.getAttribute('desc'))).show();
   });
 
+  if(isiDevice) {
+    $("#podcast-url").on(listenEvent, function(){
+      // why why why ipad...
+      document.location = this.getAttribute('href');
+    });
+  }
 
   // #23 - multiday recordings
   $("#day a").on(listenEvent, function(){
@@ -146,8 +152,7 @@ $(function() {
     }
   }
   
-  ev.fire('start');
-  ev.fire('name');
+  ev.fire(['start','name']);
 
 });
 
@@ -159,4 +164,3 @@ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 
 ga('create', 'UA-28399789-2', 'auto');
 ga('send', 'pageview');
-

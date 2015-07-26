@@ -68,7 +68,7 @@ if(isset($_GET['callsign'])) {
         <?php } ?>
         <section class="feature right">
           <a href="#" class="image icon fa-clock-o"><img src="/images/pic02.jpg" alt="" /></a>
-          <div class="content">
+          <div class="content" id='day-picker'>
 
             <label for="day">day of week to record on</label>
             <ul class="week-group" id="day">
