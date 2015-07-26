@@ -352,9 +352,9 @@ def server_manager(config):
 
 
   @app.route('/uuid')
-  def uuid():
+  def my_uuid():
     """ Returns this servers uuid """
-    return misc.config['uuid'], 200
+    return misc.config['uuid']
 
   # From http://stackoverflow.com/questions/13317536/get-a-list-of-all-routes-defined-in-the-app
   @app.route("/site-map")
@@ -989,7 +989,7 @@ def read_config(config):
 
   # This is how we discover if we are the official server or not.
   # Look at the /uuid endpoint to see how this magic works.
-  misc.config['uuid'] = uuid.uuid4()
+  misc.config['uuid'] = str(uuid.uuid4())
 
   signal.signal(signal.SIGINT, misc.shutdown)
   signal.signal(signal.SIGHUP, misc.donothing)

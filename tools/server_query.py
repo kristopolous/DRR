@@ -128,7 +128,7 @@ for station in all_stations:
   if hasFailure:
     # Stop the timer and register it as a drop.
     stop = time.time()
-    print "[ %d ] Failure: %s\n" % (stop - start, hasFailure)
+    print "[ %d:%s ] Failure: %s\n" % (stop - start, url, hasFailure)
 
     if db:
       db['c'].execute('update stations set drops = drops + 1 where callsign = "%s"' % station[CALLSIGN] )
