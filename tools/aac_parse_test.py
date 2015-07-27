@@ -89,9 +89,12 @@ def aac_decode(fname, c=0):
   f.close()
   return [frame_sig, start_byte]
 
-AH.audio_stitch(sorted(glob('wzrd*mp3'))[:4], cb_sig=aac_decode)
+for fname in glob('wzrd*mp3') + glob('/home/chris/radio/kxlu/streams/*mp3'):
+  if os.path.getsize(fname) > 0:
+     print fname, AH.audio_type(fname)
 
 """
+AH.audio_stitch(sorted(glob('wzrd*mp3'))[:4], cb_sig=aac_decode)
 c = 0
 for fname in sorted(glob('wzrd*mp3'))[:25]:
   print aac_decode(fname, c)
