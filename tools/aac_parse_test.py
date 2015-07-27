@@ -3,34 +3,40 @@
 from glob import glob
 import math
 import os
+import audio_hopper as AH
 
 # using http://wiki.multimedia.cx/index.php?title=ADTS
 def aac_decode(fname):
   f = open(fname, 'rb')
 
+  # This tries to find the first readable SOF bytes
   while True:
     if ord(f.read(1)) == 0xff:
       if ord(f.read(1)) & 0xf6 == 0xf0:
         f.seek(f.tell() - 2)
         break
     
-  isValid = False
   frame_number = 0
-  header_size = 6
+  header_size = 7
+
+  sig_size = 12
+  frame_sig = []
+  start_byte = []
+
   while True:
+    frame_start = f.tell()
 
     block = f.read(header_size)
 
     if not block or len(block) < header_size:
-        f.close()
-        return frame_number
+      break
 
-    b0, b1, b2, b3, b4, b5 = [ord(byte) for byte in block[:header_size]]
+    b0, b1, b2, b3, b4, b5, b6 = [ord(byte) for byte in block[:header_size]]
 
     # b0       b1       b2       b3       b4       b5       b6
     # AAAAAAAA AAAABCCD EEFFFFGH HHIJKLMM MMMMMMMM MMMOOOOO OOOOOOPP 
     # 84218421 84218421 84218421 84218421 84218421 84218421 84218421
-    #                                                       IGNORED
+    #                                                       
     #
     # A     12  syncword 0xFFF, all bits must be 1 
     # B     1   MPEG Version: 0 for MPEG-4, 1 for MPEG-2
@@ -64,23 +70,29 @@ def aac_decode(fname):
     #
     # freq = b2 >> 2 & 0xf
     # channels = (b2 & 1) << 2 | b3 >> 6
-    protect_absent = b1 & 1
+    # protect_absent = b1 & 1
     frame_length = (b3 & 3) << 11 | b4 << 3 | b5 >> 5
     # frame_count = (b6 & 3) + 1
 
+    sig_data = f.read(sig_size)
+    frame_sig.append(sig_data)
+    start_byte.append(frame_start)
+
     frame_number += 1 
-    f.read(frame_length - header_size)
+    f.read(frame_length - header_size - sig_size)
+ 
+  f.close()
+  return [frame_sig, start_byte]
 
-  print frame_number
-  return None
+for fname in glob('wzrd*mp3')[:4]:
+  print aac_decode(fname)
 
-packed_data = '\xff\xf9\x5c\x40\x15\x21\x30'
-
+"""
 for fname in glob('wzrd*mp3'):
-    frame_count = aac_decode(fname)
-    frame_length_estimate = 2048.00 / 44100
-    size = os.path.getsize(fname)
-    est = size / 4000.0 #frame_count * frame_length_estimate
+  frame_count = aac_decode(fname)
+  frame_length_estimate = 2048.00 / 44100
+  size = os.path.getsize(fname)
+  est = size / 4000.0 #frame_count * frame_length_estimate
 
-    print "%d:%f" % (int(math.floor(est / 60)), est % 60), size / 4000, frame_count, fname, size
-
+  print "%d:%f" % (int(math.floor(est / 60)), est % 60), size / 4000, frame_count, fname, size
+"""

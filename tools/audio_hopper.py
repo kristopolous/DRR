@@ -14,14 +14,14 @@ from glob import glob
 MAX_HEADER_ATTEMPTS = 1024
 def hash_test(file_list):
   for name in file_list:
-    audio_crc(name)
+    mp3_sig(name)
 
 def make_map(fname):
-  obj = audio_crc(fname)
+  obj = mp3_sig(fname)
   print len(obj[0])
   marshal.dump(obj, open(fname + '.map', 'wb'))
 
-def audio_crc(fname, blockcount = -1):
+def mp3_sig(fname, blockcount = -1):
   frame_sig = []
   start_byte = []
   chain = []
@@ -170,7 +170,7 @@ def audio_slice(fname, start, end):
   # Most common frame-length ... in practice, I haven't 
   # seen other values in the real world
   frame_length = (1152.0 / 44100)
-  crc32, offset = audio_crc(fname)
+  crc32, offset = mp3_sig(fname)
 
   frame_start = int(math.floor(start / frame_length))
   frame_end = int(math.ceil(end / frame_length))
@@ -185,10 +185,10 @@ def audio_slice(fname, start, end):
 
   return True
 
-def audio_stitch(file_list):
+def audio_stitch(file_list, cb_sig=mp3_sig):
   first = {'name': file_list[0]}
 
-  crc32, offset = audio_crc(first['name'])
+  crc32, offset = cb_sig(first['name'])
 
   first['crc32'] = crc32
   first['offset'] = offset
@@ -198,7 +198,7 @@ def audio_stitch(file_list):
   for name in file_list[1:]:
     second = {'name': name}
 
-    crc32, offset = audio_crc(name)
+    crc32, offset = mp3_sig(name)
 
     second['crc32'] = crc32
     second['offset'] = offset
@@ -247,31 +247,30 @@ def audiotag(source, length_sec, out):
     with open(source, 'rb') as infile:
       out.write(infile.read())
 
-audiotag('/home/chris/radio/kpcc/streams/kpcc-1437707563.mp3', 2 * 60 * 60, '/tmp/audio')
+if __name__ == "__main__":
+  audiotag('/home/chris/radio/kpcc/streams/kpcc-1437707563.mp3', 2 * 60 * 60, '/tmp/audio')
 
-sys.exit(0)
-#fail_list = '/raid/analyze/wxyc-1436334009.mp3 /raid/analyze/wxyc-1436448501.mp3 /raid/analyze/wxyc-1436555370.mp3 /raid/analyze/wxyc-1436408965.mp3 /raid/analyze/wxyc-1436322244.mp3 /raid/analyze/wxyc-1436318625.mp3 /raid/analyze/wxyc-1436407155.mp3 /raid/analyze/wxyc-1437035272.mp3 /raid/analyze/wxyc-1436587070.mp3 /raid/analyze/wxyc-1436903564.mp3 /raid/analyze/wxyc-1437047317.mp3 /raid/analyze/wxyc-1436688334.mp3 /raid/analyze/wxyc-1436835377.mp3 /raid/analyze/wxyc-1436380054.mp3 /raid/analyze/wxyc-1437013904.mp3 /raid/analyze/wxyc-1436667752.mp3 /raid/analyze/wxyc-1436470209.mp3 /raid/analyze/wxyc-1436776080.mp3 /raid/analyze/wxyc-1436338534.mp3 /raid/analyze/wxyc-1436959726.mp3 /raid/analyze/wxyc-1436971489.mp3 /raid/analyze/wxyc-1436376449.mp3 /raid/analyze/wxyc-1436627758.mp3 /raid/analyze/wxyc-1436957012.mp3'
+  sys.exit(0)
 
-#for f in glob("/raid/analyze/*.mp3"):
-for f in fail_list.split(' '):
-  fsize = os.path.getsize(f)
-  #try:
-  if fsize > 50000:
-    p = audio_crc(f)
-    if p:
-      print float(len(p[0])) / fsize, len(p[0]), fsize, f
-    else:
-      print "FAILURE: %s" % f
+  for f in fail_list.split(' '):
+    fsize = os.path.getsize(f)
+    #try:
+    if fsize > 50000:
+      p = mp3_sig(f)
+      if p:
+        print float(len(p[0])) / fsize, len(p[0]), fsize, f
+      else:
+        print "FAILURE: %s" % f
 
-sys.exit(0)
-# success case
-#make_map(sys.argv[1])
-#audio_crc(sys.argv[1])
+  sys.exit(0)
+  # success case
+  #make_map(sys.argv[1])
+  #mp3_sig(sys.argv[1])
 
-#sys.exit(0)
-isSuccess = audio_stitch(["/var/radio/kpcc-1435670337.mp3","/var/radio/kpcc-1435671243.mp3"])
+  #sys.exit(0)
+  isSuccess = audio_stitch(["/var/radio/kpcc-1435670337.mp3","/var/radio/kpcc-1435671243.mp3"])
 
-# failure case
-#stitch_attempt('/var/radio/kpcc-1435670339.mp3', '/var/radio/kpcc-1435669435.mp3')
+  # failure case
+  #stitch_attempt('/var/radio/kpcc-1435670339.mp3', '/var/radio/kpcc-1435669435.mp3')
 
-audio_slice('/tmp/serialize.mp3', 14 * 60, 16 * 60)
+  audio_slice('/tmp/serialize.mp3', 14 * 60, 16 * 60)
