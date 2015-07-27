@@ -5,4 +5,4 @@
 stream=$1
 station=$(echo $stream | sed 's/-.*//')
 
-scp $station.indycast.net:radio/$station/streams/$stream .
+[ -e $stream ] || scp $station.indycast.net:radio/$station/streams/$stream .
