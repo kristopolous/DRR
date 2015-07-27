@@ -25,19 +25,6 @@ FRAME_LENGTH = (1152.0 / 44100)
 #
 MAX_HEADER_ATTEMPTS = 2048
 
-def get_map(fname):
-  """ Retrieves a map file associated with the mp3. """
-  map_name = fname if fname.endswith('.map') else fname + '.map'
-
-  if os.path.exists(map_name):
-    f = gzip.open(map_name, 'r')
-    ret = marshal.loads(f.read())
-    f.close()
-    return ret
-
-  return None, None
-
-    
 def list_info(file_list):
   """ A version of the stream_info that accepts a list. """
   info = stream_info(file_list[0]['name'])
@@ -124,17 +111,6 @@ def signature(fname, blockcount=-1, only_check=False):
   are audio blocks, construct a signature mapping of some given beginning offset of the audio
   data ... this is intended for stitching.
   """
-  # Simply make sure that there is a map associated with the
-  # mp3.  Otherwise create one.
-  map_name = fname if fname.endswith('.map') else fname + '.map'
-
-  if only_check and os.path.exists(map_name):
-    return True
-
-  siglist, offset = get_map(fname)
-  if siglist is not None:
-    return siglist, offset
-
   frame_sig = []
   start_byte = []
   first_header_seen = False
@@ -196,11 +172,6 @@ def signature(fname, blockcount=-1, only_check=False):
 
         if not first_header_seen:
           first_header_seen = True
-
-          # We try to record the CBR associated with this
-          # stream
-          if not DB.get('bitrate', use_cache=True):
-            DB.set('bitrate', bit_rate)
 
         # Rest of the header
         throw_away = f.read(1)
@@ -284,15 +255,10 @@ def get_time(fname):
 
   Returns the audio time in seconds.
   """
-  map_name = fname + '.map'
-  if os.path.exists(map_name):
-    siglist, offset = get_map(map_name)
-    return FRAME_LENGTH * len(offset)
-
-  else:
-    bitrate = int(DB.get('bitrate', use_cache=True))
-    if os.path.exists(fname) and bitrate > 0:
-      return os.path.getsize(fname) / (bitrate * (1000 / 8))
+  # If we don't have a bitrate yet we assume 128
+  bitrate = int(DB.get('bitrate', use_cache=True) or 128)
+  if os.path.exists(fname):
+    return os.path.getsize(fname) / (bitrate * (1000 / 8))
 
 
 def stitch_and_slice_process(file_list, start_minute, duration_minute):
@@ -405,8 +371,8 @@ def list_slice(list_in, name_out, duration_sec, start_sec):
       frame_start = item['start_offset']
       duration_sec -= item['duration_sec'] 
 
-    # try and get the mp3 referred to by the map file
-    fin = cloud.get(item['name'].replace('.map',''))
+    # try and get the mp3
+    fin = cloud.get(item['name'])
 
     if fin:
       fin.seek(offset[frame_start])
