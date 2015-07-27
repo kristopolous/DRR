@@ -15,7 +15,7 @@ def aac_decode(fname):
         break
     
   isValid = False
-  frame_number = 1
+  frame_number = 0
   while True:
 
     block = f.read(7)
@@ -71,7 +71,7 @@ packed_data = '\xff\xf9\x5c\x40\x15\x21\x30'
 
 for fname in glob('wzrd*mp3'):
     frame_count = aac_decode(fname)
-    frame_length_estimate = 2067.00 / 44100
-    est = int(frame_count * frame_length_estimate)
-    print "%d:%d" % (int(math.floor(est / 60)), est % 60), fname, os.path.getsize(fname)
+    frame_length_estimate = 2048.00 / 44100
+    est = frame_count * frame_length_estimate
+    print "%d:%f" % (int(math.floor(est / 60)), est % 60), frame_count, fname, os.path.getsize(fname)
 
