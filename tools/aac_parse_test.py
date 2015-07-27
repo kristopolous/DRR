@@ -1,18 +1,28 @@
 #!/usr/bin/python
 
+from glob import glob
+import math
+import os
+
 # using http://wiki.multimedia.cx/index.php?title=ADTS
 def aac_decode(fname):
   f = open(fname, 'rb')
-  f.seek(0x30)
+
+  while True:
+    if ord(f.read(1)) == 0xff:
+      if ord(f.read(1)) & 0xf6 == 0xf0:
+        f.seek(f.tell() - 2)
+        break
+    
   isValid = False
   frame_number = 1
   while True:
 
     block = f.read(7)
+
     if not block or len(block) < 7:
-        print "End of file! We win"
         f.close()
-        return
+        return frame_number
 
     b0, b1, b2, b3, b4, b5, b6 = [ord(byte) for byte in block[:7]]
 
@@ -51,12 +61,17 @@ def aac_decode(fname):
     frame_length = (b3 & 3) << 11 | b4 << 3 | b5 >> 5
     frame_count = (b6 & 3) + 1
 
-    print f.tell(), freq, channels, frame_length, frame_count
-    f.read(frame_length - 7)
     frame_number += 1 
+    f.read(frame_length - 7)
 
+  print frame_number
   return None
 
 packed_data = '\xff\xf9\x5c\x40\x15\x21\x30'
 
-aac_decode('wzrd-1437934065.aac')
+for fname in glob('wzrd*mp3'):
+    frame_count = aac_decode(fname)
+    frame_length_estimate = 2067.00 / 44100
+    est = int(frame_count * frame_length_estimate)
+    print "%d:%d" % (int(math.floor(est / 60)), est % 60), fname, os.path.getsize(fname)
+
