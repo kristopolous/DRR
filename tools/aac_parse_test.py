@@ -2,11 +2,13 @@
 
 from glob import glob
 import math
+import binascii
 import os
+import sys
 import audio_hopper as AH
 
 # using http://wiki.multimedia.cx/index.php?title=ADTS
-def aac_decode(fname):
+def aac_decode(fname, c=0):
   f = open(fname, 'rb')
 
   # This tries to find the first readable SOF bytes
@@ -20,6 +22,7 @@ def aac_decode(fname):
   header_size = 7
 
   sig_size = 12
+  ignore_size = 3
   frame_sig = []
   start_byte = []
 
@@ -70,24 +73,31 @@ def aac_decode(fname):
     #
     # freq = b2 >> 2 & 0xf
     # channels = (b2 & 1) << 2 | b3 >> 6
-    # protect_absent = b1 & 1
+    protect_absent = b1 & 1
     frame_length = (b3 & 3) << 11 | b4 << 3 | b5 >> 5
     # frame_count = (b6 & 3) + 1
 
+    f.read(ignore_size)
     sig_data = f.read(sig_size)
+    #print binascii.b2a_hex(sig_data), c, frame_number, fname
     frame_sig.append(sig_data)
     start_byte.append(frame_start)
 
     frame_number += 1 
-    f.read(frame_length - header_size - sig_size)
+    f.read(frame_length - header_size - sig_size - ignore_size)
  
   f.close()
   return [frame_sig, start_byte]
 
-for fname in glob('wzrd*mp3')[:4]:
-  print aac_decode(fname)
+AH.audio_stitch(sorted(glob('wzrd*mp3'))[:4], cb_sig=aac_decode)
 
 """
+c = 0
+for fname in sorted(glob('wzrd*mp3'))[:25]:
+  print aac_decode(fname, c)
+  c += 1
+
+
 for fname in glob('wzrd*mp3'):
   frame_count = aac_decode(fname)
   frame_length_estimate = 2048.00 / 44100

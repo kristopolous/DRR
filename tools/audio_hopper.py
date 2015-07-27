@@ -147,8 +147,9 @@ def mp3_sig(fname, blockcount = -1):
 # one larger mp3 out of it. The tuple format is
 # (fila_name, byte_start, byte_end) where byte_end == -1 
 # means "the whole file" 
-def audio_serialize(file_list):
-  out = open('/tmp/serialize.mp3', 'wb+')
+def audio_serialize(file_list, out_path='/tmp/serialize.mp3'):
+  print ">>", out_path
+  out = open(out_path, 'wb+')
 
   for name, start, end in file_list:
     f = open(name, 'rb')
@@ -186,6 +187,7 @@ def audio_slice(fname, start, end):
   return True
 
 def audio_stitch(file_list, cb_sig=mp3_sig):
+  print file_list
   first = {'name': file_list[0]}
 
   crc32, offset = cb_sig(first['name'])
@@ -193,12 +195,13 @@ def audio_stitch(file_list, cb_sig=mp3_sig):
   first['crc32'] = crc32
   first['offset'] = offset
 
-  args = [(first['name'], 0, first['offset'][-1])]
+  # Use the first offset and not the 0 byte.
+  args = [(first['name'], first['offset'][0], first['offset'][-1])]
 
   for name in file_list[1:]:
     second = {'name': name}
 
-    crc32, offset = mp3_sig(name)
+    crc32, offset = cb_sig(name)
 
     second['crc32'] = crc32
     second['offset'] = offset
@@ -215,7 +218,7 @@ def audio_stitch(file_list, cb_sig=mp3_sig):
           break
 
     except: 
-      raise "Cannot find indices between %s and %s" % (first['name'], second['name'])
+      raise Exception("Cannot find indices between %s and %s" % (first['name'], second['name']))
       break
 
     if isFound:
