@@ -1,5 +1,6 @@
 #!/usr/bin/python -O
 import threading
+import logging
 import sqlite3
 
 g_db = {}
@@ -197,6 +198,20 @@ def get(key, expiry=0, use_cache=False):
     return res[0]
 
   return False
+
+
+def unregister_stream(name):
+  """ Deletes a stream by name, contingent on it existing only once """
+
+  db = connect()
+  res = db['c'].execute('select id from streams where name = ?', (name, )).fetchall()
+
+  if res and len(res) == 1:
+    logging.info("Removing our reference of %s" % name)
+    res = db['c'].execute('delete from streams where id = %d' % res[0][0])
+    db['conn'].commit()
+
+  return True
 
 
 def register_stream(name, start_unix, end_unix, start_minute, end_minute, week_number):
