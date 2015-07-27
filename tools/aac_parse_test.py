@@ -79,6 +79,8 @@ packed_data = '\xff\xf9\x5c\x40\x15\x21\x30'
 for fname in glob('wzrd*mp3'):
     frame_count = aac_decode(fname)
     frame_length_estimate = 2048.00 / 44100
-    est = frame_count * frame_length_estimate
-    print "%d:%f" % (int(math.floor(est / 60)), est % 60), frame_count, fname, os.path.getsize(fname)
+    size = os.path.getsize(fname)
+    est = size / 4000.0 #frame_count * frame_length_estimate
+
+    print "%d:%f" % (int(math.floor(est / 60)), est % 60), size / 4000, frame_count, fname, size
 
