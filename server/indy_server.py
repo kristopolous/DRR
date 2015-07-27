@@ -653,7 +653,9 @@ def stream_download(callsign, url, my_pid, fname):
           misc.queue.put(('stream', matches[0].strip()))
           return True
 
-    misc.queue.put(('heartbeat', True))
+    # This provides a reliable way to determine bitrate.  We look at how much 
+    # data we've received between two time periods
+    misc.queue.put(('heartbeat', (time.time(), len(data))))
 
     if not nl['stream']:
       try:
@@ -693,6 +695,18 @@ def stream_manager():
   streams are running appropriately.
   """
   callsign = misc.config['callsign']
+
+  # aac bitrate is some non-trivial thing that even ffprobe doesn't
+  # do a great job at. This solution looks at number of bits that
+  # transit over the wire given a duration of time, and then uses
+  # that to compute the bitrate, since in practice, that's what
+  # bitrate effectively means, and why it's such an important metric.
+  #
+  # This is to compute a format agnostic bitrate
+  # (see heartbeat for more information)
+  has_bitrate = DB.get('bitrate', use_cache=True) 
+  first_time = 0
+  total_bytes = 0
 
   cascade_time = misc.config['cascadetime']
   cascade_buffer = misc.config['cascadebuffer']
@@ -766,6 +780,34 @@ def stream_manager():
       elif what == 'restart':
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
         subprocess.Popen(sys.argv)
+
+      elif what == 'heartbeat':
+        flag = True
+
+        if not has_bitrate: 
+          # If we haven't determined this stream's bitrate (which we use to estimate 
+          # the amount of content is in a given archived stream), then we compute it 
+          # here instead of asking the parameters of a given block and then presuming.
+          total_bytes += value[1]
+
+          # Keep track of the first time this stream started (this is where our total
+          # byte count is derived from)
+          if not first_time: 
+            first_time = value[0]
+
+          # Otherwise we give a large (in computer time) margin of time to confidently
+          # guess the bitrate.  I didn't do great at stats in college, but in my experiments,
+          # the estimation falls within 98% of the destination.  I'm pretty sure it's really
+          # unlikely this will come out erroneous, but I really can't do the math, it's probably
+          # a T value, but I don't know. Anyway, whatevs.
+          elif (value[0] - first_time > 60):
+            # We take the total bytes, calculate it over our time, in this case, 25 seconds.
+            est = total_bytes / (value[0] - first_time)
+
+            # We find the nearest 8Kb increment this matches and then scale out.
+            # Then we multiply out by 8 (for _K_ B) and 8 again for K _b_.
+            bitrate = int( round (est / 8000) * 8 * 8 )
+            DB.get('bitrate', bitrate)
 
       else:
         flag = True
