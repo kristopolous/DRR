@@ -16,19 +16,21 @@ def aac_decode(fname):
     
   isValid = False
   frame_number = 0
+  header_size = 6
   while True:
 
-    block = f.read(7)
+    block = f.read(header_size)
 
-    if not block or len(block) < 7:
+    if not block or len(block) < header_size:
         f.close()
         return frame_number
 
-    b0, b1, b2, b3, b4, b5, b6 = [ord(byte) for byte in block[:7]]
+    b0, b1, b2, b3, b4, b5 = [ord(byte) for byte in block[:header_size]]
 
     # b0       b1       b2       b3       b4       b5       b6
     # AAAAAAAA AAAABCCD EEFFFFGH HHIJKLMM MMMMMMMM MMMOOOOO OOOOOOPP 
     # 84218421 84218421 84218421 84218421 84218421 84218421 84218421
+    #                                                       IGNORED
     #
     # A     12  syncword 0xFFF, all bits must be 1 
     # B     1   MPEG Version: 0 for MPEG-4, 1 for MPEG-2
@@ -55,14 +57,19 @@ def aac_decode(fname):
       print "Broken at frame#%d" % frame_number
       break
 
-    freq = b2 >> 2 & 0xf
-    channels = (b2 & 1) << 2 | b3 >> 6
+    #
+    # For all intents and purposes this doesn't seem to be a real
+    # heavy indicator for our calculations ... since in practice 
+    # the radio streams will be all stereo.
+    #
+    # freq = b2 >> 2 & 0xf
+    # channels = (b2 & 1) << 2 | b3 >> 6
     protect_absent = b1 & 1
     frame_length = (b3 & 3) << 11 | b4 << 3 | b5 >> 5
-    frame_count = (b6 & 3) + 1
+    # frame_count = (b6 & 3) + 1
 
     frame_number += 1 
-    f.read(frame_length - 7)
+    f.read(frame_length - header_size)
 
   print frame_number
   return None
