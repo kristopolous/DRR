@@ -696,7 +696,8 @@ def stream_manager():
   """
   callsign = misc.config['callsign']
 
-  # aac bitrate is some non-trivial thing that even ffprobe doesn't
+  #
+  # AAC bitrate is some non-trivial thing that even ffprobe doesn't
   # do a great job at. This solution looks at number of bits that
   # transit over the wire given a duration of time, and then uses
   # that to compute the bitrate, since in practice, that's what
@@ -704,6 +705,7 @@ def stream_manager():
   #
   # This is to compute a format agnostic bitrate
   # (see heartbeat for more information)
+  #
   has_bitrate = DB.get('bitrate', use_cache=True) 
   first_time = 0
   total_bytes = 0
