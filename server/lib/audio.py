@@ -320,7 +320,7 @@ def stitch_and_slice_process(file_list, start_minute, duration_minute):
     logging.warn("Unable to stitch file list")
     return False
 
-  print info, start_minute
+  # print info, start_minute
   # After we've stitched together the audio then we start our slice
   # by figuring our the start_minute of the slice, versus ours
   start_slice = start_minute #max(start_minute - info['start_minute'], 0)
