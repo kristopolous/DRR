@@ -21,12 +21,7 @@ def make_map(fname):
   print len(obj[0])
   marshal.dump(obj, open(fname + '.map', 'wb'))
 
-def mp3_sig(fname, blockcount = -1):
-  frame_sig = []
-  start_byte = []
-  chain = []
-  rsize = 4
-
+def mp3_info(byte):
   freqTable = [ 44100, 48000, 32000, 0 ]
 
   brTable = [
@@ -35,6 +30,25 @@ def mp3_sig(fname, blockcount = -1):
     112, 128, 160, 192, 
     224, 256, 320, 0
   ]
+
+  samp_rate = freqTable[(byte & 0x0f) >> 2]
+  bit_rate = brTable[byte >> 4]
+  pad_bit = (byte & 0x3) >> 1
+
+  try:
+    # from http://id3.org/mp3Frame
+    frame_size = (144000 * bit_rate / samp_rate) + pad_bit
+
+  except:
+    return False, False, False, False
+
+  return frame_size, samp_rate, bit_rate, pad_bit
+
+def mp3_sig(fname, blockcount = -1):
+  frame_sig = []
+  start_byte = []
+  chain = []
+  rsize = 4
 
   f = open(fname, 'rb')
 
@@ -64,15 +78,9 @@ def mp3_sig(fname, blockcount = -1):
         except:
           break
 
-        samp_rate = freqTable[(b & 0x0f) >> 2]
-        bit_rate = brTable[b >> 4]
-        pad_bit = (b & 0x3) >> 1
+        frame_size, samp_rate, bit_rate, pad_bit = mp3_info(b)
 
-        # from http://id3.org/mp3Frame
-        try:
-          frame_size = (144000 * bit_rate / samp_rate) + pad_bit
-
-        except:
+        if not frame_size:
           continue
 
         if not first_header_seen:
@@ -166,6 +174,55 @@ def audio_serialize(file_list, out_path='/tmp/serialize.mp3'):
   out.close()
 
   return True
+
+
+def audio_type(fname):
+  """ 
+  Determines the audio type of an fname and returns where the start of
+  the audio block is.
+  """
+  f = open(fname, 'rb')
+
+  # mp3 blocks appear to be \xff\xfb | \x49\x44 | \x54\x41
+  # aac is \xff(\xf6 == \xf0) ... 
+  while True:
+    pos = f.tell()
+
+    try:
+      b0 = ord(f.read(1))
+
+    except:
+      break
+
+    if b0 == 0xff:
+      b1 = ord(f.read(1))
+
+      if b1 & 0xf6 == 0xf0:
+        return 'aac', pos
+
+      elif b1 == 0xfb or b1 == 0xfa:
+        # In order to see if it's an mp3 or not we read the next byte
+        # and try to get the stats on the frame
+        b = ord(f.read(1))
+        frame_size, samp_rate, bit_rate, pad_bit = mp3_info(b)
+
+        # If there's a computed frame_size then we can continue
+        if frame_size:
+          # We try to move forward and see if our predictive 
+          # next block works. 
+          f.seek(pos + frame_size)
+
+          # If this is an mp3 file and that frame was valid, then
+          # we should now be at the start of the next frame.
+          b0, b1 = [ord(byte) for byte in f.read(2)]
+
+          if b0 == 0xff and b1 == 0xfb or b1 == 0xfa:
+            # That's good enough for us
+            return 'mp3', pos
+
+      f.seek(pos + 1)
+
+  return None, None
 
 def audio_slice(fname, start, end):
   # Most common frame-length ... in practice, I haven't 
