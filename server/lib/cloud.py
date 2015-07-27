@@ -253,6 +253,8 @@ def download(path):
   blob_service, container = connect()
 
   if blob_service:
+    import azure
+
     fname = os.path.basename(path)
     try:
       blob_service.get_blob_to_path(
@@ -263,7 +265,13 @@ def download(path):
       )
       return True
 
-    except:
+    except azure.WindowsAzureMissingResourceError as e:
+      logging.debug('Unable to retreive %s from the cloud. It is not there' % path)
+
+      # TODO: This is a pretty deep (and probably wrong) place to do this.
+      DB.unregister_stream(path)
+
+    except Exception as e:
       logging.debug('Unable to retreive %s from the cloud.' % path)
 
   return False
