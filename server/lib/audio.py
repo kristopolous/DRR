@@ -190,7 +190,7 @@ def signature(fname, blockcount=-1):
   audio_format = DB.get('format', use_cache=True) 
 
   if not audio_format:
-    audio_format, start = audio_format(fname)
+    audio_format, start = get_audio_format(fname)
 
     if audio_format:
       logging.info("Setting this stream's audio format as %s" % audio_format)
