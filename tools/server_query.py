@@ -106,7 +106,7 @@ for station in all_stations:
     # look at this data as JSON, so we suppress any superfluous output
     if len(all_stations) > 1:
       # Take out the \n (we'll be putting it in below)
-      sys.stdout.write("%s " % url)
+      sys.stderr.write("%s " % url)
 
     stream = urllib2.urlopen("http://%s/%s" % (url, args.query), timeout=15)
     data = stream.read()
@@ -139,7 +139,8 @@ for station in all_stations:
       sys.stdout.write(data)
        
     else:
-      print "[ %d ]\n%s" % (stop - start, data)
+      sys.stderr.write("[ %d ]\n" % (stop - start))
+      print data
 
     if db:
       db['c'].execute('update stations set active = 1, latency = latency + ?, pings = pings + 1, last_seen = current_timestamp where callsign = ?', ( str(stop - start), str(station[CALLSIGN]) ))
