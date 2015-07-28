@@ -55,9 +55,11 @@ def put(path):
   """ Place a file, given a path, in the cloud. """
   if 'test' in misc.config['_private']['azure']:
     logging.info ("I would have uploaded %s but I'm in test mode" % path)
+    return False
 
   if not misc.am_i_official():
     logging.info ("I would have uploaded %s but I'm not the official %s server" % (path, misc.config['callsign']) )
+    return False
 
   blob_service, container = connect()
 
@@ -69,7 +71,7 @@ def put(path):
         path,
         max_connections=5,
       )
-      return res
+      return True
 
     except:
       logging.debug('Unable to put %s in the cloud.' % path)
@@ -182,13 +184,14 @@ def prune_process(lockMap):
     # We want to make sure we aren't archiving the slices
     elif cloud_cutoff and ctime < cloud_cutoff and not fname.startswith('slice'):
       logging.debug("Prune[cloud]: putting %s" % fname)
-      put(fname)
 
-      try:
-        os.unlink(fname)
+      # Only unlink the file if I can successfully put it into the cloud.
+      if put(fname):
+        try:
+          os.unlink(fname)
 
-      except:
-        logging.debug("Prune[cloud]: Couldn't remove %s" % fname)
+        except:
+          logging.debug("Prune[cloud]: Couldn't remove %s" % fname)
 
   for fname in glob('*/*.map') + glob('%s/*.gz' % misc.DIR_BACKUPS):
     ctime = os.path.getctime(fname)
