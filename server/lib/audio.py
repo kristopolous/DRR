@@ -508,35 +508,6 @@ def list_slice(list_in, name_out, duration_sec, start_sec):
 
   out = open(name_out, 'wb+')
   
-  if False:
-    # I *believe* the real itunes fix was just making the HTTP/206 partial content 
-    # work on the right byte alignment AND that the part below is bogus. Also, since we
-    # are anticipating AAC this is a silly idea to begin with
-    
-    # For itunes (See #6) we need to put in an ID3 header with the duration of the file.
-    # This is the TLEN which is ms.
-    #
-    # See http://id3.org/id3v2.4.0-structure and http://id3.org/id3v2.4.0-frames
-    # to see what this is all about.
-    # 
-    # Since our id3 lengths don't exceed 126 bytes we don't have to worry about the
-    # bizarre synchsafe integer format that I am not going to do.
-    #
-    # This thing will probably break at 27.7 hours because 
-    # 
-    # 10^10 - 1 / 10^3 / 3600 ~= 27.7
-    #
-    # But really, that can be later.
-    #
-    duration_ms = '\x00%d' % int(duration_sec * 1000)
-
-    # The header is always 10 bytes.
-    tlen_block = 'TLEN%s\x40\x00%s' % (struct.pack('>I', len(duration_ms)), duration_ms)
-    id3 = 'ID3\x03\x00\x00%s%s' % (struct.pack('>I', len(tlen_block)), tlen_block)
-
-    # That's the very first thing we put there.
-    out.write(id3)
-
   # print 'slice', duration_sec, start_sec
   for ix in range(0, len(list_in)):
     item = list_in[ix]
