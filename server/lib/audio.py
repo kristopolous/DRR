@@ -582,7 +582,9 @@ def stitch(file_list, force_stitch=False):
 
   args = [{
     'name': first['name'], 
-    'start_byte': 0, 
+    # We don't let the first byte be the beginning because we want
+    # to produce valid files.
+    'start_byte': first['offset'][0], 
     'start_offset': 0,
     'end_byte': first['offset'][-2],
     'start_minute': 0,
