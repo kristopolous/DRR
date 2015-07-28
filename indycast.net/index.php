@@ -181,8 +181,8 @@ if(isset($_GET['callsign'])) {
       </span>
     </script>
 
-    <script src='/assets/js/underscore-min.js'></script>
-    <script src="/assets/js/jquery.min.js"></script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js'></script>
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="/assets/js/evda.min.js"></script>
     <!--[if lte IE 8]><script src="/assets/js/ie/respond.min.js"></script><![endif]-->
     <script src="/assets/js/indycast.js"></script>
