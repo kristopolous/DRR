@@ -155,11 +155,11 @@ def prune_process(lockMap):
   db = DB.connect()
 
   duration = misc.config['archivedays'] * TS.ONE_DAY
-  cutoff = time.time() - duration
+  cutoff = TS.unixtime('prune') - duration
 
   cloud_cutoff = False
   if misc.config['cloud']:
-    cloud_cutoff = time.time() - misc.config['cloudarchive'] * TS.ONE_DAY
+    cloud_cutoff = TS.unixtime('prune') - misc.config['cloudarchive'] * TS.ONE_DAY
 
   # Put thingies into the cloud.
   count = 0

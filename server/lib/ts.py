@@ -142,7 +142,7 @@ def get_offset(force=False):
   offset = DB.get('offset', expiry=ONE_DAY)
   if not offset or force:
 
-    when = int(time.time())
+    when = int(TS.unixtime())
 
     api_key = 'AIzaSyBkyEMoXrSYTtIi8bevEIrSxh1Iig5V_to'
     url = "https://maps.googleapis.com/maps/api/timezone/json?location=%s,%s&timestamp=%d&key=%s" % (misc.config['lat'], misc.config['long'], when, api_key)
