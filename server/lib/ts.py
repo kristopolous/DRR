@@ -56,6 +56,13 @@ def now():
   return datetime.utcnow() + timedelta(minutes=get_offset())
 
 
+def uptime():
+  return int(TS.unixtime('uptime') - misc.start_time)
+
+def unixtime(what=''):
+  """ This is used instead of time.time() in order to make this more testable """
+  return time.time()
+
 def to_minute(unix_time):
   """ Takes a given unix time and finds the week minute corresponding to it. """
   if type(unix_time) is int:
