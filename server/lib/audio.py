@@ -16,6 +16,9 @@ from datetime import datetime, timedelta, date
 # seen other values in the real world.
 FRAME_LENGTH = (1152.0 / 44100)
 
+FORMAT_MP3 = 'mp3'
+FORMAT_AAC = 'aac'
+
 #
 # Some stations don't start you off with a valid mp3 header
 # (such as kdvs), so we have to just seek into the file
@@ -128,13 +131,80 @@ def mp3_info(byte):
 
   return frame_size, samp_rate, bit_rate, pad_bit
 
+def get_audio_format(fname):
+  """ 
+  Determines the audio format of an fname 
+  and returns where the start of
+  the audio block is.
+  """
+  f = open(fname, 'rb')
+  audio_format = None, None
+
+  # mp3 blocks appear to be \xff\xfb | \x49\x44 | \x54\x41
+  # aac is \xff(\xf6 == \xf0) ... 
+  while True:
+    pos = f.tell()
+
+    try:
+      b0 = ord(f.read(1))
+
+    except:
+      break
+
+    if b0 == 0xff:
+      b1 = ord(f.read(1))
+
+      if b1 & 0xf6 == 0xf0:
+        audio_format = FORMAT_AAC, pos
+        break
+
+      elif b1 == 0xfb or b1 == 0xfa:
+        # In order to see if it's an mp3 or not we read the next byte
+        # and try to get the stats on the frame
+        b = ord(f.read(1))
+        frame_size, samp_rate, bit_rate, pad_bit = mp3_info(b)
+
+        # If there's a computed frame_size then we can continue
+        if frame_size:
+          # We try to move forward and see if our predictive 
+          # next block works. 
+          f.seek(pos + frame_size)
+
+          # If this is an mp3 file and that frame was valid, then
+          # we should now be at the start of the next frame.
+          b0, b1 = [ord(byte) for byte in f.read(2)]
+
+          if b0 == 0xff and b1 == 0xfb or b1 == 0xfa:
+            # That's good enough for us
+            f.close()
+            audio_format = FORMAT_MP3, pos
+            break
+
+      f.seek(pos + 1)
+
+  f.close()
+  return audio_format
+
 
 def signature(fname, blockcount=-1):
-  audio_type = DB.get('format', use_cache=True) 
-  if not audio_type:
+  audio_format = DB.get('format', use_cache=True) 
 
-  return mp3_signature(fname, blockcount)
-  return aac_signature(fname, blockcount)
+  if not audio_format:
+    audio_format, start = audio_format(fname)
+
+    if audio_format:
+      logging.info("Setting this stream's audio format as %s" % audio_format)
+      DB.set('format', audio_format)
+
+    else:
+      logging.warn("Can't determine type of file for %s." % fname)
+      return False
+  
+  if audio_format == FORMAT_MP3: 
+    return mp3_signature(fname, blockcount)
+
+  if audio_format == FORMAT_AAC:
+    return aac_signature(fname, blockcount)
 
 # using http://wiki.multimedia.cx/index.php?title=ADTS
 def aac_signature(fname, blockcount=-1):
@@ -154,8 +224,12 @@ def aac_signature(fname, blockcount=-1):
   ignore_size = 3
   frame_sig = []
   start_byte = []
+  first_header_seen = True
 
-  while True:
+  while blockcount != 0:
+
+    blockcount -= 1
+
     frame_start = f.tell()
 
     block = f.read(header_size)
@@ -192,7 +266,7 @@ def aac_signature(fname, blockcount=-1):
 
     # A and C (yes this is 0xf SIX and 0xf ZERO)
     if b0 != 0xff or (b1 & 0xf6 != 0xf0): 
-      print "Broken at frame#%d" % frame_number
+      logging.warn('[aac] %s Broken at frame#%d' % (fname, frame_number))
       break
 
     #
@@ -208,7 +282,8 @@ def aac_signature(fname, blockcount=-1):
 
     f.read(ignore_size)
     sig_data = f.read(sig_size)
-    #print binascii.b2a_hex(sig_data), c, frame_number, fname
+
+    # print binascii.b2a_hex(sig_data), c, frame_number, fname
     frame_sig.append(sig_data)
     start_byte.append(frame_start)
 
@@ -216,7 +291,17 @@ def aac_signature(fname, blockcount=-1):
     f.read(frame_length - header_size - sig_size - ignore_size)
  
   f.close()
-  return [frame_sig, start_byte]
+
+  info = stream_info(fname)
+  DB.register_stream(
+    name=fname,
+    week_number=info['week'],
+    start_minute=float(info['start_minute']),
+    end_minute=float(info['end_minute']),
+    start_unix=info['start_date'],
+    end_unix=info['start_date'] + timedelta(seconds=info['duration_sec'])
+  )
+  return frame_sig, start_byte
 
 
 def mp3_signature(fname, blockcount=-1):
