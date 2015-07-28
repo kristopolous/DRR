@@ -921,7 +921,7 @@ def read_config(config):
     'port': 5000,
 
     # The (day) duration we should be archiving things.
-    'archivedays': 21,
+    'archivedays': 28,
 
     # The (second) time in looking to see if our stream is running
     'cycletime': 7,
@@ -943,7 +943,7 @@ def read_config(config):
     # it does save price VPS disk space which seems to come at an unusual
     # premium.
     #
-    'cloudarchive': 1.05,
+    'cloudarchive': 0.80,
     
     # Run the pruning every this many days (float)
     'pruneevery': 0.5
