@@ -124,6 +124,23 @@ $(function() {
     });
   }
 
+  $("#station-query").on('keyup', function(){
+    var query = this.value, show_count = 0;
+    
+    $("#station li").each(function(){
+      var to_test = this.firstChild.innerHTML;
+      if(to_test.search(query) == -1) {
+        $(this).hide();
+      } else {
+        show_count++;
+        $(this).show();
+      }
+    });
+    if(show_count == 1) {
+    }
+
+  })
+
   // #23 - multiday recordings
   $("#day a").on(listenEvent, function(){
     ev.setToggle('day', this.innerHTML);
