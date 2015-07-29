@@ -109,7 +109,6 @@ if(isset($_GET['callsign'])) {
           <a href="#" class="image icon fa-mobile"><img src="/images/pic03.jpg" alt="" /></a>
           <div class="content">
             <h3>Give it a name</h3>
-            <label for="name">Show Name</label>
             <input class="text" type="text" name="name" id="name" value="" placeholder="ex. Alien Air Music" />
           </div>
         </section>
@@ -121,7 +120,7 @@ if(isset($_GET['callsign'])) {
         </div>
         <div id="podcast-notdone">
           <h3>The podcast will appear here</h3>
-          <p>Please select desired day<?= $callsign ? '' : ', station, ' ?> and time above</p>
+          <p>Please select desired day<?= $callsign ? '' : ', station, ' ?> and time above.</p>
         </div>
       </footer>
 
