@@ -163,8 +163,8 @@ def prune_process(lockMap, reindex=False):
   register_streams(reindex)
   db = DB.connect()
 
-  duration = misc.config['archivedays'] * TS.ONE_DAY
-  cutoff = TS.unixtime('prune') - duration
+  archive_duration = misc.config['archivedays'] * TS.ONE_DAY
+  cutoff = TS.unixtime('prune') - archive_duration
 
   cloud_cutoff = False
   if misc.config['cloud']:
@@ -202,7 +202,7 @@ def prune_process(lockMap, reindex=False):
         except:
           logging.debug("Prune[cloud]: Couldn't remove %s" % fname)
 
-  for fname in glob('*/*.map') + glob('%s/*.gz' % misc.DIR_BACKUPS):
+  for fname in glob('%s/*.gz' % misc.DIR_BACKUPS):
     ctime = os.path.getctime(fname)
 
     # We observe the rules set up in the config.
@@ -214,13 +214,13 @@ def prune_process(lockMap, reindex=False):
   # The map names are different since there may or may not be a corresponding
   # cloud thingie associated with it.
   db = DB.connect()
-  unlink_list = db['c'].execute('select name from streams where created_at < (current_timestamp - ?)', (duration, )).fetchall()
+  unlink_list = db['c'].execute('select name from streams where created_at < (current_timestamp - ?)', (archive_duration, )).fetchall()
 
   for fname in unlink_list:
     # If there's a cloud account at all then we need to unlink the 
     # equivalent mp3 file
     if cloud_cutoff:
-      unlink(fname[:-4])
+      "cloud.";unlink(fname)
 
     # now only after we've deleted from the cloud can we delete the local file
     os.unlink(fname)

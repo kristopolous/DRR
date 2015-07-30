@@ -932,7 +932,13 @@ def read_config(config):
     # meaning to record only when an intent is matched.
     'mode': 'full',
 
+    #
     # The relative, or absolute directory to put things in
+    # The default goes into the home directory to try to avoid a situation
+    # where we can't read or write something on default startup - also we keep
+    # it out of a dot directory intentionally so that we don't fill up a home
+    # directory in some hidden path - that's really dumb.
+    #
     'storage': "%s/radio" % os.path.expanduser('~'),
 
     # The (day) time to expire an intent to record
@@ -988,6 +994,11 @@ def read_config(config):
       # If there's a cloud conifiguration file then we read that too
       cloud_config = ConfigParser.ConfigParser()
       cloud_config.read(misc.config['cloud'])
+
+      # Things stored in the _private directory don't get reported back in a status
+      # query.
+      #
+      # see https://github.com/kristopolous/DRR/issues/73 for what this is about.
       misc.config['_private']['azure'] = misc.config_section_map('Azure', cloud_config)
 
   if not os.path.isdir(misc.config['storage']):
