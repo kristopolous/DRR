@@ -37,7 +37,9 @@ if(isset($_GET['callsign'])) {
   <body>
     <div id="header">
       <h1>Indycast Radio</h1>
-      <p>Podcasting <?= $callsign ? strtoupper($callsign) : "the World's Independent Radio" ?>
+      <p>A free service podcasting <?= $callsign ? strtoupper($callsign) : "the World's Independent Radio" ?>
+      <br/>
+      <small>(Already works on your device. no app needed)</small>
       <?php if ($callsign) { ?><br/><small>(<a href="/">and more</a>)</small><?php } ?></p>
     </div>
 
@@ -45,7 +47,7 @@ if(isset($_GET['callsign'])) {
 
       <header class="major container 75%">
         <h2>
-        Subscribe to your favorite <?= $callsign ?> shows.
+        Never miss your favorite <?= $callsign ?> show again.
         <br />
         Listen on your time, not airtime.
         </h2>
