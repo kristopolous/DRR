@@ -200,13 +200,13 @@ def get(key, expiry=0, use_cache=False):
   return False
 
 
-def unregister_stream(name):
+def unregister_stream(name, do_all=False):
   """ Deletes a stream by name, contingent on it existing only once """
 
   db = connect()
   res = db['c'].execute('select id from streams where name = ?', (name, )).fetchall()
 
-  if res and len(res) == 1:
+  if res and (len(res) == 1 or do_all):
     logging.info("Removing our reference of %s" % name)
     res = db['c'].execute('delete from streams where id = %d' % res[0][0])
     db['conn'].commit()
@@ -222,14 +222,19 @@ def register_stream(name, start_unix, end_unix, start_minute, end_minute, week_n
   db = connect()
   res = db['c'].execute('select id from streams where name = ?', (name, )).fetchone()
 
-  if res == None:
-    db['c'].execute("""insert into streams (
-        name,         start_unix, end_unix, 
-        start_minute, end_minute, week_number
-    ) values(?, ?, ?, ?, ?, ?)""", (name, start_unix, end_unix, start_minute, end_minute, week_number, ))
+  # If something exists then we remove it and reinsert ... this is not as effecient
+  # as an upsert with coalesce, but this is done on rare occasions in heavy workloads ...
+  # so we don't really need to be entirely efficient about it.
+  if res:
+    unregister_stream(name, do_all=True)
 
-    db['conn'].commit()
-    return db['c'].lastrowid
+  db['c'].execute("""insert into streams (
+      name,         start_unix, end_unix, 
+      start_minute, end_minute, week_number
+  ) values(?, ?, ?, ?, ?, ?)""", (name, start_unix, end_unix, start_minute, end_minute, week_number, ))
+
+  db['conn'].commit()
+  return db['c'].lastrowid
 
   return res[0]
  
