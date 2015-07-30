@@ -47,9 +47,9 @@ if(isset($_GET['callsign'])) {
 
       <header class="major container 75%">
         <h2>
-        Never miss your favorite <?= $callsign ?> show again.
+        Listen on your time. 
         <br />
-        Listen on your time, not airtime.
+        Never miss your favorite <?= $callsign ?> show again.
         </h2>
       </header>
 
