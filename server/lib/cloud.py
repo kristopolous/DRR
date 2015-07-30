@@ -135,7 +135,7 @@ def register_streams(reindex=False):
       misc.shutdown()
 
 
-def prune():
+def prune(reindex=False):
   """ Gets rid of files older than archivedays - cloud stores things if relevant. """
 
   # We want to run the am_i_official so that the thread that keeps forking the prune
@@ -143,12 +143,12 @@ def prune():
   misc.am_i_official()
 
   # Now when the child calls it it won't hit the network for every prune.
-  pid = Process(target=prune_process, args=(misc.lockMap,))
+  pid = Process(target=prune_process, args=(misc.lockMap, reindex,))
   pid.start()
   return pid
 
 
-def prune_process(lockMap):
+def prune_process(lockMap, reindex=False):
   """ 
   This is internal, call prune() directly. This is a normally blocking
   process that is prepared by prune(), making it easily callable asynchronously 
@@ -160,7 +160,7 @@ def prune_process(lockMap):
 
   pid = misc.change_proc_name("%s-cleanup" % misc.config['callsign'])
 
-  register_streams()
+  register_streams(reindex)
   db = DB.connect()
 
   duration = misc.config['archivedays'] * TS.ONE_DAY

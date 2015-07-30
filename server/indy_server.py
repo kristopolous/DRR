@@ -360,6 +360,7 @@ def server_manager(config):
     """ Returns this servers uuid """
     return misc.config['uuid']
 
+
   # From http://stackoverflow.com/questions/13317536/get-a-list-of-all-routes-defined-in-the-app
   @app.route("/site-map")
   def site_map():
@@ -386,6 +387,12 @@ def server_manager(config):
     time.sleep(1)
     return flask.send_file(filename)
 
+
+  @app.route('/prune_by_reindexing')
+  def prune():
+    """ Starts the prune process which cleans up and offloads mp3s. """
+    cloud.prune(reindex=True)
+    return "Pruning started"
 
   @app.route('/prune')
   def prune():
