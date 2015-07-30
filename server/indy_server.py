@@ -389,7 +389,7 @@ def server_manager(config):
 
 
   @app.route('/prune_by_reindexing')
-  def prune():
+  def reindex():
     """ Starts the prune process which cleans up and offloads mp3s. """
     cloud.prune(reindex=True)
     return "Pruning started"

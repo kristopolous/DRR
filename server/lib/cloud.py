@@ -96,7 +96,7 @@ def register_streams(reindex=False):
 
   # There should be a smarter way to do this ... you'd think. We should also
   # be more faithfully giving things extensions since it's not 100% mp3
-  all_files = glob('%s/*.mp3' % misc.DIR_STREAMS) 
+  all_files = Set(glob('%s/*.mp3' % misc.DIR_STREAMS))
  
   diff = all_files.difference(all_registered)
 
