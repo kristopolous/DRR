@@ -2,6 +2,7 @@
 var 
   // #57 - see why ipad needs to double click
   isiDevice = navigator.userAgent.match(/ip(hone|od|ad)/i),
+  isMobile = true,
   listenEvent = isiDevice ? 'touchend' : 'click',
   ev = EvDa({start: '', name: '', station: '', ampm: '', day: []}),
   fullName = {

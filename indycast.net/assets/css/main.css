@@ -1051,7 +1051,7 @@ form#donate {
   border-radius: 8px;
 }
 #station-search-box {
-  margin-left: 16px;
+  margin-left: 12px;
   margin-bottom: 0.5em;
 }
 #station-query {
@@ -1120,7 +1120,7 @@ small {
     display: none
   }
   #station {
-    height: 205px;
+    height: 202px;
   }
 }
 /* Keep the hover effect off of mobile */
@@ -1164,6 +1164,9 @@ small {
   #podcast-url:hover {
     background: #3C9767;
     box-shadow: inset 0 0 10px 3px rgba(78, 185, 128, 0.85);
+  }
+  #station {
+    overflow-y: scroll;
   }
 } 
 .button.selected {
