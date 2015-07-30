@@ -55,7 +55,7 @@ except:
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-q", "--query", default="heartbeat", help="query to send to the servers (if heartbeat then this daemonizes)")
+parser.add_argument("-q", "--query", default=None, help="query to send to the servers (if heartbeat then this daemonizes)")
 parser.add_argument("-c", "--callsign", default="all", help="station to query (default all)")
 parser.add_argument('-l', '--list', action='store_true', help='show stations')
 parser.add_argument('-k', '--key', default=None, help='Get a specific key in a json formatted result')
@@ -63,6 +63,11 @@ parser.add_argument('-n', '--notrandom', action='store_true', help='do not reand
 args = parser.parse_args()
 
 config_list = []
+
+# This permits just an inquiry like server_query -c kcrw -k version
+if not args.query:
+  args.query = "stats" if args.key else "heartbeat"
+
 for station_config in glob('../server/configs/*txt'):
   Config = ConfigParser.ConfigParser()
   Config.read(station_config)
