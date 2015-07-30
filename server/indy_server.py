@@ -388,11 +388,11 @@ def server_manager(config):
     return flask.send_file(filename)
 
 
-  @app.route('/prune_by_reindexing')
+  @app.route('/reindex')
   def reindex():
     """ Starts the prune process which cleans up and offloads mp3s. """
     cloud.prune(reindex=True)
-    return "Pruning started"
+    return "Reindexing started"
 
   @app.route('/prune')
   def prune():
