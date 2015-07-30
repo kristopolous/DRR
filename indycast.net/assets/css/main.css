@@ -1116,6 +1116,12 @@ small {
   .active-list .button {
     margin: 0;
   }
+  #station-search-box {
+    display: none
+  }
+  #station {
+    height: 205px;
+  }
 }
 /* Keep the hover effect off of mobile */
 @media screen and (min-width: 1280px) {
@@ -1164,4 +1170,3 @@ small {
   color: #544d55;
   background: #D0D3CE; 
 }
-
