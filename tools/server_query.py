@@ -55,7 +55,7 @@ except:
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-q", "--query", default=None, help="query to send to the servers (if heartbeat then this daemonizes)")
+parser.add_argument("-q", "--query", default=None, help="query to send to the servers (site-map gives all end points)")
 parser.add_argument("-c", "--callsign", default="all", help="station to query (default all)")
 parser.add_argument('-l', '--list', action='store_true', help='show stations')
 parser.add_argument('-k', '--key', default=None, help='Get a specific key in a json formatted result')
