@@ -79,15 +79,24 @@ def put(path):
   return False
 
 
-def register_streams():
+def register_streams(reindex=False):
   """ Find the local streams and make sure they are all registered in the sqlite3 database. """
 
+  #
   # Get the existing streams as a set
-  all_registered = Set(DB.all('streams', ['name']))
+  #
+  # If we are asked to re-index (due to trying to fix a bug) then we ignore what we have
+  # and just go ahead and do everything.
+  #
+  if reindex:
+    all_registered = Set([])
 
-  # There should be a smarter way to do this ... you'd think.
-  one_str = ':'.join(glob('%s/*.mp3' % misc.DIR_STREAMS) + glob('%s/*.map' % misc.DIR_STREAMS))
-  all_files = Set(one_str.replace('.map', '').split(':'))
+  else: 
+    all_registered = Set(DB.all('streams', ['name']))
+
+  # There should be a smarter way to do this ... you'd think. We should also
+  # be more faithfully giving things extensions since it's not 100% mp3
+  all_files = glob('%s/*.mp3' % misc.DIR_STREAMS) 
  
   diff = all_files.difference(all_registered)
 
