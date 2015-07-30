@@ -6,6 +6,7 @@ import ConfigParser
 import sys
 import socket
 import lib.misc as misc
+import json
 
 #
 # This is needed to force ipv4 on ipv6 devices. It's sometimes needed
@@ -54,13 +55,19 @@ except:
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-q", "--query", default="heartbeat", help="query to send to the servers (if heartbeat then this daemonizes)")
+parser.add_argument("-q", "--query", default=None, help="query to send to the servers (if heartbeat then this daemonizes)")
 parser.add_argument("-c", "--callsign", default="all", help="station to query (default all)")
 parser.add_argument('-l', '--list', action='store_true', help='show stations')
+parser.add_argument('-k', '--key', default=None, help='Get a specific key in a json formatted result')
 parser.add_argument('-n', '--notrandom', action='store_true', help='do not reandomize order')
 args = parser.parse_args()
 
 config_list = []
+
+# This permits just an inquiry like server_query -c kcrw -k version
+if not args.query:
+  args.query = "stats" if args.key else "heartbeat"
+
 for station_config in glob('../server/configs/*txt'):
   Config = ConfigParser.ConfigParser()
   Config.read(station_config)
@@ -104,10 +111,32 @@ for station in all_stations:
     # look at this data as JSON, so we suppress any superfluous output
     if len(all_stations) > 1:
       # Take out the \n (we'll be putting it in below)
-      sys.stdout.write("%s " % url)
+      sys.stderr.write("%s " % url)
 
     stream = urllib2.urlopen("http://%s/%s" % (url, args.query), timeout=15)
     data = stream.read()
+
+    if args.key:
+      document = json.loads(data)
+      result_list = []
+
+      full_key_list = args.key.split(',')
+
+      for full_key in full_key_list:
+        key_parts = full_key.split('.')
+
+        my_node = document
+        for key in key_parts:
+
+          if key in my_node:
+            my_node = my_node[key]
+
+          else:
+            my_node = '<Invalid key>'
+
+        result_list.append({full_key: my_node})
+
+      data = json.dumps(result_list)
 
     stop = time.time()
 
@@ -115,7 +144,8 @@ for station in all_stations:
       sys.stdout.write(data)
        
     else:
-      print "[ %d ]\n%s" % (stop - start, data)
+      sys.stderr.write("[ %d ]\n" % (stop - start))
+      print data
 
     if db:
       db['c'].execute('update stations set active = 1, latency = latency + ?, pings = pings + 1, last_seen = current_timestamp where callsign = ?', ( str(stop - start), str(station[CALLSIGN]) ))

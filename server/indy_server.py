@@ -458,7 +458,7 @@ def server_manager(config):
     by the server health check.
     """
     return jsonify({
-      'uptime': int(time.time() - misc.start_time),
+      'uptime': TS.uptime()
     }), 200
 
 
@@ -472,7 +472,7 @@ def server_manager(config):
       'intents': DB.all('intents'),
       'hits': db['c'].execute('select sum(read_count) from intents').fetchone()[0],
       'kv': DB.all('kv'),
-      'uptime': int(time.time() - misc.start_time),
+      'uptime': TS.uptime(),
       'free': os.popen("df -h / | tail -1").read().strip(),
       'load': os.popen("uptime").read().strip(),
       'plist': os.popen("ps auxf | grep %s" % misc.config['callsign']).read().strip().split('\n'),
@@ -589,15 +589,15 @@ def server_manager(config):
     patience = misc.PROCESS_DELAY * 2
     attempt = 1
 
-    start = time.time()
-    while time.time() - start < patience:
+    start = TS.unixtime('delay')
+    while TS.unixtime('delay') - start < patience:
       try:
         print "Listening on %s" % config['port']
         app.run(threaded=True, port=config['port'], host='0.0.0.0')
         break
 
       except Exception as exc:
-        if time.time() - start < patience:
+        if TS.unixtime('delay') - start < patience:
           print "[attempt: %d] Error, can't start server ... perhaps %s is already in use?" % (attempt, config['port'])
           attempt += 1
           time.sleep(misc.PROCESS_DELAY / 4)
@@ -659,7 +659,7 @@ def stream_download(callsign, url, my_pid, fname):
 
     # This provides a reliable way to determine bitrate.  We look at how much 
     # data we've received between two time periods
-    misc.queue.put(('heartbeat', (time.time(), len(data))))
+    misc.queue.put(('heartbeat', (TS.unixtime('hb'), len(data))))
 
     if not nl['stream']:
       try:
@@ -761,10 +761,10 @@ def stream_manager():
     #
     flag = False
 
-    if last_prune < (time.time() - TS.ONE_DAY * misc.config['pruneevery']):
+    if last_prune < (TS.unixtime('prune') - TS.ONE_DAY * misc.config['pruneevery']):
       # We just assume it can do its business in under a day
       misc.pid['prune'] = cloud.prune()
-      last_prune = time.time()
+      last_prune = TS.unixtime('prune')
 
     TS.get_offset()
 
@@ -839,10 +839,10 @@ def stream_manager():
 
       if not process and not b_shutdown:
         fname, process = download_start(fname)
-        last_success = time.time()
+        last_success = TS.unixtime('dl')
 
       # If we've hit the time when we ought to cascade
-      elif time.time() - last_success > cascade_margin:
+      elif TS.unixtime('dl') - last_success > cascade_margin:
 
         # And we haven't created the next process yet, then we start it now.
         if not process_next:
@@ -875,12 +875,12 @@ def stream_manager():
     # If we are past the cascade_time and we have a process_next, then
     # we should shutdown our previous process and move the pointers around.
     #
-    if time.time() - last_success > cascade_time and process:
+    if TS.unixtime('dl') - last_success > cascade_time and process:
       logging.info("Stopping cascaded downloader")
       process.terminate()
 
       # If the process_next is running then we move our last_success forward to the present
-      last_success = time.time()
+      last_success = TS.unixtime('dl')
 
       # we rename our process_next AS OUR process
       process = process_next
@@ -921,7 +921,7 @@ def read_config(config):
     'port': 5000,
 
     # The (day) duration we should be archiving things.
-    'archivedays': 21,
+    'archivedays': 28,
 
     # The (second) time in looking to see if our stream is running
     'cycletime': 7,
@@ -943,7 +943,7 @@ def read_config(config):
     # it does save price VPS disk space which seems to come at an unusual
     # premium.
     #
-    'cloudarchive': 1.05,
+    'cloudarchive': 0.80,
     
     # Run the pruning every this many days (float)
     'pruneevery': 0.5

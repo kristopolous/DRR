@@ -37,7 +37,9 @@ if(isset($_GET['callsign'])) {
   <body>
     <div id="header">
       <h1>Indycast Radio</h1>
-      <p>Podcasting <?= $callsign ? strtoupper($callsign) : "the World's Independent Radio" ?>
+      <p>A free service podcasting <?= $callsign ? strtoupper($callsign) : "the World's Independent Radio" ?>
+      <br/>
+      <small>(Already works on your device. no app needed)</small>
       <?php if ($callsign) { ?><br/><small>(<a href="/">and more</a>)</small><?php } ?></p>
     </div>
 
@@ -45,9 +47,9 @@ if(isset($_GET['callsign'])) {
 
       <header class="major container 75%">
         <h2>
-        Subscribe to your favorite <?= $callsign ?> shows.
+        Listen on your time. 
         <br />
-        Listen on your time, not airtime.
+        Never miss your favorite <?= $callsign ?> show again.
         </h2>
       </header>
 
@@ -57,6 +59,10 @@ if(isset($_GET['callsign'])) {
           <a href="#" class="image icon fa-signal"><img src="/images/pic01.jpg" alt="" /><div id="description"></div></a>
           <div class="content">
             <h3>Choose the station</h3>
+            <div id='station-search-box'>
+              <i class="fa fa-search"></i>
+              <input type="text" placeholder="Search" id='station-query'>
+            </div>
             <ul class="radio-group group" id="station"><?php
               foreach(active_stations() as $station) {
                 echo '<li><a desc="' . $station['description'] . '" class="button">' . ($station['callsign']) . '</a></li>';
@@ -103,7 +109,6 @@ if(isset($_GET['callsign'])) {
           <a href="#" class="image icon fa-mobile"><img src="/images/pic03.jpg" alt="" /></a>
           <div class="content">
             <h3>Give it a name</h3>
-            <label for="name">Show Name</label>
             <input class="text" type="text" name="name" id="name" value="" placeholder="ex. Alien Air Music" />
           </div>
         </section>
@@ -115,7 +120,7 @@ if(isset($_GET['callsign'])) {
         </div>
         <div id="podcast-notdone">
           <h3>The podcast will appear here</h3>
-          <p>Please select desired day<?= $callsign ? '' : ', station, ' ?> and time above</p>
+          <p>Please select desired day<?= $callsign ? '' : ', station, ' ?> and time above.</p>
         </div>
       </footer>
 
@@ -181,8 +186,8 @@ if(isset($_GET['callsign'])) {
       </span>
     </script>
 
-    <script src='/assets/js/underscore-min.js'></script>
-    <script src="/assets/js/jquery.min.js"></script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js'></script>
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="/assets/js/evda.min.js"></script>
     <!--[if lte IE 8]><script src="/assets/js/ie/respond.min.js"></script><![endif]-->
     <script src="/assets/js/indycast.js"></script>

@@ -5,6 +5,7 @@ import os
 import time
 import logging
 import sys
+import ts as TS
 import lib.db as DB
 import socket
 
@@ -73,7 +74,7 @@ DIR_SLICES = 'slices'
 manager_pid = 0
 queue = Queue()
 
-start_time = time.time()
+start_time = TS.unixtime()
 config = {}
 pid = {}
 lockMap = {'prune': Lock()}
@@ -147,7 +148,7 @@ def shutdown(signal=15, frame=False):
       except:
         pass
 
-    logging.info("Uptime: %ds", time.time() - start_time)
+    logging.info("Uptime: %ds", TS.uptime())
 
   elif title != ('%s-webserver' % config['callsign']) and os.path.isfile(PIDFILE_MANAGER):
     os.unlink(PIDFILE_MANAGER)

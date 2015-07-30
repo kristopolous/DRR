@@ -7,7 +7,7 @@
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 */
 
-html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, pre, a, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend,  caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, footer, header, section {
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, pre, a, address, big, cite, code, del, dfn, em, img, q, s, small, strike, strong, sub, sup, tt, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend,  caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, footer, header, section {
   margin: 0;
   padding: 0;
   border: 0;
@@ -15,7 +15,7 @@ html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, pre, a, addres
   font: inherit;
   vertical-align: baseline;
 }
-article, details, footer, header, nav, section {
+article, footer, header, section {
   display: block;
 }
 form {
@@ -46,7 +46,6 @@ body {
   max-width: 63.75em;
   min-width: 51em;
 }
-
 .container.\37 5\25 { width: 38.25em; }
 .container.\35 0\25 { width: 25.5em; }
 .container.\32 5\25 { width: 12.75em; }
@@ -145,7 +144,6 @@ body.is-loading * {
   -ms-animation: none !important;
   animation: none !important;
 }
-
 body, input, select {
   color: #6e6e6e;
   font-family: 'Source Sans Pro', sans-serif;
@@ -153,7 +151,6 @@ body, input, select {
   font-weight: 400;
   line-height: 1.75em;
 }
-
 a {
   border-bottom: dotted 1px;
   color: #4eb980;
@@ -252,15 +249,12 @@ footer.major:before, footer.major:after {
   position: absolute;
   width: 100%;
 }
-
 footer.major:before {
   top: 10px;
 }
-
 footer.major:after {
   bottom: 10px;
 }
-
 label {
   display: block;
   color: #5b5b5b;
@@ -271,7 +265,6 @@ label {
   text-transform: uppercase;
   margin: 0 0 0.5em 0;
 }
-
 input[type="text"],
 select {
   -moz-appearance: none;
@@ -289,20 +282,18 @@ select {
   color: inherit;
   display: block;
   outline: 0;
-  padding: 0.75em;
+  padding: 0 0.75em;
   text-decoration: none;
-  width: 100%;
   opacity: 1;
+  width: 13em;
+  display: inline-block;
+  height: 42px;
 }
-
-input[type="text"]:focus,
-select:focus {
+input[type="text"]:focus, select:focus {
   background: rgba(224, 224, 224, 0.15);
   border-color: #4eb980;
 }
-
-input[type="text"],
-select {
+input[type="text"], select {
   line-height: 1em;
 }
 ::-webkit-input-placeholder {
@@ -354,7 +345,6 @@ select {
 span.image.icon {
   cursor: default;
 }
-
 .icon {
   text-decoration: none;
   border-bottom: none;
@@ -368,26 +358,21 @@ span.image.icon {
   font-weight: normal;
   text-transform: none !important;
 }
-
 .icon > .label {
   display: none;
 }
-
 ul.icons {
   cursor: default;
 }
-
 ul.icons li {
   display: inline-block;
   font-size: 1.25em;
   line-height: 1em;
   padding-left: 0.5em;
 }
-
 ul.icons li:first-child {
   padding-left: 0;
 }
-
 ul.icons li a, ul.icons li span {
   border-radius: 100%;
   border: solid 1px rgba(224, 224, 224, 0.75);
@@ -397,7 +382,6 @@ ul.icons li a, ul.icons li span {
   text-align: center;
   width: 2em;
 }
-
 input[type="submit"],
 .button {
   background: #544d55;
@@ -422,12 +406,6 @@ input[type="submit"],
   display:inline-block;
   border: 1px solid white;
   overflow:hidden;
-}
-#station {
-  margin-bottom: 0.5em;
-}
-#station li {
-  margin: 0.15em;
 }
 .week-group li, .radio-group li{ 
   display: inline-block;
@@ -485,19 +463,16 @@ input[type="submit"],
   border-radius: 0;
   min-width: 2em;
 }
-    
 input[type="submit"]:active,
 .button:active {
   background: #474148;
 }
-
 input[type="submit"].alt,
 .button.alt {
   background: none;
   box-shadow: inset 0 0 0 1px rgba(224, 224, 224, 0.75);
   color: #544d55;
 }
-
 input[type="text"].error {
   border-color: red;
 }
@@ -505,7 +480,6 @@ input[type="submit"].alt:active,
 .button.alt:active {
   background: rgba(224, 224, 224, 0.35);
 }
-
 input[type="submit"].fit,
 .button.fit {
   width: 100%;
@@ -513,14 +487,12 @@ input[type="submit"].fit,
 .button.small {
   font-size: 0.8em;
 }
-
 .box {
   background: #ffffff;
   border: solid 1px rgba(224, 224, 224, 0.75);
   margin-bottom: 6em;
   padding: 3.5em;
 }
-
 .box.alt {
   background: none;
   border: none;
@@ -535,11 +507,9 @@ input[type="submit"].fit,
   content: '';
   display: block;
 }
-
 .feature h3, .feature h4, .feature h5, .feature h6 {
   text-align: inherit;
 }
-
 .feature .image {
   display: inline-block;
   height: 100%;
@@ -547,14 +517,12 @@ input[type="submit"].fit,
   position: relative;
   width: 50%;
 }
-
 .feature .image img {
   display: block;
   min-height: 100%;
   min-width: 100%;
   position: absolute;
 }
-
 .feature:before {
   background: blue;
   content: '';
@@ -562,18 +530,15 @@ input[type="submit"].fit,
   height: 100%;
   vertical-align: middle;
 }
-
 .feature .content {
   display: inline-block;
   padding: 0em 3.5em;
   vertical-align: middle;
   width: 48%;
 }
-
 .feature .content h3 {
-  margin-bottom: 0.5em;
+  margin-bottom: 0em;
 }
-
 .feature .content :last-child {
   margin: 0;
 }
@@ -647,7 +612,6 @@ input[type="submit"].fit,
   line-height: 1.5em;
   margin: 0.25em 0 0 0;
 }
-
 #footer {
   background-attachment: scroll;
   background-color: #4eb980;
@@ -677,7 +641,6 @@ input[type="submit"].fit,
   width: 1px;
   z-index: 0;
 }
-
 #footer a {
   color: #ffffff;
 }
@@ -690,7 +653,6 @@ input[type="submit"].fit,
 #footer header p {
   color: rgba(255, 255, 255, 0.5);
 }
-
 #footer input[type="submit"],
 #footer .button {
   background: #ffffff;
@@ -704,7 +666,6 @@ input[type="submit"].fit,
 #footer .formerize-placeholder {
   color: rgba(255, 255, 255, 0.3) !important;
 }
-
 #footer .copyright {
   color: rgba(255, 255, 255, 0.5);
   font-size: 0.8em;
@@ -722,11 +683,9 @@ input[type="submit"].fit,
   margin: 0;
   border: 0;
 }
-
 #footer .copyright li a, #footer .copyright li span {
   color: inherit;
 }
-
 #main {
   padding: 6em 0 5em 0;
   position: relative;
@@ -746,7 +705,6 @@ input[type="submit"].fit,
 #main footer.major {
   background: #ffffff;
 }
-
 @media screen and (max-width: 1680px) {
   body, input, select {
     font-size: 14pt;
@@ -854,29 +812,13 @@ input[type="submit"].fit,
   h2 { font-size: 1em; }
   h3 { font-size: 1em; }
 
-  header p {
-    font-size: 0.8em;
-  }
+  header p { font-size: 0.8em; }
+  header.major { margin-bottom: 2em; }
+  header.major br { display: none; }
+  header.major p { font-size: 0.8em; }
 
-  header.major {
-    margin-bottom: 2em;
-  }
-
-  header.major br {
-    display: none;
-  }
-
-  header.major p {
-    font-size: 0.8em;
-  }
-
-  footer.major {
-    margin-top: 2em;
-  }
-
-  footer.major br {
-    display: none;
-  }
+  footer.major { margin-top: 2em; }
+  footer.major br { display: none; }
 
   .box {
     padding: 2em;
@@ -916,22 +858,14 @@ input[type="submit"].fit,
     background-size: 1280px 184px,						auto,							cover;
     padding: 3em 0 7em 0;
   }
-
   #header:before {
     height: calc(100% - 20px);
   }
-
   #header:after {
     height: 20px;
   }
-
-  #header h1 {
-    font-size: 1.25em;
-  }
-
-  #header p {
-    font-size: 1em;
-  }
+  #header h1 { font-size: 1.25em; }
+  #header p { font-size: 1em; }
 
   #footer {
     background-image: url("images/bottom-1280.svg");
@@ -1111,12 +1045,28 @@ form#donate {
   border-bottom: 0;
 }
 #start {
-  width: 13em;
-  display: inline-block;
   text-align: left;
   vertical-align: top;
   height: 42px;
   border-radius: 8px;
+}
+#station-search-box {
+  margin-left: 12px;
+  margin-bottom: 0.5em;
+}
+#station-query {
+  margin-left: -32px;
+  padding-left: 32px;
+  width: 14em;
+}
+#station {
+  margin-bottom: 0.5em;
+  height: 152px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+#station li {
+  margin: 0.15em;
 }
 #ampm {
   margin-left: -21.8em;
@@ -1166,6 +1116,12 @@ small {
   .active-list .button {
     margin: 0;
   }
+  #station-search-box {
+    display: none
+  }
+  #station {
+    height: 202px;
+  }
 }
 /* Keep the hover effect off of mobile */
 @media screen and (min-width: 1280px) {
@@ -1209,9 +1165,11 @@ small {
     background: #3C9767;
     box-shadow: inset 0 0 10px 3px rgba(78, 185, 128, 0.85);
   }
+  #station {
+    overflow-y: scroll;
+  }
 } 
 .button.selected {
   color: #544d55;
   background: #D0D3CE; 
 }
-

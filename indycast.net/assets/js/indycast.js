@@ -2,6 +2,7 @@
 var 
   // #57 - see why ipad needs to double click
   isiDevice = navigator.userAgent.match(/ip(hone|od|ad)/i),
+  isMobile = true,
   listenEvent = isiDevice ? 'touchend' : 'click',
   ev = EvDa({start: '', name: '', station: '', ampm: '', day: []}),
   fullName = {
@@ -123,6 +124,25 @@ $(function() {
       document.location = this.getAttribute('href');
     });
   }
+
+  $("#station-query").on('keyup', function(){
+    var query = this.value, show_count = [];
+    
+    $("#station li").each(function(){
+      var to_test = this.firstChild.innerHTML;
+      if(to_test.search(query) == -1) {
+        $(this).hide();
+      } else {
+        show_count.push(to_test)
+        $(this).show();
+      }
+    });
+
+    if(show_count.length == 1) {
+      ev('station', show_count[0]);
+    }
+
+  })
 
   // #23 - multiday recordings
   $("#day a").on(listenEvent, function(){
