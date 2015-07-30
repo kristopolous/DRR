@@ -798,7 +798,7 @@ def stream_manager():
       elif what == 'heartbeat':
         flag = True
 
-        if True: #not has_bitrate: 
+        if not has_bitrate: 
 
           # Keep track of the first time this stream started (this is where our total
           # byte count is derived from)
