@@ -1102,19 +1102,17 @@ form#donate {
   border-radius: 8px;
 }
 #station-search-box {
-  margin-left: 12px;
+  margin-left: 16px;
+  margin-bottom: 0.5em;
 }
 #station-query {
   margin-left: -32px;
   padding-left: 32px;
   width: 14em;
 }
-#station-controls {
-  margin-bottom: 0.5em;
-}
 #station {
   margin-bottom: 0.5em;
-  height: 154px;
+  height: 152px;
   overflow-x: auto;
   overflow-y: hidden;
 }

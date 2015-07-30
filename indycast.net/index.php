@@ -57,11 +57,9 @@ if(isset($_GET['callsign'])) {
           <a href="#" class="image icon fa-signal"><img src="/images/pic01.jpg" alt="" /><div id="description"></div></a>
           <div class="content">
             <h3>Choose the station</h3>
-            <div id='station-controls'>
-              <div id='station-search-box'>
-                <i class="fa fa-search"></i>
-                <input type="text" placeholder="Search" id='station-query'>
-              </div>
+            <div id='station-search-box'>
+              <i class="fa fa-search"></i>
+              <input type="text" placeholder="Search" id='station-query'>
             </div>
             <ul class="radio-group group" id="station"><?php
               foreach(active_stations() as $station) {
