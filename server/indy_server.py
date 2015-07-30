@@ -720,6 +720,7 @@ def stream_manager():
   has_bitrate = DB.get('bitrate', use_cache=True) 
   first_time = 0
   total_bytes = 0
+  normalize_delay = 6
 
   cascade_time = misc.config['cascadetime']
   cascade_buffer = misc.config['cascadebuffer']
@@ -797,30 +798,43 @@ def stream_manager():
       elif what == 'heartbeat':
         flag = True
 
-        if not has_bitrate: 
-          # If we haven't determined this stream's bitrate (which we use to estimate 
-          # the amount of content is in a given archived stream), then we compute it 
-          # here instead of asking the parameters of a given block and then presuming.
-          total_bytes += value[1]
+        if True: #not has_bitrate: 
 
           # Keep track of the first time this stream started (this is where our total
           # byte count is derived from)
           if not first_time: 
             first_time = value[0]
 
+          #
           # Otherwise we give a large (in computer time) margin of time to confidently
           # guess the bitrate.  I didn't do great at stats in college, but in my experiments,
           # the estimation falls within 98% of the destination.  I'm pretty sure it's really
           # unlikely this will come out erroneous, but I really can't do the math, it's probably
           # a T value, but I don't know. Anyway, whatevs.
-          elif (value[0] - first_time > 60):
-            # We take the total bytes, calculate it over our time, in this case, 25 seconds.
-            est = total_bytes / (value[0] - first_time)
+          #
+          # The normalize_delay here is for both he-aac+ streams which need to put in some frames
+          # before the quantizing pushes itself up and for other stations which sometimes put a canned
+          # message at the beginning of the stream, like "Live streaming supported by ..."
+          #
+          # Whe we discount the first half-dozen seconds as not being part of the total, we get a 
+          # stabilizing convergence far quicker.
+          #
+          elif (value[0] - first_time > normalize_delay):
+            # If we haven't determined this stream's bitrate (which we use to estimate 
+            # the amount of content is in a given archived stream), then we compute it 
+            # here instead of asking the parameters of a given block and then presuming.
+            total_bytes += value[1]
 
-            # We find the nearest 8Kb increment this matches and then scale out.
-            # Then we multiply out by 8 (for _K_ B) and 8 again for K _b_.
-            bitrate = int( round (est / 8000) * 8 * 8 )
-            DB.set('bitrate', bitrate)
+            # We still give it a time period after the normalizing delay in order to build enough
+            # samples to make a solid guess at what this number should be.
+            if (value[0] - first_time > (normalize_delay + 60)):
+              # We take the total bytes, calculate it over our time, in this case, 25 seconds.
+              est = total_bytes / (value[0] - first_time - normalize_delay)
+
+              # We find the nearest 8Kb increment this matches and then scale out.
+              # Then we multiply out by 8 (for _K_ B) and 8 again for K _b_.
+              bitrate = int( round (est / 1000) * 8 )
+              DB.set('bitrate', bitrate)
 
       else:
         flag = True
