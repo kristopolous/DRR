@@ -820,7 +820,7 @@ def stream_manager():
             # We find the nearest 8Kb increment this matches and then scale out.
             # Then we multiply out by 8 (for _K_ B) and 8 again for K _b_.
             bitrate = int( round (est / 8000) * 8 * 8 )
-            DB.get('bitrate', bitrate)
+            DB.set('bitrate', bitrate)
 
       else:
         flag = True
