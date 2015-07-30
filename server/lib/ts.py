@@ -57,7 +57,7 @@ def now():
 
 
 def uptime():
-  return int(TS.unixtime('uptime') - misc.start_time)
+  return int(unixtime('uptime') - misc.start_time)
 
 def unixtime(what=''):
   """ This is used instead of time.time() in order to make this more testable """
@@ -142,7 +142,7 @@ def get_offset(force=False):
   offset = DB.get('offset', expiry=ONE_DAY)
   if not offset or force:
 
-    when = int(TS.unixtime())
+    when = int(unixtime())
 
     api_key = 'AIzaSyBkyEMoXrSYTtIi8bevEIrSxh1Iig5V_to'
     url = "https://maps.googleapis.com/maps/api/timezone/json?location=%s,%s&timestamp=%d&key=%s" % (misc.config['lat'], misc.config['long'], when, api_key)
