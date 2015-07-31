@@ -944,6 +944,9 @@ form#donate {
   text-transform: none;
   white-space: normal;
 }
+#description a {
+  color: #4EB880;
+}
 #description h2 {
   text-align: left;
   margin-bottom: 0.25em;
