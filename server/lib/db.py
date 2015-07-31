@@ -34,8 +34,39 @@ SCHEMA = {
      ('week_number', 'INTEGER DEFAULT 0'),
      ('created_at', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'),
      ('accessed_at', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'),
+     ('size', 'INTEGER DEFAULT 0'),
    ]
 }
+
+# Ok so if column order or type changes, this isn't found ... nor
+# are we doing formal migrations where you can roll back or whatever
+# because way too fancy ...
+def upgrade():
+  my_set = __builtins__['set']
+  db = connect()
+
+  for table, schema in SCHEMA.items():
+    existing_schema = db['c'].execute('pragma table_info(%s)' % table).fetchall()
+    existing_column_names = [str(row[1]) for row in existing_schema]
+
+    our_column_names = [row[0] for row in schema]
+
+    to_add = my_set(our_column_names).difference(my_set(existing_column_names))
+
+    # These are the things we should add ... this can be an empty set, that's fine.
+    for key in to_add:
+      # 
+      # sqlite doesn't support adding things into positional places (add column after X)
+      # they just get tacked on at the end ... which is fine - you'd have to rebuild 
+      # everything to achieve positional columns - that's not worth it - we just always 
+      # tack on at the end as a policy in our schema and we'll be fine.
+      #
+      # However, given all of that, we still need the schema
+      #
+      our_schema = schema[our_column_names.index(key)][1]
+      db['c'].execute('alter table %s add column %s %s' % (table, key, our_schema))
+      db['conn'].commit()
+
 
 def map(row_list, table):
   """ 
@@ -228,10 +259,10 @@ def register_stream(name, start_unix, end_unix, start_minute, end_minute, week_n
   if res:
     unregister_stream(name, do_all=True)
 
-  db['c'].execute("""insert into streams (
-      name,         start_unix, end_unix, 
-      start_minute, end_minute, week_number
-  ) values(?, ?, ?, ?, ?, ?)""", (name, start_unix, end_unix, start_minute, end_minute, week_number, ))
+  db['c'].execute("""insert into streams 
+  (name, start_unix, end_unix, start_minute, end_minute, week_number, size) values
+  (   ?,          ?,        ?,            ?,          ?,           ?,    ?) """, 
+  (name, start_unix, end_unix, start_minute, end_minute, week_number, size))
 
   db['conn'].commit()
   return db['c'].lastrowid

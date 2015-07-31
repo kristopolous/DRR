@@ -912,6 +912,7 @@ def read_config(config):
   Reads a configuration file. 
   Currently documented at https://github.com/kristopolous/DRR/wiki/Join-the-Federation
   """
+  DB.upgrade()
   Config = ConfigParser.ConfigParser()
   Config.read(config)
   misc.config = misc.config_section_map('Main', Config)
