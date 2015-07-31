@@ -135,6 +135,10 @@ def register_streams(reindex=False):
       misc.shutdown()
 
 
+def get_next(path):
+  """ Given a file, we look to see if there's another one which could come after """
+
+  
 def prune(reindex=False):
   """ Gets rid of files older than archivedays - cloud stores things if relevant. """
 

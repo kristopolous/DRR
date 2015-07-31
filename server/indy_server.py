@@ -492,6 +492,16 @@ def server_manager(config):
     return jsonify(stats), 200
   
 
+  # Using http://flask.pocoo.org/docs/0.10/patterns/streaming/ as a reference.
+  @app.route('/live/<start>')
+  def live(start):
+    """ sends off a live-stream equivalent """
+    def generate():
+      yield "hi"
+      # get offset starting from start time
+
+    return Response(generate(), mimetype='audio/%s' % DB.get('format') or 'mp3')
+
   @app.route('/<weekday>/<start>/<duration_string>/<showname>')
   def stream(weekday, start, duration_string, showname):
     """
@@ -582,6 +592,7 @@ def server_manager(config):
       start=start, 
       duration_string=duration_string
     )
+
 
   if __name__ == '__main__':
     pid = misc.change_proc_name("%s-webserver" % config['callsign'])
