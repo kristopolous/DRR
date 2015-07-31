@@ -1155,6 +1155,14 @@ small {
     overflow-y: scroll;
   }
 } 
+@media screen and (max-width: 768px) {
+  #day-picker label { 
+    text-align: center;
+  }
+  #station {
+    height: auto
+  }
+}
 .button.selected {
   color: #544d55;
   background: #D0D3CE; 
