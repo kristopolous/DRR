@@ -106,11 +106,14 @@ def stream_name(list_in, start_minute, duration_minute):
   """ Get the stream name from list and start minute over a given duration. """
   duration_sec = duration_minute * 60.0
 
+  # The start_minute above is in absolute terms, not those relative to the file.
+  start_offset = start_minute - list_in[0]['start_minute']
   first_file = list_in[0]['name']
   callsign, unix_time = re.findall('(\w*)-(\d+)', first_file)[0]
 
   # print unix_time, start_minute
-  return "%s/%s-%d_%d.mp3" % (misc.DIR_SLICES, callsign, int(unix_time) + start_minute * 60, duration_minute)
+  fname = "%s/%s-%d_%d.mp3" % (misc.DIR_SLICES, callsign, int(unix_time) + start_offset * 60, duration_minute)
+  return fname
 
 
 def mp3_info(byte):
