@@ -419,6 +419,12 @@ def mp3_signature(fname, blockcount=-1):
   return frame_sig, start_byte
 
 
+def our_mime():
+  our_format = db.get('format') or 'mp3'
+  
+  if our_format == 'mp3': return 'audio/mpeg'
+  if our_format == 'aac': return 'audio/aac'
+
 def get_time(fname):
   """
   Determines the duration of an audio file by doing some estimates based on the offsets

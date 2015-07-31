@@ -325,12 +325,7 @@ def server_manager(config):
       f.seek(byte1)
       data = f.read(length + 1)
 
-    rv = Response(
-      data, 
-      206,
-      mimetype='audio/mpeg',
-      direct_passthrough=True
-    )
+    rv = Response( data, 206, mimetype=audio.our_mime(), direct_passthrough=True )
     rv.headers.add('Content-Range', 'bytes {0}-{1}/{2}'.format(byte1, byte1 + length, size))
 
     return rv
@@ -481,7 +476,7 @@ def server_manager(config):
       yield "hi"
       # get offset starting from start time
 
-    return Response(generate(), mimetype='audio/%s' % DB.get('format') or 'mp3')
+    return Response(generate(), mimetype=audio.our_mime())
 
   @app.route('/<weekday>/<start>/<duration_string>/<showname>')
   def stream(weekday, start, duration_string, showname):
