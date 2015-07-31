@@ -55,7 +55,6 @@ if(isset($_GET['callsign'])) {
       <h1>Indycast Radio</h1>
       <p>A free service podcasting <?= $callsign ? strtoupper($callsign) : "the World's Independent Radio" ?>
       <?php if ($callsign) { ?><br/><small>(<a href="/">and more</a>)</small><?php } ?></p>
-      <br>
       <small>Works on your <?= $device ?>. No signup or app needed.</small>
     </div>
 
