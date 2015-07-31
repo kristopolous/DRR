@@ -704,7 +704,7 @@ def stream_manager():
   # This is to compute a format agnostic bitrate
   # (see heartbeat for more information)
   #
-  has_bitrate = DB.get('bitrate', use_cache=True) 
+  has_bitrate = DB.get('bitrate') 
   first_time = 0
   total_bytes = 0
   normalize_delay = 6

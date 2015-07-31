@@ -188,7 +188,7 @@ def get_audio_format(fname):
 
 
 def signature(fname, blockcount=-1):
-  audio_format = DB.get('format', use_cache=True) 
+  audio_format = DB.get('format') 
 
   if not audio_format:
     audio_format, start = get_audio_format(fname)
@@ -420,7 +420,7 @@ def mp3_signature(fname, blockcount=-1):
 
 
 def our_mime():
-  our_format = db.get('format') or 'mp3'
+  our_format = DB.get('format') or 'mp3'
   
   if our_format == 'mp3': return 'audio/mpeg'
   if our_format == 'aac': return 'audio/aac'
@@ -432,7 +432,7 @@ def get_time(fname):
   Returns the audio time in seconds.
   """
   # If we don't have a bitrate yet we assume 128
-  bitrate = int(DB.get('bitrate', use_cache=True) or 128)
+  bitrate = int(DB.get('bitrate') or 128)
   if os.path.exists(fname):
     return os.path.getsize(fname) / (bitrate * (1000 / 8))
 
@@ -445,7 +445,7 @@ def stitch_and_slice_process(file_list, start_minute, duration_minute):
     file_size = os.path.getsize(name_out)
     # A "correct" filesize should be measured as more than 65% of what the
     # math would be. So first we can guess that.
-    bitrate = int(DB.get('bitrate', use_cache=True) or 128)
+    bitrate = int(DB.get('bitrate') or 128)
     estimate = (bitrate / 8) * (duration_minute * 60) * (10 ** 3)
 
     if 0.65 * estimate < file_size:
