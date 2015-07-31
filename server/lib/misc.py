@@ -5,8 +5,6 @@ import os
 import time
 import logging
 import sys
-import ts as TS
-import lib.db as DB
 import socket
 
 #
@@ -42,6 +40,8 @@ socket.getaddrinfo = getAddrInfoWrapper
 import urllib2
 import urllib
 
+import ts as TS
+import lib.db as DB
 from multiprocessing import Process, Queue, Lock
 
 #
