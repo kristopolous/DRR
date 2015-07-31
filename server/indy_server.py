@@ -296,8 +296,8 @@ def server_manager(config):
       # we can do something rather specific here ... 
       #
       # first we get our generic stream list using our start_minute from the info.
-      #cloud.find_and_make_slices(info['start_minute']
-      return jsonify(info), 404
+      slice_info = cloud.find_and_make_slices(start_list=[info['start_minute']], duration_min=info['duration_sec'] / 60)
+      return jsonify(slice_info), 404
       #return "File not found. Perhaps the stream is old?", 404
 
     return send_file_partial("%s/%s" % (base_dir, path))

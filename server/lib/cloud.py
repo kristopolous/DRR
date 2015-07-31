@@ -128,7 +128,7 @@ def register_stream_list(reindex=False):
       misc.shutdown()
 
 
-def find_and_make_slices(start_list, duration_min):
+def find_streams(start_list, duration_min):
   """
   Given a start week minute this looks for streams in the storage 
   directory that match it - regardless of duration ... so it may return
@@ -142,6 +142,7 @@ def find_and_make_slices(start_list, duration_min):
   # Sort nominally - since we have unix time in the name, this should come out
   # as sorted by time for us for free.
   stitch_list = []
+  episode_list = []
   db = DB.connect()
 
   # So we have a start list, we are about to query our database using the start_minute
@@ -172,8 +173,10 @@ def find_and_make_slices(start_list, duration_min):
   # see https://github.com/kristopolous/DRR/issues/50
   condition_query += " and start_unix < datetime(%d, 'unixepoch', 'localtime')" % (TS.sec_now() - duration_min * 60 - misc.config['cascadetime'])
 
-  # print condition_query
-  entry_list = DB.map(db['c'].execute("select * from streams where %s order by week_number * 10080 + start_minute asc" % condition_query).fetchall(), 'streams')
+  full_query = "select * from streams where %s order by week_number * 10080 + start_minute asc" % condition_query
+  # print full_query
+
+  entry_list = DB.map(db['c'].execute(full_query).fetchall(), 'streams')
 
   # We want to make sure that we break down the stream_list into days.  We can't JUST look at the week
   # number since we permit feed requests for shows which may have multiple days.  Since this is leaky
@@ -225,8 +228,17 @@ def find_and_make_slices(start_list, duration_min):
         stream_list.append(audio.stream_info(fname))
 
         # print offset_start, duration_min, episode
-        audio.stitch_and_slice(episode, offset_start, duration_min)
+        episode_list.append((episode, offset_start, duration_min))
         break
+
+  return stream_list, episode_list
+
+
+def find_and_make_slices(start_list, duration_min):
+  stream_list, episode_list = find_streams(start_list, duration_min)
+
+  for episode, offset_start, duration_min in episode_list:
+     audio.stitch_and_slice(episode, offset_start, duration_min)
 
   return stream_list
 
