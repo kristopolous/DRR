@@ -1155,6 +1155,11 @@ small {
     overflow-y: scroll;
   }
 } 
+@media screen and (max-width: 768px) {
+  #station {
+    height: auto
+  }
+}
 .button.selected {
   color: #544d55;
   background: #D0D3CE; 
