@@ -1,13 +1,7 @@
 @import url("font-awesome.min.css");
 @import url("http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,400italic,600,600italic,700,700italic");
 
-/*
-	Directive by HTML5 UP
-	html5up.net | @n33co
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
-*/
-
-html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, pre, a, address, big, cite, code, del, dfn, em, img, q, s, small, strike, strong, sub, sup, tt, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend,  caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, footer, header, section {
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, pre, a, address, big, cite, code, del, dfn, em, img, q, s, small, strike, strong, sub, sup, tt, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend,  caption, tr, th, td, article, aside, details, embed, footer, header, section {
   margin: 0;
   padding: 0;
   border: 0;
@@ -128,12 +122,8 @@ body {
   .container.\32 5\25 { width: 25%; }
   .container { width: 100% !important; }
 }
-html, body {
-  height: 100%;
-}
-body {
-  background: #ffffff;
-}
+html, body { height: 100%; }
+body { background: white; }
 body.is-loading * {
   -moz-transition: none !important;
   -webkit-transition: none !important;
@@ -153,7 +143,7 @@ body, input, select {
 }
 a {
   border-bottom: dotted 1px;
-  color: #4eb980;
+  color: #317C54;
   text-decoration: none;
 }
 em, i {
@@ -162,8 +152,10 @@ em, i {
 p, ul, ol {
   margin: 0 0 2em 0;
 }
+body {
+  color: #2D2D2D;
+}
 h1, h2, h3, h4, h5, h6 {
-  color: #5b5b5b;
   font-weight: 700;
   letter-spacing: 0.125em;
   line-height: 1.75em;
@@ -257,7 +249,6 @@ footer.major:after {
 }
 label {
   display: block;
-  color: #5b5b5b;
   font-size: 0.8em;
   font-weight: 700;
   letter-spacing: 0.125em;
@@ -387,7 +378,7 @@ input[type="submit"],
   background: #544d55;
   border-radius: 4px;
   border: 0;
-  color: #ffffff;
+  color: #fff;
   cursor: pointer;
   display: inline-block;
   font-size: 0.9em;
@@ -593,10 +584,10 @@ input[type="submit"].fit,
   height: 50px;
 }
 #header strong, #header b {
-  color: #ffffff;
+  color: #fff;
 }
 #header h1, #header h2, #header h3, #header h4, #header h5, #header h6 {
-  color: #ffffff;
+  color: #fff;
 }
 #header input[type="submit"],
 #header .button {
@@ -641,14 +632,9 @@ input[type="submit"].fit,
   width: 1px;
   z-index: 0;
 }
-#footer a {
-  color: #ffffff;
-}
-#footer strong, #footer b {
-  color: #ffffff;
-}
-#footer h1, #footer h2, #footer h3, #footer h4, #footer h5, #footer h6 {
-  color: #ffffff;
+#footer strong, #footer b, 
+#footer a, #footer h1, #footer h2, #footer h3, #footer h4, #footer h5, #footer h6 {
+  color: #fff;
 }
 #footer header p {
   color: rgba(255, 255, 255, 0.5);
