@@ -83,6 +83,11 @@ def stream_info(fname, guess_time=False):
     if ts:
       duration = int(ts[0]) * 60
 
+  # We represent non-existing files by saying they occupy -1 bytes.
+  file_size = - 1
+  if os.path.exists(fname):
+    file_size = os.path.getsize(fname)
+
   if not isinstance(duration, (int, long, float)):
     duration = 0
 
@@ -93,7 +98,7 @@ def stream_info(fname, guess_time=False):
     'start_minute': start_minute, 
     'start_date': start_date, 
     'end_minute': (duration / 60.0 + start_minute) % TS.MINUTES_PER_WEEK,
-    'size': os.path.getsize(fname),
+    'size': file_size,
     'duration_sec': duration
   }
 
