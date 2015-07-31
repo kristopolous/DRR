@@ -291,13 +291,22 @@ def server_manager(config):
     if not os.path.isfile(fname):
       # This tells us that if it were to exist, it would be something
       # like this.
-      info = audio.stream_info(fname)
+      request_info = audio.stream_info(fname)
 
       # we can do something rather specific here ... 
       #
       # first we get our generic stream list using our start_minute from the info.
-      slice_info = cloud.find_and_make_slices(start_list=[info['start_minute']], duration_min=info['duration_sec'] / 60)
-      return jsonify(slice_info), 404
+      stream_list, episode_list = cloud.find_streams(start_list=[request_info['start_minute']], duration_min=request_info['duration_sec'] / 60)
+      
+      for ep in episode_list:
+        episode = ep[0]
+        first_slice = episode[0]
+
+        if first_slice['week_number'] == request_info['week_number']:
+          # This means that we've found the episode that we want
+          print episode
+
+      return jsonify(episode_list), 404
       #return "File not found. Perhaps the stream is old?", 404
 
     return send_file_partial("%s/%s" % (base_dir, path))

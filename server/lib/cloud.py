@@ -228,7 +228,7 @@ def find_streams(start_list, duration_min):
         stream_list.append(audio.stream_info(fname))
 
         # print offset_start, duration_min, episode
-        episode_list.append((episode, offset_start, duration_min))
+        episode_list.append([episode, offset_start, duration_min])
         break
 
   return stream_list, episode_list
