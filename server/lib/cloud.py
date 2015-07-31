@@ -79,7 +79,7 @@ def put(path):
   return False
 
 
-def register_streams(reindex=False):
+def register_stream_list(reindex=False):
   """ Find the local streams and make sure they are all registered in the sqlite3 database. """
 
   #
@@ -121,14 +121,7 @@ def register_streams(reindex=False):
     if not info:
       continue
 
-    DB.register_stream(
-      name=fname,
-      week_number=info['week'],
-      start_minute=float(info['start_minute']),
-      end_minute=float(info['end_minute']),
-      start_unix=info['start_date'],
-      end_unix=info['start_date'] + timedelta(seconds=info['duration_sec'])
-    )
+    DB.register_stream(info)
 
     if not misc.manager_is_running():
       print "Manager is gone, shutting down"
@@ -164,7 +157,7 @@ def prune_process(lockMap, reindex=False):
 
   pid = misc.change_proc_name("%s-cleanup" % misc.config['callsign'])
 
-  register_streams(reindex)
+  register_stream_list(reindex)
   db = DB.connect()
 
   archive_duration = misc.config['archivedays'] * TS.ONE_DAY

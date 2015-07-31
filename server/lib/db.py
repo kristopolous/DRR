@@ -2,6 +2,7 @@
 import threading
 import logging
 import sqlite3
+from datetime import datetime, timedelta, date
 
 g_db = {}
 g_params = {}
@@ -245,11 +246,21 @@ def unregister_stream(name, do_all=False):
   return True
 
 
-def register_stream(name, start_unix, end_unix, start_minute, end_minute, week_number):
+def register_stream(info):
   """
   Registers a stream as existing to be found later when trying to stitch and slice files together.
-  This is all that ought to be needed to know if the streams should attempt to be stitched.
+  This is all that ought to be needed to know if the streams should attempt to be stitched. The input
+  info is grabbed from audio.stream_info(filename)
   """
+
+  name = info['name']
+  start_unix = info['start_date']
+  end_unix = info['start_date'] + timedelta(seconds=info['duration_sec']) 
+  start_minute = float(info['start_minute'])
+  end_minute = float(info['end_minute'])
+  week_number = info['week_number']
+  size = info['size']
+
   db = connect()
   res = db['c'].execute('select id from streams where name = ?', (name, )).fetchone()
 

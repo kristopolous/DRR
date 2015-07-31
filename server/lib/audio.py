@@ -294,14 +294,7 @@ def aac_signature(fname, blockcount=-1):
   f.close()
 
   info = stream_info(fname)
-  DB.register_stream(
-    name=fname,
-    week_number=info['week'],
-    start_minute=float(info['start_minute']),
-    end_minute=float(info['end_minute']),
-    start_unix=info['start_date'],
-    end_unix=info['start_date'] + timedelta(seconds=info['duration_sec'])
-  )
+  DB.register_stream(info)
   return frame_sig, start_byte
 
 
@@ -422,14 +415,7 @@ def mp3_signature(fname, blockcount=-1):
   f.close()
 
   info = stream_info(fname, guess_time=FRAME_LENGTH * len(frame_sig))
-  DB.register_stream(
-    name=fname,
-    week_number=info['week'],
-    start_minute=float(info['start_minute']),
-    end_minute=float(info['end_minute']),
-    start_unix=info['start_date'],
-    end_unix=info['start_date'] + timedelta(seconds=info['duration_sec'])
-  )
+  DB.register_stream(info)
   return frame_sig, start_byte
 
 
