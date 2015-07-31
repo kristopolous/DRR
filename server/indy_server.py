@@ -29,27 +29,8 @@ import socket
 # ipv4 then optimistically cross our fingers.
 #
 origGetAddrInfo = socket.getaddrinfo
-
-def getAddrInfoWrapper(host, port, family=0, socktype=0, proto=0, flags=0):
-  attempts = 1
-  max_attempts = 10
-
-  while attempts < max_attempts:
-    try:
-      res = origGetAddrInfo(host, port, socket.AF_INET, socktype, proto, flags)
-
-      if attempts > 1:
-        logging.info( "[%d/%d] resolved %s on %d ... patience paid off." % (attempts, max_attempts, host, port))
-
-      return res
-
-    except:
-      logging.warn( "[%d/%d] Unable to resolve %s on %d ... sleeping a bit" % (attempts, max_attempts, host, port))
-      time.sleep(1)
-      attempts += 1
-
-  # If we have tried this a few times and nothing happens, then we just bail
-  raise Exception
+getAddrInfoWrapper = misc.getAddrInfoWrapper
+socket.getaddrinfo = getAddrInfoWrapper
 
 import urllib2
 import urllib
@@ -495,7 +476,7 @@ def server_manager(config):
   # Using http://flask.pocoo.org/docs/0.10/patterns/streaming/ as a reference.
   @app.route('/live/<start>')
   def live(start):
-    """ sends off a live-stream equivalent """
+    """ Sends off a live-stream equivalent """
     def generate():
       yield "hi"
       # get offset starting from start time
