@@ -1,0 +1,7 @@
+[Main]
+callsign=kvrm
+lat=44.052069
+long=-123.086754
+stream=http://lin2.san.fast-serv.com:6002/stream?1438324915601.aac
+port=9190
+cloud=~/cloudcreds.cfg
