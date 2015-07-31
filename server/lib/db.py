@@ -52,6 +52,8 @@ def upgrade():
 
     our_column_names = [row[0] for row in schema]
 
+    # print table, existing_column_names, our_column_names
+
     to_add = my_set(our_column_names).difference(my_set(existing_column_names))
 
     # These are the things we should add ... this can be an empty set, that's fine.
@@ -65,6 +67,7 @@ def upgrade():
       # However, given all of that, we still need the schema
       #
       our_schema = schema[our_column_names.index(key)][1]
+      # print 'alter table %s add column %s %s' % (table, key, our_schema)
       db['c'].execute('alter table %s add column %s %s' % (table, key, our_schema))
       db['conn'].commit()
 
