@@ -16,25 +16,7 @@ import json
 # ipv4 then optimistically cross our fingers.
 #
 origGetAddrInfo = socket.getaddrinfo
-
-def getAddrInfoWrapper(host, port, family=0, socktype=0, proto=0, flags=0):
-  attempts = 1
-  max_attempts = 10
-
-  while attempts < max_attempts:
-    try:
-      res = origGetAddrInfo(host, port, socket.AF_INET, socktype, proto, flags)
-      return res
-
-    except:
-      print "[%d/%d] Unable to resolve %s on %d ... sleeping a bit" % (attempts, max_attempts, host, port)
-      time.sleep(1)
-      attempts += 1
-
-  # If we have tried this a few times and nothing happens, then we just bail
-  raise Exception
-
-# Replace the original socket.getaddrinfo by our version
+getAddrInfoWrapper = misc.getAddrInfoWrapper
 socket.getaddrinfo = getAddrInfoWrapper
 
 import urllib2
@@ -99,6 +81,9 @@ if args.list:
 if not args.notrandom:
   random.shuffle(all_stations)
 
+if args.key:
+  sys.stdout.write('[')
+
 for station in all_stations:
   url = "%s.indycast.net:%s" % (station[CALLSIGN], station['port'])
 
@@ -109,16 +94,17 @@ for station in all_stations:
 
     # If we are just looking at one station, then we may want to 
     # look at this data as JSON, so we suppress any superfluous output
-    if len(all_stations) > 1:
+    if len(all_stations) > 1 and not args.key:
       # Take out the \n (we'll be putting it in below)
       sys.stderr.write("%s " % url)
 
     stream = urllib2.urlopen("http://%s/%s" % (url, args.query), timeout=15)
     data = stream.read()
+    stop = time.time()
 
     if args.key:
       document = json.loads(data)
-      result_list = []
+      result_list = [{'url': url, "latency": stop - start}]
 
       full_key_list = args.key.split(',')
 
@@ -146,15 +132,15 @@ for station in all_stations:
 
         result_list.append({full_key: my_node})
 
-      data = json.dumps(result_list)
-
-    stop = time.time()
+      data = json.dumps(result_list) + ','
 
     if len(all_stations) == 1:
       sys.stdout.write(data)
        
     else:
-      sys.stderr.write("[ %d ]\n" % (stop - start))
+      if not args.key:
+        sys.stderr.write("[ %d ]\n" % (stop - start))
+
       print data
 
     if db:
@@ -175,4 +161,7 @@ for station in all_stations:
 
 if args.query == 'heartbeat' and db:
   db['conn'].commit()
+
+if args.key:
+  sys.stdout.write('null]')
 
