@@ -73,23 +73,22 @@ def stream_info(fname, guess_time=False):
     logging.warn("Failure to find info for '%s'" % fname)
     return False
 
-  try:
-    duration = guess_time if guess_time else get_time(fname) 
+  duration = guess_time if guess_time else get_time(fname) 
 
-  except Exception as exc:
+  if not duration:
     # If we can't find a duration then we try to see if it's in the file name
-    ts_re_duration = re.compile('_(\d*).mp3')
+    ts_re_duration = re.compile('_(\d*).{4}')
     ts = ts_re_duration.findall(fname)
     if ts:
       duration = int(ts[0]) * 60
+
+  if not isinstance(duration, (int, long, float)):
+    duration = 0
 
   # We represent non-existing files by saying they occupy -1 bytes.
   file_size = - 1
   if os.path.exists(fname):
     file_size = os.path.getsize(fname)
-
-  if not isinstance(duration, (int, long, float)):
-    duration = 0
 
   return {
     # The week number 
@@ -440,6 +439,8 @@ def get_time(fname):
   bitrate = int(DB.get('bitrate') or 128)
   if os.path.exists(fname):
     return os.path.getsize(fname) / (bitrate * (1000 / 8))
+
+  return None
 
 
 def stitch_and_slice_process(file_list, start_minute, duration_minute):
