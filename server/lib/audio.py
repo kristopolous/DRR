@@ -88,11 +88,12 @@ def stream_info(fname, guess_time=False):
 
   return {
     # The week number 
-    'week': start_date.isocalendar()[1], 
+    'week_number': start_date.isocalendar()[1], 
     'name': fname, 
     'start_minute': start_minute, 
     'start_date': start_date, 
     'end_minute': (duration / 60.0 + start_minute) % TS.MINUTES_PER_WEEK,
+    'size': os.path.getsize(fname),
     'duration_sec': duration
   }
 
