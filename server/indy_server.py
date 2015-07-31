@@ -815,7 +815,6 @@ def read_config(config):
   Reads a configuration file. 
   Currently documented at https://github.com/kristopolous/DRR/wiki/Join-the-Federation
   """
-  DB.upgrade()
   Config = ConfigParser.ConfigParser()
   Config.read(config)
   misc.config = misc.config_section_map('Main', Config)
@@ -962,6 +961,7 @@ def read_config(config):
 
   # Increment the number of times this has been run so we can track the stability of remote 
   # servers and instances.
+  DB.upgrade()
   DB.incr('runcount')
 
   # This is how we discover if we are the official server or not.
