@@ -92,7 +92,8 @@ def am_i_official():
   """
   global config
 
-  if 'official' not in config:
+  # Don't cache a true value ... see https://github.com/kristopolous/DRR/issues/84 for details
+  if 'official' not in config or config['official']:
     endpoint = "http://%s.indycast.net:%d/uuid" % (config['callsign'], config['port'])
     try: 
       stream = urllib2.urlopen(endpoint)
