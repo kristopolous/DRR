@@ -1,5 +1,6 @@
 # Miscellaneous tools
 
+ * aac_parse_test.py - My playground for trying to quickly navigate around aac files and accurately report things about them.
  * audio_hopper.py - This is where most of the map and mp3 parsing testing happens.  
  * backup.sh - Queries each station for a gzipped SQLite3 dump of their current database, putting them in a dated directory
  * cleanup_cloud.sh - Cross-references the cloud and a station's database, removing files that aren't accounted for.
