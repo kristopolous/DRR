@@ -50,109 +50,6 @@ __version__ = os.popen("git describe").read().strip()
 ##
 ## Storage and file related
 ##
-def file_find_and_make_slices(start_list, duration_min):
-  """
-  Given a start week minute this looks for streams in the storage 
-  directory that match it - regardless of duration ... so it may return
-  partial shows results.
-  """
-  stream_list = []
-
-  if type(start_list) is int:
-    start_list = [start_list]
-
-  # Sort nominally - since we have unix time in the name, this should come out
-  # as sorted by time for us for free.
-  stitch_list = []
-  db = DB.connect()
-
-  # So we have a start list, we are about to query our database using the start_minute
-  # and end_minute field ... to get end_minue we need to make use of our duration.
-  #
-  # timeline ->
-  #
-  #          ###################           << Region we want
-  # start_sea#ch    end_search #           << Search
-  #          V                 V
-  # |     |     |     |     |     |     |  << Minute
-  #          a     b     b     c
-  #
-  # so we want 
-  #     (a) start_minute < start_search and end_minute >= start_search  ||
-  #     (b) start_minute > start_search and end_minute <= end_search  ||
-  #     (c) start_minute < end_search and end_minute >= end_search
-  #     
-  condition_list = []
-  for start in start_list:
-    end_search = (start + duration_min) % TS.MINUTES_PER_WEEK
-    condition_list.append('start_minute < %d and end_minute >= %d' % (start, start))
-    condition_list.append('start_minute > %d and end_minute >= %d and end_minute <= %d' % (start, start, end_search))
-    condition_list.append('start_minute < %d and end_minute >= %d' % (end_search, end_search))
-
-  condition_query = "((%s))" % ') or ('.join(condition_list)
-
-  # see https://github.com/kristopolous/DRR/issues/50
-  condition_query += " and start_unix < datetime(%d, 'unixepoch', 'localtime')" % (TS.sec_now() - duration_min * 60 - misc.config['cascadetime'])
-
-  # print condition_query
-  entry_list = DB.map(db['c'].execute("select * from streams where %s order by week_number * 10080 + start_minute asc" % condition_query).fetchall(), 'streams')
-
-  # We want to make sure that we break down the stream_list into days.  We can't JUST look at the week
-  # number since we permit feed requests for shows which may have multiple days.  Since this is leaky
-  # data that we don't keep via our separation of concerns, we use a little hack to figure this out.
-  by_episode = []
-  episode = []
-  cutoff_minute = 0
-  current_week = 0
-
-  for entry in entry_list:
-    # look at start minute, if it's > 12 * cascade time (by default 3 hours), then we presume this is a new episode.
-    if entry['start_minute'] > cutoff_minute or entry['week_number'] != current_week:
-      if len(episode):
-        by_episode.append(episode)
-
-      episode = []
-
-    cutoff_minute = entry['start_minute'] + (12 * misc.config['cascadetime']) % TS.MINUTES_PER_WEEK
-    current_week = entry['week_number']
-
-    # We know by definition that every entry in our stream_list is a valid thing we need
-    # to look at.  We just need to make sure we break them down by episode
-    episode.append(entry)
-
-  if len(episode):
-    by_episode.append(episode)
-
-  #print len(by_episode), condition_query
-  # Start the creation of the mp3s
-  for episode in by_episode:
-
-    # We blur the test start to a bigger window
-    test_start = (episode[0]['start_minute'] / (60 * 4))
-
-    for week_start in start_list:
-      # Blur the query start to the same window
-      query_start = week_start / (60 * 4)
-
-      # This shouldn't be necessary but let's do it anyway
-      if abs(query_start - test_start) <= 1:
-        # Under these conditions we can say that this episode
-        # can be associated with this particular start time
-
-        # The start_minute is based on the week
-        offset_start = week_start - episode[0]['start_minute']
-        fname = audio.stream_name(episode, offset_start, duration_min)
-
-        # We get the name that it will be and then append that
-        stream_list.append(audio.stream_info(fname))
-
-        # print offset_start, duration_min, episode
-        audio.stitch_and_slice(episode, offset_start, duration_min)
-        break
-
-  return stream_list
-
-
 def server_generate_xml(showname, feed_list, duration_min, weekday_list, start, duration_string):
   """
   This takes a number of params:
@@ -282,8 +179,10 @@ def server_manager(config):
   # from http://flask.pocoo.org/snippets/67/
   def shutdown_server():
     func = request.environ.get('werkzeug.server.shutdown')
+
     if func is None:
       raise RuntimeError('Not running with the Werkzeug Server')
+
     func()
 
 
@@ -390,7 +289,16 @@ def server_manager(config):
 
     # If the file doesn't exist, then we need to slice it and create it based on our query.
     if not os.path.isfile(fname):
-      return "File not found. Perhaps the stream is old?", 404
+      # This tells us that if it were to exist, it would be something
+      # like this.
+      info = audio.stream_info(fname)
+
+      # we can do something rather specific here ... 
+      #
+      # first we get our generic stream list using our start_minute from the info.
+      #cloud.find_and_make_slices(info['start_minute']
+      return jsonify(info), 404
+      #return "File not found. Perhaps the stream is old?", 404
 
     return send_file_partial("%s/%s" % (base_dir, path))
 
@@ -557,7 +465,7 @@ def server_manager(config):
     # This will also create slices if necessary in a sub process.
     # The list of files that returns will include this not-yet-created
     # file-name as essentially a "promise" to when it will be made.
-    feed_list = file_find_and_make_slices(start_time_list, duration_min)
+    feed_list = cloud.find_and_make_slices(start_time_list, duration_min)
 
     # Then, taking those two things, make a feed list from them.
     return server_generate_xml(
