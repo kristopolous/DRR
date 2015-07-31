@@ -1,15 +1,18 @@
 <?php
 include_once('db.php');
-$ua = $_SERVER['HTTP_USER_AGENT'];
+$ua = strtolower($_SERVER['HTTP_USER_AGENT']);
 $device = 'device';
 
 if(strpos($ua, 'mobile') != False) {
   $device = 'smartphone';
 }
+if(strpos($ua, 'android') != False) {
+  $device = 'Android smartphone';
+}
 if(strpos($ua, 'iOS') != False or strpos($ua, 'iPhone') != False) {
   $device = 'Apple device';
 }
-if(strpos(strtolower($ua), 'windows') != False) {
+if(strpos($ua, 'windows') != False) {
   $device = 'Windows machine';
 }
 
@@ -53,7 +56,7 @@ if(isset($_GET['callsign'])) {
       <p>A free service podcasting <?= $callsign ? strtoupper($callsign) : "the World's Independent Radio" ?>
       <?php if ($callsign) { ?><br/><small>(<a href="/">and more</a>)</small><?php } ?></p>
       <br>
-      <small>Will work on your <?= $device ?>! No signup and no app required.</small>
+      <small>Works on your <?= $device ?>. No signup or app needed.</small>
     </div>
 
     <div id="main">
