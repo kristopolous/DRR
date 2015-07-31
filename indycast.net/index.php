@@ -1,5 +1,18 @@
 <?php
 include_once('db.php');
+$ua = $_SERVER['HTTP_USER_AGENT'];
+$device = 'device';
+
+if(strpos($ua, 'mobile') != False) {
+  $device = 'smartphone';
+}
+if(strpos($ua, 'iOS') != False or strpos($ua, 'iPhone') != False) {
+  $device = 'Apple device';
+}
+if(strpos(strtolower($ua), 'windows') != False) {
+  $device = 'Windows machine';
+}
+
 if(isset($_GET['callsign'])) {
   $callsign = $_GET['callsign'];
 } else {
@@ -39,7 +52,7 @@ if(isset($_GET['callsign'])) {
       <h1>Indycast Radio</h1>
       <p>A free service podcasting <?= $callsign ? strtoupper($callsign) : "the World's Independent Radio" ?>
       <br/>
-      <small>(Already works on your device. no app needed)</small>
+      <small>Will work on your <?= $device ?>! | No signup and no app needed!</small>
       <?php if ($callsign) { ?><br/><small>(<a href="/">and more</a>)</small><?php } ?></p>
     </div>
 
@@ -47,9 +60,9 @@ if(isset($_GET['callsign'])) {
 
       <header class="major container 75%">
         <h2>
-        Listen on your time. 
+        Listen on your time and
         <br />
-        Never miss your favorite <?= $callsign ?> show again.
+        Never miss that <?= $callsign ?> show again!
         </h2>
       </header>
 
