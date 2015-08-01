@@ -19,6 +19,8 @@ FRAME_LENGTH = (1152.0 / 44100)
 FORMAT_MP3 = 'mp3'
 FORMAT_AAC = 'aac'
 
+TS_RE = re.compile('-(\d*)[.|_]')
+
 #
 # Some stations don't start you off with a valid mp3 header
 # (such as kdvs), so we have to just seek into the file
@@ -51,8 +53,7 @@ def stream_info(fname):
   if type(fname) is list:
     return list_info(fname)
 
-  ts_re = re.compile('-(\d*)[.|_]')
-  ts = ts_re.findall(fname)
+  ts = TS_RE.findall(fname)
 
   duration = 0
   start_minute = 0
@@ -67,19 +68,13 @@ def stream_info(fname):
     logging.warn("Failure to find info for '%s'" % fname)
     return False
 
-  duration = get_time(fname) 
-
-  #
-  # If the duration was set then we can assume that the
-  # file exists, since that is how get_time is implemented.
-  #
-  # We can use this to reduce our I/O count and not check
-  # for the file's existence a second time.
-  #
-  if duration:
+  # If we don't have a bitrate yet we assume 128
+  bitrate = int(DB.get('bitrate') or 128)
+  try:
     file_size = os.path.getsize(fname)
+    duration = file_size / (bitrate * (1000 / 8))
 
-  else:
+  except:
     file_size = -1
     # If we can't find a duration then we try to see if it's in the file name
     ts_re_duration = re.compile('_(\d*).{4}')
@@ -433,19 +428,6 @@ def our_mime():
   
   if our_format == 'mp3': return 'audio/mpeg'
   if our_format == 'aac': return 'audio/aac'
-
-def get_time(fname):
-  """
-  Determines the duration of an audio file by doing some estimates based on the offsets
-
-  Returns the audio time in seconds.
-  """
-  # If we don't have a bitrate yet we assume 128
-  bitrate = int(DB.get('bitrate') or 128)
-  if os.path.exists(fname):
-    return os.path.getsize(fname) / (bitrate * (1000 / 8))
-
-  return None
 
 
 def stitch_and_slice_process(file_list, start_minute, duration_minute):
