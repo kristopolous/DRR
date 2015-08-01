@@ -45,19 +45,25 @@ def list_info(file_list):
   return info
 
 
-def stream_info(fname):
+def stream_info(fname, skip_size=False):
   """
   Determines the date the thing starts,
   the minute time it starts, and the duration
+
+  If you do skip_size = True then you avoid any i/o 
+  and have everything determined solely by the name.
+  This means that some values returned will be set to 
+  None
   """
   if type(fname) is list:
     return list_info(fname)
 
   ts = TS_RE.findall(fname)
 
-  duration = 0
-  start_minute = 0
-  start_date = 0
+  duration_sec = None
+  start_minute = None
+  start_date = None
+  end_minute = None
 
   if ts:
     unix_time = int(ts[0])
@@ -69,21 +75,24 @@ def stream_info(fname):
     return False
 
   # If we don't have a bitrate yet we assume 128
-  bitrate = int(DB.get('bitrate') or 128)
   try:
+    # Just skip over this if the skip_size is set
+    if skip_size: raise Exception
+
+    bitrate = int(DB.get('bitrate') or 128)
     file_size = os.path.getsize(fname)
-    duration = file_size / (bitrate * (1000 / 8))
+    duration_sec = file_size / (bitrate * (1000.0 / 8.0))
 
   except:
-    file_size = -1
+    file_size = None
     # If we can't find a duration then we try to see if it's in the file name
     ts_re_duration = re.compile('_(\d*).{4}')
     ts = ts_re_duration.findall(fname)
     if ts:
-      duration = int(ts[0]) * 60
+      duration_sec = int(ts[0]) * 60.0
 
-  if not isinstance(duration, (int, long, float)):
-    duration = 0
+  if isinstance(duration_sec, (int, long, float)):
+    end_minute = (duration_sec / 60.0 + start_minute) % TS.MINUTES_PER_WEEK
 
   # We represent non-existing files by saying they occupy -1 bytes.
 
@@ -93,9 +102,9 @@ def stream_info(fname):
     'name': fname, 
     'start_minute': start_minute, 
     'start_date': start_date, 
-    'end_minute': (duration / 60.0 + start_minute) % TS.MINUTES_PER_WEEK,
+    'end_minute': end_minute,
     'size': file_size,
-    'duration_sec': duration
+    'duration_sec': duration_sec
   }
 
 
