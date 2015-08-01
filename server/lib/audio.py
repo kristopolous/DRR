@@ -43,16 +43,10 @@ def list_info(file_list):
   return info
 
 
-def stream_info(fname, guess_time=False):
+def stream_info(fname):
   """
   Determines the date the thing starts,
   the minute time it starts, and the duration
-
-  If guess_time is set, then that value is used 
-  as the audio time.  It can speed things up
-  by avoiding an opening of the file all together.
-  
-  It's sometimes an ok thing to do.
   """
   if type(fname) is list:
     return list_info(fname)
@@ -73,9 +67,20 @@ def stream_info(fname, guess_time=False):
     logging.warn("Failure to find info for '%s'" % fname)
     return False
 
-  duration = guess_time if guess_time else get_time(fname) 
+  duration = get_time(fname) 
 
-  if not duration:
+  #
+  # If the duration was set then we can assume that the
+  # file exists, since that is how get_time is implemented.
+  #
+  # We can use this to reduce our I/O count and not check
+  # for the file's existence a second time.
+  #
+  if duration:
+    file_size = os.path.getsize(fname)
+
+  else:
+    file_size = -1
     # If we can't find a duration then we try to see if it's in the file name
     ts_re_duration = re.compile('_(\d*).{4}')
     ts = ts_re_duration.findall(fname)
@@ -86,9 +91,6 @@ def stream_info(fname, guess_time=False):
     duration = 0
 
   # We represent non-existing files by saying they occupy -1 bytes.
-  file_size = - 1
-  if os.path.exists(fname):
-    file_size = os.path.getsize(fname)
 
   return {
     # The week number 
@@ -421,7 +423,7 @@ def mp3_signature(fname, blockcount=-1):
 
   f.close()
 
-  info = stream_info(fname, guess_time=FRAME_LENGTH * len(frame_sig))
+  info = stream_info(fname)
   DB.register_stream(info)
   return frame_sig, start_byte
 
