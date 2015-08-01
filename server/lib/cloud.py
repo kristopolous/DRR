@@ -29,7 +29,7 @@ def get(path, do_open=True):
       if do_open: return open(path, 'rb')
       return True
 
-  return False
+  return None
 
 
 def connect(config=False):
@@ -243,9 +243,10 @@ def find_and_make_slices(start_list, duration_min):
   return stream_list
 
 
-def get_next(query_path):
+def get_next(info_query):
   """ Given a file, we look to see if there's another one which could come after -- we won't look in the database """
-  info_query = audio.stream_info(query_path)
+  if type(info_query) is str:
+    info_query = audio.stream_info(info_query)
 
   #
   # We are looking for a file with the closest start time to 
@@ -268,9 +269,9 @@ def get_next(query_path):
 
     if not time_to_beat or difference < time_to_beat:
       time_to_beat = difference
-      current_winner = candidate_path
+      current_winner = info_candidate
 
-  return current_winner
+  return (info_query, current_winner)
 
   
 def prune(reindex=False):

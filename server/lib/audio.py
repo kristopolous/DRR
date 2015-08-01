@@ -520,6 +520,40 @@ def list_slice(list_in, name_out, duration_sec, start_sec):
     os.unlink(name_out)
 
 
+def list_slice_stream(start_file, start_sec):
+  """
+  Takes some stitch list, list_in and then create a new one based on the start and end times 
+  by finding the closest frames and just doing an extraction.
+
+  Setting the duration as None is equivalent to a forever stream 
+  """
+  pid = misc.change_proc_name("%s-audiostream" % misc.config['callsign'])
+
+  current_info = stream_info(start_file)
+
+  # get the regular map so we know where to start from
+  siglist, offset = signature(current_info['name'])
+  frame_start = min(max(int(math.floor(start_sec / FRAME_LENGTH)), 0), len(offset) - 1)
+  frame_end = len(offset) - 1
+
+  times_none = 0
+  while True:
+    stream_handle = cloud.get(current_info['name'])
+    stream_handle.seek(offset[frame_start])
+
+    while True:
+    yield fin.read(offset[frame_end] - offset[frame_start])
+
+    # See if there is a next file
+    our_info, next_info = cloud.get_next(current_file)
+
+    if next_info:
+      # If there is we find the stitching point
+      args = stitch([our_info, next_info])
+      print args
+
+
+
 def list_slice_generator(list_in, duration_sec=None, start_sec=0):
   """
   Takes some stitch list, list_in and then create a new one based on the start and end times 
@@ -529,14 +563,20 @@ def list_slice_generator(list_in, duration_sec=None, start_sec=0):
   """
   pid = misc.change_proc_name("%s-audioslice" % misc.config['callsign'])
 
+  # There's support for a generator style list_in for live streams
+  number_of_files = None
+  if type(list_in) is list:
+    number_of_files = len(list_in)
+
+  ix = 0
   # print 'slice', duration_sec, start_sec
-  for ix in range(0, len(list_in)):
-    item = list_in[ix]
+  for item in list_in:
+    ix += 1
 
     # get the regular map
     siglist, offset = signature(item['name'])
 
-    if ix == len(list_in) - 1:
+    if number_of_files and ix == number_of_files:
       frame_end = min(int(math.ceil(duration_sec / FRAME_LENGTH)), len(offset) - 1)
 
     else:
@@ -570,7 +610,6 @@ def stitch(file_list, force_stitch=False):
   Takes a list of files and then attempt to seamlessly stitch them 
   together by looking at their signature checksums of the data payload in the blocks.
   """
-
   duration = 0
 
   start_index = 0
