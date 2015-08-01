@@ -194,11 +194,16 @@ def server_manager(config):
     return response
 
 
-  def send_file_partial(path):
+  def send_file_partial(path, requested_path):
     """ 
     Wrapper around send_file which handles HTTP 206 Partial Content
     (byte ranges)
     """
+
+    # If we requested something that isn't around, then we bail.
+    if not os.path.exists(path):
+     return "File %s not found. Perhaps the stream is old?" % requested_path, 404
+
     range_header = request.headers.get('Range', None)
     if not range_header: 
       return flask.send_file(path)
@@ -292,11 +297,12 @@ def server_manager(config):
       # This tells us that if it were to exist, it would be something
       # like this.
       request_info = audio.stream_info(fname)
+      print request_info
 
       # we can do something rather specific here ... 
       #
       # first we get our generic stream list using our start_minute from the info.
-      stream_list, episode_list = cloud.find_streams(start_list=[request_info['start_minute']], duration_min=request_info['duration_sec'] / 60)
+      stream_list, episode_list = cloud.find_streams(start_list=[request_info['start_minute']], duration_min=request_info['duration_sec'] / 60.0)
       
       for ep in episode_list:
         episode = ep[0]
@@ -304,12 +310,13 @@ def server_manager(config):
 
         if first_slice['week_number'] == request_info['week_number']:
           # This means that we've found the episode that we want
-          print episode
+          # We will block on this.
+          audio.stitch_and_slice_process(file_list=episode, start_minute=request_info['start_minute'], duration_minute=request_info['duration_sec'] / 60.0)
 
-      return jsonify(episode_list), 404
-      #return "File not found. Perhaps the stream is old?", 404
+          # And break out of our loop ... now everything should exist.
+          break
 
-    return send_file_partial("%s/%s" % (base_dir, path))
+    return send_file_partial("%s/%s" % (base_dir, path), requested_path=path)
 
 
   @app.route('/restart')
