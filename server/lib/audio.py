@@ -145,28 +145,28 @@ def mp3_info(byte):
 
   return frame_size, samp_rate, bit_rate, pad_bit
 
-def get_audio_format(fname):
+def get_audio_format(file_name):
   """ 
-  Determines the audio format of an fname 
-  and returns where the start of
-  the audio block is.
+  Determines the audio format of file_name and return 
+  where the start of the audio block is.
   """
-  f = open(fname, 'rb')
+  file_handle = open(file_name, 'rb')
+
   audio_format = None, None
 
   # mp3 blocks appear to be \xff\xfb | \x49\x44 | \x54\x41
   # aac is \xff(\xf6 == \xf0) ... 
   while True:
-    pos = f.tell()
+    pos = file_handle.tell()
 
     try:
-      b0 = ord(f.read(1))
+      b0 = ord(file_handle.read(1))
 
     except:
       break
 
     if b0 == 0xff:
-      b1 = ord(f.read(1))
+      b1 = ord(file_handle.read(1))
 
       if b1 & 0xf6 == 0xf0:
         audio_format = FORMAT_AAC, pos
@@ -175,28 +175,28 @@ def get_audio_format(fname):
       elif b1 == 0xfb or b1 == 0xfa:
         # In order to see if it's an mp3 or not we read the next byte
         # and try to get the stats on the frame
-        b = ord(f.read(1))
+        b = ord(file_handle.read(1))
         frame_size, samp_rate, bit_rate, pad_bit = mp3_info(b)
 
         # If there's a computed frame_size then we can continue
         if frame_size:
           # We try to move forward and see if our predictive 
           # next block works. 
-          f.seek(pos + frame_size)
+          file_handle.seek(pos + frame_size)
 
           # If this is an mp3 file and that frame was valid, then
           # we should now be at the start of the next frame.
-          b0, b1 = [ord(byte) for byte in f.read(2)]
+          b0, b1 = [ord(byte) for byte in file_handle.read(2)]
 
           if b0 == 0xff and b1 == 0xfb or b1 == 0xfa:
             # That's good enough for us
-            f.close()
+            file_handle.close()
             audio_format = FORMAT_MP3, pos
             break
 
-      f.seek(pos + 1)
+      file_handle.seek(pos + 1)
 
-  f.close()
+  file_handle.close()
   return audio_format
 
 
