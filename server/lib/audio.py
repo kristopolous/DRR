@@ -224,14 +224,22 @@ def signature(fname, blockcount=-1):
 
 
 # using http://wiki.multimedia.cx/index.php?title=ADTS
-def aac_signature(fname, blockcount=-1):
-  f = open(fname, 'rb')
+def aac_signature(file_name, blockcount=-1):
+  is_stream = False
+
+  if type(file_name) is str:
+    file_handle = open(file_name, 'rb')
+
+  else:
+    is_stream = True
+    # This means we can handle file pointers
+    file_handle = file_name
 
   # This tries to find the first readable SOF bytes
   while True:
-    if ord(f.read(1)) == 0xff:
-      if ord(f.read(1)) & 0xf6 == 0xf0:
-        f.seek(f.tell() - 2)
+    if ord(file_handle.read(1)) == 0xff:
+      if ord(file_handle.read(1)) & 0xf6 == 0xf0:
+        file_handle.seek(file_handle.tell() - 2)
         break
     
   frame_number = 0
@@ -247,9 +255,9 @@ def aac_signature(fname, blockcount=-1):
 
     blockcount -= 1
 
-    frame_start = f.tell()
+    frame_start = file_handle.tell()
 
-    block = f.read(header_size)
+    block = file_handle.read(header_size)
 
     if not block or len(block) < header_size:
       break
@@ -283,7 +291,9 @@ def aac_signature(fname, blockcount=-1):
 
     # A and C (yes this is 0xf SIX and 0xf ZERO)
     if b0 != 0xff or (b1 & 0xf6 != 0xf0): 
-      logging.warn('[aac] %s Broken at frame#%d' % (fname, frame_number))
+      if not is_stream:
+        logging.warn('[aac] %s Broken at frame#%d' % (file_name, frame_number))
+
       break
 
     #
@@ -297,24 +307,24 @@ def aac_signature(fname, blockcount=-1):
     frame_length = (b3 & 3) << 11 | b4 << 3 | b5 >> 5
     # frame_count = (b6 & 3) + 1
 
-    f.read(ignore_size)
-    sig_data = f.read(sig_size)
+    file_handle.read(ignore_size)
+    sig_data = file_handle.read(sig_size)
 
-    # print binascii.b2a_hex(sig_data), c, frame_number, fname
     frame_sig.append(sig_data)
     start_byte.append(frame_start)
 
     frame_number += 1 
-    f.read(frame_length - header_size - sig_size - ignore_size)
+    file_handle.read(frame_length - header_size - sig_size - ignore_size)
  
-  f.close()
+  if not is_stream:
+    file_handle.close()
+    info = stream_info(file_name)
+    DB.register_stream(info)
 
-  info = stream_info(fname)
-  DB.register_stream(info)
   return frame_sig, start_byte
 
 
-def mp3_signature(fname, blockcount=-1):
+def mp3_signature(file_name, blockcount=-1):
   """
   Opens an mp3 file, find all the blocks, the byte offset of the blocks, and if they
   are audio blocks, construct a signature mapping of some given beginning offset of the audio
@@ -333,8 +343,16 @@ def mp3_signature(fname, blockcount=-1):
   # mitigates this even further
   #
   read_size = 8
+  is_stream = False
 
-  f = open(fname, 'rb')
+  if type(file_name) is str:
+    file_handle = open(file_name, 'rb')
+
+  else:
+    # This means we can handle file pointers
+    is_stream = True
+    file_handle = file_name
+
   while blockcount != 0:
 
     if first_header_seen:
@@ -344,16 +362,16 @@ def mp3_signature(fname, blockcount=-1):
       header_attempts += 1 
       if header_attempts > 2:
         # Go 1 back.
-        f.seek(-1, 1)
+        file_handle.seek(-1, 1)
 
-    frame_start = f.tell()
-    header = f.read(2)
+    frame_start = file_handle.tell()
+    header = file_handle.read(2)
     if header:
 
       if header == '\xff\xfb' or header == '\xff\xfa':
 
         try:
-          b = ord(f.read(1))
+          b = ord(file_handle.read(1))
           # If we are at the EOF
         except:
           break
@@ -367,22 +385,22 @@ def mp3_signature(fname, blockcount=-1):
           first_header_seen = True
 
         # Rest of the header
-        throw_away = f.read(1)
+        throw_away = file_handle.read(1)
 
         # Get the signature
-        sig = f.read(read_size)
+        sig = file_handle.read(read_size)
 
         frame_sig.append(sig)
 
         start_byte.append(frame_start)
 
-        # Move forward the frame f.read size + 4 byte header
-        throw_away = f.read(frame_size - (read_size + 4))
+        # Move forward the frame file_handle.read size + 4 byte header
+        throw_away = file_handle.read(frame_size - (read_size + 4))
 
       # ID3 tag for some reason
       elif header == '\x49\x44':
         # Rest of the header
-        throw_away = f.read(4)
+        throw_away = file_handle.read(4)
 
         #
         # Quoting http://id3.org/d3v2.3.0
@@ -391,30 +409,31 @@ def mp3_signature(fname, blockcount=-1):
         # (bit 7) is set to zero in every byte, making a total of 28 bits. The zeroed 
         # bits are ignored, so a 257 bytes long tag is represented as $00 00 02 01.
         #
-        candidate = struct.unpack('>I', f.read(4))[0]
+        candidate = struct.unpack('>I', file_handle.read(4))[0]
         size = ((candidate & 0x007f0000) >> 2 ) | ((candidate & 0x00007f00) >> 1 ) | (candidate & 0x0000007f)
         
-        f.read(size)
+        file_handle.read(size)
 
       # ID3 TAG -- 128 bytes long
       elif header == '\x54\x41':
         # We've already read 2 so we can go 126 forward
-        f.read(126)
+        file_handle.read(126)
 
       elif len(header) == 1:
         # We are at the end of file, but let's just continue.
         next
 
       elif first_header_seen or header_attempts > MAX_HEADER_ATTEMPTS:
-        import binascii
-        print "%d[%d/%d]%s:%s:%s %s %d" % (len(frame_sig), header_attempts, MAX_HEADER_ATTEMPTS, binascii.b2a_hex(header), binascii.b2a_hex(f.read(5)), fname, hex(f.tell()), len(start_byte) * (1152.0 / 44100) / 60)
+        if not is_stream:
+          import binascii
+          print "%d[%d/%d]%s:%s:%s %s %d" % (len(frame_sig), header_attempts, MAX_HEADER_ATTEMPTS, binascii.b2a_hex(header), binascii.b2a_hex(file_handle.read(5)), file_name, hex(file_handle.tell()), len(start_byte) * (1152.0 / 44100) / 60)
 
         # This means that perhaps we didn't guess the start correct so we try this again
         if len(frame_sig) == 1 and header_attempts < MAX_HEADER_ATTEMPTS:
           print "False start -- trying again"
 
           # seek to the first start byte + 1
-          f.seek(start_byte[0] + 2)
+          file_handle.seek(start_byte[0] + 2)
 
           # discard what we thought was the first start byte and
           # frame signature
@@ -428,10 +447,11 @@ def mp3_signature(fname, blockcount=-1):
     else:
       break
 
-  f.close()
+  if not is_stream:
+    file_handle.close()
+    info = stream_info(file_name)
+    DB.register_stream(info)
 
-  info = stream_info(fname)
-  DB.register_stream(info)
   return frame_sig, start_byte
 
 
