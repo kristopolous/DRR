@@ -480,8 +480,6 @@ def stitch_and_slice_process(file_list, start_minute, duration_minute):
   # make sure that we don't exceed the length of the file.
   duration_slice = min(duration_minute, start_slice + info['duration_sec'] / 60.0)
 
-  print start_slice, duration_slice, start_minute, duration_minute
-
   sliced_name = list_slice(
     list_in=stitched_list, 
     name_out=name_out,
@@ -527,7 +525,6 @@ def list_slice(list_in, name_out, duration_sec, start_sec):
 
     if ix == 0:
       frame_start = min(max(int(math.floor(start_sec / FRAME_LENGTH)), 0), len(offset) - 1)
-      print 'frame_start', frame_start, start_sec
       duration_sec -= (item['duration_sec'] - start_sec)
 
     else:

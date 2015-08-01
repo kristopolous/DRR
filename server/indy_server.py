@@ -297,7 +297,6 @@ def server_manager(config):
       # This tells us that if it were to exist, it would be something
       # like this.
       request_info = audio.stream_info(fname)
-      print request_info
 
       # we can do something rather specific here ... 
       #
