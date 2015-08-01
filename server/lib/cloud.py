@@ -243,8 +243,34 @@ def find_and_make_slices(start_list, duration_min):
   return stream_list
 
 
-def get_next(path):
-  """ Given a file, we look to see if there's another one which could come after """
+def get_next(query_path):
+  """ Given a file, we look to see if there's another one which could come after -- we won't first look for the database """
+  info_query = audio.stream_info(query_path)
+
+  #
+  # We are looking for a file with the closest start time to 
+  # the end time of our stream whose file size is greater than a 
+  # certain threshold
+  #
+  target_time = info_query['start_date'] + timedelta(seconds=info_query['duration_sec'])
+
+  time_to_beat = False 
+  current_winner = False
+
+  for candidate_path in glob('%s/*mp3' % misc.DIR_STREAMS):
+    if candidate_path == query_path: continue
+
+    info_candidate = audio.stream_info(candidate_path)
+    if not info_candidate or info_candidate['duration_sec'] < 45.0:
+      next
+
+    difference = abs(info_candidate['start_date'] - target_time)
+
+    if time_to_beat == False or difference < time_to_beat:
+      time_to_beat = difference
+      current_winner = candidate_path
+
+  return current_winner
 
   
 def prune(reindex=False):
