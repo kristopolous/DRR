@@ -504,10 +504,31 @@ def list_slice(list_in, name_out, duration_sec, start_sec):
   Takes some stitch list, list_in and then create a new one based on the start and end times 
   by finding the closest frames and just doing an extraction.
   """
-  pid = misc.change_proc_name("%s-audioslice" % misc.config['callsign'])
-
   out = open(name_out, 'wb+')
   
+  for block in list_slice_generator(list_in, duration_sec, start_sec):
+    out.write(block)
+
+  out.close()
+
+  # If we failed to do anything this is a tragedy
+  # and we just dump the file
+  #
+  # We take files under some really nominal threshold as being invalid.
+  if os.path.getsize(name_out) < 1000:
+    logging.warn("Unable to create %s - no valid slices" % name_out)
+    os.unlink(name_out)
+
+
+def list_slice_generator(list_in, duration_sec=None, start_sec=0):
+  """
+  Takes some stitch list, list_in and then create a new one based on the start and end times 
+  by finding the closest frames and just doing an extraction.
+
+  Setting the duration as None is equivalent to a forever stream 
+  """
+  pid = misc.change_proc_name("%s-audioslice" % misc.config['callsign'])
+
   # print 'slice', duration_sec, start_sec
   for ix in range(0, len(list_in)):
     item = list_in[ix]
@@ -534,7 +555,7 @@ def list_slice(list_in, name_out, duration_sec, start_sec):
 
     if fin:
       fin.seek(offset[frame_start])
-      out.write(fin.read(offset[frame_end] - offset[frame_start]))
+      yield fin.read(offset[frame_end] - offset[frame_start])
       fin.close()
 
     # If we fail to get the mp3 file then we can suppose that
@@ -542,16 +563,6 @@ def list_slice(list_in, name_out, duration_sec, start_sec):
     else:
       os.unlink(item['name'])
       logging.warn("Unable to find %s's corresponding mp3, deleting" % item['name'])
-
-  out.close()
-
-  # If we failed to do anything this is a tragedy
-  # and we just dump the file
-  #
-  # We take files under some really nominal threshold as being invalid.
-  if os.path.getsize(name_out) < 1000:
-    logging.warn("Unable to create %s - no valid slices" % name_out)
-    os.unlink(name_out)
 
 
 def stitch(file_list, force_stitch=False):
