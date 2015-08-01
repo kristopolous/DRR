@@ -234,13 +234,6 @@ def server_manager(config):
 
     return rv
 
-
-  @app.route('/uuid')
-  def my_uuid():
-    """ Returns this servers uuid """
-    return misc.config['uuid']
-
-
   # From http://stackoverflow.com/questions/13317536/get-a-list-of-all-routes-defined-in-the-app
   @app.route("/site-map")
   def site_map():
@@ -257,6 +250,12 @@ def server_manager(config):
       output.append(line)
 
     return Response('\n'.join(output), mimetype='text/plain')
+
+
+  @app.route('/uuid')
+  def my_uuid():
+    """ Returns this servers uuid """
+    return misc.config['uuid']
 
 
   @app.route('/db')
@@ -288,7 +287,6 @@ def server_manager(config):
     If it exists (as in we had previously generated it) then we can trivially send it. Otherwise
     we'll just call this an error to make our lives easier.
     """
-
     base_dir = "%s%s/" % (config['storage'], misc.DIR_SLICES)
     fname = base_dir + path
 
@@ -816,7 +814,7 @@ def stream_manager():
       # we rename our process_next AS OUR process
       process = process_next
 
-      # And then clear out the old process_next pointer
+      # and then clear out the old process_next pointer
       process_next = False 
 
     # Increment the amount of time this has been running
@@ -893,7 +891,7 @@ def read_config(config):
       if type(v) is int: misc.config[k] = int(misc.config[k])
       elif type(v) is float: misc.config[k] = float(misc.config[k])
 
-  # in case someone is specifying ~/radio 
+  # In case someone is specifying ~/radio 
   misc.config['storage'] = os.path.expanduser(misc.config['storage'])
   misc.config['_private'] = {}
 
