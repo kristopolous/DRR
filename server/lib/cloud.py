@@ -244,7 +244,7 @@ def find_and_make_slices(start_list, duration_min):
 
 
 def get_next(query_path):
-  """ Given a file, we look to see if there's another one which could come after -- we won't first look for the database """
+  """ Given a file, we look to see if there's another one which could come after -- we won't look in the database """
   info_query = audio.stream_info(query_path)
 
   #
@@ -254,8 +254,8 @@ def get_next(query_path):
   #
   target_time = info_query['start_date'] + timedelta(seconds=info_query['duration_sec'])
 
-  time_to_beat = False 
-  current_winner = False
+  time_to_beat = None
+  current_winner = None
 
   for candidate_path in glob('%s/*mp3' % misc.DIR_STREAMS):
     if candidate_path == query_path: continue
@@ -266,7 +266,7 @@ def get_next(query_path):
 
     difference = abs(info_candidate['start_date'] - target_time)
 
-    if time_to_beat == False or difference < time_to_beat:
+    if not time_to_beat or difference < time_to_beat:
       time_to_beat = difference
       current_winner = candidate_path
 

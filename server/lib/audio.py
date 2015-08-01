@@ -72,7 +72,7 @@ def stream_info(fname, skip_size=False):
 
   else:
     logging.warn("Failure to find info for '%s'" % fname)
-    return False
+    return None
 
   # If we don't have a bitrate yet we assume 128
   try:
@@ -219,6 +219,9 @@ def signature(fname, blockcount=-1):
 
   if audio_format == FORMAT_AAC:
     return aac_signature(fname, blockcount)
+
+  return None
+
 
 # using http://wiki.multimedia.cx/index.php?title=ADTS
 def aac_signature(fname, blockcount=-1):
@@ -435,8 +438,10 @@ def mp3_signature(fname, blockcount=-1):
 def our_mime():
   our_format = DB.get('format') or 'mp3'
   
-  if our_format == 'mp3': return 'audio/mpeg'
   if our_format == 'aac': return 'audio/aac'
+
+  # Default to mp3
+  return 'audio/mpeg'
 
 
 def stitch_and_slice_process(file_list, start_minute, duration_minute):
@@ -462,7 +467,7 @@ def stitch_and_slice_process(file_list, start_minute, duration_minute):
 
   else:
     logging.warn("Unable to stitch file list")
-    return False
+    return None
 
   # print info, start_minute
   # After we've stitched together the audio then we start our slice
