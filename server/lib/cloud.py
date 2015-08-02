@@ -54,7 +54,6 @@ def unlink(path, config=False):
 def put(path):
   """ Place a file, given a path, in the cloud. """
   if 'test' in misc.config['_private']['azure']:
-    logging.info ("I would have uploaded %s but I'm in test mode" % path)
     return False
 
   if not misc.am_i_official():
@@ -372,13 +371,13 @@ def prune_process(lockMap, reindex=False):
 
     # We observe the rules set up in the config.
     if ctime < cutoff:
-      logging.debug("Prune: %s" % fname)
+      logging.debug("Prune[remove]: %s" % fname)
       os.unlink(fname)
       count += 1 
 
     # We want to make sure we aren't archiving the slices
-    elif cloud_cutoff and ctime < cloud_cutoff and not fname.startswith('slice'):
-      logging.debug("Prune[cloud]: putting %s" % fname)
+    elif cloud_cutoff and ctime < cloud_cutoff and not fname.startswith('slice') and misc.am_i_official():
+      logging.debug("Prune[cloud]: %s" % fname)
 
       # Only unlink the file if I can successfully put it into the cloud.
       if put(fname):
