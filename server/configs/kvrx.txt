@@ -2,8 +2,6 @@
 callsign=kvrx
 long=-97.743061
 lat=30.267153
-mode=full
 stream=http://tstv-stream.tsm.utexas.edu:8000/kvrx_livestream
 port=9170
-loglevel=debug
 cloud=~/cloudcreds.cfg

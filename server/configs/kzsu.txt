@@ -2,8 +2,6 @@
 callsign=kzsu
 long=-122.166076
 lat=37.424106
-mode=full
 stream=http://kzsu-streams.stanford.edu/kzsu-1-128.mp3
 port=9010
-loglevel=debug
 cloud=~/cloudcreds.cfg
