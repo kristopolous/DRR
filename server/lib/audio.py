@@ -320,8 +320,6 @@ def aac_signature(file_name, blockcount=-1):
  
   if not is_stream:
     file_handle.close()
-    info = stream_info(file_name)
-    DB.register_stream(info)
 
   return frame_sig, start_byte
 
@@ -451,8 +449,6 @@ def mp3_signature(file_name, blockcount=-1):
 
   if not is_stream:
     file_handle.close()
-    info = stream_info(file_name)
-    DB.register_stream(info)
 
   return frame_sig, start_byte
 
@@ -634,9 +630,7 @@ def list_slice_generator(list_in, duration_sec=None, start_sec=0):
   pid = misc.change_proc_name("%s-audioslice" % misc.config['callsign'])
 
   # There's support for a generator style list_in for live streams
-  number_of_files = None
-  if type(list_in) is list:
-    number_of_files = len(list_in)
+  number_of_files = len(list_in)
 
   ix = 0
   # print 'slice', duration_sec, start_sec
