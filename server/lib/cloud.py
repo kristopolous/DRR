@@ -288,7 +288,7 @@ def get_file_for_ts(target_time, bias=None, exclude_path=None):
 
   if bias == -1:
     # Make sure that our candidate has our time within it
-    print best_before_info['start_date'], timedelta(seconds=best_before_info['duration_sec']) , target_time
+    # print best_before_info['start_date'], timedelta(seconds=best_before_info['duration_sec']) , target_time
     if best_before_info['start_date'] + timedelta(seconds=best_before_info['duration_sec']) > target_time:
       # This means that we have found a valid file and we can return the successful target_time 
       # and our info
@@ -330,7 +330,7 @@ def get_next(info_query):
 def prune(reindex=False):
   """ Gets rid of files older than archivedays - cloud stores things if relevant. """
 
-  print "Prune starting"
+  #print "Prune starting"
   # If we are the first process then we need to make sure that the webserver is up before
   # we do this to check to see if we are official
   time.sleep(3)
@@ -381,7 +381,7 @@ def prune_process(lockMap, reindex=False):
 
     ctime = os.path.getctime(fname)
 
-    print "Looking at ", fname, ctime, cutoff, archive_duration,  misc.config['archivedays'], misc.am_i_official()
+    # print "Looking at ", fname, ctime, cutoff, archive_duration,  misc.config['archivedays'], misc.am_i_official()
     # We observe the rules set up in the config.
     if ctime < cutoff:
       logging.debug("Prune[remove]: %s" % fname)
