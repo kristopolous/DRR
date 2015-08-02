@@ -540,7 +540,7 @@ def list_slice(list_in, name_out, duration_sec, start_sec):
     os.unlink(name_out)
 
 
-def list_slice_stream(start_file, start_sec):
+def list_slice_stream(start_info, start_sec):
   """
   Takes some stitch list, list_in and then create a new one based on the start and end times 
   by finding the closest frames and just doing an extraction.
@@ -549,7 +549,7 @@ def list_slice_stream(start_file, start_sec):
   """
   pid = misc.change_proc_name("%s-audiostream" % misc.config['callsign'])
 
-  current_info = stream_info(start_file)
+  current_info = start_info
 
   # get the regular map so we know where to start from
   siglist, offset = signature(current_info['name'])
@@ -610,7 +610,6 @@ def list_slice_stream(start_file, start_sec):
     else:
       # Otherwise we have to bail
       break
-
 
 
 def list_slice_generator(list_in, duration_sec=None, start_sec=0):
