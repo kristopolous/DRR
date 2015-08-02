@@ -397,6 +397,7 @@ def server_manager(config):
     # library we wrote for streaming to get the minute of day this is.
     requested_minute = TS.to_utc('mon', start)
 
+    offset_sec = 0
     range_header = request.headers.get('Range', None)
     if range_header:
       m = re.search('(\d+)-', range_header)
@@ -405,11 +406,10 @@ def server_manager(config):
         byte1 = int(g[0])
 
         # We use the byte to compute the offset
-        offset = float(byte1) / ((int(DB.get('bitrate')) or 128) * (1000 / 8.0))
+        offset_sec = float(byte1) / ((int(DB.get('bitrate')) or 128) * (1000 / 8.0))
     
-        requested_minute += offset / 60.0
-        print "--- REQUEST @ ", start, range_header, offset
 
+    print "--- REQUEST @ ", start, range_header, offset_sec
     current_minute = TS.minute_now() % TS.ONE_DAY_MINUTE
 
     now_time = TS.now()
@@ -420,6 +420,9 @@ def server_manager(config):
     # and now it's 1am.
     if requested_minute > current_minute:
       requested_time -= timedelta(days=1)
+
+    # It's important to do this AFTER the operation above otherwise we wrap around to yesterday
+    requested_time += timedelta(seconds=offset_sec)
 
     # Get the info for the file that contains this timestamp
     start_info, requested_time_available = cloud.get_file_for_ts(target_time=requested_time, bias=-1)

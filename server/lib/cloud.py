@@ -300,7 +300,7 @@ def get_file_for_ts(target_time, bias=None, exclude_path=None):
     return best_after_info, best_after_info['start_date']
 
   if bias == None:
-    if abs(best_before_time) < abs(best_after_time):
+    if not best_after_time or (abs(best_before_time) < abs(best_after_time)):
       return best_before_info, max(target_time, best_before_info['start_date'])
 
     return best_after_info, min(target_time, best_after_info['start_date'])
