@@ -551,12 +551,13 @@ def list_slice_stream(start_info, start_sec):
 
   # get the regular map so we know where to start from
   siglist, offset = signature(current_info['name'])
-  frame_start = min(max(int(math.floor(start_sec / FRAME_LENGTH)), 0), len(offset) - 1)
-  byte_start = offset[frame_start]
+  start_frame = min(max(int(math.floor(start_sec / FRAME_LENGTH)), 0), len(offset) - 1)
+  start_byte = offset[start_frame]
 
   while True:
     stream_handle = cloud.get(current_info['name'])
-    stream_handle.seek(byte_start)
+    stream_handle.seek(start_byte)
+    # print "-- opening", current_info['name'], current_info['size'], stream_handle.tell(), start_byte
 
     # This helps us determine when we are at EOF ... which
     # we basically define as a number of seconds without any
@@ -570,7 +571,7 @@ def list_slice_stream(start_info, start_sec):
       block = stream_handle.read(8192)
        
       if block:
-        #sys.stdout.write('!')
+        # sys.stdout.write('!')
         times_none = 0 
         yield block
 
@@ -603,13 +604,13 @@ def list_slice_stream(start_info, start_sec):
 
       # We make it our current file
       current_info = next_info
-      #print "args --", args
 
       # Now we can assume that our args[1] is going to have all
       # the information pertaining to where the new file should pick
       # up from - all we really need is the start_byte
       if len(args) == 2:
         start_byte = args[1]['start_byte'] 
+        # print "Starting at ", start_byte
 
       else:
         logging.warn("Live stitching failed")
