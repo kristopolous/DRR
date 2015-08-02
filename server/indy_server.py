@@ -506,7 +506,7 @@ def server_manager(config):
 
     # Make sure that we have all of our streams registered before trying
     # to infer what we can send to the user.
-    cloud.register_streams()
+    cloud.register_stream_list()
 
     # Look for streams that we have which match this query and duration.
     # This will also create slices if necessary in a sub process.
