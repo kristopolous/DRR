@@ -330,6 +330,11 @@ def get_next(info_query):
 def prune(reindex=False):
   """ Gets rid of files older than archivedays - cloud stores things if relevant. """
 
+  print "Prune starting"
+  # If we are the first process then we need to make sure that the webserver is up before
+  # we do this to check to see if we are official
+  time.sleep(3)
+
   # We want to run the am_i_official so that the thread that keeps forking the prune
   # process bequeths a cached version of whether it is official or not.
   misc.am_i_official()
@@ -376,6 +381,7 @@ def prune_process(lockMap, reindex=False):
 
     ctime = os.path.getctime(fname)
 
+    print "Looking at ", fname, ctime, cutoff, archive_duration,  misc.config['archivedays'], misc.am_i_official()
     # We observe the rules set up in the config.
     if ctime < cutoff:
       logging.debug("Prune[remove]: %s" % fname)

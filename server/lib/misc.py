@@ -101,8 +101,9 @@ def am_i_official():
       config['official'] = (data.strip() == config['uuid'])
 
     except:
-      # Default on the safe side
-      config['official'] = False
+      # We can't contact the server so we just return false
+      # and set nothing
+      return False
 
   return config['official']
 
