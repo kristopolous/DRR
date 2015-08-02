@@ -289,13 +289,13 @@ def server_manager(config):
     we'll just call this an error to make our lives easier.
     """
     base_dir = "%s%s/" % (config['storage'], misc.DIR_SLICES)
-    fname = base_dir + path
+    file_name = base_dir + path
 
     # If the file doesn't exist, then we need to slice it and create it based on our query.
-    if not os.path.isfile(fname):
+    if not os.path.isfile(file_name):
       # This tells us that if it were to exist, it would be something
       # like this.
-      request_info = audio.stream_info(fname)
+      request_info = audio.stream_info(file_name)
 
       # we can do something rather specific here ... 
       #
@@ -573,7 +573,7 @@ def stream_should_be_recording():
   return intent_count != 0
 
 
-def stream_download(callsign, url, my_pid, fname):
+def stream_download(callsign, url, my_pid, file_name):
   """ 
   Curl interfacing which downloads the stream to disk. 
   Follows redirects and parses out basic m3u.
@@ -612,10 +612,10 @@ def stream_download(callsign, url, my_pid, fname):
 
     if not nl['stream']:
       try:
-        nl['stream'] = open(fname, 'w')
+        nl['stream'] = open(file_name, 'w')
 
       except Exception as exc:
-        logging.critical("Unable to open %s. Can't record. Must exit." % fname)
+        logging.critical("Unable to open %s. Can't record. Must exit." % file_name)
         sys.exit(-1)
 
     nl['stream'].write(data)
@@ -687,10 +687,10 @@ def stream_manager():
   server_pid = Process(target=server_manager, args=(misc.config,))
   server_pid.start()
 
-  fname = False
+  file_name = False
 
   # A wrapper function to start a donwnload process
-  def download_start(fname):
+  def download_start(file_name):
     """ Starts a process that manages the downloading of a stream. """
     global g_download_pid
 
@@ -702,10 +702,10 @@ def stream_manager():
     # the actual start of the download so we should err on that side by putting it
     # in the future by some margin
     #
-    fname = '%s/%s-%d.mp3' % (misc.DIR_STREAMS, callsign, TS.sec_now(offset_sec=misc.PROCESS_DELAY))
-    process = Process(target=stream_download, args=(callsign, misc.config['stream'], g_download_pid, fname))
+    file_name = '%s/%s-%d.mp3' % (misc.DIR_STREAMS, callsign, TS.sec_now(offset_sec=misc.PROCESS_DELAY))
+    process = Process(target=stream_download, args=(callsign, misc.config['stream'], g_download_pid, file_name))
     process.start()
-    return [fname, process]
+    return [file_name, process]
 
   # see https://github.com/kristopolous/DRR/issues/91:
   # Randomize prune to offload disk peaks
@@ -809,7 +809,7 @@ def stream_manager():
         process = False
 
       if not process and not b_shutdown:
-        fname, process = download_start(fname)
+        file_name, process = download_start(file_name)
         last_success = TS.unixtime('dl')
 
       # If we've hit the time when we ought to cascade
@@ -817,7 +817,7 @@ def stream_manager():
 
         # And we haven't created the next process yet, then we start it now.
         if not process_next:
-          fname, process_next = download_start(fname)
+          file_name, process_next = download_start(file_name)
 
       # If our last_success stream was more than cascade_time - cascade_buffer
       # then we start our process_next
