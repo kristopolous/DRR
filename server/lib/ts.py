@@ -26,7 +26,8 @@ import urllib
 # Everything is presumed to be weekly and on the minute
 # scale. We use this to do wrap around when necessary
 MINUTES_PER_WEEK = 10080
-ONE_DAY = 60 * 60 * 24
+ONE_DAY_MINUTE = 60 * 24
+ONE_DAY_SECOND = 60 * ONE_DAY_MINUTE
 
 def now():
   """ Returns the time.time() equivalent given the offset of the station """
@@ -116,7 +117,7 @@ def get_offset(force=False):
 
   Returns an int second offset.
   """
-  offset = DB.get('offset', expiry=ONE_DAY)
+  offset = DB.get('offset', expiry=ONE_DAY_SECOND)
   if not offset or force:
 
     when = int(unixtime())

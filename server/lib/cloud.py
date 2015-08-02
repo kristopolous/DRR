@@ -302,12 +302,12 @@ def prune_process(lockMap, reindex=False):
   register_stream_list(reindex)
   db = DB.connect()
 
-  archive_duration = misc.config['archivedays'] * TS.ONE_DAY
+  archive_duration = misc.config['archivedays'] * TS.ONE_DAY_SECOND
   cutoff = TS.unixtime('prune') - archive_duration
 
   cloud_cutoff = False
   if misc.config['cloud']:
-    cloud_cutoff = TS.unixtime('prune') - misc.config['cloudarchive'] * TS.ONE_DAY
+    cloud_cutoff = TS.unixtime('prune') - misc.config['cloudarchive'] * TS.ONE_DAY_SECOND
 
   # Put thingies into the cloud.
   count = 0
