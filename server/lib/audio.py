@@ -560,26 +560,23 @@ def list_slice_stream(start_file, start_sec):
     stream_handle = cloud.get(current_info['name'])
     stream_handle.seek(byte_start)
 
+    # This helps us determine when we are at EOF ... which
+    # we basically define as a number of seconds without any
+    # valid read.
     times_none = 0
+
     while True:
       # So we want to make sure that we only send out valid, 
       # non-corrupt mp3 blocks that start and end
       # at reasonable intervals.
       block = fin.read()
-
-      # This helps us determine when we are at EOF ... which
-      # we basically define as a number of seconds without any
-      # valid read.
        
-      if block:
-        times_none = 0
+      times_none = 0 if block else times_none + 1
 
-      if not block:
-        times_none += 1
+      if times_none:
+        yield block
 
-      yield block
-
-      if times_none > 20:
+      elif times_none > 20:
         break
 
       # We wait 1/2 second and then try this process again, hopefully
