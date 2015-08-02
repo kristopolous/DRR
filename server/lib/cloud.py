@@ -250,14 +250,21 @@ def get_file_for_ts(target_time, bias=None, exclude_path=None):
 
   An exclude_path can be set to remove it from the candidates to be searched
   """
+  best_before_time = None
+  best_before_info = None
+
+  best_after_time = None
+  best_after_info = None
+
   time_to_beat = None
   current_winner = None
 
+  #print "-----------------------"
   for candidate_path in glob('%s/*mp3' % misc.DIR_STREAMS):
     if candidate_path == exclude_path: continue
 
     info_candidate = audio.stream_info(candidate_path)
-    if not info_candidate or info_candidate['duration_sec'] < 45.0:
+    if not info_candidate or info_candidate['duration_sec'] < 25.0:
       next
 
     difference = info_candidate['start_date'] - target_time
@@ -265,22 +272,38 @@ def get_file_for_ts(target_time, bias=None, exclude_path=None):
     # This means we want to be strictly later
     # If our difference is before, which means we are earlier,
     # then we exclude this
-    if bias == +1 and difference < timedelta():
-      continue
+    #
+    # BUGBUG: There's a hole in here ... pretend there's an expansive file starting at t0 and
+    # a small one at t1 where start time of t0 < t1 so t1 is the file that is selected even though
+    # t0 is a better candidate.
+    #
+    if difference < timedelta() and (not best_before_time or difference > best_before_time):
+      best_before_time = difference
+      best_before_info = info_candidate
 
     # If we want something earlier and the start date is AFTER
     # our target time then we bail
-    elif bias == -1 and difference > timedelta():
-      continue
+    elif difference > timedelta() and (not best_after_time or difference < best_after_time):
+      best_after_time = difference
+      best_after_info = info_candidate
 
-    # Otherwise we do this based on an absolute query
-    difference = abs(difference)
+  if bias == -1:
+    # Make sure that our candidate has our time within it
+    print best_before_info['start_date'], timedelta(seconds=best_before_info['duration_sec']) , target_time
+    if best_before_info['start_date'] + timedelta(seconds=best_before_info['duration_sec']) > target_time:
+      # This means that we have found a valid file and we can return the successful target_time 
+      # and our info
+      return best_before_info, target_time
 
-    if not time_to_beat or difference < time_to_beat:
-      time_to_beat = difference
-      current_winner = info_candidate
+    # Otherwise that means that our best time doesn't actually have our target time!
+    # So we return where we ought to start and the file we can start at
+    return best_after_info, best_after_info['start_date']
 
-  return current_winner
+  if bias == None:
+    if abs(best_before_time) < abs(best_after_time):
+      return best_before_info, max(target_time, best_before_info['start_date'])
+
+    return best_after_info, min(target_time, best_after_info['start_date'])
 
 
 def get_next(info_query):
@@ -295,7 +318,7 @@ def get_next(info_query):
   #
   target_time = info_query['start_date'] + timedelta(seconds=info_query['duration_sec'])
 
-  return info_query, get_file_for_ts(target_time=target_time, bias=None, exclude_path=info_query['name'])
+  return get_file_for_ts(target_time=target_time, bias=None, exclude_path=info_query['name'])
 
   
 def prune(reindex=False):

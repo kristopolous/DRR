@@ -399,7 +399,7 @@ def server_manager(config):
 
     range_header = request.headers.get('Range', None)
     if range_header:
-      m = re.search('(\d+)-(\d*)', range_header)
+      m = re.search('(\d+)-', range_header)
       g = m.groups()
       if g[0]: 
         byte1 = int(g[0])
@@ -422,7 +422,8 @@ def server_manager(config):
       requested_time -= timedelta(days=1)
 
     # Get the info for the file that contains this timestamp
-    start_info = cloud.get_file_for_ts(target_time=requested_time, bias=-1)
+    start_info, requested_time_available = cloud.get_file_for_ts(target_time=requested_time, bias=-1)
+    requested_time = max(requested_time, requested_time_available)
     start_second = (requested_time - start_info['start_date']).total_seconds()
     print start_info, requested_time, start_second
 

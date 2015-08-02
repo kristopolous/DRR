@@ -8,6 +8,7 @@ import struct
 import logging
 import misc
 import cloud
+import sys
 import time
 import db as DB
 import ts as TS
@@ -573,6 +574,7 @@ def list_slice_stream(start_info, start_sec):
       block = stream_handle.read(8192)
        
       if block:
+        #sys.stdout.write('!')
         times_none = 0 
         yield block
 
@@ -582,8 +584,9 @@ def list_slice_stream(start_info, start_sec):
           break
     
         elif times_none > 1:
+          #print stream_handle.tell(), current_info['size'], times_none, len(block)
           # See if there's a next file that we can immediately go to
-          our_info, next_info = cloud.get_next(current_info)
+          next_info, offset = cloud.get_next(current_info)
           if next_info: break
 
         # We wait 1/2 second and then try this process again, hopefully
@@ -595,15 +598,16 @@ def list_slice_stream(start_info, start_sec):
 
     # If we are here that means that we ran out of data on our current
     # file.  The first things we should do is see if there is a next file
-    our_info, next_info = cloud.get_next(current_info)
+    next_info, offset = cloud.get_next(current_info)
 
     if next_info:
 
       # If there is we find the stitching point
-      args = stitch([our_info, next_info], force_stitch=True)
+      args = stitch([current_info, next_info], force_stitch=True)
 
       # We make it our current file
       current_info = next_info
+      #print "args --", args
 
       # Now we can assume that our args[1] is going to have all
       # the information pertaining to where the new file should pick
