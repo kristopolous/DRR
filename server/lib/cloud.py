@@ -243,6 +243,46 @@ def find_and_make_slices(start_list, duration_min):
   return stream_list
 
 
+def get_file_for_ts(target_time, bias=None, exclude_path=None):
+  """ 
+  Given a datetime target_time, this finds the closest file either with a bias
+  of +1 for after, -1 for before (or within) or no bias for the closest match.
+
+  An exclude_path can be set to remove it from the candidates to be searched
+  """
+  time_to_beat = None
+  current_winner = None
+
+  for candidate_path in glob('%s/*mp3' % misc.DIR_STREAMS):
+    if candidate_path == exclude_path: continue
+
+    info_candidate = audio.stream_info(candidate_path)
+    if not info_candidate or info_candidate['duration_sec'] < 45.0:
+      next
+
+    difference = info_candidate['start_date'] - target_time
+
+    # This means we want to be strictly later
+    # If our difference is before, which means we are earlier,
+    # then we exclude this
+    if bias == +1 and difference < 0:
+      continue
+
+    # If we want something earlier and the start date is AFTER
+    # our target time then we bail
+    elif bias == -1 and difference > 0:
+      continue
+
+    # Otherwise we do this based on an absolute query
+    difference = abs(difference)
+
+    if not time_to_beat or difference < time_to_beat:
+      time_to_beat = difference
+      current_winner = info_candidate
+
+  return (info_query, current_winner)
+
+
 def get_next(info_query):
   """ Given a file, we look to see if there's another one which could come after -- we won't look in the database """
   if type(info_query) is str:
@@ -255,23 +295,7 @@ def get_next(info_query):
   #
   target_time = info_query['start_date'] + timedelta(seconds=info_query['duration_sec'])
 
-  time_to_beat = None
-  current_winner = None
-
-  for candidate_path in glob('%s/*mp3' % misc.DIR_STREAMS):
-    if candidate_path == query_path: continue
-
-    info_candidate = audio.stream_info(candidate_path)
-    if not info_candidate or info_candidate['duration_sec'] < 45.0:
-      next
-
-    difference = abs(info_candidate['start_date'] - target_time)
-
-    if not time_to_beat or difference < time_to_beat:
-      time_to_beat = difference
-      current_winner = info_candidate
-
-  return (info_query, current_winner)
+  return get_file_for_ts(target_time=target_time, bias=None, exclude_path=info_query['name'])
 
   
 def prune(reindex=False):
