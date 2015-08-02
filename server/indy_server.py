@@ -1036,7 +1036,7 @@ if __name__ == "__main__":
   else: 
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--config", default="./indy_config.txt", help="Configuration file (default ./indy_config.txt)")
-    parser.add_argument('--version', action='version', version='indycast %s :: July 2015' % __version__)
+    parser.add_argument('--version', action='version', version='indycast %s :: Aug 2015' % __version__)
     args = parser.parse_args()
     read_config(args.config)      
 
