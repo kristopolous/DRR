@@ -397,6 +397,19 @@ def server_manager(config):
     # library we wrote for streaming to get the minute of day this is.
     requested_minute = TS.to_utc('mon', start)
 
+    range_header = request.headers.get('Range', None)
+    if range_header:
+      m = re.search('(\d+)-(\d*)', range_header)
+      g = m.groups()
+      if g[0]: 
+        byte1 = int(g[0])
+
+        # We use the byte to compute the offset
+        offset = float(byte1) / ((int(DB.get('bitrate')) or 128) * (1000 / 8.0))
+    
+        requested_minute += offset / 60.0
+        print "--- REQUEST @ ", start, range_header, offset
+
     current_minute = TS.minute_now() % TS.ONE_DAY_MINUTE
 
     now_time = TS.now()
