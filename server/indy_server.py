@@ -393,11 +393,27 @@ def server_manager(config):
   @app.route('/live/<start>')
   def live(start):
     """ Sends off a live-stream equivalent """
-    def generate():
-      yield "hi"
-      # get offset starting from start time
+    # The start is expressed in times like "11:59am ..." We utilize the
+    # library we wrote for streaming to get the minute of day this is.
+    requested_minute = TS.to_utc('mon', start)
 
-    return Response(generate(), mimetype=audio.our_mime())
+    current_minute = TS.minute_now() % TS.ONE_DAY_MINUTE
+
+    now_time = TS.now()
+    requested_time = now_time - timedelta(minutes=current_minute) + timedelta(minutes=requested_minute)
+
+    # If the requested minute is greater than the current one, then we can presume that
+    # the requested minute refers to yesterday ... as in, someone wants 11pm
+    # and now it's 1am.
+    if requested_minute > current_minute:
+      requested_time -= timedelta(days=1)
+
+    # Get the info for the file that contains this timestamp
+    start_info = cloud.get_file_for_ts(target_time=requested_time, bias=-1)
+    start_second = (requested_time - start_info['start_date']).total_seconds()
+    print start_info, requested_time, start_second
+
+    return Response(audio.list_slice_stream(start_info, start_second), mimetype=audio.our_mime())
 
   @app.route('/<weekday>/<start>/<duration_string>/<showname>')
   def stream(weekday, start, duration_string, showname):
@@ -677,7 +693,7 @@ def stream_manager():
     #
     flag = False
 
-    if last_prune < (TS.unixtime('prune') - TS.ONE_DAY * misc.config['pruneevery']):
+    if last_prune < (TS.unixtime('prune') - TS.ONE_DAY_SECOND * misc.config['pruneevery']):
       # We just assume it can do its business in under a day
       misc.pid['prune'] = cloud.prune()
       last_prune = TS.unixtime('prune')

@@ -8,6 +8,7 @@ import struct
 import logging
 import misc
 import cloud
+import time
 import db as DB
 import ts as TS
 from datetime import datetime, timedelta, date
@@ -569,7 +570,7 @@ def list_slice_stream(start_info, start_sec):
       # So we want to make sure that we only send out valid, 
       # non-corrupt mp3 blocks that start and end
       # at reasonable intervals.
-      block = fin.read()
+      block = stream_handle.read()
        
       times_none = 0 if block else times_none + 1
 
