@@ -13,7 +13,6 @@ if($station) {
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
   $data = curl_exec($ch);
   $info = curl_getinfo($ch);
-  header('Content-Type: text/xml; charset=UTF-8');/* . $info['content_type']);
-  header('Content-Type: ' . $info['content_type']);*/
+  header('Content-Type: ' . $info['content_type']);
   echo $data;
 }
