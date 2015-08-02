@@ -265,12 +265,12 @@ def get_file_for_ts(target_time, bias=None, exclude_path=None):
     # This means we want to be strictly later
     # If our difference is before, which means we are earlier,
     # then we exclude this
-    if bias == +1 and difference < 0:
+    if bias == +1 and difference < timedelta():
       continue
 
     # If we want something earlier and the start date is AFTER
     # our target time then we bail
-    elif bias == -1 and difference > 0:
+    elif bias == -1 and difference > timedelta():
       continue
 
     # Otherwise we do this based on an absolute query
@@ -280,7 +280,7 @@ def get_file_for_ts(target_time, bias=None, exclude_path=None):
       time_to_beat = difference
       current_winner = info_candidate
 
-  return (info_query, current_winner)
+  return current_winner
 
 
 def get_next(info_query):
@@ -295,7 +295,7 @@ def get_next(info_query):
   #
   target_time = info_query['start_date'] + timedelta(seconds=info_query['duration_sec'])
 
-  return get_file_for_ts(target_time=target_time, bias=None, exclude_path=info_query['name'])
+  return info_query, get_file_for_ts(target_time=target_time, bias=None, exclude_path=info_query['name'])
 
   
 def prune(reindex=False):
