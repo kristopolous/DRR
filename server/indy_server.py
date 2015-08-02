@@ -8,6 +8,7 @@ import math
 import os
 import pycurl
 import re
+import random
 import signal
 import sys
 import time
@@ -703,6 +704,10 @@ def stream_manager():
     process.start()
     return [fname, process]
 
+  # see https://github.com/kristopolous/DRR/issues/91:
+  # Randomize prune to offload disk peaks
+  prune_duration = misc.config['pruneevery'] + (1 / 8.0 - random.random() / 4.0)
+
   while True:
     #
     # We cycle this to off for every run. By the time we go throug the queue so long 
@@ -710,7 +715,8 @@ def stream_manager():
     #
     flag = False
 
-    if last_prune < (TS.unixtime('prune') - TS.ONE_DAY_SECOND * misc.config['pruneevery']):
+    if last_prune < (TS.unixtime('prune') - TS.ONE_DAY_SECOND * prune_duration):
+      prune_duration = misc.config['pruneevery'] + (1 / 8.0 - random.random() / 4.0)
       # We just assume it can do its business in under a day
       misc.pid['prune'] = cloud.prune()
       last_prune = TS.unixtime('prune')
