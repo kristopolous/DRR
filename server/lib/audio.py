@@ -570,19 +570,26 @@ def list_slice_stream(start_info, start_sec):
       # So we want to make sure that we only send out valid, 
       # non-corrupt mp3 blocks that start and end
       # at reasonable intervals.
-      block = stream_handle.read()
+      block = stream_handle.read(8192)
        
-      times_none = 0 if block else times_none + 1
-
-      if times_none:
+      if block:
+        times_none = 0 
         yield block
 
-      elif times_none > 20:
-        break
+      else:  
+        times_none += 1
+        yield None
+        if times_none > 20:
+          break
+    
+        # See if there's a next file that we can immediately go to
+        our_info, next_info = cloud.get_next(current_info)
+        if next_info: break
 
-      # We wait 1/2 second and then try this process again, hopefully
-      # the disk has sync'd and we have more data
-      time.sleep(0.5)
+        # We wait 1/2 second and then try this process again, hopefully
+        # the disk has sync'd and we have more data
+        time.sleep(0.5)
+
       
     stream_handle.close()
 
