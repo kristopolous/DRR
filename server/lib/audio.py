@@ -578,13 +578,13 @@ def list_slice_stream(start_info, start_sec):
 
       else:  
         times_none += 1
-        yield None
         if times_none > 20:
           break
     
-        # See if there's a next file that we can immediately go to
-        our_info, next_info = cloud.get_next(current_info)
-        if next_info: break
+        elif times_none > 1:
+          # See if there's a next file that we can immediately go to
+          our_info, next_info = cloud.get_next(current_info)
+          if next_info: break
 
         # We wait 1/2 second and then try this process again, hopefully
         # the disk has sync'd and we have more data
