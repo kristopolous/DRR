@@ -2,8 +2,6 @@
 callsign=kspc
 long=-118.397920
 lat=33.955766
-mode=full
 stream=http://208.70.75.109:8000/stream
 port=8870
-loglevel=debug
 cloud=~/cloudcreds.cfg

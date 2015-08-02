@@ -2,8 +2,6 @@
 callsign=kcrw
 long=-118.397920
 lat=33.955766
-mode=full
 stream=http://kcrw.ic.llnwd.net/stream/kcrw_live
 port=8990
-loglevel=debug
 cloud=~/cloudcreds.cfg

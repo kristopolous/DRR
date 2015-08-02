@@ -2,8 +2,6 @@
 callsign=kpcc
 long=-118.397920
 lat=33.955766
-mode=full
 stream=http://live.scpr.org/kpcclive/
 port=8930
-loglevel=debug
 cloud=~/cloudcreds.cfg
