@@ -345,7 +345,7 @@ def mp3_signature(file_name, blockcount=-1):
   read_size = 8
   is_stream = False
 
-  if type(file_name) is str:
+  if isinstance(file_name, basestring):
     file_handle = open(file_name, 'rb')
 
   else:
