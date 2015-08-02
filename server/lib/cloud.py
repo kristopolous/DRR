@@ -304,6 +304,13 @@ def get_file_for_ts(target_time, bias=None, exclude_path=None):
 
     return best_after_info, min(target_time, best_after_info['start_date'])
 
+  if bias == +1:
+    print best_after_info, best_before_info, exclude_path
+    if not best_after_time:
+      return None, target_time
+
+    return best_after_info, min(target_time, best_after_info['start_date'])
+
 
 def get_next(info_query):
   """ Given a file, we look to see if there's another one which could come after -- we won't look in the database """
@@ -317,7 +324,7 @@ def get_next(info_query):
   #
   target_time = info_query['start_date'] + timedelta(seconds=info_query['duration_sec'])
 
-  return get_file_for_ts(target_time=target_time, bias=None, exclude_path=info_query['name'])
+  return get_file_for_ts(target_time=target_time, bias=+1, exclude_path=info_query['name'])
 
   
 def prune(reindex=False):
