@@ -554,23 +554,65 @@ def list_slice_stream(start_file, start_sec):
   # get the regular map so we know where to start from
   siglist, offset = signature(current_info['name'])
   frame_start = min(max(int(math.floor(start_sec / FRAME_LENGTH)), 0), len(offset) - 1)
-  frame_end = len(offset) - 1
+  byte_start = offset[frame_start]
 
-  times_none = 0
   while True:
     stream_handle = cloud.get(current_info['name'])
-    stream_handle.seek(offset[frame_start])
+    stream_handle.seek(byte_start)
 
+    times_none = 0
     while True:
-    yield fin.read(offset[frame_end] - offset[frame_start])
+      # So we want to make sure that we only send out valid, 
+      # non-corrupt mp3 blocks that start and end
+      # at reasonable intervals.
+      block = fin.read()
 
-    # See if there is a next file
-    our_info, next_info = cloud.get_next(current_file)
+      # This helps us determine when we are at EOF ... which
+      # we basically define as a number of seconds without any
+      # valid read.
+       
+      if block:
+        times_none = 0
+
+      if not block:
+        times_none += 1
+
+      yield block
+
+      if times_none > 20:
+        break
+
+      # We wait 1/2 second and then try this process again, hopefully
+      # the disk has sync'd and we have more data
+      time.sleep(0.5)
+      
+    stream_handle.close()
+
+    # If we are here that means that we ran out of data on our current
+    # file.  The first things we should do is see if there is a next file
+    our_info, next_info = cloud.get_next(current_info)
 
     if next_info:
+
       # If there is we find the stitching point
-      args = stitch([our_info, next_info])
-      print args
+      args = stitch([our_info, next_info], force_stitch=True)
+
+      # We make it our current file
+      current_info = next_info
+
+      # Now we can assume that our args[1] is going to have all
+      # the information pertaining to where the new file should pick
+      # up from - all we really need is the start_byte
+      if len(args) == 2:
+        start_byte = args[1]['start_byte'] 
+
+      else:
+        logging.warn("Live stitching failed")
+        break
+
+    else:
+      # Otherwise we have to bail
+      break
 
 
 
