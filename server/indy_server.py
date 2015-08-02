@@ -624,19 +624,19 @@ def stream_download(callsign, url, my_pid, file_name):
       misc.shutdown()
 
   # signal.signal(signal.SIGTERM, dl_stop)
-  c = pycurl.Curl()
-  c.setopt(c.URL, url)
-  c.setopt(pycurl.WRITEFUNCTION, cback)
-  c.setopt(pycurl.FOLLOWLOCATION, True)
+  curl_handle = pycurl.Curl()
+  curl_handle.setopt(curl_handle.URL, url)
+  curl_handle.setopt(pycurl.WRITEFUNCTION, cback)
+  curl_handle.setopt(pycurl.FOLLOWLOCATION, True)
   g_params['isFirst'] = True
 
   try:
-    c.perform()
+    curl_handle.perform()
 
   except Exception as exc:
     logging.warning("Couldn't resolve or connect to %s." % url)
 
-  c.close()
+  curl_handle.close()
 
   if type(nl['stream']) != bool:
     nl['stream'].close()
