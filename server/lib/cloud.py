@@ -239,8 +239,8 @@ def find_streams(start_list, duration_min):
 def find_and_make_slices(start_list, duration_min):
   stream_list, episode_list = find_streams(start_list, duration_min)
 
-  for episode, offset_start_min, duration_min in episode_list:
-    audio.stitch_and_slice(episode, offset_start_min, duration_min)
+  #for episode, offset_start_min, duration_min in episode_list:
+  #  audio.stitch_and_slice(episode, offset_start_min, duration_min)
 
   return stream_list
 

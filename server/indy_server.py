@@ -174,6 +174,7 @@ def server_manager(config):
       # This tells us that if it were to exist, it would be something
       # like this.
       request_info = audio.stream_info(file_name)
+      print request_info
 
       # we can do something rather specific here ... 
       #
@@ -187,7 +188,9 @@ def server_manager(config):
         if first_slice['week_number'] == request_info['week_number']:
           # This means that we've found the episode that we want
           # We will block on this.
-          audio.stitch_and_slice_process(file_list=episode, start_minute=request_info['start_minute'], duration_minute=request_info['duration_sec'] / 60.0)
+          relative_start_minute = request_info['start_minute'] - first_slice['start_minute']
+          print episode, request_info
+          audio.stitch_and_slice_process(file_list=episode, relative_start_minute=relative_start_minute, duration_minute=request_info['duration_sec'] / 60.0)
 
           # And break out of our loop ... now everything should exist.
           break
@@ -273,7 +276,7 @@ def server_manager(config):
   def live(start, offset_min=0):
     """ Sends off a live-stream equivalent """
     if start[0] == '-':
-      return redirect('/live/%dmin' % (int(TS.minute_now() - float(start))), code=302)
+      return redirect('/live/%dmin' % (int(TS.minute_now() - float(start))), code=303)
 
     # The start is expressed in times like "11:59am ..." We utilize the
     # library we wrote for streaming to get the minute of day this is.
