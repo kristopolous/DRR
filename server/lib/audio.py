@@ -641,6 +641,7 @@ def list_slice(list_in, name_out, duration_sec, start_sec=0):
 
     if fin:
       fin.seek(offset[frame_start])
+      print 'off---',frame_end, frame_start, len(offset)
       out.write(fin.read(offset[frame_end] - offset[frame_start]))
       fin.close()
 

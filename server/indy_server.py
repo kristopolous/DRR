@@ -38,7 +38,7 @@ import urllib
 
 from datetime import datetime, timedelta, date
 from glob import glob
-from flask import Flask, request, jsonify, Response, url_for
+from flask import Flask, request, jsonify, Response, url_for, redirect
 import flask
 from subprocess import call
 import subprocess
@@ -268,14 +268,13 @@ def server_manager(config):
     return jsonify(stats), 200
   
 
-  @app.route('/yesterday/<start>')
-  def yesterday_live(start):
-    return live(start, offset_min=-(24 * 60))
-
   # Using http://flask.pocoo.org/docs/0.10/patterns/streaming/ as a reference.
   @app.route('/live/<start>')
   def live(start, offset_min=0):
     """ Sends off a live-stream equivalent """
+    if start[0] == '-':
+      return redirect('/live/%dmin' % (TS.minute_now() - int(start)), code=302)
+
     # The start is expressed in times like "11:59am ..." We utilize the
     # library we wrote for streaming to get the minute of day this is.
     requested_minute = TS.to_utc('mon', start) - offset_min

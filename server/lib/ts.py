@@ -69,6 +69,9 @@ def to_utc(day_str, hour):
   and a 12 hour time hh:mm [ap]m and converts it to our absolute units
   with respect to the timestamp in the configuration file.
   """
+  if hour.endswith('min'):
+    return int(hour[:-3])
+
   try:
     day_number = ['mon','tue','wed','thu','fri','sat','sun'].index(day_str.lower())
 
