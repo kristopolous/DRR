@@ -463,9 +463,9 @@ def our_mime():
   return 'audio/mpeg'
 
 
-def stitch_and_slice_process(file_list, start_minute, duration_minute):
+def stitch_and_slice_process(file_list, relative_start_minute, duration_minute):
   """ The process wrapper around stitch_and_slice to do it asynchronously. """
-  name_out = stream_name(file_list, start_minute, duration_minute) 
+  name_out = stream_name(file_list, relative_start_minute, duration_minute) 
 
   if os.path.isfile(name_out):
     file_size = os.path.getsize(name_out)
@@ -490,13 +490,14 @@ def stitch_and_slice_process(file_list, start_minute, duration_minute):
 
   # print info, start_minute
   # After we've stitched together the audio then we start our slice
-  # by figuring our the start_minute of the slice, versus ours
-  start_slice = max(start_minute - info['start_minute'], 0)
+  # by figuring our the relative_start_minute of the slice, versus ours
+  start_slice = relative_start_minute #max(start_minute - info['start_minute'], 0)
 
   # Now we need to take the duration of the stream we want, in minutes, and then
   # make sure that we don't exceed the length of the file.
   duration_slice = min(duration_minute, start_slice + info['duration_sec'] / 60.0)
 
+  # print "startslice---", start_slice, relative_start_minute
   sliced_name = list_slice(
     list_in=stitched_list, 
     name_out=name_out,
@@ -516,27 +517,6 @@ def stitch_and_slice(file_list, start_minute, duration_minute):
   from multiprocessing import Process
   slice_process = Process(target=stitch_and_slice_process, args=(file_list, start_minute, duration_minute, ))
   slice_process.start()
-
-
-def list_slice(list_in, name_out, duration_sec, start_sec):
-  """
-  Takes some stitch list, list_in and then create a new one based on the start and end times 
-  by finding the closest frames and just doing an extraction.
-  """
-  out = open(name_out, 'wb+')
-  
-  for block in list_slice_generator(list_in, duration_sec, start_sec):
-    out.write(block)
-
-  out.close()
-
-  # If we failed to do anything this is a tragedy
-  # and we just dump the file
-  #
-  # We take files under some really nominal threshold as being invalid.
-  if os.path.getsize(name_out) < 1000:
-    logging.warn("Unable to create %s - no valid slices" % name_out)
-    os.unlink(name_out)
 
 
 def list_slice_stream(start_info, start_sec):
@@ -622,7 +602,7 @@ def list_slice_stream(start_info, start_sec):
       break
 
 
-def list_slice_generator(list_in, duration_sec=None, start_sec=0):
+def list_slice(list_in, name_out, duration_sec, start_sec=0):
   """
   Takes some stitch list, list_in and then create a new one based on the start and end times 
   by finding the closest frames and just doing an extraction.
@@ -631,18 +611,16 @@ def list_slice_generator(list_in, duration_sec=None, start_sec=0):
   """
   pid = misc.change_proc_name("%s-audioslice" % misc.config['callsign'])
 
-  # There's support for a generator style list_in for live streams
-  number_of_files = len(list_in)
-
-  ix = 0
+  out = open(name_out, 'wb+')
+  
   # print 'slice', duration_sec, start_sec
-  for item in list_in:
-    ix += 1
+  for ix in range(0, len(list_in)):
+    item = list_in[ix]
 
     # get the regular map
     siglist, offset = signature(item['name'])
 
-    if number_of_files and ix == number_of_files:
+    if ix == len(list_in) - 1:
       frame_end = min(int(math.ceil(duration_sec / FRAME_LENGTH)), len(offset) - 1)
 
     else:
@@ -661,7 +639,7 @@ def list_slice_generator(list_in, duration_sec=None, start_sec=0):
 
     if fin:
       fin.seek(offset[frame_start])
-      yield fin.read(offset[frame_end] - offset[frame_start])
+      out.write(fin.read(offset[frame_end] - offset[frame_start]))
       fin.close()
 
     # If we fail to get the mp3 file then we can suppose that
@@ -669,6 +647,16 @@ def list_slice_generator(list_in, duration_sec=None, start_sec=0):
     else:
       os.unlink(item['name'])
       logging.warn("Unable to find %s's corresponding mp3, deleting" % item['name'])
+
+  out.close()
+
+  # If we failed to do anything this is a tragedy
+  # and we just dump the file
+  #
+  # We take files under some really nominal threshold as being invalid.
+  if os.path.getsize(name_out) < 1000:
+    logging.warn("Unable to create %s - no valid slices" % name_out)
+    os.unlink(name_out)
 
 
 def stitch(file_list, force_stitch=False):
