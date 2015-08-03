@@ -110,18 +110,20 @@ def stream_info(fname, skip_size=False):
   }
 
 
-def stream_name(list_in, start_minute, duration_minute):
+def stream_name(list_in, absolute_start_minute, duration_minute, relative_start_minute=None):
   """ Get the stream name from list and start minute over a given duration. """
   duration_sec = duration_minute * 60.0
 
   # The start_minute above is in absolute terms, not those relative to the file.
-  start_offset = start_minute - list_in[0]['start_minute']
+  if not relative_start_minute:
+    relative_start_minute = absolute_start_minute - list_in[0]['start_minute']
+
   first_file = list_in[0]['name']
   callsign, unix_time = re.findall('(\w*)-(\d+)', first_file)[0]
 
   
   # print '--offset', unix_time, start_minute, list_in[0]['start_minute'] , list_in
-  fname = "%s/%s-%d_%d.mp3" % (misc.DIR_SLICES, callsign, int(unix_time) + start_offset * 60, duration_minute)
+  fname = "%s/%s-%d_%d.mp3" % (misc.DIR_SLICES, callsign, int(unix_time) + relative_start_minute * 60, duration_minute)
   return fname
 
 
@@ -465,7 +467,7 @@ def our_mime():
 
 def stitch_and_slice_process(file_list, relative_start_minute, duration_minute):
   """ The process wrapper around stitch_and_slice to do it asynchronously. """
-  name_out = stream_name(file_list, relative_start_minute, duration_minute) 
+  name_out = stream_name(file_list, relative_start_minute=relative_start_minute, duration_minute=duration_minute, absolute_start_minute=None) 
 
   if os.path.isfile(name_out):
     file_size = os.path.getsize(name_out)
