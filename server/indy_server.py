@@ -174,7 +174,7 @@ def server_manager(config):
       # This tells us that if it were to exist, it would be something
       # like this.
       request_info = audio.stream_info(file_name)
-      print request_info
+      # print request_info
 
       # we can do something rather specific here ... 
       #
@@ -189,7 +189,7 @@ def server_manager(config):
           # This means that we've found the episode that we want
           # We will block on this.
           relative_start_minute = request_info['start_minute'] - first_slice['start_minute']
-          print episode, request_info
+          # print episode, request_info
           audio.stitch_and_slice_process(file_list=episode, relative_start_minute=relative_start_minute, duration_minute=request_info['duration_sec'] / 60.0)
 
           # And break out of our loop ... now everything should exist.
@@ -294,7 +294,7 @@ def server_manager(config):
         offset_sec = float(byte1) / ((int(DB.get('bitrate')) or 128) * (1000 / 8.0))
     
 
-    print "--- REQUEST @ ", start, range_header, offset_sec
+    #print "--- REQUEST @ ", start, range_header, offset_sec
     current_minute = TS.minute_now() % TS.ONE_DAY_MINUTE
 
     now_time = TS.now()
@@ -313,7 +313,7 @@ def server_manager(config):
     start_info, requested_time_available = cloud.get_file_for_ts(target_time=requested_time, bias=-1)
     requested_time = max(requested_time, requested_time_available)
     start_second = (requested_time - start_info['start_date']).total_seconds()
-    print start_info, requested_time, start_second
+    # print start_info, requested_time, start_second
 
     return Response(audio.list_slice_stream(start_info, start_second), mimetype=audio.our_mime())
 

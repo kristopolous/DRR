@@ -429,11 +429,11 @@ def mp3_signature(file_name, blockcount=-1):
       elif first_header_seen or header_attempts > MAX_HEADER_ATTEMPTS:
         if not is_stream:
           import binascii
-          print "%d[%d/%d]%s:%s:%s %s %d" % (len(frame_sig), header_attempts, MAX_HEADER_ATTEMPTS, binascii.b2a_hex(header), binascii.b2a_hex(file_handle.read(5)), file_name, hex(file_handle.tell()), len(start_byte) * (1152.0 / 44100) / 60)
+          logging.debug('[mp3-sig] %d[%d/%d]%s:%s:%s %s %d' % (len(frame_sig), header_attempts, MAX_HEADER_ATTEMPTS, binascii.b2a_hex(header), binascii.b2a_hex(file_handle.read(5)), file_name, hex(file_handle.tell()), len(start_byte) * (1152.0 / 44100) / 60))
 
         # This means that perhaps we didn't guess the start correct so we try this again
         if len(frame_sig) == 1 and header_attempts < MAX_HEADER_ATTEMPTS:
-          print "False start -- trying again"
+          logging.debug("[mp3-sig] False start -- trying again")
 
           # seek to the first start byte + 1
           file_handle.seek(start_byte[0] + 2)
@@ -641,7 +641,7 @@ def list_slice(list_in, name_out, duration_sec, start_sec=0):
 
     if fin:
       fin.seek(offset[frame_start])
-      print 'off---',frame_end, frame_start, len(offset)
+      # print 'off---',frame_end, frame_start, len(offset)
       out.write(fin.read(offset[frame_end] - offset[frame_start]))
       fin.close()
 
