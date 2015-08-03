@@ -513,6 +513,7 @@ def server_manager(config):
     # The list of files that returns will include this not-yet-created
     # file-name as essentially a "promise" to when it will be made.
     feed_list = cloud.find_and_make_slices(start_time_list, duration_min)
+    # print feed_list
 
     # Then, taking those two things, make a feed list from them.
     return server_generate_xml(

@@ -163,6 +163,7 @@ def find_streams(start_list, duration_min):
   condition_list = []
   for start in start_list:
     end_search = (start + duration_min) % TS.MINUTES_PER_WEEK
+    # print start, duration_min, end_search
     condition_list.append('start_minute < %d and end_minute >= %d' % (start, start))
     condition_list.append('start_minute > %d and end_minute >= %d and end_minute <= %d' % (start, start, end_search))
     condition_list.append('start_minute < %d and end_minute >= %d' % (end_search, end_search))
@@ -173,10 +174,10 @@ def find_streams(start_list, duration_min):
   condition_query += " and start_unix < datetime(%d, 'unixepoch', 'localtime')" % (TS.sec_now() - duration_min * 60 - misc.config['cascadetime'])
 
   full_query = "select * from streams where %s order by week_number * 10080 + start_minute asc" % condition_query
-  # print full_query
 
   entry_list = DB.map(db['c'].execute(full_query).fetchall(), 'streams')
 
+  # print full_query, len(entry_list)
   # We want to make sure that we break down the stream_list into days.  We can't JUST look at the week
   # number since we permit feed requests for shows which may have multiple days.  Since this is leaky
   # data that we don't keep via our separation of concerns, we use a little hack to figure this out.
@@ -221,15 +222,17 @@ def find_streams(start_list, duration_min):
 
         # The start_minute is based on the week
         offset_start = week_start - episode[0]['start_minute']
-        fname = audio.stream_name(episode, offset_start, duration_min)
+        fname = audio.stream_name(episode, week_start, duration_min)
+        # print '--name',episode[0]['name'], fname
 
         # We get the name that it will be and then append that
         stream_list.append(audio.stream_info(fname))
 
         # print offset_start, duration_min, episode
-        episode_list.append([episode, offset_start, duration_min])
+        episode_list.append((episode, offset_start, duration_min))
         break
 
+  # print stream_list, "\nbreak\n", episode_list, "\nasfdasdf\n"
   return stream_list, episode_list
 
 
