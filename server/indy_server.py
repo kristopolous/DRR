@@ -3,7 +3,6 @@ import argparse
 import ConfigParser
 import json
 import logging
-import lxml.etree as ET
 import math
 import os
 import pycurl
@@ -15,6 +14,7 @@ import time
 import setproctitle as SP
 import sqlite3
 import lib.db as DB
+import lib.server as server
 import lib.audio as audio
 import lib.ts as TS
 import lib.misc as misc
@@ -51,128 +51,6 @@ __version__ = os.popen("git describe").read().strip()
 ##
 ## Storage and file related
 ##
-def server_generate_xml(showname, feed_list, duration_min, weekday_list, start, duration_string):
-  """
-  This takes a number of params:
- 
-  showname - from the incoming request url
-  feed_list - this is a list of tuples in the form (date, file)
-       corresponding to the, um, date of recording and filename
-   
-  It obviously returns an xml file ... I mean duh.
-
-  In the xml file we will lie about the duration to make life easier
-  """
-  day_map = {
-    'sun': 'Sunday',
-    'mon': 'Monday',
-    'tue': 'Tuesday',
-    'wed': 'Wednesday',
-    'thu': 'Thursday',
-    'fri': 'Friday',
-    'sat': 'Saturday'
-  }
-  
-  day_list = [ day_map[weekday] for weekday in weekday_list ]
-  if len(day_list) == 1:
-    week_string = day_list[0]
-
-  else:
-    # an oxford comma, how cute.
-    week_string = "%s and %s" % (', '.join(day_list[:-1]), day_list[-1])
-
-  base_url = 'http://%s.indycast.net:%d/' % (misc.config['callsign'], misc.config['port'])
-  callsign = misc.config['callsign']
-
-  nsmap = {
-    'dc': 'http://purl.org/dc/elements/1.1/',
-    'media': 'http://search.yahoo.com/mrss/', 
-    'itunes': 'http://www.itunes.com/dtds/podcast-1.0.dtd',
-    'feedburner': 'http://rssnamespace.org/feedburner/ext/1.0'
-  }
-
-  root = ET.Element("rss", nsmap=nsmap)
-  root.attrib['version'] = '2.0'
-
-  channel = ET.SubElement(root, "channel")
-
-  for k,v in {
-    '{%s}summary' % nsmap['itunes']: showname,
-    '{%s}subtitle' % nsmap['itunes']: showname,
-    '{%s}category' % nsmap['itunes']: 'podcast',
-    'title': showname,
-    'link': base_url,
-    'copyright': callsign,
-    'description': "%s is a %s show recorded every %s on %s at %s. Saved and delivered when you want it, through a volunteer network at http://indycast.net." % (showname, duration_string, week_string, callsign.upper(), start),
-    'language': 'en'
-  }.items():
-    ET.SubElement(channel, k).text = v
-
-  itunes_image = ET.SubElement(channel, '{%s}image' % nsmap['itunes'])
-  itunes_image.attrib['href'] = 'http://indycast.net/icon/%s_1400.png' % urllib.quote(showname)
-
-  media_image = ET.SubElement(channel, '{%s}thumbnail' % nsmap['media'])
-  media_image.attrib['url'] = 'http://indycast.net/icon/%s_1400.png' % urllib.quote(showname)
-
-  image = ET.SubElement(channel, 'image')
-  for k,v in {
-    'url': 'http://indycast.net/icon/%s_200.png' % urllib.quote(showname),
-    'title': showname,
-    'link': 'http://indycast.net'
-  }.items():
-    ET.SubElement(image, k).text = v
-
-  for feed in feed_list:
-    file_name = feed['name']
-    link = "%s%s" % (base_url, file_name)
-
-    item = ET.SubElement(channel, 'item')
-
-    itunes_duration = "%02d:00" % (duration_min % 60)
-    if duration_min > 60:
-      itunes_duration = "%d:%s" % (int(math.floor(duration_min / 60 )), itunes_duration)    
-
-    for k,v in {
-      'title': "%s - %s" % (showname, feed['start_date'].strftime("%Y.%m.%d")),
-      'description': "%s recorded on %s" % (showname, feed['start_date'].strftime("%Y-%m-%d %H:%M:%S")),
-      '{%s}explicit' % nsmap['itunes']: 'no', 
-      '{%s}author' % nsmap['itunes']: callsign,
-      '{%s}duration' % nsmap['itunes']: itunes_duration,
-      '{%s}summary' % nsmap['itunes']: showname,
-      '{%s}creator' % nsmap['dc']: callsign.upper(),
-      '{%s}origEnclosureLink' % nsmap['feedburner']: link,
-      '{%s}origLink' % nsmap['feedburner']: base_url,
-      'pubDate': feed['start_date'].strftime("%Y-%m-%d %H:%M:%S"),
-      'link': link,
-      'copyright': callsign
-    }.items():
-      ET.SubElement(item, k).text = v
-
-    ET.SubElement(item, 'guid', isPermaLink="false").text = file_name
-
-    # fileSize and length will be guessed based on 209 bytes covering
-    # frame_length seconds of audio (128k/44.1k no id3)
-    content = ET.SubElement(item, '{%s}content' % nsmap['media'])
-    content.attrib['url'] = link
-    content.attrib['fileSize'] = str(cloud.get_size(file_name))
-    content.attrib['type'] = 'audio/mpeg'
-
-    # The length of the audio we will just take as the duration
-    content = ET.SubElement(item, 'enclosure')
-    content.attrib['url'] = link
-    content.attrib['length'] = str(cloud.get_size(file_name))
-    content.attrib['type'] = 'audio/mpeg'
-
-  tree = ET.ElementTree(root)
-
-  return Response(ET.tostring(tree, xml_declaration=True, encoding="UTF-8"), mimetype='text/xml')
-
-
-def server_error(errstr):
-  """ Returns a server error as a JSON result. """
-  return jsonify({'result': False, 'error':errstr}), 500
-    
-
 def server_manager(config):
   """ Main flask process that manages the end points. """
   app = Flask(__name__)
@@ -390,13 +268,17 @@ def server_manager(config):
     return jsonify(stats), 200
   
 
+  @app.route('/yesterday/<start>')
+  def yesterday_live(start):
+    return live(start, offset_min=-(24 * 60))
+
   # Using http://flask.pocoo.org/docs/0.10/patterns/streaming/ as a reference.
   @app.route('/live/<start>')
-  def live(start):
+  def live(start, offset_min=0):
     """ Sends off a live-stream equivalent """
     # The start is expressed in times like "11:59am ..." We utilize the
     # library we wrote for streaming to get the minute of day this is.
-    requested_minute = TS.to_utc('mon', start)
+    requested_minute = TS.to_utc('mon', start) - offset_min
 
     offset_sec = 0
     range_header = request.headers.get('Range', None)
@@ -477,7 +359,7 @@ def server_manager(config):
 
     # This means we failed to parse
     if not duration_min:
-      return server_error("duration '%s' is not set correctly" % duration_string)
+      return do_error("duration '%s' is not set correctly" % duration_string)
 
     #
     # See https://github.com/kristopolous/DRR/issues/22:
@@ -490,7 +372,7 @@ def server_manager(config):
     start_time_list = [TS.to_utc(day, start) for day in weekday_list]
     
     if type(start_time_list[0]) is not int:
-      return server_error('weekday and start times are not set correctly')
+      return server.do_error('weekday and start times are not set correctly')
 
     # If we are here then it looks like our input is probably good.
     
@@ -516,7 +398,7 @@ def server_manager(config):
     # print feed_list
 
     # Then, taking those two things, make a feed list from them.
-    return server_generate_xml(
+    return server.generate_xml(
       showname=showname, 
       feed_list=feed_list, 
       duration_min=duration_min, 
@@ -921,7 +803,7 @@ def read_config(config):
     # it does save price VPS disk space which seems to come at an unusual
     # premium.
     #
-    'cloudarchive': 0.80,
+    'cloudarchive': 1.20,
     
     # Run the pruning every this many days (float)
     'pruneevery': 0.5
@@ -1029,7 +911,6 @@ def read_config(config):
 
 
 if __name__ == "__main__":
-
   # From http://stackoverflow.com/questions/25504149/why-does-running-the-flask-dev-server-run-itself-twice
   if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
     server_manager(misc.config)
