@@ -382,18 +382,23 @@ def prune_process(lockMap, reindex=False):
     if not misc.manager_is_running():
       misc.shutdown()
 
-    ctime = os.path.getctime(fname)
+    ctime = os.path.getctime(file_name)
 
-    # print "Looking at ", fname, ctime, cutoff, archive_duration,  misc.config['archivedays'], misc.am_i_official()
+    # print "Looking at ", file_name, ctime, cutoff, archive_duration,  misc.config['archivedays'], misc.am_i_official()
     # We observe the rules set up in the config.
-    if ctime < cutoff:
-      logging.debug("Prune[remove]: %s" % fname)
-      os.unlink(fname)
+    if file_name.startswith('slices') and ctime < slice_cutoff:
+      logging.debug("Prune[remove]: %s" % file_name)
+      os.unlink(file_name)
+      count += 1 
+
+    elif ctime < cutoff:
+      logging.debug("Prune[remove]: %s" % file_name)
+      os.unlink(file_name)
       count += 1 
 
     # We want to make sure we aren't archiving the slices
-    elif cloud_cutoff and ctime < cloud_cutoff and not fname.startswith('slice') and misc.am_i_official():
-      logging.debug("Prune[cloud]: %s" % fname)
+    elif cloud_cutoff and ctime < cloud_cutoff and not file_name.startswith('slice') and misc.am_i_official():
+      logging.debug("Prune[cloud]: %s" % file_name)
 
       # Only unlink the file if I can successfully put it into the cloud.
       if put(fname):
