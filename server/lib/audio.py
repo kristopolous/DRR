@@ -347,14 +347,16 @@ def mp3_signature(file_name, blockcount=-1):
   #
   read_size = 8
   is_stream = False
+  start_pos = None
 
   if isinstance(file_name, basestring):
     file_handle = open(file_name, 'rb')
 
   else:
     # This means we can handle file pointers
-    is_stream = True
     file_handle = file_name
+    is_stream = True
+    start_pos = file_handle.tell()
 
   while blockcount != 0:
 
@@ -453,6 +455,9 @@ def mp3_signature(file_name, blockcount=-1):
   if not is_stream:
     file_handle.close()
 
+  else:
+    file_handle.seek(start_pos)
+
   return frame_sig, start_byte
 
 
@@ -523,12 +528,11 @@ def stitch_and_slice(file_list, start_minute, duration_minute):
 
 def list_slice_stream(start_info, start_sec):
   """
-  Takes some stitch list, list_in and then create a new one based on the start and end times 
-  by finding the closest frames and just doing an extraction.
-
-  Setting the duration as None is equivalent to a forever stream 
+  This is part of the /live/time feature ... this streams files hopping from one to the next
+  in a live manner ... it constructs things while running ... hopping to the next stream in real time.
   """
   pid = misc.change_proc_name("%s-audiostream" % misc.config['callsign'])
+  block_count = 0
 
   current_info = start_info
 
@@ -540,20 +544,26 @@ def list_slice_stream(start_info, start_sec):
   while True:
     stream_handle = cloud.get(current_info['name'])
     stream_handle.seek(start_byte)
-    # print "-- opening", current_info['name'], current_info['size'], stream_handle.tell(), start_byte
+    sig, offset = signature(stream_handle)
+    print "-- opening", current_info['name'], current_info['size'], stream_handle.tell(), start_byte
 
     # This helps us determine when we are at EOF ... which
     # we basically define as a number of seconds without any
     # valid read.
     times_none = 0
+    block_count = 0
+    read_size = 0
 
     while True:
       # So we want to make sure that we only send out valid, 
       # non-corrupt mp3 blocks that start and end
       # at reasonable intervals.
-      block = stream_handle.read(8192)
-       
-      if block:
+      if len(offset) > 2:
+        read_size = offset[1] - offset[0]
+        offset.pop(0)
+
+        block = stream_handle.read(read_size)
+        block_count += 1
         # sys.stdout.write('!')
         times_none = 0 
         yield block
@@ -572,8 +582,11 @@ def list_slice_stream(start_info, start_sec):
         # We wait 1/2 second and then try this process again, hopefully
         # the disk has sync'd and we have more data
         time.sleep(0.5)
+        sig, offset = signature(stream_handle)
 
       
+    print "-- closing", current_info['name'], current_info['size'], stream_handle.tell(), block_count, (stream_handle.tell() - start_byte) / (128000 / 8) / 60.0
+    pos = stream_handle.tell() 
     stream_handle.close()
 
     # If we are here that means that we ran out of data on our current
@@ -584,6 +597,7 @@ def list_slice_stream(start_info, start_sec):
 
       # If there is we find the stitching point
       args = stitch([current_info, next_info], force_stitch=True)
+      print args, pos
 
       # We make it our current file
       current_info = next_info
