@@ -1,0 +1,39 @@
+<p>Indycast is a set of federated servers controlled by a community for time-shifting independent radio.</p>
+
+<p>I've been a listener and supporter of non-commercial radio for about 20 years.</p>
+
+<p>In that time, I've found a few things:</p>
+
+<ul>
+  <li>Often the best shows are on at inconvenient hours</li>
+  <li>These shows are rarely archived</li>
+  <li>When the shows are archived, they have the following properties
+    <ul>
+      <li>I need itunes, which I don't have</li>
+      <li>They break the show down into small units that must be reconstituted manually</li>
+      <li>You have to know every show and stations individual site</li>
+      <li>The retention policy of the audio and when it is availabe widely varies</li>
+    </ul>
+  </li>
+</ul>
+
+<p>However, they all have internet streams that you can listen to wherever.</p>
+
+<p>So a few years ago I made a shell-scripted solution for this.  cron would fire off a downloader at the time my show was on, the downloader would time-stamp the web stream and dump it in a directory and then I can listen to it later.</p>
+
+<p>This worked fine. For years actually.  But it was so useful I wanted to share this with everyone</p>
+
+<p>So I had to make a system that everyone could use.</p>
+
+<h2>Designing something for everyone</h2>
+
+<p>I made a few decisions to set up the framework of the system early on:</p>
+<ul>
+  <li>Non-commercial - I wanted a way to support and provide listener supported radio in a convenient manner</li>
+  <li>Free - Although I'm just building a platform, it didn't feel right charging people for this so it had to be free</li>
+  <li>Distributed - The architecture has to allow people from other places with their own stations to join the network without much effort</li>
+  <li>Open source and hackable - Every device and reasonable way of listening to content should be supported</li>
+</ul>
+
+<h2>Architecture</h2>
+
