@@ -618,7 +618,7 @@ def list_slice_stream(start_info, start_sec):
       break
 
 
-def list_slice(list_in, name_out, duration_sec, start_sec=0):
+def list_slice(list_in, name_out, duration_sec, start_sec=0, do_confirm=True):
   """
   Takes some stitch list, list_in and then create a new one based on the start and end times 
   by finding the closest frames and just doing an extraction.
@@ -628,6 +628,7 @@ def list_slice(list_in, name_out, duration_sec, start_sec=0):
   pid = misc.change_proc_name("%s-audioslice" % misc.config['callsign'])
 
   out = open(name_out, 'wb+')
+  buf_confirm = None
   
   # print 'slice', duration_sec, start_sec
   for ix in range(0, len(list_in)):
@@ -655,8 +656,20 @@ def list_slice(list_in, name_out, duration_sec, start_sec=0):
 
     if fin:
       fin.seek(offset[frame_start])
+
+      if do_confirm and buf_confirm:
+        fin.seek(-16, 1)
+        buf = fin.read(16)
+        if buf != buf_confirm:
+          logging.warn("Slicing error at %d of %s" % (fin.tell(), item['name']))
+
       # print 'off---',frame_end, frame_start, len(offset)
-      out.write(fin.read(offset[frame_end] - offset[frame_start]))
+      buf = fin.read(offset[frame_end] - offset[frame_start])
+      out.write(buf)
+
+      if do_confirm:
+        buf_confirm = buf[-16]
+
       fin.close()
 
     # If we fail to get the mp3 file then we can suppose that
