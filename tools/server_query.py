@@ -82,7 +82,7 @@ if not args.notrandom:
   random.shuffle(all_stations)
 
 if args.key:
-  sys.stdout.write('[')
+  print '['
 
 for station in all_stations:
   url = "%s.indycast.net:%s" % (station[CALLSIGN], station['port'])
