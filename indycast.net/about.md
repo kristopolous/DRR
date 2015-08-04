@@ -95,4 +95,4 @@ http://indycast.net/rdio/live/1pm
 If Alice just wants to listen to say, the Darkwaves show directly, from the command line, without all the hassle, she should be able
 to specify a date, time, and duration, such as this:
 
-    $ mplayer http://indycast.net/rdio/at/4pm monday/2hr
+    $ mplayer http://indycast.net/rdio/at/monday_2am/2hr
