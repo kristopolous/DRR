@@ -5,7 +5,6 @@ import os
 import time
 import logging
 import sys
-import ts as TS
 import socket
 
 #
@@ -42,7 +41,7 @@ import urllib2
 import urllib
 
 import ts as TS
-import lib.db as DB
+import db as DB
 from multiprocessing import Process, Queue, Lock
 
 #
