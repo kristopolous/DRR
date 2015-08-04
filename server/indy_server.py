@@ -276,7 +276,9 @@ def server_manager(config):
   def live(start, offset_min=0):
     """ Sends off a live-stream equivalent """
     if start[0] == '-':
-      return redirect('/live/%dmin' % (int(TS.minute_now() - float(start))), code=303)
+      # dump things like min or m
+      start = re.sub('[a-z]', '', start)
+      return redirect('/live/%dmin' % (int(TS.minute_now() - abs(float(start)))), code=303)
 
     # The start is expressed in times like "11:59am ..." We utilize the
     # library we wrote for streaming to get the minute of day this is.
