@@ -104,7 +104,7 @@ for station in all_stations:
 
     if args.key:
       document = json.loads(data)
-      result_list = [{'url': url, "latency": stop - start}]
+      result_list = []
 
       full_key_list = args.key.split(',')
 
@@ -131,6 +131,8 @@ for station in all_stations:
             my_node = '<Invalid key>'
 
         result_list.append({full_key: my_node})
+
+      result_list.append({'url': url, "latency": stop - start})
 
       data = json.dumps(result_list) + ','
 
