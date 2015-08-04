@@ -21,7 +21,7 @@ FRAME_LENGTH = (1152.0 / 44100)
 FORMAT_MP3 = 'mp3'
 FORMAT_AAC = 'aac'
 
-TS_RE = re.compile('-(\d*)[.|_]')
+TS_RE = re.compile('(\w*)-(\d*)[.|_]')
 
 #
 # Some stations don't start you off with a valid mp3 header
@@ -47,7 +47,7 @@ def list_info(file_list):
   return info
 
 
-def stream_info(fname, skip_size=False):
+def stream_info(file_name, skip_size=False):
   """
   Determines the date the thing starts,
   the minute time it starts, and the duration
@@ -57,23 +57,27 @@ def stream_info(fname, skip_size=False):
   This means that some values returned will be set to 
   None
   """
-  if type(fname) is list:
-    return list_info(fname)
+  if type(file_name) is list:
+    return list_info(file_name)
 
-  ts = TS_RE.findall(fname)
+  info = TS_RE.findall(file_name)
 
   duration_sec = None
   start_minute = None
   start_date = None
   end_minute = None
+  callsign = None
 
-  if ts:
+  if info:
+    info = info[0]
+    callsign = info[0]
+
     # We have two formats here ... one is unix time 
     # and the other is a much more readable time.  We will determine
     # whether it's UNIX time by seeing if it's greater than 2**36, which
     # makes us not Y4147 compliant. Oh dear - better fix this sometime
     # in the next 2100 years!
-    unix_time = int(ts[0])
+    unix_time = int(info[1])
 
     if unix_time > 2**36:
       unix_time = TS.name_to_unix(unix_time)  
@@ -82,7 +86,7 @@ def stream_info(fname, skip_size=False):
     start_date = datetime.fromtimestamp(unix_time)
 
   else:
-    logging.warn("Failure to find info for '%s'" % fname)
+    logging.warn("Failure to find info for '%s'" % file_name)
     return None
 
   # If we don't have a bitrate yet we assume 128
@@ -91,26 +95,24 @@ def stream_info(fname, skip_size=False):
     if skip_size: raise Exception
 
     bitrate = int(DB.get('bitrate') or 128)
-    file_size = os.path.getsize(fname)
+    file_size = os.path.getsize(file_name)
     duration_sec = file_size / (bitrate * (1000.0 / 8.0))
 
   except:
     file_size = None
     # If we can't find a duration then we try to see if it's in the file name
     ts_re_duration = re.compile('_(\d*).{4}')
-    ts = ts_re_duration.findall(fname)
+    ts = ts_re_duration.findall(file_name)
     if ts:
       duration_sec = int(ts[0]) * 60.0
 
   if isinstance(duration_sec, (int, long, float)):
     end_minute = (duration_sec / 60.0 + start_minute) % TS.MINUTES_PER_WEEK
 
-  # We represent non-existing files by saying they occupy -1 bytes.
-
   return {
-    # The week number 
+    'callsign': callsign,
     'week_number': start_date.isocalendar()[1], 
-    'name': fname, 
+    'name': file_name, 
     'start_minute': start_minute, 
     'start_date': start_date, 
     'end_minute': end_minute,
