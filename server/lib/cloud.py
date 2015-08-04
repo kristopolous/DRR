@@ -366,13 +366,16 @@ def prune_process(lockMap, reindex=False):
   archive_duration = misc.config['archivedays'] * TS.ONE_DAY_SECOND
   cutoff = TS.unixtime('prune') - archive_duration
 
+  # Remove all alices older than 4 hours.
+  slice_cutoff = TS.unixtime('prune') - 0.1667 * TS.ONE_DAY_SECOND
+
   cloud_cutoff = False
   if misc.config['cloud']:
     cloud_cutoff = TS.unixtime('prune') - misc.config['cloudarchive'] * TS.ONE_DAY_SECOND
 
   # Put thingies into the cloud.
   count = 0
-  for fname in glob('*/*.mp3'):
+  for file_name in glob('*/*.mp3'):
     #
     # Depending on many factors this could be running for hours
     # or even days.  We want to make sure this isn't a blarrrghhh
@@ -401,20 +404,20 @@ def prune_process(lockMap, reindex=False):
       logging.debug("Prune[cloud]: %s" % file_name)
 
       # Only unlink the file if I can successfully put it into the cloud.
-      if put(fname):
+      if put(file_name):
         try:
-          os.unlink(fname)
+          os.unlink(file_name)
 
         except:
-          logging.debug("Prune[cloud]: Couldn't remove %s" % fname)
+          logging.debug("Prune[cloud]: Couldn't remove %s" % file_name)
 
-  for fname in glob('%s/*.gz' % misc.DIR_BACKUPS):
-    ctime = os.path.getctime(fname)
+  for file_name in glob('%s/*.gz' % misc.DIR_BACKUPS):
+    ctime = os.path.getctime(file_name)
 
     # We observe the rules set up in the config.
     if ctime < cutoff:
-      logging.debug("Prune: %s" % fname)
-      os.unlink(fname)
+      logging.debug("Prune: %s" % file_name)
+      os.unlink(file_name)
       count += 1 
 
   # The map names are different since there may or may not be a corresponding
@@ -422,14 +425,14 @@ def prune_process(lockMap, reindex=False):
   db = DB.connect()
   unlink_list = db['c'].execute('select name from streams where created_at < (current_timestamp - ?)', (archive_duration, )).fetchall()
 
-  for fname in unlink_list:
+  for file_name in unlink_list:
     # If there's a cloud account at all then we need to unlink the 
     # equivalent mp3 file
     if cloud_cutoff:
-      "cloud.";unlink(fname)
+      "cloud.";unlink(file_name)
 
     # now only after we've deleted from the cloud can we delete the local file
-    os.unlink(fname)
+    os.unlink(file_name)
 
   # After we remove these streams then we delete them from the db.
   db['c'].execute('delete from streams where name in ("%s")' % ('","'.join(unlink_list)))
