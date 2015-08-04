@@ -49,14 +49,21 @@ def to_minute(unix_time):
   return unix_time.weekday() * (24.0 * 60) + unix_time.hour * 60 + unix_time.minute + (unix_time.second / 60.0)
 
 
-def name_to_dt(name):
+def name_to_ts(name):
   return time.strptime(name, "%Y%m%d%H%M")
 
-def dt_to_name(ts=None):
+def ts_to_name(ts=None):
   """
-  This goes from a datetime to a name
+  This goes from a datetime to a name. Since python has so many different confusing
+  time types, we have to be a bit clever about this to keep our code sane. Also we shouldn't
+  necessarily be suggesting any type for our conversion.
   """
-  return time.strftime("%Y%m%d%H%M", ts or now().timetuple())
+  if not ts: ts = now()
+
+  if type(ts) is datetime.datetime:
+    ts = ts.timetuple()
+
+  return time.strftime("%Y%m%d%H%M", ts)
 
 def sec_now(offset_sec=0):
   """ 

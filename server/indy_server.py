@@ -148,13 +148,18 @@ def server_manager(config):
 
   @app.route('/reindex')
   def reindex():
-    """ Starts the prune process which cleans up and offloads mp3s. """
+    """ 
+    Starts the prune process which cleans up and offloads audio files but also re-index the database.
+    This is useful in the cases where bugs have led to improper registration of the streams and a 
+    busted building of the database.  It's fairly expensive in I/O costs so this shouldn't be done
+    as the default.
+    """
     cloud.prune(reindex=True)
     return "Reindexing started"
 
   @app.route('/prune')
   def prune():
-    """ Starts the prune process which cleans up and offloads mp3s. """
+    """ Starts the prune process which cleans up and offloads audio files. """
     cloud.prune()
     return "Pruning started"
 
