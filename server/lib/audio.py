@@ -231,21 +231,32 @@ def signature(fname, blockcount=-1):
 # using http://wiki.multimedia.cx/index.php?title=ADTS
 def aac_signature(file_name, blockcount=-1):
   is_stream = False
+  start_pos = None
 
   if type(file_name) is str:
     file_handle = open(file_name, 'rb')
 
   else:
-    is_stream = True
     # This means we can handle file pointers
+    is_stream = True
     file_handle = file_name
+    start_pos = file_handle.tell()
 
   # This tries to find the first readable SOF bytes
   while True:
-    if ord(file_handle.read(1)) == 0xff:
-      if ord(file_handle.read(1)) & 0xf6 == 0xf0:
-        file_handle.seek(file_handle.tell() - 2)
-        break
+    try:
+      if ord(file_handle.read(1)) == 0xff:
+        b1 = ord(file_handle.read(1))
+        print "%X%X" % (b1, b1 & 0xf6)
+        if b1 & 0xf6 == 0xf0:
+          file_handle.seek(file_handle.tell() - 2)
+          break
+        else:
+          file_handle.seek(-1, 1)
+
+    except:
+      logging.warn("Could not find header. searched %d bytes in %s" % (file_handle.tell(), file_name))
+      return None, None
     
   frame_number = 0
   header_size = 7
@@ -323,6 +334,9 @@ def aac_signature(file_name, blockcount=-1):
  
   if not is_stream:
     file_handle.close()
+
+  else:
+    file_handle.seek(start_pos)
 
   return frame_sig, start_byte
 
