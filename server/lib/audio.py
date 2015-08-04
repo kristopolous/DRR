@@ -68,7 +68,16 @@ def stream_info(fname, skip_size=False):
   end_minute = None
 
   if ts:
+    # We have two formats here ... one is unix time 
+    # and the other is a much more readable time.  We will determine
+    # whether it's UNIX time by seeing if it's greater than 2**36, which
+    # makes us not Y4147 compliant. Oh dear - better fix this sometime
+    # in the next 2100 years!
     unix_time = int(ts[0])
+
+    if unix_time > 2**36:
+      unix_time = TS.name_to_unix(unix_time)  
+
     start_minute = TS.to_minute(unix_time)
     start_date = datetime.fromtimestamp(unix_time)
 

@@ -594,7 +594,7 @@ def stream_manager():
     # the actual start of the download so we should err on that side by putting it
     # in the future by some margin
     #
-    file_name = '%s/%s-%d.mp3' % (misc.DIR_STREAMS, callsign, TS.ts_to_name(TS.now(offset_sec=misc.PROCESS_DELAY / 2)))
+    file_name = '%s/%s-%s.mp3' % (misc.DIR_STREAMS, callsign, TS.ts_to_name(TS.now(offset_sec=misc.PROCESS_DELAY / 2)))
     process = Process(target=stream_download, args=(callsign, misc.config['stream'], g_download_pid, file_name))
     process.start()
     return [file_name, process]
