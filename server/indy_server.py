@@ -37,6 +37,7 @@ import urllib2
 import urllib
 
 from datetime import datetime, timedelta, date
+from dateutil import parser as dt_parser
 from glob import glob
 from flask import Flask, request, jsonify, Response, url_for, redirect
 import flask
@@ -324,6 +325,24 @@ def server_manager(config):
 
     return Response(audio.list_slice_stream(start_info, start_second), mimetype=audio.our_mime())
 
+  @app.route('/at/<start>/<duration_string>')
+  def at(start, duration_string='1hr'):
+    start = re.sub('[+_-]', ' ', start)
+    try:
+      dt = dt_parser.parse(start)
+      
+      # This silly library will take "monday" to mean NEXT monday, not the
+      # one that just past.  What a goofy piece of shit this is.
+      if dt > TS.now():
+        dt -= timedelta(days=7)
+
+    except:
+      return "Unfortunately, I don't know what '%s' means." % start
+
+    duration_min = TS.duration_parse(duration_string)
+    endpoint = '%s-%s_%d.mp3' % (misc.config['callsign'], TS.ts_to_name(dt), duration_min)
+    return send_stream(endpoint)
+
   @app.route('/<weekday>/<start>/<duration_string>/<showname>')
   def stream(weekday, start, duration_string, showname):
     """
@@ -334,37 +353,7 @@ def server_manager(config):
     # Supports multiple weekdays
     weekday_list = weekday.split(',')
 
-    # Duration is expressed either in minutes or in \d+hr\d+ minute
-    re_minute = re.compile('^(\d+)(?:min|)$')
-    re_hr_solo = re.compile('^(\d+)hr$', re.I)
-    re_hr_min = re.compile('^(\d+)hr(\d+).*$', re.I)
-
-    duration_min = False
-
-    res = re_minute.match(duration_string)
-    if res:
-      duration_min = int(res.groups()[0])
-
-      # This means that the input is just numeric.
-      # This is fine for now, but we use this to construct prose such as
-      # "So and so is a xxx show recorded" ... in this case, a unit is
-      # nice to have there for legibility purposes.  Since we are doing
-      # with our parsing of the string, we can just ammend the unit
-      # to the end
-      if re.match('^(\d+)$', duration_string):
-        duration_string += 'min'
-
-    else:
-      res = re_hr_solo.match(duration_string)
-
-      if res:
-        duration_min = int(res.groups()[0]) * 60
-
-      else:
-        res = re_hr_min.match(duration_string)
-
-        if res:
-          duration_min = int(res.groups()[0]) * 60 + int(res.groups()[1])
+    duration_min = TS.duration_parse(duration_string)
 
     # This means we failed to parse
     if not duration_min:
