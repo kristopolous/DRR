@@ -743,6 +743,7 @@ def stitch(file_list, force_stitch=False):
     pos = -1
     try:
       while True:
+        # The pos will be the same frame in the second stream as the first.
         pos = second['siglist'].index(first['siglist'][-2], pos + 1)
 
         isFound = True
@@ -761,6 +762,27 @@ def stitch(file_list, force_stitch=False):
       pos = 1
 
     if isFound or force_stitch:
+      # Since the pos was the same frame, if we use that then we essentially
+      # use the same frame twice ... so we need to start one ahead of it.  The
+      # easiest way to do this is just to increment the pos var.
+      if isFound:
+        pos += 1
+        import binascii
+
+        print "----"
+        for i in xrange(-4, 4):
+          if i < 2:
+            p1 = binascii.b2a_hex(first['siglist'][i - 2])
+
+            if i == 0:
+              p1 += '*'
+
+          else:
+            p1 = ''
+
+          print "%s %s" % (binascii.b2a_hex(second['siglist'][pos + i]), p1)
+        print args 
+
       args.append({
         'name': second['name'], 
         'start_byte': second['offset'][pos], 
