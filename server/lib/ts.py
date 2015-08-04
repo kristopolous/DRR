@@ -74,7 +74,7 @@ def sec_now(offset_sec=0):
   
   Accepts an optional offset_sec to forward the time into the future.
   """
-  return int((now(seconds=offset_sec)).strftime('%s'))
+  return int((now(offset_sec=offset_sec)).strftime('%s'))
 
 
 def minute_now():
