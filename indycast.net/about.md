@@ -4,18 +4,13 @@ I've been a listener and supporter of non-commercial radio for about 20 years.
 
 In that time, I've found a few things:
 
-<ul>
-  <li>Often the best shows are on at inconvenient hours</li>
-  <li>These shows are rarely archived</li>
-  <li>When the shows are archived, they have the following properties
-    <ul>
-      <li>I need itunes, which I don't have</li>
-      <li>They break the show down into small units that must be reconstituted manually</li>
-      <li>You have to know every show and stations individual site</li>
-      <li>The retention policy of the audio and when it is availabe widely varies</li>
-    </ul>
-  </li>
-</ul>
+ * Often the best shows are on at inconvenient hours
+ * These shows are rarely archived
+ * When the shows are archived, they have the following properties
+   * I often need itunes, which I don't have
+   * They break the show down into small units that must be reconstituted manually
+   * You have to know every show and stations individual site
+   * The retention policy of the audio and when it is availabe widely varies
 
 However, they all have internet streams that you can listen to wherever.
 
@@ -73,11 +68,11 @@ The user of the service should be able to do the following:
 #### Subscribe to any time slot 
 This should be accessible with a simple url schema:
 
-http://indycast.net/<station>/<weekday,...>/<start time>/<duration>/<name>
+    http://indycast.net/*station*/*weekday,...*/*start time*/*duration*/*name*
 
 For instance, if there's a 2 hour show called, say "Darkwaves" at 2AM monday and wednesday mornings, you could do:
-
-http://indycast.net/rdio/mon,wed/2am/2hr/Darkwaves.xml
+  
+    http://indycast.net/rdio/mon,wed/2am/2hr/Darkwaves.xml
 
 And that url should be openable in anything that ostensibly accepts "podcasts".
 
@@ -85,11 +80,11 @@ And that url should be openable in anything that ostensibly accepts "podcasts".
 Alice turns on her radio and there's a fascinating interview going on.  Unfortunately, she missed the beginning of it.  She should
 be able to listen to RDIO starting say, 5 minutes ago, by doing the following:
 
-http://indycast.net/rdio/live/-5min
+    http://indycast.net/rdio/live/-5min
 
 Or, if she wanted to listen starting at 1pm, this should work:
     
-http://indycast.net/rdio/live/1pm
+    http://indycast.net/rdio/live/1pm
 
 #### Pick any arbitrary time slice
 If Alice just wants to listen to say, the Darkwaves show directly, from the command line, without all the hassle, she should be able

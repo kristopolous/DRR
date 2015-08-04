@@ -2,21 +2,13 @@
 <p>I've been a listener and supporter of non-commercial radio for about 20 years.</p>
 <p>In that time, I've found a few things:</p>
 <ul>
-<li>
-Often the best shows are on at inconvenient hours
-</li>
-<li>
-These shows are rarely archived
-</li>
-<li>
-When the shows are archived, they have the following properties
-<ul>
-<pre><code>  &lt;li&gt;I need itunes, which I don&#39;t have&lt;/li&gt;
-  &lt;li&gt;They break the show down into small units that must be reconstituted manually&lt;/li&gt;
-  &lt;li&gt;You have to know every show and stations individual site&lt;/li&gt;
-  &lt;li&gt;The retention policy of the audio and when it is availabe widely varies&lt;/li&gt;
-&lt;/ul&gt;</code></pre>
-</li>
+<li>Often the best shows are on at inconvenient hours</li>
+<li>These shows are rarely archived</li>
+<li>When the shows are archived, they have the following properties</li>
+<li>I often need itunes, which I don't have</li>
+<li>They break the show down into small units that must be reconstituted manually</li>
+<li>You have to know every show and stations individual site</li>
+<li>The retention policy of the audio and when it is availabe widely varies</li>
 </ul>
 <p>However, they all have internet streams that you can listen to wherever.</p>
 <p>So a few years ago I made a shell-scripted solution for this. cron would fire off a downloader at the time my show was on, the downloader would time-stamp the web stream and dump it in a directory and then I can listen to it later.</p>
@@ -61,15 +53,15 @@ When the shows are archived, they have the following properties
 <p>The user of the service should be able to do the following:</p>
 <h4 id="subscribe-to-any-time-slot">Subscribe to any time slot</h4>
 <p>This should be accessible with a simple url schema:</p>
-<p>http://indycast.net/<station>/<weekday,...>/<start time>/<duration>/<name></p>
+<pre><code>http://indycast.net/*station*/*weekday,...*/*start time*/*duration*/*name*</code></pre>
 <p>For instance, if there's a 2 hour show called, say &quot;Darkwaves&quot; at 2AM monday and wednesday mornings, you could do:</p>
-<p>http://indycast.net/rdio/mon,wed/2am/2hr/Darkwaves.xml</p>
+<pre><code>http://indycast.net/rdio/mon,wed/2am/2hr/Darkwaves.xml</code></pre>
 <p>And that url should be openable in anything that ostensibly accepts &quot;podcasts&quot;.</p>
 <h4 id="listen-to-live-radio-with-a-delay">Listen to live radio with a delay</h4>
 <p>Alice turns on her radio and there's a fascinating interview going on. Unfortunately, she missed the beginning of it. She should be able to listen to RDIO starting say, 5 minutes ago, by doing the following:</p>
-<p>http://indycast.net/rdio/live/-5min</p>
+<pre><code>http://indycast.net/rdio/live/-5min</code></pre>
 <p>Or, if she wanted to listen starting at 1pm, this should work:</p>
-<p>http://indycast.net/rdio/live/1pm</p>
+<pre><code>http://indycast.net/rdio/live/1pm</code></pre>
 <h4 id="pick-any-arbitrary-time-slice">Pick any arbitrary time slice</h4>
 <p>If Alice just wants to listen to say, the Darkwaves show directly, from the command line, without all the hassle, she should be able to specify a date, time, and duration, such as this:</p>
 <pre><code>$ mplayer http://indycast.net/rdio/at/monday_2am/2hr</code></pre>
