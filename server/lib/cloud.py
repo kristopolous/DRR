@@ -205,7 +205,7 @@ def find_streams(start_list, duration_min):
     by_episode.append(episode)
 
   #print len(by_episode), condition_query
-  # Start the creation of the mp3s
+  # Start the creation of the audio files.
   for episode in by_episode:
 
     # We blur the test start to a bigger window
@@ -262,7 +262,7 @@ def get_file_for_ts(target_time, bias=None, exclude_path=None):
   current_winner = None
 
   #print "-----------------------"
-  for candidate_path in glob('%s/*mp3' % misc.DIR_STREAMS):
+  for candidate_path in glob('%s/*.mp3' % misc.DIR_STREAMS):
     if candidate_path == exclude_path: continue
 
     info_candidate = audio.stream_info(candidate_path)
@@ -448,7 +448,7 @@ def get_size(fname):
     return os.path.getsize(fname)
 
   # Otherwise we try to parse the magical file which doesn't exist yet.
-  ts_re_duration = re.compile('_(\d*).mp3')
+  ts_re_duration = re.compile('_(\d*).{4}')
   ts = ts_re_duration.findall(fname)
 
   if len(ts):
