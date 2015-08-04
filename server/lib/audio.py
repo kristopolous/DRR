@@ -618,7 +618,7 @@ def list_slice_stream(start_info, start_sec):
       break
 
 
-def list_slice(list_in, name_out, duration_sec, start_sec=0, do_confirm=True):
+def list_slice(list_in, name_out, duration_sec, start_sec=0, do_confirm=False):
   """
   Takes some stitch list, list_in and then create a new one based on the start and end times 
   by finding the closest frames and just doing an extraction.
@@ -767,6 +767,7 @@ def stitch(file_list, force_stitch=False):
       # easiest way to do this is just to increment the pos var.
       if isFound:
         pos += 1
+        """
         import binascii
 
         print "----"
@@ -782,6 +783,7 @@ def stitch(file_list, force_stitch=False):
 
           print "%s %s" % (binascii.b2a_hex(second['siglist'][pos + i]), p1)
         print args 
+        """
 
       args.append({
         'name': second['name'], 
