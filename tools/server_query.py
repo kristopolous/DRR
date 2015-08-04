@@ -81,10 +81,14 @@ if args.list:
 if not args.notrandom:
   random.shuffle(all_stations)
 
-if args.key:
+station_count = len(all_stations)
+station_ix = 0
+
+if args.key and station_count > 1:
   print '['
 
 for station in all_stations:
+  station_ix += 1
   url = "%s.indycast.net:%s" % (station[CALLSIGN], station['port'])
 
   hasFailure = False
@@ -104,7 +108,7 @@ for station in all_stations:
 
     if args.key:
       document = json.loads(data)
-      result_list = []
+      result_map = {}
 
       full_key_list = args.key.split(',')
 
@@ -130,11 +134,15 @@ for station in all_stations:
           else:
             my_node = '<Invalid key>'
 
-        result_list.append({full_key: my_node})
+        result_map[full_key] = my_node
 
-      result_list.append({'url': url, "latency": stop - start})
+      result_map['url'] = url
+      result_map['latency'] = stop - start
 
-      data = json.dumps(result_list) + ','
+      data = json.dumps(result_map)
+
+      if station_ix < station_count:
+        data += ','
 
     if len(all_stations) == 1:
       sys.stdout.write(data)
@@ -164,6 +172,6 @@ for station in all_stations:
 if args.query == 'heartbeat' and db:
   db['conn'].commit()
 
-if args.key:
-  sys.stdout.write('null]')
+if args.key and station_count > 1:
+  sys.stdout.write(']')
 
