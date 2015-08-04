@@ -49,8 +49,11 @@ def to_minute(unix_time):
   return unix_time.weekday() * (24.0 * 60) + unix_time.hour * 60 + unix_time.minute + (unix_time.second / 60.0)
 
 
-def name_to_ts(name):
-  return time.strptime(name, "%Y%m%d%H%M")
+def name_to_unix(name):
+  if type(name) is int:
+    name = str(name)
+
+  return int(time.mktime(time.strptime(name, "%Y%m%d%H%M")))
 
 def ts_to_name(ts=None):
   """
@@ -60,7 +63,7 @@ def ts_to_name(ts=None):
   """
   if not ts: ts = now()
 
-  if type(ts) is datetime.datetime:
+  if type(ts) is datetime:
     ts = ts.timetuple()
 
   return time.strftime("%Y%m%d%H%M", ts)
