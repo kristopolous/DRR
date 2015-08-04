@@ -49,6 +49,15 @@ def to_minute(unix_time):
   return unix_time.weekday() * (24.0 * 60) + unix_time.hour * 60 + unix_time.minute + (unix_time.second / 60.0)
 
 
+def name_to_dt(name):
+  return time.strptime(name, "%Y%m%d%H%M")
+
+def dt_to_name(ts=None):
+  """
+  This goes from a datetime to a name
+  """
+  return time.strftime("%Y%m%d%H%M", ts or now().timetuple())
+
 def sec_now(offset_sec=0):
   """ 
   Returns the unix time with respect to the timezone of the station being recorded.
@@ -120,6 +129,11 @@ def get_offset(force=False):
 
   Returns an int second offset.
   """
+
+  # If we are testing this from an API level, then we don't
+  # have a database
+  if misc.IS_TEST: return 0
+
   offset = DB.get('offset', expiry=ONE_DAY_SECOND)
   if not offset or force:
 
