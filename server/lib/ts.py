@@ -29,9 +29,9 @@ MINUTES_PER_WEEK = 10080
 ONE_DAY_MINUTE = 60 * 24
 ONE_DAY_SECOND = 60 * ONE_DAY_MINUTE
 
-def now():
+def now(offset_sec=0):
   """ Returns the time.time() equivalent given the offset of the station """
-  return datetime.utcnow() + timedelta(minutes=get_offset())
+  return datetime.utcnow() + timedelta(minutes=get_offset(), seconds=offset_sec)
 
 
 def uptime():
@@ -71,7 +71,7 @@ def sec_now(offset_sec=0):
   
   Accepts an optional offset_sec to forward the time into the future.
   """
-  return int((now() + timedelta(seconds=offset_sec)).strftime('%s'))
+  return int((now(seconds=offset_sec)).strftime('%s'))
 
 
 def minute_now():

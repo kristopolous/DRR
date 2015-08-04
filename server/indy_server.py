@@ -594,7 +594,7 @@ def stream_manager():
     # the actual start of the download so we should err on that side by putting it
     # in the future by some margin
     #
-    file_name = '%s/%s-%d.mp3' % (misc.DIR_STREAMS, callsign, TS.sec_now(offset_sec=misc.PROCESS_DELAY))
+    file_name = '%s/%s-%d.mp3' % (misc.DIR_STREAMS, callsign, TS.ts_to_name(TS.now(offset_sec=misc.PROCESS_DELAY / 2)))
     process = Process(target=stream_download, args=(callsign, misc.config['stream'], g_download_pid, file_name))
     process.start()
     return [file_name, process]
@@ -904,7 +904,7 @@ def read_config(config):
   if not isinstance(numeric_level, int):
     raise ValueError('Invalid log level: %s' % loglevel)
 
-  logging.basicConfig(level=numeric_level, filename='indycast.log', datefmt='%Y-%m-%d %H:%M:%S',format='%(asctime)s %(message)s')
+  logging.basicConfig(level=numeric_level, filename='indycast.log', datefmt='%Y-%m-%d %H:%M:%S', format='%(asctime)s %(message)s')
 
   # Increment the number of times this has been run so we can track the stability of remote 
   # servers and instances.
