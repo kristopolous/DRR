@@ -1,0 +1,16 @@
+<!doctype html5>
+<style>
+</style>
+<div id=now></div>
+<audio src="http://kpcc.indycast.net:8930/live/5pm" preload="auto" controls></audio>
+<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script>
+
+function timeConvert(ts) {
+  return ts.toLocaleString();
+}
+
+setInterval(function(){
+  $("#now").html(timeConvert(new Date()));
+}, 1000);
+</script> 
