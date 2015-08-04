@@ -823,6 +823,7 @@ def read_config(config):
       misc.config[k] = v
     else:
       if type(v) is int: misc.config[k] = int(misc.config[k])
+      elif type(v) is long: misc.config[k] = long(misc.config[k])
       elif type(v) is float: misc.config[k] = float(misc.config[k])
 
   # In case someone is specifying ~/radio 
