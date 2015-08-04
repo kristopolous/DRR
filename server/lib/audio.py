@@ -130,11 +130,11 @@ def stream_name(list_in, absolute_start_minute, duration_minute, relative_start_
     relative_start_minute = absolute_start_minute - list_in[0]['start_minute']
 
   first_file = list_in[0]['name']
-  callsign, unix_time = re.findall('(\w*)-(\d+)', first_file)[0]
-
+  info = stream_info(first_file)
+  ts = TS.ts_to_name(info['start_date'] + timedelta(minutes=relative_start_minute))
   
   # print '--offset', unix_time, start_minute, list_in[0]['start_minute'] , list_in
-  fname = "%s/%s-%d_%d.mp3" % (misc.DIR_SLICES, callsign, int(unix_time) + relative_start_minute * 60, duration_minute)
+  fname = "%s/%s-%s_%d.mp3" % (misc.DIR_SLICES, info['callsign'], ts, duration_minute)
   return fname
 
 
