@@ -48,6 +48,41 @@ def to_minute(unix_time):
 
   return unix_time.weekday() * (24.0 * 60) + unix_time.hour * 60 + unix_time.minute + (unix_time.second / 60.0)
 
+def duration_parse(duration_string):
+  # Duration is expressed either in minutes or in \d+hr\d+ minute
+  re_minute = re.compile('^(\d+)(?:min|)$')
+  re_hr_solo = re.compile('^(\d+)hr$', re.I)
+  re_hr_min = re.compile('^(\d+)hr(\d+).*$', re.I)
+
+  duration_min = None
+
+  res = re_minute.match(duration_string)
+  if res:
+    duration_min = int(res.groups()[0])
+
+    # This means that the input is just numeric.
+    # This is fine for now, but we use this to construct prose such as
+    # "So and so is a xxx show recorded" ... in this case, a unit is
+    # nice to have there for legibility purposes.  Since we are doing
+    # with our parsing of the string, we can just ammend the unit
+    # to the end
+    if re.match('^(\d+)$', duration_string):
+      duration_string += 'min'
+
+  else:
+    res = re_hr_solo.match(duration_string)
+
+    if res:
+      duration_min = int(res.groups()[0]) * 60
+
+    else:
+      res = re_hr_min.match(duration_string)
+
+      if res:
+        duration_min = int(res.groups()[0]) * 60 + int(res.groups()[1])
+
+  return duration_min
+
 
 def name_to_unix(name):
   if isinstance(name, (int, long)):
