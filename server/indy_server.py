@@ -920,6 +920,10 @@ if __name__ == "__main__":
     server_manager(misc.config)
 
   else: 
+    # Ignore all test scaffolding
+    misc.IS_TEST = False
+    misc.start_time = TS.unixtime()
+
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--config", default="./indy_config.txt", help="Configuration file (default ./indy_config.txt)")
     parser.add_argument('--version', action='version', version='indycast %s :: Aug 2015' % __version__)

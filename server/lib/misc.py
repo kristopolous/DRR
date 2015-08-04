@@ -5,6 +5,7 @@ import os
 import time
 import logging
 import sys
+import ts as TS
 import socket
 
 #
@@ -71,10 +72,12 @@ DIR_BACKUPS = 'backups'
 DIR_STREAMS = 'streams'
 DIR_SLICES = 'slices'
 
+IS_TEST = True
+
 manager_pid = 0
 queue = Queue()
 
-start_time = TS.unixtime()
+start_time = None
 config = {}
 pid = {}
 lockMap = {'prune': Lock()}
@@ -180,7 +183,7 @@ def manager_is_running(pid=False):
   except:
     return False
 
-
+  
 def change_proc_name(what):
   """
   Sets a more human-readable process name for the various 
