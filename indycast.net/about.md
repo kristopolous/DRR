@@ -47,7 +47,7 @@ It's in Python 2.7, Flask, and SQLite 3. The audio library is written by hand (m
 
 ## User-experience
 
-### Administrator
+### Being an administrator
 The ideal user-experience of someone who wants to participate.
 
 #### Easy set-up
@@ -63,16 +63,16 @@ Alice, a junior dev, is interested in adding her station, RDIO.  She
 
 When the server starts up, it 
 
- * Puts everything in a single directory with a simple to understand hierarchy: `~/radio/RDIO/`
+ * Puts everything in a single directory with a simple to understand hierarchy: `~/radio/rdio/`
  * Forks processes from a manager thread, carefully naming them with their purpose.
- * Has an informative log file that tells the user what's going on: `~/radio/RDIO/indycast.log`
- * Is easy to shut down and restart: `kill cat ~/radio/RDIO/pid-manager`
+ * Has an informative log file that tells the user what's going on: `~/radio/rdio/indycast.log`
+ * Is easy to shut down and restart: `kill cat ~/radio/rdio/pid-manager`
  * Is remotely upgradable, replacing its own footprint seamlessly.
 
 #### Non-mysterious
 
-There's an endpoint map so an admin can see everything that is accessible along with its
-documentation:
+There's an endpoint map so Alice can see everything that is accessible along with its
+documentation. As of the writing of this document, it looks like so:
 
     $ curl indycast.net/kpcc/site-map
     /heartbeat      
@@ -236,7 +236,7 @@ If you'd like to find out what the station coverage is, there's a graph-drawing 
              kpcc coverage: 90.877315%
 
 
-### User
+### Being a User
 The user of the service should be able to use the service in any reasonable way with any reasonable set of expectations.
 
 #### Subscribe to any time slot 
@@ -278,14 +278,14 @@ The schema for generating them looks like the following
 
 For instance:
 
-&lt;img src=http://indycast.net/icon/Here+is+one_120.png&gt;
-&lt;img src=http://indycast.net/icon/And+Here+Is+another_120.png&gt;
-&lt;img src=http://indycast.net/icon/You+can+go+small_90.png&gt;
+    <img src=http://indycast.net/icon/Here+is+one_120.png>
+    <img src=http://indycast.net/icon/And+here+is+another_120.png>
+    <img src=http://indycast.net/icon/You+can+go+small_90.png>
 
 Looks like so:
 
 <div id='logo-block'>
-<img src=http://indycast.net/icon/Here+is+one_120.png><img src=http://indycast.net/icon/And+Here+Is+another_120.png><img src=http://indycast.net/icon/You+can+go+small_90.png>
+<img src=http://indycast.net/icon/Here+is+one_120.png><img src=http://indycast.net/icon/And+here+is+another_120.png><img src=http://indycast.net/icon/You+can+go+small_90.png>
 </div>
 
 The logos are 16-color PNGs which make them small and fast (although admittedly kind of ugly).
