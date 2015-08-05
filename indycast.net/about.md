@@ -219,8 +219,11 @@ documentation. As of the writing of this document, it looks like so:
 
         
 
-These endpoints can be conveniently queried in bulk using a server query tool, located in `tools/server_query.py`.  It can query any endpoint on any 
-number of stations and parse JSON if desired.  For instance, if I wanted to see how much disk space kpcc is using I can do the following:
+##### Bulk Queries with JSON output
+
+These endpoints can be conveniently queried in bulk using a server query tool, located in `tools/server_query.py`.  
+
+It can query any endpoint on any number of stations and parse JSON if desired.  For instance, if I wanted to see how much disk space kpcc is using I can do the following:
 
     $ tools/server_query.py -k disk -c kpcc
     {"url": "kpcc.indycast.net:8930", "latency": 2.824465036392212, "disk": 2000112}
@@ -233,7 +236,9 @@ Or, if I wanted to find out the uptime and disk space of kpcc and kxlu:
     {"url": "kpcc.indycast.net:8930", "latency": 2.451361894607544, "uptime": 5250, "disk": 2000112}
     ]
 
-As you can see, the server query presents this in a JSON array for our convenience.
+The server query presents the output as valid JSON to do with it whatever you please.
+
+##### Graphical comprehension 
 
 If you'd like to find out what the station coverage is, there's a graph-drawing tool that tells you.
 
@@ -278,14 +283,14 @@ If you'd like to find out what the station coverage is, there's a graph-drawing 
 ### Being a User
 The user of the service should be able to use the service in any reasonable way with any reasonable set of expectations.
 
-#### Should be usable by novices
+#### Should be easy for novices
 If Alice doesn't really know how to use computers that well, there is a [web front end](http://indycast.net) that explains what indycast is and has a simple and attractive user-interface that she can operate on the device of her choosing.
 
 However, Alice is a hacker.  She has no problem using a command line. 
 
 She's in luck. Powerful things can be done in simple ways using the command line.
 
-#### Should make hackers do the splits, with pom-poms in the air
+#### Should make hackers do the splits while shooting party poppers
 
 The first thing that Alice does is curl the main indycast site.  
 
@@ -322,20 +327,20 @@ XMLs podcasts feed are generated with a simple url schema:
 
     http://indycast.net/[station]/[weekday,...]/[start time]/[duration]/[name]
 
-For instance, if there's a 2 hour show called, say "Darkwaves" at 2AM monday and wednesday mornings, you could do:
+Let's say there's a 2 hour show called, say *Darkwaves* at 2AM Monday and Wednesday mornings, you could do:
   
     http://indycast.net/rdio/mon,wed/2am/2hr/Darkwaves.xml
 
-And that url should be openable in anything that ostensibly accepts so called *podcasts*.
+That URL would happily works with anything that ostensibly accepts so-called *podcasts*.
 
-Or if you prefer, since the XML gets printed in a human readable pretty-print form, you can just cut the BS and do something like this:
+Or if you prefer, since the XML gets printed in a human readable pretty-print format, we can just cut the BS and do something like this:
 
     $ curl -s kxlu.indycast.net:8890/sun/7pm/1hr/show.xml | grep enclosure 
       <enclosure url="http://kxlu.indycast.net:8890/slices/kxlu-201507261900_62.mp3" length="59520000" type="audio/mpeg"/>
       <enclosure url="http://kxlu.indycast.net:8890/slices/kxlu-201508021900_62.mp3" length="59520000" type="audio/mpeg"/>
     $
 
-Just like a boss. Alice is a boss.  
+Like a boss. Alice is a boss.  
 
 BTW, the audio intentionally starts a bit early and goes a bit over because in the real world, shows don't end on some exact NTP millisecond.
 
@@ -394,7 +399,9 @@ The logos are 16-color PNGs which make them small and fast (although admittedly 
 
 VPSs generally don't give that much disk space and archiving audio would normally take a lot of it.
 
-That's why there's support for cloud storage.  A survey was done to try to find the cheapest storage options:
+There's two systems here. You can put your server in [on-demand mode](https://github.com/kristopolous/DRR/wiki/Join-the-Federation), which means that lots of things can't be done (basically, just forward-moving subscriptions), or you can use cloud storage.
+
+A survey was done in July 2015 to try to find the cheapest storage options:
 
   * Amazon EC2: $0.050 / GB
   * Google Compute: $0.040 / GB
@@ -435,24 +442,29 @@ and in use. Here is an example:
 
 ### CPU efficient
 
-There is no audio processing done.  
+There is **no audio processing done** on the server.  No ffmpeg, avconv, lame, mencoder.  No
+none of that.  It can all be cleverly avoided - lemee 'splain:
 
 Because audio streams are just binary files, and the binary files are identical 
 independent of the user downloading them, then in order to overlap or splice the audio 
 all you need is the ability to parse and find the headers ... not the payloads themselves.
 
-Since there was no library out there that did just the headers, one was written for this.  It 
-scans headers, hopping around the file, making a number of assumptions about things (such as CBR 
-encoding) and as a result, audio can be brought down from the cloud storage, stitched together, and
-then sliced in under a second.
+In order to find matching payloads, you can look at a sequence of bytes, called a signature, at
+the beginning of the payloads, and simply match that.  No audio-fingerprinting or FFT between 
+time and frequenc... no none of that.  It's much faster.
 
-Generally speaking, since the user is expecting to hear 1 or 2 hours of audio, this delay doesn't feel
-unusual.
+But since there was no library out there that did just this, I had to roll my own (see [server/lib/audio.py](https://github.com/kristopolous/DRR/blob/master/server/lib/audio.py)).  It scans headers, hopping around the file, making a number of 
+bold assumptions about things (such as CBR encoding) and as a result, audio can be brought down 
+from the cloud storage, stitched together, and then sliced in under a second.
 
-Bitrates are computed based on how many bits transit over the connection in a given duration as opposed
-to being internally taken from the file itself.  This is a much more direct and format agnostic computation.
-The sample size is large enough to avoid any errors (in fact, for HE-AAC+ streams, it performs more accurate
-duration measurements then `ffprobe` ... really).
+The audio processing engine wasn't designed to process all MP3 and AAC files ... in fact, it was designed 
+to deal with broken headers, files that are cut off, that begin in the middle of a payload, etc.
+
+Bitrates in fact, are computed based on the rate of the bits transiting over the connection in a given duration as opposed
+to being internally taken from what the file says it is.  
+
+This is a much more direct and format agnostic computation.  The sample size is large enough to avoid any 
+errors (in fact, for HE-AAC+ streams, it performs more accurate duration measurements then `ffprobe` ... really).
 
 ### Is this legal?
 

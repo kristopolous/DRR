@@ -46,8 +46,13 @@
     color: #002244;
   }
   h2 { margin-left: 10px; }
-  h3 { margin-left: 20px; }
-  h4 { margin-left: 40px; }
+  h3 { margin-left: 20px; margin-top: 30px; }
+  h5,h4 { margin-left: 40px; margin-top: 30px; }
+  h5 { 
+    padding-bottom: 0.75em;
+    max-width: 740px;
+    border-bottom: 1px solid rgba(0,34,68,0.2);
+  }
   
   h2 ~ p { margin-left: 20px; }
   h3 ~ table, h3 ~ p, h3 ~ ul, h3 ~ ol, h3 ~ pre { margin-left: 40px; }
@@ -67,7 +72,7 @@
     width: auto;
     background: #f8fafd;
     box-shadow: 0 0 2px 0px #ddd inset;
-    padding: 0.75em 1em;
+    padding: 0.75em 18px;
     border-radius: 5px;
     margin: 0 1em;
   }
@@ -306,7 +311,9 @@ kcrw  kdvs  kpcc  kxlu  wxyc</code></pre>
      * duration - In the form of strings such as &quot;1pm&quot; or &quot;2:30pm&quot;
      * offset - starting with a negative &quot;-&quot;, this means &quot;from the present&quot;.
         For instance, to start the stream from 5 minutes ago, you can do &quot;-5&quot;</code></pre>
-<p>These endpoints can be conveniently queried in bulk using a server query tool, located in <code>tools/server_query.py</code>. It can query any endpoint on any number of stations and parse JSON if desired. For instance, if I wanted to see how much disk space kpcc is using I can do the following:</p>
+<h5 id="bulk-queries-with-json-output">Bulk Queries with JSON output</h5>
+<p>These endpoints can be conveniently queried in bulk using a server query tool, located in <code>tools/server_query.py</code>.</p>
+<p>It can query any endpoint on any number of stations and parse JSON if desired. For instance, if I wanted to see how much disk space kpcc is using I can do the following:</p>
 <pre><code>$ tools/server_query.py -k disk -c kpcc
 {&quot;url&quot;: &quot;kpcc.indycast.net:8930&quot;, &quot;latency&quot;: 2.824465036392212, &quot;disk&quot;: 2000112}</code></pre>
 <p>Or, if I wanted to find out the uptime and disk space of kpcc and kxlu:</p>
@@ -315,7 +322,8 @@ kcrw  kdvs  kpcc  kxlu  wxyc</code></pre>
 {&quot;url&quot;: &quot;kxlu.indycast.net:8890&quot;, &quot;latency&quot;: 3.542130947113037, &quot;uptime&quot;: 5235, &quot;disk&quot;: 2283312},
 {&quot;url&quot;: &quot;kpcc.indycast.net:8930&quot;, &quot;latency&quot;: 2.451361894607544, &quot;uptime&quot;: 5250, &quot;disk&quot;: 2000112}
 ]</code></pre>
-<p>As you can see, the server query presents this in a JSON array for our convenience.</p>
+<p>The server query presents the output as valid JSON to do with it whatever you please.</p>
+<h5 id="graphical-comprehension">Graphical comprehension</h5>
 <p>If you'd like to find out what the station coverage is, there's a graph-drawing tool that tells you.</p>
 <pre><code>$ tools/server_query.py -q stats -c kpcc | tools/graph.py 
 
@@ -355,11 +363,11 @@ kcrw  kdvs  kpcc  kxlu  wxyc</code></pre>
          kpcc coverage: 90.877315%</code></pre>
 <h3 id="being-a-user">Being a User</h3>
 <p>The user of the service should be able to use the service in any reasonable way with any reasonable set of expectations.</p>
-<h4 id="should-be-usable-by-novices">Should be usable by novices</h4>
+<h4 id="should-be-easy-for-novices">Should be easy for novices</h4>
 <p>If Alice doesn't really know how to use computers that well, there is a <a href="http://indycast.net">web front end</a> that explains what indycast is and has a simple and attractive user-interface that she can operate on the device of her choosing.</p>
 <p>However, Alice is a hacker. She has no problem using a command line.</p>
 <p>She's in luck. Powerful things can be done in simple ways using the command line.</p>
-<h4 id="should-make-hackers-do-the-splits-with-pom-poms-in-the-air">Should make hackers do the splits, with pom-poms in the air</h4>
+<h4 id="should-make-hackers-do-the-splits-while-shooting-party-poppers">Should make hackers do the splits while shooting party poppers</h4>
 <p>The first thing that Alice does is curl the main indycast site.</p>
 <p>Normally this is a stupid idea as she would get a bunch of terribly formatted server-generated HTML, but not with indycast! Here is what she sees:</p>
 <pre><code>$ curl http://indycast.net/    
@@ -388,15 +396,15 @@ $</code></pre>
 <h4 id="subscribe-to-any-show">Subscribe to any show</h4>
 <p>XMLs podcasts feed are generated with a simple url schema:</p>
 <pre><code>http://indycast.net/[station]/[weekday,...]/[start time]/[duration]/[name]</code></pre>
-<p>For instance, if there's a 2 hour show called, say &quot;Darkwaves&quot; at 2AM monday and wednesday mornings, you could do:</p>
+<p>Let's say there's a 2 hour show called, say <em>Darkwaves</em> at 2AM Monday and Wednesday mornings, you could do:</p>
 <pre><code>http://indycast.net/rdio/mon,wed/2am/2hr/Darkwaves.xml</code></pre>
-<p>And that url should be openable in anything that ostensibly accepts so called <em>podcasts</em>.</p>
-<p>Or if you prefer, since the XML gets printed in a human readable pretty-print form, you can just cut the BS and do something like this:</p>
+<p>That URL would happily works with anything that ostensibly accepts so-called <em>podcasts</em>.</p>
+<p>Or if you prefer, since the XML gets printed in a human readable pretty-print format, we can just cut the BS and do something like this:</p>
 <pre><code>$ curl -s kxlu.indycast.net:8890/sun/7pm/1hr/show.xml | grep enclosure 
   &lt;enclosure url=&quot;http://kxlu.indycast.net:8890/slices/kxlu-201507261900_62.mp3&quot; length=&quot;59520000&quot; type=&quot;audio/mpeg&quot;/&gt;
   &lt;enclosure url=&quot;http://kxlu.indycast.net:8890/slices/kxlu-201508021900_62.mp3&quot; length=&quot;59520000&quot; type=&quot;audio/mpeg&quot;/&gt;
 $</code></pre>
-<p>Just like a boss. Alice is a boss.</p>
+<p>Like a boss. Alice is a boss.</p>
 <p>BTW, the audio intentionally starts a bit early and goes a bit over because in the real world, shows don't end on some exact NTP millisecond.</p>
 <h4 id="rewind-pause-and-scrub-live-radio">Rewind, pause, and scrub live radio</h4>
 <p>Alice turns on her radio and there's a fascinating interview going on. Unfortunately, she missed the beginning of it. Luckily, she is able to listen to RDIO starting say, 5 minutes ago, by doing the following:</p>
@@ -427,7 +435,8 @@ $</code></pre>
 <h2 id="fast-and-small">Fast and small</h2>
 <h3 id="disk-space-efficient">Disk space efficient</h3>
 <p>VPSs generally don't give that much disk space and archiving audio would normally take a lot of it.</p>
-<p>That's why there's support for cloud storage. A survey was done to try to find the cheapest storage options:</p>
+<p>There's two systems here. You can put your server in <a href="https://github.com/kristopolous/DRR/wiki/Join-the-Federation">on-demand mode</a>, which means that lots of things can't be done (basically, just forward-moving subscriptions), or you can use cloud storage.</p>
+<p>A survey was done in July 2015 to try to find the cheapest storage options:</p>
 <ul>
 <li>Amazon EC2: $0.050 / GB</li>
 <li>Google Compute: $0.040 / GB</li>
@@ -459,11 +468,13 @@ $</code></pre>
 
  *using $0.024/GB azure pricing</code></pre>
 <h3 id="cpu-efficient">CPU efficient</h3>
-<p>There is no audio processing done.</p>
+<p>There is <strong>no audio processing done</strong> on the server. No ffmpeg, avconv, lame, mencoder. No none of that. It can all be cleverly avoided - lemee 'splain:</p>
 <p>Because audio streams are just binary files, and the binary files are identical independent of the user downloading them, then in order to overlap or splice the audio all you need is the ability to parse and find the headers ... not the payloads themselves.</p>
-<p>Since there was no library out there that did just the headers, one was written for this. It scans headers, hopping around the file, making a number of assumptions about things (such as CBR encoding) and as a result, audio can be brought down from the cloud storage, stitched together, and then sliced in under a second.</p>
-<p>Generally speaking, since the user is expecting to hear 1 or 2 hours of audio, this delay doesn't feel unusual.</p>
-<p>Bitrates are computed based on how many bits transit over the connection in a given duration as opposed to being internally taken from the file itself. This is a much more direct and format agnostic computation. The sample size is large enough to avoid any errors (in fact, for HE-AAC+ streams, it performs more accurate duration measurements then <code>ffprobe</code> ... really).</p>
+<p>In order to find matching payloads, you can look at a sequence of bytes, called a signature, at the beginning of the payloads, and simply match that. No audio-fingerprinting or FFT between time and frequenc... no none of that. It's much faster.</p>
+<p>But since there was no library out there that did just this, I had to roll my own (see <a href="https://github.com/kristopolous/DRR/blob/master/server/lib/audio.py">server/lib/audio.py</a>). It scans headers, hopping around the file, making a number of bold assumptions about things (such as CBR encoding) and as a result, audio can be brought down from the cloud storage, stitched together, and then sliced in under a second.</p>
+<p>The audio processing engine wasn't designed to process all MP3 and AAC files ... in fact, it was designed to deal with broken headers, files that are cut off, that begin in the middle of a payload, etc.</p>
+<p>Bitrates in fact, are computed based on the rate of the bits transiting over the connection in a given duration as opposed to being internally taken from what the file says it is.</p>
+<p>This is a much more direct and format agnostic computation. The sample size is large enough to avoid any errors (in fact, for HE-AAC+ streams, it performs more accurate duration measurements then <code>ffprobe</code> ... really).</p>
 <h3 id="is-this-legal">Is this legal?</h3>
 <p>I have no idea; I'm not a lawyer. We're solving real-world problems here so let's see what happens.</p>
 <p>If you're really concerned, then go ahead and run your own network of servers for personal private use - you can easily stuff 25 stations on any half-assed modern consumer-grade internet connection. Each instance takes up about 80MB of resident memory so we are still just talking 2GB for all that.</p>

@@ -38,8 +38,13 @@ h1,h2,h3,h4,h5,h6 {
   color: #002244;
 }
 h2 { margin-left: 10px; }
-h3 { margin-left: 20px; }
-h4 { margin-left: 40px; }
+h3 { margin-left: 20px; margin-top: 30px; }
+h5,h4 { margin-left: 40px; margin-top: 30px; }
+h5 { 
+  padding-bottom: 0.75em;
+  max-width: 740px;
+  border-bottom: 1px solid rgba(0,34,68,0.2);
+}
 
 h2 ~ p { margin-left: 20px; }
 h3 ~ table, h3 ~ p, h3 ~ ul, h3 ~ ol, h3 ~ pre { margin-left: 40px; }
@@ -59,7 +64,7 @@ pre {
   width: auto;
   background: #f8fafd;
   box-shadow: 0 0 2px 0px #ddd inset;
-  padding: 0.75em 1em;
+  padding: 0.75em 18px;
   border-radius: 5px;
   margin: 0 1em;
 }
