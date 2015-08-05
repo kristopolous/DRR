@@ -265,30 +265,82 @@ If Alice just wants to listen to say, the Darkwaves show directly, from the comm
     $ mplayer2 http://indycast.net/rdio/at/monday_2am/2hr
 
 #### Should be usable by novices
-If Alice doesn't really know how to use computers that well, there is a [web front end](http://indycast.net) that explains what indycast is and 
-has a simple and attractive user-interface that she can operate on the device of her choosing.
+If Alice doesn't really know how to use computers that well, there is a [web front end](http://indycast.net) that explains what indycast is and has a simple and attractive user-interface that she can operate on the device of her choosing.
+
+#### Logos
+Logos for the podcasts are generated server-side at indycast.net so as not to require any image-processing
+or font dependencies on the servers themselves.  The background tint is chosen based on the word 
+itself in order to create a diverse but distinct palette for the various logos. 
+
+The schema for generating them looks like the following
+
+    http://indycast.net/icon/(Arbitrary_string)_(size).png
+
+For instance:
+
+&lt;img src=http://indycast.net/icon/Here+is+one_120.png&gt;
+&lt;img src=http://indycast.net/icon/And+Here+Is+another_120.png&gt;
+&lt;img src=http://indycast.net/icon/You+can+go+small_90.png&gt;
+
+Looks like so:
+
+<div id='logo-block'>
+<img src=http://indycast.net/icon/Here+is+one_120.png><img src=http://indycast.net/icon/And+Here+Is+another_120.png><img src=http://indycast.net/icon/You+can+go+small_90.png>
+</div>
+
+The logos are 16-color PNGs which make them small and fast (although admittedly kind of ugly).
 
 ## Fast and small
 
 ### Disk space efficient
 
 VPSs generally don't give that much disk space and archiving audio would normally take a lot of them.  
-That's why there's support for Microsft Azure cloud storage.  A survey was done to try to find the 
-cheapest storage options:
+
+That's why there's support for cloud storage.  A survey was done to try to find the cheapest storage options:
 
   * Amazon EC2: $0.050 / GB
   * Google Compute: $0.040 / GB
   * Microsoft Azure: $0.024 / GB
 
-Coming in at less than half the price of EC2, MS azure was the obvious choice.  If configured with
-credentials, the server will use an Azure account to offload the valuable disk space on the VPS.
+Coming in at less than half the price of EC2, MS Azure was the obvious choice.  If configured with
+credentials, the server will use an Azure account to offload the valuable disk space on the VPS. If you would rather use another service, [open a bug](https://github.com/kristopolous/DRR/issues).
+
+A tool `tools/cloud.py` computes the current cost for the stations specified.  Also, a tool
+`tools/cleanup_cloud.sh` will analyze all the content on the cloud and make sure that it's valid
+and in use. Here is an example:
+
+    $ tools/cloud.py
+
+     Station   Files   Space (GB)
+    -----------------------------
+    14: kcrw   1738    22.467
+    13: kdvs   1938    25.881
+    12: kpcc   2792    18.477
+    11: kpfk   5000     4.069
+    10: krvm    341     3.470
+     9: kspc   1508    20.169
+     8: kusf    865    11.661
+     7: kvrx   2693    54.312
+     6: kxlu   2661    35.260
+     5: kzsu   4273    35.511
+     4: wcbn   2681    34.591
+     3: wfmu   1717    23.250
+     2: wxyc   1114    14.798
+     1: wzrd   1038     3.368
+    -----------------------------
+     Total    30359   307.282 GB
+     Cost     $7.37/month
+
+     *using $0.024/GB azure pricing
+
+
 
 ### CPU efficient
 
 There is no audio processing done.  
 
 Because audio streams are just binary files, and the binary files are identical 
-independent of the user downloading them, then in order to overlap or splice the audio, 
+independent of the user downloading them, then in order to overlap or splice the audio 
 all you need is the ability to parse and find the headers ... not the payloads themselves.
 
 Since there was no library out there that did just the headers, one was written for this.  It 
