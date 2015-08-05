@@ -8,7 +8,7 @@ if(strpos($ua, 'curl') !== False) {
   foreach(active_stations() as $station) {
     echo ' * http://indycast.net/' . $station['callsign'] . "/\n";
   }
-  echo "\nQuery the /site-map end-point to see\nsupported features on a per-station basis.\n\nThanks for using $ua ;-).\n";
+  echo "\nQuery the /help end-point to see\nsupported features on a per-station basis.\n\nThanks for using $ua ;-).\n";
   exit(0);
 }
 if(strpos($ua, 'mobile') !== False) {

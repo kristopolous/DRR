@@ -48,10 +48,19 @@ It's in Python 2.7, Flask, and SQLite 3. The audio library is written by hand (m
 ## User-experience
 
 ### Being an administrator
-The ideal user-experience of someone who wants to participate.
+
+Unlike with other projects, a minimal configuration to get a server up and running can be done in just 6 freakin lines! 
+There are 14 example configurations which are about 7 lines each.
+
+There's a script to install dependencies but again, unlike with other things, it's 12 lines ... so if it doesn't work on your
+system, just cat the file and install the stuff yourself.
+
+Don't you hate it when some blackbox frameworky magic doesn't work and you helplessly try to figure out what's the code and what's the framework ... geez, I hate that.  No, not here.
+
+In fact, I've created a user-story for an would-be admin.
 
 #### Easy set-up
-Alice, a junior dev, is interested in adding her station, RDIO.  She 
+Alice is interested in adding her station, RDIO.  She 
 
  1. Git clones [the repository](https://github.com/kristopolous/DRR).
  1. Runs a [small shell script](https://github.com/kristopolous/DRR/blob/master/bootstrap.sh) `bootstrap.sh` to install dependencies.
@@ -63,28 +72,44 @@ Alice, a junior dev, is interested in adding her station, RDIO.  She
 
 When the server starts up, it 
 
- * Puts everything in a single directory with a simple to understand hierarchy: `~/radio/rdio/`
+ * Puts everything in a single directory with a simple to understand hierarchy: `~/radio/rdio/` (configurable)
  * Forks processes from a manager thread, carefully naming them with their purpose.
  * Has an informative log file that tells the user what's going on: `~/radio/rdio/indycast.log`
  * Is easy to shut down and restart: `kill cat ~/radio/rdio/pid-manager`
  * Is remotely upgradable (through the `/upgrade` endpoint), replacing its own footprint seamlessly.
+
+In fact if you run multiple stations you can see something like this:
+
+   $ ls ~/radio
+   kcrw  kdvs  kpcc  kxlu  wxyc
+  
+And if we dip into one of these, (notice how I'm not root or using sudo or any of that nonsense?) we'll see something like this:
+
+   $ cd kpcc; find . | grep -v mp3
+   .
+   ./config.db
+   ./slices
+   ./backups
+   ./backups/kpcc-20150723-2012.gz
+   ./indycast.log
+   ./streams
+   
+No voodoo and nothing cryptic. Refreshing huh?
+
 
 #### Non-mysterious
 
 There's an endpoint map so Alice can see everything that is accessible along with its
 documentation. As of the writing of this document, it looks like so:
 
-    $ curl indycast.net/kpcc/site-map
+    $ curl indycast.net/kpcc/help
+    -=#[ Welcome to indycast v0.9-Inkanyamba-75-g10234a0 API help ]#=-
+
     /heartbeat      
         A low resource version of the /stats call ... this is invoked
         by the server health check.  Only the uptime of the server is reported.
         
         This allows us to check if a restart happened between invocations.
-        
-
-    /site-map        
-        Shows all the end points supported by the current server, the options 
-        and the documentation.
         
 
     /reindex         
@@ -113,6 +138,11 @@ documentation. As of the writing of this document, it looks like so:
     /stats           
         Reports various statistical metrics on a particular server.  
         Use this with the graph.py tool to see station coverage.
+        
+
+    /help            
+        Shows all the end points supported by the current server, the options 
+        and the documentation.
         
 
     /uuid            
@@ -157,6 +187,14 @@ documentation. As of the writing of this document, it looks like so:
         Will work fine
         
 
+    /[weekday]/[start]/[duration_string] 
+        This is identical to the stream syntax, but instead it is similar to
+        /at ... it uses the same notation but instead returns an audio file
+        directly.
+
+        You must specify a single weekday ... I know, total bummer.
+        
+
     /slices/[path] 
         Downloads a stream from the server. The path is callsign-date_duration.mp3
 
@@ -179,6 +217,7 @@ documentation. As of the writing of this document, it looks like so:
          * offset - starting with a negative "-", this means "from the present".
             For instance, to start the stream from 5 minutes ago, you can do "-5"
 
+        
 
 These endpoints can be conveniently queried in bulk using a server query tool, located in `tools/server_query.py`.  It can query any endpoint on any 
 number of stations and parse JSON if desired.  For instance, if I wanted to see how much disk space kpcc is using I can do the following:

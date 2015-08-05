@@ -115,13 +115,13 @@ def server_manager(config):
     return rv
 
   # From http://stackoverflow.com/questions/13317536/get-a-list-of-all-routes-defined-in-the-app
-  @app.route("/site-map")
+  @app.route("/help")
   def site_map():
     """ 
     Shows all the end points supported by the current server, the options 
     and the documentation.
     """
-    output = []
+    output = ['-=#| Welcome to indycast %s API help |#=-' % __version__, '']
 
     for rule in app.url_map.iter_rules():
 
