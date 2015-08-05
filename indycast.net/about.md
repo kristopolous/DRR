@@ -285,7 +285,18 @@ For instance, if there's a 2 hour show called, say "Darkwaves" at 2AM monday and
   
     http://indycast.net/rdio/mon,wed/2am/2hr/Darkwaves.xml
 
-And that url should be openable in anything that ostensibly accepts "podcasts".
+And that url should be openable in anything that ostensibly accepts so called *podcasts*.
+
+Or if you prefer, since the XML gets printed in a human readable pretty-print form, you can just cut the BS and do something like this:
+
+    $ curl -s kxlu.indycast.net:8890/sun/7pm/1hr/show.xml | grep enclosure 
+      <enclosure url="http://kxlu.indycast.net:8890/slices/kxlu-201507261900_62.mp3" length="59520000" type="audio/mpeg"/>
+      <enclosure url="http://kxlu.indycast.net:8890/slices/kxlu-201508021900_62.mp3" length="59520000" type="audio/mpeg"/>
+    $
+
+Just like a boss. Alice is a boss.  
+
+BTW, the audio intentionally starts a bit early and goes a bit over because in the real world, shows don't end on some exact NTP millisecond.
 
 #### Rewind, pause, and scrub live radio
 Alice turns on her radio and there's a fascinating interview going on.  Unfortunately, she missed the beginning of it.  Luckily, she is able to listen to RDIO starting say, 5 minutes ago, by doing the following:

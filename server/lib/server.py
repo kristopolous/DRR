@@ -126,5 +126,5 @@ def generate_xml(showname, feed_list, duration_min, weekday_list, start, duratio
 
   tree = ET.ElementTree(root)
 
-  return Response(ET.tostring(tree, xml_declaration=True, encoding="UTF-8"), mimetype='text/xml')
+  return Response(ET.tostring(tree, pretty_print=True, xml_declaration=True, encoding="UTF-8"), mimetype='text/xml')
 
