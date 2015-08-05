@@ -9,11 +9,9 @@
   <link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'>
   <style>
-  body {
-    max-width: 700px;
-  }
   * { font-family: 'Lora', serif; }
   p {
+    width: 700px;
     margin-left: 10px;
     line-height: 1.4em;
   }
@@ -46,8 +44,9 @@
     font-family: 'Inconsolata', monospace;
   }
   pre {
-    display: block;
+    display: inline-block;
     line-height: 1.5em;
+    width: auto;
     background: #f8fafd;
     box-shadow: 0 0 2px 0px #ddd inset;
     padding: 0.75em 1em;
@@ -203,9 +202,9 @@
      * duration - In the form of strings such as &quot;1pm&quot; or &quot;2:30pm&quot;
      * offset - starting with a negative &quot;-&quot;, this means &quot;from the present&quot;.
         For instance, to start the stream from 5 minutes ago, you can do &quot;-5&quot;</code></pre>
-<p>These can be queried using a server query tool, located in <code>tools/server_query.py</code>. It can query any endpoint on any number of servers and parse json. For instance, if I wanted to see how much disk space kpcc is using I can do the following:</p>
+<p>These can be queried using a server query tool, located in <code>tools/server_query.py</code>. It can query any endpoint on any number of stations and parse JSON if desired. For instance, if I wanted to see how much disk space kpcc is using I can do the following:</p>
 <pre><code>$ tools/server_query.py -k disk -c kpcc
-{&quot;url&quot;: &quot;kpcc.indycast.net:8930&quot;, &quot;latency&quot;: 2.824465036392212, &quot;disk&quot;: 2000112}%                                                                      </code></pre>
+{&quot;url&quot;: &quot;kpcc.indycast.net:8930&quot;, &quot;latency&quot;: 2.824465036392212, &quot;disk&quot;: 2000112}</code></pre>
 <p>Or, what if I wanted to find out the uptime and disk space of kpcc and kxlu?</p>
 <pre><code>$ tools/server_query.py -k disk,uptime -c kpcc,kxlu
 [

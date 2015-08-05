@@ -154,10 +154,10 @@ There's an endpoint map so that the admin can see everything that is accessible.
 
 
 These can be queried using a server query tool, located in `tools/server_query.py`.  It can query any endpoint on any 
-number of servers and parse json.  For instance, if I wanted to see how much disk space kpcc is using I can do the following:
+number of stations and parse JSON if desired.  For instance, if I wanted to see how much disk space kpcc is using I can do the following:
 
     $ tools/server_query.py -k disk -c kpcc
-    {"url": "kpcc.indycast.net:8930", "latency": 2.824465036392212, "disk": 2000112}%                                                                      
+    {"url": "kpcc.indycast.net:8930", "latency": 2.824465036392212, "disk": 2000112}
 
 Or, what if I wanted to find out the uptime and disk space of kpcc and kxlu?
 
