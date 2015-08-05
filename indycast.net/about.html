@@ -158,7 +158,7 @@ A Distributed Open Source DVR for Independent Radio
 <p>Unlike with other projects, a minimal configuration to get a server up and running can be done in just 6 freakin lines! There are 14 example configurations which are about 7 lines each.</p>
 <p>There's a script to install dependencies but again, unlike with other things, it's 12 lines ... so if it doesn't work on your system, just cat the file and install the stuff yourself.</p>
 <p>Don't you hate it when some blackbox frameworky magic doesn't work and you helplessly try to figure out what's the code and what's the framework ... geez, I hate that. No, not here.</p>
-<p>In fact, I've created a user-story for an would-be admin.</p>
+<p>In fact, I've created a user-story for a would-be admin. Every interaction with a computer should be a thought-out interface.</p>
 <h4 id="easy-set-up">Easy set-up</h4>
 <p>Alice is interested in adding her station, RDIO. She</p>
 <ol style="list-style-type: decimal">
@@ -178,9 +178,17 @@ A Distributed Open Source DVR for Independent Radio
 <li>Is remotely upgradable (through the <code>/upgrade</code> endpoint), replacing its own footprint seamlessly.</li>
 </ul>
 <p>In fact if you run multiple stations you can see something like this:</p>
-<p>$ ls ~/radio kcrw kdvs kpcc kxlu wxyc</p>
+<pre><code>$ ls ~/radio
+kcrw  kdvs  kpcc  kxlu  wxyc</code></pre>
 <p>And if we dip into one of these, (notice how I'm not root or using sudo or any of that nonsense?) we'll see something like this:</p>
-<p>$ cd kpcc; find . | grep -v mp3 . ./config.db ./slices ./backups ./backups/kpcc-20150723-2012.gz ./indycast.log ./streams</p>
+<pre><code>$ cd kpcc; find . | grep -v mp3
+.
+./config.db
+./slices
+./backups
+./backups/kpcc-20150723-2012.gz
+./indycast.log
+./streams</code></pre>
 <p>No voodoo and nothing cryptic. Refreshing huh?</p>
 <h4 id="non-mysterious">Non-mysterious</h4>
 <p>There's an endpoint map so Alice can see everything that is accessible along with its documentation. As of the writing of this document, it looks like so:</p>

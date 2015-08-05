@@ -57,7 +57,7 @@ system, just cat the file and install the stuff yourself.
 
 Don't you hate it when some blackbox frameworky magic doesn't work and you helplessly try to figure out what's the code and what's the framework ... geez, I hate that.  No, not here.
 
-In fact, I've created a user-story for an would-be admin.
+In fact, I've created a user-story for a would-be admin. Every interaction with a computer should be a thought-out interface.
 
 #### Easy set-up
 Alice is interested in adding her station, RDIO.  She 
@@ -80,19 +80,19 @@ When the server starts up, it
 
 In fact if you run multiple stations you can see something like this:
 
-   $ ls ~/radio
-   kcrw  kdvs  kpcc  kxlu  wxyc
+    $ ls ~/radio
+    kcrw  kdvs  kpcc  kxlu  wxyc
   
 And if we dip into one of these, (notice how I'm not root or using sudo or any of that nonsense?) we'll see something like this:
 
-   $ cd kpcc; find . | grep -v mp3
-   .
-   ./config.db
-   ./slices
-   ./backups
-   ./backups/kpcc-20150723-2012.gz
-   ./indycast.log
-   ./streams
+    $ cd kpcc; find . | grep -v mp3
+    .
+    ./config.db
+    ./slices
+    ./backups
+    ./backups/kpcc-20150723-2012.gz
+    ./indycast.log
+    ./streams
    
 No voodoo and nothing cryptic. Refreshing huh?
 
