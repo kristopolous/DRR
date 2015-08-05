@@ -307,11 +307,22 @@ Or, if she wants to listen starting at 1pm, this works:
     
     $ mpg321 http://indycast.net/rdio/live/1pm
 
+
 #### Pick any arbitrary time slice
 If Alice just wants to listen to say, the Darkwaves show directly, from the command line, without all the hassle, she can specify a date, time, and duration, such as this:
 
     $ mplayer2 http://indycast.net/rdio/at/monday_2am/2hr
 
+In fact, there's another more orthagonal way to do this, for Bob, who is forgetful and lazy:
+
+    $ mpv http://indycast.net/rdio/mon/2am/2hr
+
+See how this is similar to the podcast link of 
+
+    http://indycast.net/rdio/mon/2am/2hr/Darkwaves.xml
+
+Simply by omitting the christening of the show and stopping after the duration, the server figures you just want the most recent 
+episode and gives it to you.  How nice for Bob.
 
 #### Logos
 Logos for the podcasts are generated server-side at indycast.net so as not to require any image-processing

@@ -362,6 +362,11 @@ $</code></pre>
 <h4 id="pick-any-arbitrary-time-slice">Pick any arbitrary time slice</h4>
 <p>If Alice just wants to listen to say, the Darkwaves show directly, from the command line, without all the hassle, she can specify a date, time, and duration, such as this:</p>
 <pre><code>$ mplayer2 http://indycast.net/rdio/at/monday_2am/2hr</code></pre>
+<p>In fact, there's another more orthagonal way to do this, for Bob, who is forgetful and lazy:</p>
+<pre><code>$ mpv http://indycast.net/rdio/mon/2am/2hr</code></pre>
+<p>See how this is similar to the podcast link of</p>
+<pre><code>http://indycast.net/rdio/mon/2am/2hr/Darkwaves.xml</code></pre>
+<p>Simply by omitting the christening of the show and stopping after the duration, the server figures you just want the most recent episode and gives it to you. How nice for Bob.</p>
 <h4 id="logos">Logos</h4>
 <p>Logos for the podcasts are generated server-side at indycast.net so as not to require any image-processing or font dependencies on the servers themselves. The background tint is chosen based on the word itself in order to create a diverse but distinct palette for the various logos.</p>
 <p>The schema for generating them looks like the following</p>

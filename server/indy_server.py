@@ -365,6 +365,7 @@ def server_manager(config):
 
     return Response(audio.list_slice_stream(start_info, start_second), mimetype=audio.our_mime())
 
+
   @app.route('/at/<start>/<duration_string>')
   def at(start, duration_string='1hr'):
     """
@@ -394,6 +395,31 @@ def server_manager(config):
     duration_min = TS.duration_parse(duration_string)
     endpoint = '%s-%s_%d.mp3' % (misc.config['callsign'], TS.ts_to_name(dt), duration_min)
     return send_stream(endpoint)
+
+  @app.route('/<weekday>/<start>/<duration_string>')
+  def at_method2(weekday, start, duration_string):
+    """
+    This is identical to the stream syntax, but instead it is similar to
+    /at ... it uses the same notation but instead returns an audio file
+    directly.
+
+    You must specify a single weekday ... I know, total bummer.
+    """
+    weekday_map = {
+      'mon': 'monday', 
+      'tue': 'tuesday',
+      'wed': 'wednesday',
+      'thu': 'thursday', 
+      'fri': 'friday', 
+      'sat': 'saturday', 
+      'sun': 'sunday'
+    }
+
+    if weekday not in weekday_map:
+      return "The first parameter, %s, is not a recognized weekday." % weekday
+
+    return at("%s_%s" % (weekday_map[weekday], start), duration_string)
+    
 
   @app.route('/<weekday>/<start>/<duration_string>/<showname>')
   def stream(weekday, start, duration_string, showname):
