@@ -131,71 +131,105 @@
 <li>is remotely upgradable, replacing its own footprint seamlessly</li>
 </ul>
 <h4 id="non-mysterious">Non-mysterious</h4>
-<p>There's an endpoint map so that the admin can see everything that is accessible. For instance</p>
+<p>There's an endpoint map so that the admin can see everything that is accessible along with its documentation. For instance</p>
 <pre><code>$ curl indycast.net/kpcc/site-map
-
 /heartbeat      
     A low resource version of the /stats call ... this is invoked
     by the server health check.  Only the uptime of the server is reported.
     
     This allows us to check if a restart happened between invocations.
     
+
 /site-map        
     Shows all the end points supported by the current server, the options 
     and the documentation.
     
+
 /reindex         
-    Starts the prune process which cleans up and offloads audio files but also re-index the database.
-    This is useful in the cases where bugs have led to improper registration of the streams and a 
-    busted building of the database.  It&#39;s fairly expensive in I/O costs so this shouldn&#39;t be done
-    as the default.
+    Starts the prune process which cleans up and offloads audio files but also re-index 
+    the database.
+
+    This is useful in the cases where bugs have led to improper registration of the 
+    streams and a busted building of the database.  It&#39;s fairly expensive in I/O costs 
+    so this shouldn&#39;t be done as the default.
     
+
 /restart         
     Restarts an instance. This does so in a gapless non-overlapping way.
     
+
 /upgrade        
     Goes to the source directory, pulls down the latest from git
     and if the versions are different, the application restarts.
     
+
 /prune           
     Starts the prune sub-process which cleans up and offloads audio files 
     following the rules outlined in the configuration file (viewable with the stats call)
     
+
 /stats           
     Reports various statistical metrics on a particular server.  
     Use this with the graph.py tool to see station coverage.
     
+
 /uuid            
     Returns this server&#39;s uuid which is generated each time it is run.
     This is used to determine whether this is the official server or not.
     
+
 /db              
     Backs up the current sqlite3 db and sends a gzipped version of it as the response.
     
+
 /[weekday]/[start]/[duration_string]/[showname] 
     Returns a podcast xml file based on the weekday, start and duration.
-    This is designed to be read by podcasting software such as podkicker, itunes, and feedburner.
+    This is designed to be read by podcasting software such as podkicker, 
+    itunes, and feedburner.
+
+    weekdays are defined as mon, tue, wed, thu, fri, sat, sun.
+
+    If a show occurs multiple times per week, this can be specified with
+    a comma.  for instance,
+
+    /mon,tue,fri/4pm/1hr
+    
+    The showname should be followed by an &quot;xml&quot; extension.
 
     It should also be viewable in a modern web browser.
 
-    If you can find a podcaster that&#39;s not supported, please send an email to indycast@googlegroups.com.
+    If you can find a podcaster that&#39;s not supported, please send an email 
+    to indycast@googlegroups.com.
     
-/at/[start]/[duration_string] 
-    Sends a stream using a human-readable (and human-writable) definition at start time.
-    This uses the dateutils.parser library and so strings such as &quot;Monday 2pm&quot; are accepted.
 
-    Because the space, 0x20 is such a pain in HTTP, you can use &quot;_&quot;, &quot;-&quot; or &quot;+&quot; to signify it.
-    For instance,
+/at/[start]/[duration_string] 
+    Sends a stream using a human-readable (and human-writable) definition 
+    at start time.  This uses the dateutils.parser library and so strings 
+    such as &quot;Monday 2pm&quot; are accepted.
+
+    Because the space, 0x20 is such a pain in HTTP, you can use &quot;_&quot;, 
+    &quot;-&quot; or &quot;+&quot; to signify it.  For instance,
 
         /at/monday_2pm/1hr
 
     Will work fine
     
+
 /slices/[path] 
-    Downloads a stream from the server. The path is (unix timestamp)_(duration in minutes). 
-    If it exists (as in we had previously generated it) then we can trivially send it. Otherwise
-    we&#39;ll just call this an error to make our lives easier.
+    Downloads a stream from the server. The path is callsign-date_duration.mp3
+
+      * callsign: The callsign returned by /stats
+      * date: in the format YYYYMMDDHHMM such as 201508011005 for 
+        2015-08-01 10:05
+      * duration: A value, in minutes, to return.
+
+    The mp3 extension should be used regardless of the actual format of the stream -
+    although the audio returned will be in the streams&#39; native format.
     
+    The streams are created and sent on-demand, so there may be a slight delay before
+    it starts.
+    
+
 /live/[start]  
     Sends off a live-stream equivalent.  Two formats are supported:
 
