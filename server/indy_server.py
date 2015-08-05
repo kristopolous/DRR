@@ -321,14 +321,20 @@ def server_manager(config):
         For instance, to start the stream from 5 minutes ago, you can do "-5"
 
     """
-    if start[0] == '-':
+    if start[0] == '-' or start.endswith('min'):
       # dump things like min or m
       start = re.sub('[a-z]', '', start)
-      return redirect('/live/%dmin' % (int(TS.minute_now() - abs(float(start)))), code=303)
+      return redirect('/live/m%d' % (int(TS.minute_now() - abs(float(start)))), code=302)
 
     # The start is expressed in times like "11:59am ..." We utilize the
     # library we wrote for streaming to get the minute of day this is.
-    requested_minute = TS.to_utc('mon', start) - offset_min
+    if start[0] == 'm':
+      candidate = start[1:]
+
+    else:
+      candidate = start
+
+    requested_minute = TS.to_utc('mon', candidate) - offset_min
 
     offset_sec = 0
     range_header = request.headers.get('Range', None)
