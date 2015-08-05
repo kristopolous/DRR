@@ -17,17 +17,11 @@ Indycast is a set of community owned federated servers for time-shifting indepen
 
 Essentially the existing landscape is laborious to use, inconsistent, technically restricted, and very incomplete in coverage.
 
-### History
-
-In 2010, I made a shell-scripted solution: cron fires off a downloader that timestamps a webstream.
-
-This worked great. I wanted to share it with everyone.
-
-# Designing something for everyone
+# Making things easy and powerful
 
 The project's objectives:
 
- * **Non-commercial:** A way to support and provide listener supported radio in a convenient manner
+ * **Non-commercial:** A way to support and provide listener supported radio in a convenient manner.
  * **Free:** Although it's just a platform, it doesn't feel right charging people for it.
  * **Distributed:** People from other places can join the network using their stations without much effort.
  * **Hackable:** Every device and reasonable way of listening to content is supported.
