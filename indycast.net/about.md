@@ -1,4 +1,7 @@
-# Indycast: Distributed Open Source DVR for Independent Radio
+<div id='title'>
+<div id='logo'><img src=images/square-indycast_70.png></div><div id='header'>
+<h1>Indycast</h1><h2>A Distributed Open Source DVR for Independent Radio</h2></div>
+</div>
 
 ## Introduction
 
@@ -12,15 +15,15 @@ Indycast is a set of community owned federated servers for time-shifting indepen
     * You have to know every show and stations individual site
     * The retention policy of the audio and when it is availabe widely varies
 
-### Version 1: circa 2010
+### History
 
-I made a shell-scripted solution for this.  cron would fire off a downloader which would timestamp a webstream.
+In 2010, I made a shell-scripted solution for this: cron would fire off a downloader which would timestamp a webstream.
 
 This worked great. I wanted to share it with everyone.
 
-## Designing something for everyone
+# Designing something for everyone
 
-The project's objectives are to be:
+The project's objectives:
 
  * **Non-commercial:** A way to support and provide listener supported radio in a convenient manner
  * **Free:** Although it's just a platform, it doesn't feel right charging people for it.
@@ -29,10 +32,9 @@ The project's objectives are to be:
 
 ## Architecture
 
-Since there's no money behind this, that means that I'd need a way to do this cheaply and in a way that has a really low barrier to entry
-for participation.  I want to encourage people to run and manage their own servers for their favorite radio station.  
+Since there's no money behind this, I'd need a way to do it cheaply and have alow barrier to entry for participation.  People should be encouraged to run and manage their own servers for their favorite radio station.  
 
-The solution should be:
+The solution seeks to be:
 
  * **Simple**: Easy and quick to setup.
  * **Small**: A small-footprint, unobtrusive system that can piggy-back on servers doing other things.
@@ -285,7 +287,7 @@ cheapest storage options:
   * Microsoft Azure: $0.024 / GB
 
 Coming in at less than half the price of EC2, MS azure was the obvious choice.  If configured with
-credentials, the server will use an azure account to offload the valuable disk space on the VPS
+credentials, the server will use an Azure account to offload the valuable disk space on the VPS.
 
 ### CPU efficient
 
