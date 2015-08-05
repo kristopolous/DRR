@@ -17,7 +17,7 @@ Indycast is a set of community owned federated servers for time-shifting indepen
 
 Essentially the existing landscape is laborious to use, inconsistent, technically restricted, and very incomplete in coverage.
 
-# Making things easy and powerful
+## Making things easy and powerful
 
 The project's objectives:
 
@@ -28,7 +28,7 @@ The project's objectives:
 
 ## Architecture
 
-Since there's no money behind this, it's done cheaply with a low barrier to entry for participation.  People are encouraged to run and manage their own servers for their favorite radio station.  
+There's no money behind this. It's designed to be cheap with a low barrier to entry for participation.  People are encouraged to run and manage their own servers for their favorite radio station.  
 
 The solution seeks to be:
 
