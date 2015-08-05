@@ -75,6 +75,7 @@ When the server starts up, it
  * forks processes from a manager thread, carefully naming them with their purpose
  * has an informative log file that tells the user what's going on
  * is easy to shut down and restart
+ * is remotely upgradable, replacing its own footprint seamlessly
 
 #### Non-mysterious
 
@@ -82,19 +83,75 @@ There's an endpoint map so that the admin can see everything that is accessible.
 
     $ curl indycast.net/kpcc/site-map
 
-    heartbeat                 /heartbeat
-    site_map                  /site-map
-    reindex                   /reindex
-    restart                   /restart
-    upgrade                   /upgrade
-    prune                     /prune
-    stats                     /stats
-    my_uuid                   /uuid
-    database                  /db
-    stream                    /[weekday]/[start]/[duration_string]/[showname]
-    static                    /static/[filename]
-    send_stream               /slices/[path]
-    live                      /live/[start]
+    /heartbeat      
+        A low resource version of the /stats call ... this is invoked
+        by the server health check.  Only the uptime of the server is reported.
+        
+        This allows us to check if a restart happened between invocations.
+        
+    /site-map        
+        Shows all the end points supported by the current server, the options 
+        and the documentation.
+        
+    /reindex         
+        Starts the prune process which cleans up and offloads audio files but also re-index the database.
+        This is useful in the cases where bugs have led to improper registration of the streams and a 
+        busted building of the database.  It's fairly expensive in I/O costs so this shouldn't be done
+        as the default.
+        
+    /restart         
+        Restarts an instance. This does so in a gapless non-overlapping way.
+        
+    /upgrade        
+        Goes to the source directory, pulls down the latest from git
+        and if the versions are different, the application restarts.
+        
+    /prune           
+        Starts the prune sub-process which cleans up and offloads audio files 
+        following the rules outlined in the configuration file (viewable with the stats call)
+        
+    /stats           
+        Reports various statistical metrics on a particular server.  
+        Use this with the graph.py tool to see station coverage.
+        
+    /uuid            
+        Returns this server's uuid which is generated each time it is run.
+        This is used to determine whether this is the official server or not.
+        
+    /db              
+        Backs up the current sqlite3 db and sends a gzipped version of it as the response.
+        
+    /[weekday]/[start]/[duration_string]/[showname] 
+        Returns a podcast xml file based on the weekday, start and duration.
+        This is designed to be read by podcasting software such as podkicker, itunes, and feedburner.
+
+        It should also be viewable in a modern web browser.
+
+        If you can find a podcaster that's not supported, please send an email to indycast@googlegroups.com.
+        
+    /at/[start]/[duration_string] 
+        Sends a stream using a human-readable (and human-writable) definition at start time.
+        This uses the dateutils.parser library and so strings such as "Monday 2pm" are accepted.
+
+        Because the space, 0x20 is such a pain in HTTP, you can use "_", "-" or "+" to signify it.
+        For instance,
+
+            /at/monday_2pm/1hr
+
+        Will work fine
+        
+    /slices/[path] 
+        Downloads a stream from the server. The path is (unix timestamp)_(duration in minutes). 
+        If it exists (as in we had previously generated it) then we can trivially send it. Otherwise
+        we'll just call this an error to make our lives easier.
+        
+    /live/[start]  
+        Sends off a live-stream equivalent.  Two formats are supported:
+
+         * duration - In the form of strings such as "1pm" or "2:30pm"
+         * offset - starting with a negative "-", this means "from the present".
+            For instance, to start the stream from 5 minutes ago, you can do "-5"
+
 
 These can be queried using a server query tool, located in `tools/server_query.py`.  It can query any endpoint on any 
 number of servers and parse json.  For instance, if I wanted to see how much disk space kpcc is using I can do the following:
@@ -183,5 +240,5 @@ to specify a date, time, and duration, such as this:
     $ mplayer http://indycast.net/rdio/at/monday_2am/2hr
 
 #### Should be usable by novices
-If Alice doesn't really know how to use computers that well, there should be a web front end (at http://indycast.net) that explains what this is and 
+If Alice doesn't really know how to use computers that well, there should be a [web front end](http://indycast.net) that explains what this is and 
 has a simple and attractive user-interface that she can operate on the device of her choosing.
