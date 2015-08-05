@@ -8,7 +8,7 @@ $station = get_station(['callsign' => $callsign]);
 if($station) {
   // Don't redirect unless needed
   $url = 'http://' . $station['base_url'] . '/' . implode("/", array_map("rawurlencode", explode("/", $request)));
-  if (array_search($request, ['my_uuid', 'heartbeat', 'help', 'stats']) !== false) {
+  if (array_search($request, ['my_uuid', 'heartbeat', 'help', 'stats', '.xml']) !== false) {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
