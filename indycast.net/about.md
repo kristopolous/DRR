@@ -1,4 +1,6 @@
-# Introduction
+# Indycast: Distributed Open Source DVR for Independent Radio
+
+## Introduction
 
 Indycast is a set of community owned federated servers for time-shifting independent radio because
 
