@@ -315,7 +315,7 @@ If Alice just wants to listen to say, the Darkwaves show directly, from the comm
 
     $ mplayer2 http://indycast.net/rdio/at/monday_2am/2hr
 
-In fact, there's another more orthagonal way to do this, for Bob, who is forgetful and lazy:
+In fact, there's another more orthogonal way to do this, for Bob, who is forgetful and lazy:
 
     $ mpv http://indycast.net/rdio/mon/2am/2hr
 
@@ -413,6 +413,14 @@ unusual.
 Bitrates are computed based on how many bits transit over the connection in a given duration as opposed
 to being internally taken from the file itself.  This is a much more direct computation and the sample
 size is large enough to avoid any errors.
+
+### Is this legal?
+
+I'm have no idea; I'm not a lawyer. We're solving real-world problems here so let's see what happens.
+
+If you're really concerned, then go ahead and run your own network of servers for personal private use - you
+can easily stuff 25 stations on any half-assed modern consumer-grade internet connection. Each instance takes 
+up about 80MB of resident memory so we are still just talking 2GB for all that.
 
 ## Conclusion
 

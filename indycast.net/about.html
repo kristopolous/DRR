@@ -363,7 +363,7 @@ $</code></pre>
 <h4 id="pick-any-arbitrary-time-slice">Pick any arbitrary time slice</h4>
 <p>If Alice just wants to listen to say, the Darkwaves show directly, from the command line, without all the hassle, she can specify a date, time, and duration, such as this:</p>
 <pre><code>$ mplayer2 http://indycast.net/rdio/at/monday_2am/2hr</code></pre>
-<p>In fact, there's another more orthagonal way to do this, for Bob, who is forgetful and lazy:</p>
+<p>In fact, there's another more orthogonal way to do this, for Bob, who is forgetful and lazy:</p>
 <pre><code>$ mpv http://indycast.net/rdio/mon/2am/2hr</code></pre>
 <p>See how this is similar to the podcast link of</p>
 <pre><code>http://indycast.net/rdio/mon/2am/2hr/Darkwaves.xml</code></pre>
@@ -421,6 +421,9 @@ $</code></pre>
 <p>Since there was no library out there that did just the headers, one was written for this. It scans headers, hopping around the file, making a number of assumptions about things (such as CBR encoding) and as a result, audio can be brought down from the cloud storage, stitched together, and then sliced in under a second.</p>
 <p>Generally speaking, since the user is expecting to hear 1 or 2 hours of audio, this delay doesn't feel unusual.</p>
 <p>Bitrates are computed based on how many bits transit over the connection in a given duration as opposed to being internally taken from the file itself. This is a much more direct computation and the sample size is large enough to avoid any errors.</p>
+<h3 id="is-this-legal">Is this legal?</h3>
+<p>I'm have no idea; I'm not a lawyer. We're solving real-world problems here so let's see what happens.</p>
+<p>If you're really concerned, then go ahead and run your own network of servers for personal private use - you can easily stuff 25 stations on any half-assed modern consumer-grade internet connection. Each instance takes up about 80MB of resident memory so we are still just talking 2GB for all that.</p>
 <h2 id="conclusion">Conclusion</h2>
 <p>I hope you enjoyed reading this and use indycast. I've been working full-time, 7 days a week on it since June 2015 and encourage you to become part of the community.</p>
 <p>If there are stations you'd like to support, or better yet, money you'd like to donate, <a href="https://github.com/kristopolous/DRR/wiki">a wiki has been set up</a> describing:</p>
