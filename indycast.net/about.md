@@ -246,6 +246,8 @@ However, Alice is a hacker.  She has no problem using a command line.
 
 She's in luck. Powerful things can be done in simple ways using the command line.
 
+#### Should make hackers do the splits, with pom-poms in the air
+
 The first thing that Alice does is curl the main indycast site.  
 
 Normally this is a stupid idea as she would get a bunch of terribly formatted server-generated HTML, but not with indycast!  Here is what she sees:
