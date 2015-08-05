@@ -134,6 +134,7 @@ def server_manager(config):
       url = url_for(rule.endpoint, **options)
       line = urllib.unquote("{:15s} {}".format(url, app.view_functions[rule.endpoint].__doc__))
       output.append(line)
+      output.append("")
 
     return Response('\n'.join(output), mimetype='text/plain')
 
@@ -161,10 +162,12 @@ def server_manager(config):
   @app.route('/reindex')
   def reindex():
     """ 
-    Starts the prune process which cleans up and offloads audio files but also re-index the database.
-    This is useful in the cases where bugs have led to improper registration of the streams and a 
-    busted building of the database.  It's fairly expensive in I/O costs so this shouldn't be done
-    as the default.
+    Starts the prune process which cleans up and offloads audio files but also re-index 
+    the database.
+
+    This is useful in the cases where bugs have led to improper registration of the 
+    streams and a busted building of the database.  It's fairly expensive in I/O costs 
+    so this shouldn't be done as the default.
     """
     cloud.prune(reindex=True)
     return "Reindexing started"
@@ -182,9 +185,18 @@ def server_manager(config):
   @app.route('/slices/<path:path>')
   def send_stream(path):
     """
-    Downloads a stream from the server. The path is (unix timestamp)_(duration in minutes). 
-    If it exists (as in we had previously generated it) then we can trivially send it. Otherwise
-    we'll just call this an error to make our lives easier.
+    Downloads a stream from the server. The path is callsign-date_duration.mp3
+
+      * callsign: The callsign returned by /stats
+      * date: in the format YYYYMMDDHHMM such as 201508011005 for 
+        2015-08-01 10:05
+      * duration: A value, in minutes, to return.
+
+    The mp3 extension should be used regardless of the actual format of the stream -
+    although the audio returned will be in the streams' native format.
+    
+    The streams are created and sent on-demand, so there may be a slight delay before
+    it starts.
     """
     base_dir = "%s%s/" % (config['storage'], misc.DIR_SLICES)
     file_name = base_dir + path
@@ -356,11 +368,12 @@ def server_manager(config):
   @app.route('/at/<start>/<duration_string>')
   def at(start, duration_string='1hr'):
     """
-    Sends a stream using a human-readable (and human-writable) definition at start time.
-    This uses the dateutils.parser library and so strings such as "Monday 2pm" are accepted.
+    Sends a stream using a human-readable (and human-writable) definition 
+    at start time.  This uses the dateutils.parser library and so strings 
+    such as "Monday 2pm" are accepted.
 
-    Because the space, 0x20 is such a pain in HTTP, you can use "_", "-" or "+" to signify it.
-    For instance,
+    Because the space, 0x20 is such a pain in HTTP, you can use "_", 
+    "-" or "+" to signify it.  For instance,
 
         /at/monday_2pm/1hr
 
@@ -386,11 +399,22 @@ def server_manager(config):
   def stream(weekday, start, duration_string, showname):
     """
     Returns a podcast xml file based on the weekday, start and duration.
-    This is designed to be read by podcasting software such as podkicker, itunes, and feedburner.
+    This is designed to be read by podcasting software such as podkicker, 
+    itunes, and feedburner.
+
+    weekdays are defined as mon, tue, wed, thu, fri, sat, sun.
+
+    If a show occurs multiple times per week, this can be specified with
+    a comma.  for instance,
+
+    /mon,tue,fri/4pm/1hr
+    
+    The showname should be followed by an "xml" extension.
 
     It should also be viewable in a modern web browser.
 
-    If you can find a podcaster that's not supported, please send an email to indycast@googlegroups.com.
+    If you can find a podcaster that's not supported, please send an email 
+    to indycast@googlegroups.com.
     """
     
     # Supports multiple weekdays
