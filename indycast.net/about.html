@@ -329,23 +329,26 @@ A Distributed Open Source DVR for Independent Radio
 <h4 id="should-be-usable-by-novices">Should be usable by novices</h4>
 <p>If Alice doesn't really know how to use computers that well, there is a <a href="http://indycast.net">web front end</a> that explains what indycast is and has a simple and attractive user-interface that she can operate on the device of her choosing.</p>
 <h4 id="logos">Logos</h4>
-<p>Logos for the podcasts are generated server-side at indycast.net so as not to require any image-processing dependencies on the servers themselves. The background is chosen based on the word itself in order to create a diverse but distinct palette for the various logos.</p>
+<p>Logos for the podcasts are generated server-side at indycast.net so as not to require any image-processing or font dependencies on the servers themselves. The background tint is chosen based on the word itself in order to create a diverse but distinct palette for the various logos.</p>
 <p>The schema for generating them looks like the following</p>
-<pre><code>indycast.net/icon/(Arbitrary_string)_(size).png</code></pre>
+<pre><code>http://indycast.net/icon/(Arbitrary_string)_(size).png</code></pre>
 <p>For instance:</p>
+<p>&lt;img src=http://indycast.net/icon/Here+is+one_120.png&gt; &lt;img src=http://indycast.net/icon/And+Here+Is+another_120.png&gt; &lt;img src=http://indycast.net/icon/You+can+go+small_90.png&gt;</p>
+<p>Looks like so:</p>
 <div id="logo-block">
 <p><img src=http://indycast.net/icon/Here+is+one_120.png><img src=http://indycast.net/icon/And+Here+Is+another_120.png><img src=http://indycast.net/icon/You+can+go+small_90.png></p>
 </div>
-<p>The logos are 16-color PNGs which clock in at about 2.4KB.</p>
+<p>The logos are 16-color PNGs which make them small and fast (although admittedly kind of ugly).</p>
 <h2 id="fast-and-small">Fast and small</h2>
 <h3 id="disk-space-efficient">Disk space efficient</h3>
-<p>VPSs generally don't give that much disk space and archiving audio would normally take a lot of them.<br />That's why there's support for Microsft Azure cloud storage. A survey was done to try to find the cheapest storage options:</p>
+<p>VPSs generally don't give that much disk space and archiving audio would normally take a lot of them.</p>
+<p>That's why there's support for cloud storage. A survey was done to try to find the cheapest storage options:</p>
 <ul>
 <li>Amazon EC2: $0.050 / GB</li>
 <li>Google Compute: $0.040 / GB</li>
 <li>Microsoft Azure: $0.024 / GB</li>
 </ul>
-<p>Coming in at less than half the price of EC2, MS azure was the obvious choice. If configured with credentials, the server will use an Azure account to offload the valuable disk space on the VPS.</p>
+<p>Coming in at less than half the price of EC2, MS Azure was the obvious choice. If configured with credentials, the server will use an Azure account to offload the valuable disk space on the VPS. If you would rather use another service, <a href="https://github.com/kristopolous/DRR/issues">open a bug</a>.</p>
 <p>A tool <code>tools/cloud.py</code> computes the current cost for the stations specified. Also, a tool <code>tools/cleanup_cloud.sh</code> will analyze all the content on the cloud and make sure that it's valid and in use. Here is an example:</p>
 <pre><code>$ tools/cloud.py
 
@@ -372,7 +375,7 @@ A Distributed Open Source DVR for Independent Radio
  *using $0.024/GB azure pricing</code></pre>
 <h3 id="cpu-efficient">CPU efficient</h3>
 <p>There is no audio processing done.</p>
-<p>Because audio streams are just binary files, and the binary files are identical independent of the user downloading them, then in order to overlap or splice the audio, all you need is the ability to parse and find the headers ... not the payloads themselves.</p>
+<p>Because audio streams are just binary files, and the binary files are identical independent of the user downloading them, then in order to overlap or splice the audio all you need is the ability to parse and find the headers ... not the payloads themselves.</p>
 <p>Since there was no library out there that did just the headers, one was written for this. It scans headers, hopping around the file, making a number of assumptions about things (such as CBR encoding) and as a result, audio can be brought down from the cloud storage, stitched together, and then sliced in under a second.</p>
 <p>Generally speaking, since the user is expecting to hear 1 or 2 hours of audio, this delay doesn't feel unusual.</p>
 <p>Bitrates are computed based on how many bits transit over the connection in a given duration as opposed to being internally taken from the file itself. This is a much more direct computation and the sample size is large enough to avoid any errors.</p>
