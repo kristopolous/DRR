@@ -327,7 +327,7 @@ def get_next(info_query):
   #
   target_time = info_query['start_date'] + timedelta(seconds=info_query['duration_sec'])
 
-  return get_file_for_ts(target_time=target_time, bias=+1, exclude_path=info_query['name'])
+  return get_file_for_ts(target_time=target_time, bias=None, exclude_path=info_query['name'])
 
   
 def prune(reindex=False):

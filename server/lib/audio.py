@@ -583,7 +583,7 @@ def list_slice_stream(start_info, start_sec):
       # So we want to make sure that we only send out valid, 
       # non-corrupt mp3 blocks that start and end
       # at reasonable intervals.
-      if len(offset) > 2:
+      if len(offset) > 1:
         read_size = offset[1] - offset[0]
         offset.pop(0)
 
