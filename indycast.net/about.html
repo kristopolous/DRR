@@ -420,9 +420,9 @@ $</code></pre>
 <p>Because audio streams are just binary files, and the binary files are identical independent of the user downloading them, then in order to overlap or splice the audio all you need is the ability to parse and find the headers ... not the payloads themselves.</p>
 <p>Since there was no library out there that did just the headers, one was written for this. It scans headers, hopping around the file, making a number of assumptions about things (such as CBR encoding) and as a result, audio can be brought down from the cloud storage, stitched together, and then sliced in under a second.</p>
 <p>Generally speaking, since the user is expecting to hear 1 or 2 hours of audio, this delay doesn't feel unusual.</p>
-<p>Bitrates are computed based on how many bits transit over the connection in a given duration as opposed to being internally taken from the file itself. This is a much more direct computation and the sample size is large enough to avoid any errors.</p>
+<p>Bitrates are computed based on how many bits transit over the connection in a given duration as opposed to being internally taken from the file itself. This is a much more direct and format agnostic computation. The sample size is large enough to avoid any errors (in fact, for HE-AAC+ streams, it performs more accurate duration measurements then <code>ffprobe</code> ... really).</p>
 <h3 id="is-this-legal">Is this legal?</h3>
-<p>I'm have no idea; I'm not a lawyer. We're solving real-world problems here so let's see what happens.</p>
+<p>I have no idea; I'm not a lawyer. We're solving real-world problems here so let's see what happens.</p>
 <p>If you're really concerned, then go ahead and run your own network of servers for personal private use - you can easily stuff 25 stations on any half-assed modern consumer-grade internet connection. Each instance takes up about 80MB of resident memory so we are still just talking 2GB for all that.</p>
 <h2 id="conclusion">Conclusion</h2>
 <p>I hope you enjoyed reading this and use indycast. I've been working full-time, 7 days a week on it since June 2015 and encourage you to become part of the community.</p>

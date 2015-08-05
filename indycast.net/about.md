@@ -411,12 +411,13 @@ Generally speaking, since the user is expecting to hear 1 or 2 hours of audio, t
 unusual.
 
 Bitrates are computed based on how many bits transit over the connection in a given duration as opposed
-to being internally taken from the file itself.  This is a much more direct computation and the sample
-size is large enough to avoid any errors.
+to being internally taken from the file itself.  This is a much more direct and format agnostic computation.
+The sample size is large enough to avoid any errors (in fact, for HE-AAC+ streams, it performs more accurate
+duration measurements then `ffprobe` ... really).
 
 ### Is this legal?
 
-I'm have no idea; I'm not a lawyer. We're solving real-world problems here so let's see what happens.
+I have no idea; I'm not a lawyer. We're solving real-world problems here so let's see what happens.
 
 If you're really concerned, then go ahead and run your own network of servers for personal private use - you
 can easily stuff 25 stations on any half-assed modern consumer-grade internet connection. Each instance takes 
