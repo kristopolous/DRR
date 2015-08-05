@@ -9,10 +9,10 @@ Indycast is a set of community owned federated servers for time-shifting indepen
 
  * Often the best shows are on at inconvenient hours
  * Shows are rarely archived
- * When the shows are archived, they often have the following properties
+ * When shows are archived, they often have the following properties
     * A proprietary solution such as iTunes is required.
     * They are broken into small units that must be reconstituted manually.
-    * You have to know every show and stations individual website.
+    * Every show and station has a different website with a different layout.
     * The retention policy of the audio and when it is availabe widely varies.
 
 Essentially the existing landscape is laborious to use, inconsistent, technically restricted, and very incomplete in coverage.
@@ -22,7 +22,7 @@ Essentially the existing landscape is laborious to use, inconsistent, technicall
 The project's objectives:
 
  * **Non-commercial:** A way to provide listener-supported radio in a convenient manner.
- * **Free:** Let's try to build a community instead of always looking to make a buck.
+ * **Free:** Trying to build a community instead of always looking to make a buck.
  * **Distributed:** People from other places can join the network using their stations without much effort.
  * **Hackable:** Every device and reasonable way of listening to content is supported.
 
