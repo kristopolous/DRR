@@ -1,10 +1,6 @@
 # Introduction
 
-Indycast is a set of federated servers controlled by a community for time-shifting independent radio.
-
-I've been a listener and supporter of non-commercial radio for about 20 years.
-
-In that time, I've found a few things:
+Indycast is a set of community owned federated servers for time-shifting independent radio because
 
  * Often the best shows are on at inconvenient hours
  * These shows are rarely archived
@@ -14,72 +10,68 @@ In that time, I've found a few things:
     * You have to know every show and stations individual site
     * The retention policy of the audio and when it is availabe widely varies
 
-However, they all have internet streams that you can listen to wherever.
-
 ### Version 1: circa 2010
 
-So a few years ago I made a shell-scripted solution for this.  cron would fire off a downloader at the time my show was on, the downloader would time-stamp the web stream and dump it in a directory and then I can listen to it later.
+I made a shell-scripted solution for this.  cron would fire off a downloader which would timestamp a webstream.
 
-This worked fine. For years actually.  But it was so useful I wanted to share this with everyone.
-
-So I had to make a system that everyone could use.
+This worked great. I wanted to share it with everyone.
 
 ## Designing something for everyone
 
-I made a few decisions to set up the framework of the system early on:
+The project's objectives are to be:
 
- * **Non-commercial:**  I wanted a way to support and provide listener supported radio in a convenient manner
- * **Free:** Although I'm just building a platform, it didn't feel right charging people for this so it had to be free
- * **Distributed:** The architecture has to allow people from other places with their own stations to join the network without much effort
- * **Hackable:** Every device and reasonable way of listening to content should be supported
+ * **Non-commercial:** A way to support and provide listener supported radio in a convenient manner
+ * **Free:** Although it's just a platform, it doesn't feel right charging people for it.
+ * **Distributed:** People from other places can join the network using their stations without much effort.
+ * **Hackable:** Every device and reasonable way of listening to content is supported.
 
 ## Architecture
 
 Since there's no money behind this, that means that I'd need a way to do this cheaply and in a way that has a really low barrier to entry
 for participation.  I want to encourage people to run and manage their own servers for their favorite radio station.  
 
-Here were my priorities, the solution should be:
+The solution should be:
 
- * easy and quick to setup.
- * a small-footprint, unobtrusive system that can piggy-back on servers doing other things.
- * highly configurable with reasonable defaults.
- * able to be disk and network effecient.
- * able to be run multiple times on the same machine for different stations.
+ * Easy and quick to setup.
+ * A small-footprint, unobtrusive system that can piggy-back on servers doing other things.
+ * Highly configurable with reasonable defaults.
+ * Able to be disk and network effecient.
+ * Able to be run multiple times on the same machine for different stations.
 
 It also should not
 
- * require significant dependencies
+ * require significant dependencies.
  * be language-specific with arcane knowledge needed in order to get it running.
 
-So the stack chosen was Python 2.7, Flask, and SQLite 3. The audio library was written by hand.
+It's in Python 2.7, Flask, and SQLite 3. The audio library was written by hand.
 
 ## User-experience
 
 ### Administrator
-I envisioned the ideal user-experience of someone who wants to participate in this:
+The ideal user-experience of someone who wants to participate.
 
 #### Easy set-up
 Alice, a junior dev, is interested in adding her station, RDIO.  She 
 
- * git clones the repository
- * runs a small shell script to install dependencies
- * goes to RDIO's website and finds the live stream url
- * puts the url in a configuration file, say rdio.txt
- * runs the server with this configuration file.
+ 1. Git clones the repository.
+ 1. Runs a small shell script to install dependencies.
+ 1. Goes to RDIO's website and finds the live stream url.
+ 1. Puts the URL in a configuration file, say rdio.txt.
+ 1. Runs the server with this configuration file.
 
 #### Self-contained
 
 When the server starts up, it 
 
- * puts everything in a single directory with a simple to understand hierarchy
- * forks processes from a manager thread, carefully naming them with their purpose
- * has an informative log file that tells the user what's going on
- * is easy to shut down and restart
- * is remotely upgradable, replacing its own footprint seamlessly
+ * Puts everything in a single directory with a simple to understand hierarchy.
+ * Forks processes from a manager thread, carefully naming them with their purpose.
+ * Has an informative log file that tells the user what's going on.
+ * Is easy to shut down and restart.
+ * Is remotely upgradable, replacing its own footprint seamlessly.
 
 #### Non-mysterious
 
-There's an endpoint map so that the admin can see everything that is accessible along with its
+There's an endpoint map so an admin can see everything that is accessible along with its
 documentation.  For instance
 
     $ curl indycast.net/kpcc/site-map

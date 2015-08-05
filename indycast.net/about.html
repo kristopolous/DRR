@@ -11,7 +11,7 @@
   <style>
   * { font-family: 'Lora', serif; }
   p {
-    width: 700px;
+    max-width: 700px;
     margin-left: 10px;
     line-height: 1.4em;
   }
@@ -66,9 +66,7 @@
 </head>
 <body>
 <h1 id="introduction">Introduction</h1>
-<p>Indycast is a set of federated servers controlled by a community for time-shifting independent radio.</p>
-<p>I've been a listener and supporter of non-commercial radio for about 20 years.</p>
-<p>In that time, I've found a few things:</p>
+<p>Indycast is a set of community owned federated servers for time-shifting independent radio because</p>
 <ul>
 <li>Often the best shows are on at inconvenient hours</li>
 <li>These shows are rarely archived</li>
@@ -80,58 +78,56 @@
 <li>The retention policy of the audio and when it is availabe widely varies</li>
 </ul></li>
 </ul>
-<p>However, they all have internet streams that you can listen to wherever.</p>
 <h3 id="version-1-circa-2010">Version 1: circa 2010</h3>
-<p>So a few years ago I made a shell-scripted solution for this. cron would fire off a downloader at the time my show was on, the downloader would time-stamp the web stream and dump it in a directory and then I can listen to it later.</p>
-<p>This worked fine. For years actually. But it was so useful I wanted to share this with everyone.</p>
-<p>So I had to make a system that everyone could use.</p>
+<p>I made a shell-scripted solution for this. cron would fire off a downloader which would timestamp a webstream.</p>
+<p>This worked great. I wanted to share it with everyone.</p>
 <h2 id="designing-something-for-everyone">Designing something for everyone</h2>
-<p>I made a few decisions to set up the framework of the system early on:</p>
+<p>The project's objectives are to be:</p>
 <ul>
-<li><strong>Non-commercial:</strong> I wanted a way to support and provide listener supported radio in a convenient manner</li>
-<li><strong>Free:</strong> Although I'm just building a platform, it didn't feel right charging people for this so it had to be free</li>
-<li><strong>Distributed:</strong> The architecture has to allow people from other places with their own stations to join the network without much effort</li>
-<li><strong>Hackable:</strong> Every device and reasonable way of listening to content should be supported</li>
+<li><strong>Non-commercial:</strong> A way to support and provide listener supported radio in a convenient manner</li>
+<li><strong>Free:</strong> Although it's just a platform, it doesn't feel right charging people for it.</li>
+<li><strong>Distributed:</strong> People from other places can join the network using their stations without much effort.</li>
+<li><strong>Hackable:</strong> Every device and reasonable way of listening to content is supported.</li>
 </ul>
 <h2 id="architecture">Architecture</h2>
 <p>Since there's no money behind this, that means that I'd need a way to do this cheaply and in a way that has a really low barrier to entry for participation. I want to encourage people to run and manage their own servers for their favorite radio station.</p>
-<p>Here were my priorities, the solution should be:</p>
+<p>The solution should be:</p>
 <ul>
-<li>easy and quick to setup.</li>
-<li>a small-footprint, unobtrusive system that can piggy-back on servers doing other things.</li>
-<li>highly configurable with reasonable defaults.</li>
-<li>able to be disk and network effecient.</li>
-<li>able to be run multiple times on the same machine for different stations.</li>
+<li>Easy and quick to setup.</li>
+<li>A small-footprint, unobtrusive system that can piggy-back on servers doing other things.</li>
+<li>Highly configurable with reasonable defaults.</li>
+<li>Able to be disk and network effecient.</li>
+<li>Able to be run multiple times on the same machine for different stations.</li>
 </ul>
 <p>It also should not</p>
 <ul>
-<li>require significant dependencies</li>
+<li>require significant dependencies.</li>
 <li>be language-specific with arcane knowledge needed in order to get it running.</li>
 </ul>
-<p>So the stack chosen was Python 2.7, Flask, and SQLite 3. The audio library was written by hand.</p>
+<p>It's in Python 2.7, Flask, and SQLite 3. The audio library was written by hand.</p>
 <h2 id="user-experience">User-experience</h2>
 <h3 id="administrator">Administrator</h3>
-<p>I envisioned the ideal user-experience of someone who wants to participate in this:</p>
+<p>The ideal user-experience of someone who wants to participate.</p>
 <h4 id="easy-set-up">Easy set-up</h4>
 <p>Alice, a junior dev, is interested in adding her station, RDIO. She</p>
-<ul>
-<li>git clones the repository</li>
-<li>runs a small shell script to install dependencies</li>
-<li>goes to RDIO's website and finds the live stream url</li>
-<li>puts the url in a configuration file, say rdio.txt</li>
-<li>runs the server with this configuration file.</li>
-</ul>
+<ol style="list-style-type: decimal">
+<li>Git clones the repository.</li>
+<li>Runs a small shell script to install dependencies.</li>
+<li>Goes to RDIO's website and finds the live stream url.</li>
+<li>Puts the URL in a configuration file, say rdio.txt.</li>
+<li>Runs the server with this configuration file.</li>
+</ol>
 <h4 id="self-contained">Self-contained</h4>
 <p>When the server starts up, it</p>
 <ul>
-<li>puts everything in a single directory with a simple to understand hierarchy</li>
-<li>forks processes from a manager thread, carefully naming them with their purpose</li>
-<li>has an informative log file that tells the user what's going on</li>
-<li>is easy to shut down and restart</li>
-<li>is remotely upgradable, replacing its own footprint seamlessly</li>
+<li>Puts everything in a single directory with a simple to understand hierarchy.</li>
+<li>Forks processes from a manager thread, carefully naming them with their purpose.</li>
+<li>Has an informative log file that tells the user what's going on.</li>
+<li>Is easy to shut down and restart.</li>
+<li>Is remotely upgradable, replacing its own footprint seamlessly.</li>
 </ul>
 <h4 id="non-mysterious">Non-mysterious</h4>
-<p>There's an endpoint map so that the admin can see everything that is accessible along with its documentation. For instance</p>
+<p>There's an endpoint map so an admin can see everything that is accessible along with its documentation. For instance</p>
 <pre><code>$ curl indycast.net/kpcc/site-map
 /heartbeat      
     A low resource version of the /stats call ... this is invoked
