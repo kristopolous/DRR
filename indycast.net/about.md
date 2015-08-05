@@ -8,10 +8,10 @@
 Indycast is a set of community owned federated servers for time-shifting independent radio because
 
  * Often the best shows are on at inconvenient hours
- * These shows are rarely archived
- * When the shows are archived, they have the following properties
-    * Often a proprietary solution such as iTunes is required.
-    * Shows are often broken into small units that must be reconstituted manually.
+ * Shows are rarely archived
+ * When the shows are archived, they often have the following properties
+    * A proprietary solution such as iTunes is required.
+    * They are broken into small units that must be reconstituted manually.
     * You have to know every show and stations individual website.
     * The retention policy of the audio and when it is availabe widely varies.
 
@@ -21,20 +21,20 @@ Essentially the existing landscape is laborious to use, inconsistent, technicall
 
 The project's objectives:
 
- * **Non-commercial:** A way to support and provide listener supported radio in a convenient manner.
- * **Free:** Although it's just a platform, it doesn't feel right charging people for it.
+ * **Non-commercial:** A way to provide listener-supported radio in a convenient manner.
+ * **Free:** Let's try to build a community instead of always looking to make a buck.
  * **Distributed:** People from other places can join the network using their stations without much effort.
  * **Hackable:** Every device and reasonable way of listening to content is supported.
 
 ## Architecture
 
-Since there's no money behind this, it is done cheaply with a low barrier to entry for participation.  People are encouraged to run and manage their own servers for their favorite radio station.  
+Since there's no money behind this, it's done cheaply with a low barrier to entry for participation.  People are encouraged to run and manage their own servers for their favorite radio station.  
 
 The solution seeks to be:
 
  * **Simple**: Easy and quick to setup.
  * **Small**: A small-footprint, unobtrusive system that can piggy-back on servers doing other things.
- * **Customizable**: Highly configurable With reasonable defaults.
+ * **Customizable**: Highly configurable with reasonable defaults.
  * **Efficient**: Able to be use minimal disk and network resources.
  * **Self-contained**: Able to be run multiple times on the same machine for different stations.
 
