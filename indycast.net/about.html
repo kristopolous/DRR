@@ -97,14 +97,15 @@ A Distributed Open Source DVR for Independent Radio
 <li>These shows are rarely archived</li>
 <li>When the shows are archived, they have the following properties
 <ul>
-<li>I often need itunes, which I don't have</li>
-<li>They break the show down into small units that must be reconstituted manually</li>
-<li>You have to know every show and stations individual site</li>
-<li>The retention policy of the audio and when it is availabe widely varies</li>
+<li>Often a proprietary solution such as iTunes is required.</li>
+<li>Shows are often broken into small units that must be reconstituted manually.</li>
+<li>You have to know every show and stations individual website.</li>
+<li>The retention policy of the audio and when it is availabe widely varies.</li>
 </ul></li>
 </ul>
+<p>Essentially the existing landscape is laborious to use, inconsistent, technically restricted, and very incomplete in coverage.</p>
 <h3 id="history">History</h3>
-<p>In 2010, I made a shell-scripted solution for this: cron would fire off a downloader which would timestamp a webstream.</p>
+<p>In 2010, I made a shell-scripted solution: cron fires off a downloader that timestamps a webstream.</p>
 <p>This worked great. I wanted to share it with everyone.</p>
 <h1 id="designing-something-for-everyone">Designing something for everyone</h1>
 <p>The project's objectives:</p>
@@ -115,8 +116,8 @@ A Distributed Open Source DVR for Independent Radio
 <li><strong>Hackable:</strong> Every device and reasonable way of listening to content is supported.</li>
 </ul>
 <h2 id="architecture">Architecture</h2>
-<p>Since there's no money behind this, that means that I'd need a way to do this cheaply and in a way that has a really low barrier to entry for participation. I want to encourage people to run and manage their own servers for their favorite radio station.</p>
-<p>The solution should be:</p>
+<p>Since there's no money behind this, it is done cheaply with a low barrier to entry for participation. People are encouraged to run and manage their own servers for their favorite radio station.</p>
+<p>The solution seeks to be:</p>
 <ul>
 <li><strong>Simple</strong>: Easy and quick to setup.</li>
 <li><strong>Small</strong>: A small-footprint, unobtrusive system that can piggy-back on servers doing other things.</li>
@@ -124,12 +125,12 @@ A Distributed Open Source DVR for Independent Radio
 <li><strong>Efficient</strong>: Able to be use minimal disk and network resources.</li>
 <li><strong>Self-contained</strong>: Able to be run multiple times on the same machine for different stations.</li>
 </ul>
-<p>It also should not:</p>
+<p>It also is not:</p>
 <ul>
-<li>Require significant dependencies.</li>
+<li>Requiring of significant dependencies.</li>
 <li>Be language-specific with arcane knowledge needed in order to get it running.</li>
 </ul>
-<p>It's in Python 2.7, Flask, and SQLite 3. The audio library was written by hand.</p>
+<p>It's in Python 2.7, Flask, and SQLite 3. The audio library is written by hand (more below on why)</p>
 <h2 id="user-experience">User-experience</h2>
 <h3 id="administrator">Administrator</h3>
 <p>The ideal user-experience of someone who wants to participate.</p>
@@ -137,18 +138,18 @@ A Distributed Open Source DVR for Independent Radio
 <p>Alice, a junior dev, is interested in adding her station, RDIO. She</p>
 <ol style="list-style-type: decimal">
 <li>Git clones the repository.</li>
-<li>Runs a small shell script to install dependencies.</li>
+<li>Runs a small shell script <code>bootstrap.sh</code> to install dependencies.</li>
 <li>Goes to RDIO's website and finds the live stream url.</li>
-<li>Puts the URL in a configuration file, say rdio.txt.</li>
-<li>Runs the server with this configuration file.</li>
+<li>Puts the URL in a configuration file, say <code>server/configs/rdio.txt</code>.</li>
+<li>Runs the server with this configuration file, <code>server/indy_server.py -c server/configs/rdio.txt</code>.</li>
 </ol>
 <h4 id="self-contained">Self-contained</h4>
 <p>When the server starts up, it</p>
 <ul>
-<li>Puts everything in a single directory with a simple to understand hierarchy.</li>
+<li>Puts everything in a single directory with a simple to understand hierarchy: <code>~/radio/RDIO/</code></li>
 <li>Forks processes from a manager thread, carefully naming them with their purpose.</li>
-<li>Has an informative log file that tells the user what's going on.</li>
-<li>Is easy to shut down and restart.</li>
+<li>Has an informative log file that tells the user what's going on: <code>~/radio/RDIO/indycast.log</code></li>
+<li>Is easy to shut down and restart: <code>kill cat ~/radio/RDIO/pid-manager</code></li>
 <li>Is remotely upgradable, replacing its own footprint seamlessly.</li>
 </ul>
 <h4 id="non-mysterious">Non-mysterious</h4>
@@ -257,7 +258,7 @@ A Distributed Open Source DVR for Independent Radio
      * duration - In the form of strings such as &quot;1pm&quot; or &quot;2:30pm&quot;
      * offset - starting with a negative &quot;-&quot;, this means &quot;from the present&quot;.
         For instance, to start the stream from 5 minutes ago, you can do &quot;-5&quot;</code></pre>
-<p>These can be queried using a server query tool, located in <code>tools/server_query.py</code>. It can query any endpoint on any number of stations and parse JSON if desired. For instance, if I wanted to see how much disk space kpcc is using I can do the following:</p>
+<p>These endpoints can be conveniently queried in bulk using a server query tool, located in <code>tools/server_query.py</code>. It can query any endpoint on any number of stations and parse JSON if desired. For instance, if I wanted to see how much disk space kpcc is using I can do the following:</p>
 <pre><code>$ tools/server_query.py -k disk -c kpcc
 {&quot;url&quot;: &quot;kpcc.indycast.net:8930&quot;, &quot;latency&quot;: 2.824465036392212, &quot;disk&quot;: 2000112}</code></pre>
 <p>Or, if I wanted to find out the uptime and disk space of kpcc and kxlu:</p>
@@ -307,21 +308,21 @@ A Distributed Open Source DVR for Independent Radio
 <h3 id="user">User</h3>
 <p>The user of the service should be able to use the service in any reasonable way with any reasonable set of expectations.</p>
 <h4 id="subscribe-to-any-time-slot">Subscribe to any time slot</h4>
-<p>This should be accessible with a simple url schema:</p>
+<p>XMLs podcasts feed are generated with a simple url schema:</p>
 <pre><code>http://indycast.net/[station]/[weekday,...]/[start time]/[duration]/[name]</code></pre>
 <p>For instance, if there's a 2 hour show called, say &quot;Darkwaves&quot; at 2AM monday and wednesday mornings, you could do:</p>
 <pre><code>http://indycast.net/rdio/mon,wed/2am/2hr/Darkwaves.xml</code></pre>
 <p>And that url should be openable in anything that ostensibly accepts &quot;podcasts&quot;.</p>
 <h4 id="listen-to-live-radio-with-a-delay">Listen to live radio with a delay</h4>
-<p>Alice turns on her radio and there's a fascinating interview going on. Unfortunately, she missed the beginning of it. She should be able to listen to RDIO starting say, 5 minutes ago, by doing the following:</p>
-<pre><code>http://indycast.net/rdio/live/-5min</code></pre>
-<p>Or, if she wanted to listen starting at 1pm, this should work:</p>
-<pre><code>http://indycast.net/rdio/live/1pm</code></pre>
+<p>Alice turns on her radio and there's a fascinating interview going on. Unfortunately, she missed the beginning of it. Luckily, she is able to listen to RDIO starting say, 5 minutes ago, by doing the following:</p>
+<pre><code>$ mplayer http://indycast.net/rdio/live/-5min</code></pre>
+<p>Or, if she wants to listen starting at 1pm, this should work:</p>
+<pre><code>$ mpg321 http://indycast.net/rdio/live/1pm</code></pre>
 <h4 id="pick-any-arbitrary-time-slice">Pick any arbitrary time slice</h4>
-<p>If Alice just wants to listen to say, the Darkwaves show directly, from the command line, without all the hassle, she should be able to specify a date, time, and duration, such as this:</p>
-<pre><code>$ mplayer http://indycast.net/rdio/at/monday_2am/2hr</code></pre>
+<p>If Alice just wants to listen to say, the Darkwaves show directly, from the command line, without all the hassle, she can specify a date, time, and duration, such as this:</p>
+<pre><code>$ mplayer2 http://indycast.net/rdio/at/monday_2am/2hr</code></pre>
 <h4 id="should-be-usable-by-novices">Should be usable by novices</h4>
-<p>If Alice doesn't really know how to use computers that well, there should be a <a href="http://indycast.net">web front end</a> that explains what this is and has a simple and attractive user-interface that she can operate on the device of her choosing.</p>
+<p>If Alice doesn't really know how to use computers that well, there is a <a href="http://indycast.net">web front end</a> that explains what indycast is and has a simple and attractive user-interface that she can operate on the device of her choosing.</p>
 <h2 id="fast-and-small">Fast and small</h2>
 <h3 id="disk-space-efficient">Disk space efficient</h3>
 <p>VPSs generally don't give that much disk space and archiving audio would normally take a lot of them.<br />That's why there's support for Microsft Azure cloud storage. A survey was done to try to find the cheapest storage options:</p>

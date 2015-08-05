@@ -10,14 +10,16 @@ Indycast is a set of community owned federated servers for time-shifting indepen
  * Often the best shows are on at inconvenient hours
  * These shows are rarely archived
  * When the shows are archived, they have the following properties
-    * I often need itunes, which I don't have
-    * They break the show down into small units that must be reconstituted manually
-    * You have to know every show and stations individual site
-    * The retention policy of the audio and when it is availabe widely varies
+    * Often a proprietary solution such as iTunes is required.
+    * Shows are often broken into small units that must be reconstituted manually.
+    * You have to know every show and stations individual website.
+    * The retention policy of the audio and when it is availabe widely varies.
+
+Essentially the existing landscape is laborious to use, inconsistent, technically restricted, and very incomplete in coverage.
 
 ### History
 
-In 2010, I made a shell-scripted solution for this: cron would fire off a downloader which would timestamp a webstream.
+In 2010, I made a shell-scripted solution: cron fires off a downloader that timestamps a webstream.
 
 This worked great. I wanted to share it with everyone.
 
@@ -32,7 +34,7 @@ The project's objectives:
 
 ## Architecture
 
-Since there's no money behind this, I'd need a way to do it cheaply and have alow barrier to entry for participation.  People should be encouraged to run and manage their own servers for their favorite radio station.  
+Since there's no money behind this, it is done cheaply with a low barrier to entry for participation.  People are encouraged to run and manage their own servers for their favorite radio station.  
 
 The solution seeks to be:
 
@@ -42,12 +44,12 @@ The solution seeks to be:
  * **Efficient**: Able to be use minimal disk and network resources.
  * **Self-contained**: Able to be run multiple times on the same machine for different stations.
 
-It also should not:
+It also is not:
 
- * Require significant dependencies.
+ * Requiring of significant dependencies.
  * Be language-specific with arcane knowledge needed in order to get it running.
 
-It's in Python 2.7, Flask, and SQLite 3. The audio library was written by hand.
+It's in Python 2.7, Flask, and SQLite 3. The audio library is written by hand (more below on why)
 
 ## User-experience
 
@@ -58,19 +60,19 @@ The ideal user-experience of someone who wants to participate.
 Alice, a junior dev, is interested in adding her station, RDIO.  She 
 
  1. Git clones the repository.
- 1. Runs a small shell script to install dependencies.
+ 1. Runs a small shell script `bootstrap.sh` to install dependencies.
  1. Goes to RDIO's website and finds the live stream url.
- 1. Puts the URL in a configuration file, say rdio.txt.
- 1. Runs the server with this configuration file.
+ 1. Puts the URL in a configuration file, say `server/configs/rdio.txt`.
+ 1. Runs the server with this configuration file, `server/indy_server.py -c server/configs/rdio.txt`.
 
 #### Self-contained
 
 When the server starts up, it 
 
- * Puts everything in a single directory with a simple to understand hierarchy.
+ * Puts everything in a single directory with a simple to understand hierarchy: `~/radio/RDIO/`
  * Forks processes from a manager thread, carefully naming them with their purpose.
- * Has an informative log file that tells the user what's going on.
- * Is easy to shut down and restart.
+ * Has an informative log file that tells the user what's going on: `~/radio/RDIO/indycast.log`
+ * Is easy to shut down and restart: `kill cat ~/radio/RDIO/pid-manager`
  * Is remotely upgradable, replacing its own footprint seamlessly.
 
 #### Non-mysterious
@@ -184,7 +186,7 @@ documentation:
             For instance, to start the stream from 5 minutes ago, you can do "-5"
 
 
-These can be queried using a server query tool, located in `tools/server_query.py`.  It can query any endpoint on any 
+These endpoints can be conveniently queried in bulk using a server query tool, located in `tools/server_query.py`.  It can query any endpoint on any 
 number of stations and parse JSON if desired.  For instance, if I wanted to see how much disk space kpcc is using I can do the following:
 
     $ tools/server_query.py -k disk -c kpcc
@@ -244,7 +246,7 @@ If you'd like to find out what the station coverage is, there's a graph-drawing 
 The user of the service should be able to use the service in any reasonable way with any reasonable set of expectations.
 
 #### Subscribe to any time slot 
-This should be accessible with a simple url schema:
+XMLs podcasts feed are generated with a simple url schema:
 
     http://indycast.net/[station]/[weekday,...]/[start time]/[duration]/[name]
 
@@ -255,23 +257,21 @@ For instance, if there's a 2 hour show called, say "Darkwaves" at 2AM monday and
 And that url should be openable in anything that ostensibly accepts "podcasts".
 
 #### Listen to live radio with a delay
-Alice turns on her radio and there's a fascinating interview going on.  Unfortunately, she missed the beginning of it.  She should
-be able to listen to RDIO starting say, 5 minutes ago, by doing the following:
+Alice turns on her radio and there's a fascinating interview going on.  Unfortunately, she missed the beginning of it.  Luckily, she is able to listen to RDIO starting say, 5 minutes ago, by doing the following:
 
-    http://indycast.net/rdio/live/-5min
+    $ mplayer http://indycast.net/rdio/live/-5min
 
-Or, if she wanted to listen starting at 1pm, this should work:
+Or, if she wants to listen starting at 1pm, this should work:
     
-    http://indycast.net/rdio/live/1pm
+    $ mpg321 http://indycast.net/rdio/live/1pm
 
 #### Pick any arbitrary time slice
-If Alice just wants to listen to say, the Darkwaves show directly, from the command line, without all the hassle, she should be able
-to specify a date, time, and duration, such as this:
+If Alice just wants to listen to say, the Darkwaves show directly, from the command line, without all the hassle, she can specify a date, time, and duration, such as this:
 
-    $ mplayer http://indycast.net/rdio/at/monday_2am/2hr
+    $ mplayer2 http://indycast.net/rdio/at/monday_2am/2hr
 
 #### Should be usable by novices
-If Alice doesn't really know how to use computers that well, there should be a [web front end](http://indycast.net) that explains what this is and 
+If Alice doesn't really know how to use computers that well, there is a [web front end](http://indycast.net) that explains what indycast is and 
 has a simple and attractive user-interface that she can operate on the device of her choosing.
 
 ## Fast and small
