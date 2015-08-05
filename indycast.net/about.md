@@ -32,16 +32,16 @@ for participation.  I want to encourage people to run and manage their own serve
 
 The solution should be:
 
- * Easy and quick to setup.
- * A small-footprint, unobtrusive system that can piggy-back on servers doing other things.
- * Highly configurable with reasonable defaults.
- * Able to be disk and network effecient.
- * Able to be run multiple times on the same machine for different stations.
+ * **Simple**: Easy and quick to setup.
+ * **Small**: A small-footprint, unobtrusive system that can piggy-back on servers doing other things.
+ * **Customizable**: Highly configurable With reasonable defaults.
+ * **Efficient**: Able to be use minimal disk and network resources.
+ * **Self-contained**: Able to be run multiple times on the same machine for different stations.
 
-It also should not
+It also should not:
 
- * require significant dependencies.
- * be language-specific with arcane knowledge needed in order to get it running.
+ * Require significant dependencies.
+ * Be language-specific with arcane knowledge needed in order to get it running.
 
 It's in Python 2.7, Flask, and SQLite 3. The audio library was written by hand.
 
@@ -72,7 +72,7 @@ When the server starts up, it
 #### Non-mysterious
 
 There's an endpoint map so an admin can see everything that is accessible along with its
-documentation.  For instance
+documentation:
 
     $ curl indycast.net/kpcc/site-map
     /heartbeat      
@@ -186,7 +186,7 @@ number of stations and parse JSON if desired.  For instance, if I wanted to see 
     $ tools/server_query.py -k disk -c kpcc
     {"url": "kpcc.indycast.net:8930", "latency": 2.824465036392212, "disk": 2000112}
 
-Or, what if I wanted to find out the uptime and disk space of kpcc and kxlu?
+Or, if I wanted to find out the uptime and disk space of kpcc and kxlu:
 
     $ tools/server_query.py -k disk,uptime -c kpcc,kxlu
     [
@@ -269,3 +269,38 @@ to specify a date, time, and duration, such as this:
 #### Should be usable by novices
 If Alice doesn't really know how to use computers that well, there should be a [web front end](http://indycast.net) that explains what this is and 
 has a simple and attractive user-interface that she can operate on the device of her choosing.
+
+## Fast and small
+
+### Disk space efficient
+
+VPSs generally don't give that much disk space and archiving audio would normally take a lot of them.  
+That's why there's support for Microsft Azure cloud storage.  A survey was done to try to find the 
+cheapest storage options:
+
+  * Amazon EC2: $0.050 / GB
+  * Google Compute: $0.040 / GB
+  * Microsoft Azure: $0.024 / GB
+
+Coming in at less than half the price of EC2, MS azure was the obvious choice.  If configured with
+credentials, the server will use an azure account to offload the valuable disk space on the VPS
+
+### CPU efficient
+
+There is no audio processing done.  
+
+Because audio streams are just binary files, and the binary files are identical 
+independent of the user downloading them, then in order to overlap or splice the audio, 
+all you need is the ability to parse and find the headers ... not the payloads themselves.
+
+Since there was no library out there that did just the headers, one was written for this.  It 
+scans headers, hopping around the file, making a number of assumptions about things (such as CBR 
+encoding) and as a result, audio can be brought down from the cloud storage, stitched together, and
+then sliced in under a second.
+
+Generally speaking, since the user is expecting to hear 1 or 2 hours of audio, this delay doesn't feel
+unusual.
+
+Bitrates are computed based on how many bits transit over the connection in a given duration as opposed
+to being internally taken from the file itself.  This is a much more direct computation and the sample
+size is large enough to avoid any errors.

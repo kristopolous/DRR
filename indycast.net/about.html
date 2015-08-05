@@ -93,16 +93,16 @@
 <p>Since there's no money behind this, that means that I'd need a way to do this cheaply and in a way that has a really low barrier to entry for participation. I want to encourage people to run and manage their own servers for their favorite radio station.</p>
 <p>The solution should be:</p>
 <ul>
-<li>Easy and quick to setup.</li>
-<li>A small-footprint, unobtrusive system that can piggy-back on servers doing other things.</li>
-<li>Highly configurable with reasonable defaults.</li>
-<li>Able to be disk and network effecient.</li>
-<li>Able to be run multiple times on the same machine for different stations.</li>
+<li><strong>Simple</strong>: Easy and quick to setup.</li>
+<li><strong>Small</strong>: A small-footprint, unobtrusive system that can piggy-back on servers doing other things.</li>
+<li><strong>Customizable</strong>: Highly configurable With reasonable defaults.</li>
+<li><strong>Efficient</strong>: Able to be use minimal disk and network resources.</li>
+<li><strong>Self-contained</strong>: Able to be run multiple times on the same machine for different stations.</li>
 </ul>
-<p>It also should not</p>
+<p>It also should not:</p>
 <ul>
-<li>require significant dependencies.</li>
-<li>be language-specific with arcane knowledge needed in order to get it running.</li>
+<li>Require significant dependencies.</li>
+<li>Be language-specific with arcane knowledge needed in order to get it running.</li>
 </ul>
 <p>It's in Python 2.7, Flask, and SQLite 3. The audio library was written by hand.</p>
 <h2 id="user-experience">User-experience</h2>
@@ -127,7 +127,7 @@
 <li>Is remotely upgradable, replacing its own footprint seamlessly.</li>
 </ul>
 <h4 id="non-mysterious">Non-mysterious</h4>
-<p>There's an endpoint map so an admin can see everything that is accessible along with its documentation. For instance</p>
+<p>There's an endpoint map so an admin can see everything that is accessible along with its documentation:</p>
 <pre><code>$ curl indycast.net/kpcc/site-map
 /heartbeat      
     A low resource version of the /stats call ... this is invoked
@@ -235,7 +235,7 @@
 <p>These can be queried using a server query tool, located in <code>tools/server_query.py</code>. It can query any endpoint on any number of stations and parse JSON if desired. For instance, if I wanted to see how much disk space kpcc is using I can do the following:</p>
 <pre><code>$ tools/server_query.py -k disk -c kpcc
 {&quot;url&quot;: &quot;kpcc.indycast.net:8930&quot;, &quot;latency&quot;: 2.824465036392212, &quot;disk&quot;: 2000112}</code></pre>
-<p>Or, what if I wanted to find out the uptime and disk space of kpcc and kxlu?</p>
+<p>Or, if I wanted to find out the uptime and disk space of kpcc and kxlu:</p>
 <pre><code>$ tools/server_query.py -k disk,uptime -c kpcc,kxlu
 [
 {&quot;url&quot;: &quot;kxlu.indycast.net:8890&quot;, &quot;latency&quot;: 3.542130947113037, &quot;uptime&quot;: 5235, &quot;disk&quot;: 2283312},
@@ -297,5 +297,20 @@
 <pre><code>$ mplayer http://indycast.net/rdio/at/monday_2am/2hr</code></pre>
 <h4 id="should-be-usable-by-novices">Should be usable by novices</h4>
 <p>If Alice doesn't really know how to use computers that well, there should be a <a href="http://indycast.net">web front end</a> that explains what this is and has a simple and attractive user-interface that she can operate on the device of her choosing.</p>
+<h2 id="fast-and-small">Fast and small</h2>
+<h3 id="disk-space-efficient">Disk space efficient</h3>
+<p>VPSs generally don't give that much disk space and archiving audio would normally take a lot of them.<br />That's why there's support for Microsft Azure cloud storage. A survey was done to try to find the cheapest storage options:</p>
+<ul>
+<li>Amazon EC2: $0.050 / GB</li>
+<li>Google Compute: $0.040 / GB</li>
+<li>Microsoft Azure: $0.024 / GB</li>
+</ul>
+<p>Coming in at less than half the price of EC2, MS azure was the obvious choice. If configured with credentials, the server will use an azure account to offload the valuable disk space on the VPS</p>
+<h3 id="cpu-efficient">CPU efficient</h3>
+<p>There is no audio processing done.</p>
+<p>Because audio streams are just binary files, and the binary files are identical independent of the user downloading them, then in order to overlap or splice the audio, all you need is the ability to parse and find the headers ... not the payloads themselves.</p>
+<p>Since there was no library out there that did just the headers, one was written for this. It scans headers, hopping around the file, making a number of assumptions about things (such as CBR encoding) and as a result, audio can be brought down from the cloud storage, stitched together, and then sliced in under a second.</p>
+<p>Generally speaking, since the user is expecting to hear 1 or 2 hours of audio, this delay doesn't feel unusual.</p>
+<p>Bitrates are computed based on how many bits transit over the connection in a given duration as opposed to being internally taken from the file itself. This is a much more direct computation and the sample size is large enough to avoid any errors.</p>
 </body>
 </html>
