@@ -82,9 +82,10 @@ You could do a pull request to add one, or [send an email](mailto:indycast@googl
 
 These are parts of the server broken down into handy pocket-sized modules.
 
-  * ts.py - Deals with localizing time functions
   * audio.py - All the mp3 slicing and stitching magic is done here
-  * file.py - The negotiations with when to put things on the cloud, register streams in the database, and remove them
-  * db.py - An (intentionally) leaky wrapper for the sqlite3 database
+  * cloud.py - The negotiations with when to put things on the cloud, register streams in the database, and remove them.
+  * db.py - An (intentionally) leaky wrapper for the sqlite3 database.
   * misc.py - Miscellaneous "global" tools that all the other libs use.
+  * server.py - Web server functions.
+  * ts.py - Deals with localizing time functions.
 
