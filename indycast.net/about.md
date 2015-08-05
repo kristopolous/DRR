@@ -290,7 +290,7 @@ However, Alice is a hacker.  She has no problem using a command line.
 
 She's in luck. Powerful things can be done in simple ways using the command line.
 
-#### Should make hackers do the splits while shooting party poppers
+#### Should make hackers do the splits while shooting <a href=http://i.dailymail.co.uk/i/pix/2014/12/21/24333D7D00000578-0-image-m-13_1419157979609.jpg>party poppers</a>
 
 The first thing that Alice does is curl the main indycast site.  
 
