@@ -155,9 +155,12 @@ A Distributed Open Source DVR for Independent Radio
 <p>It's in Python 2.7, Flask, and SQLite 3. The audio library is written by hand (more below on why)</p>
 <h2 id="user-experience">User-experience</h2>
 <h3 id="being-an-administrator">Being an administrator</h3>
-<p>The ideal user-experience of someone who wants to participate.</p>
+<p>Unlike with other projects, a minimal configuration to get a server up and running can be done in just 6 freakin lines! There are 14 example configurations which are about 7 lines each.</p>
+<p>There's a script to install dependencies but again, unlike with other things, it's 12 lines ... so if it doesn't work on your system, just cat the file and install the stuff yourself.</p>
+<p>Don't you hate it when some blackbox frameworky magic doesn't work and you helplessly try to figure out what's the code and what's the framework ... geez, I hate that. No, not here.</p>
+<p>In fact, I've created a user-story for an would-be admin.</p>
 <h4 id="easy-set-up">Easy set-up</h4>
-<p>Alice, a junior dev, is interested in adding her station, RDIO. She</p>
+<p>Alice is interested in adding her station, RDIO. She</p>
 <ol style="list-style-type: decimal">
 <li>Git clones <a href="https://github.com/kristopolous/DRR">the repository</a>.</li>
 <li>Runs a <a href="https://github.com/kristopolous/DRR/blob/master/bootstrap.sh">small shell script</a> <code>bootstrap.sh</code> to install dependencies.</li>
@@ -168,25 +171,27 @@ A Distributed Open Source DVR for Independent Radio
 <h4 id="self-contained">Self-contained</h4>
 <p>When the server starts up, it</p>
 <ul>
-<li>Puts everything in a single directory with a simple to understand hierarchy: <code>~/radio/rdio/</code></li>
+<li>Puts everything in a single directory with a simple to understand hierarchy: <code>~/radio/rdio/</code> (configurable)</li>
 <li>Forks processes from a manager thread, carefully naming them with their purpose.</li>
 <li>Has an informative log file that tells the user what's going on: <code>~/radio/rdio/indycast.log</code></li>
 <li>Is easy to shut down and restart: <code>kill cat ~/radio/rdio/pid-manager</code></li>
 <li>Is remotely upgradable (through the <code>/upgrade</code> endpoint), replacing its own footprint seamlessly.</li>
 </ul>
+<p>In fact if you run multiple stations you can see something like this:</p>
+<p>$ ls ~/radio kcrw kdvs kpcc kxlu wxyc</p>
+<p>And if we dip into one of these, (notice how I'm not root or using sudo or any of that nonsense?) we'll see something like this:</p>
+<p>$ cd kpcc; find . | grep -v mp3 . ./config.db ./slices ./backups ./backups/kpcc-20150723-2012.gz ./indycast.log ./streams</p>
+<p>No voodoo and nothing cryptic. Refreshing huh?</p>
 <h4 id="non-mysterious">Non-mysterious</h4>
 <p>There's an endpoint map so Alice can see everything that is accessible along with its documentation. As of the writing of this document, it looks like so:</p>
-<pre><code>$ curl indycast.net/kpcc/site-map
+<pre><code>$ curl indycast.net/kpcc/help
+-=#[ Welcome to indycast v0.9-Inkanyamba-75-g10234a0 API help ]#=-
+
 /heartbeat      
     A low resource version of the /stats call ... this is invoked
     by the server health check.  Only the uptime of the server is reported.
     
     This allows us to check if a restart happened between invocations.
-    
-
-/site-map        
-    Shows all the end points supported by the current server, the options 
-    and the documentation.
     
 
 /reindex         
@@ -215,6 +220,11 @@ A Distributed Open Source DVR for Independent Radio
 /stats           
     Reports various statistical metrics on a particular server.  
     Use this with the graph.py tool to see station coverage.
+    
+
+/help            
+    Shows all the end points supported by the current server, the options 
+    and the documentation.
     
 
 /uuid            
@@ -257,6 +267,14 @@ A Distributed Open Source DVR for Independent Radio
         /at/monday_2pm/1hr
 
     Will work fine
+    
+
+/[weekday]/[start]/[duration_string] 
+    This is identical to the stream syntax, but instead it is similar to
+    /at ... it uses the same notation but instead returns an audio file
+    directly.
+
+    You must specify a single weekday ... I know, total bummer.
     
 
 /slices/[path] 
