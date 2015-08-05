@@ -21,20 +21,23 @@
     float: left;
     margin-left: 10px;
     width: 70px;
-    height: 120px;
+    height: 90px;
+  }
+  #header {
+    margin-left: 95px;
+    height: 90px;
+  }
+  #header h1 {
+    padding-top: 5px;
   }
   #title { 
     margin-top: 20px;
   }
   #logo-block { margin-left: 30px; }
-  #logo-block img {
+  img {
     border: 1px solid rgba(128,128,128,0.5);
     margin: 2px;
     padding: 2px;
-  }
-  #header {
-    margin-left: 90px;
-    height: 120px;
   }
   #header * { 
     margin: 0;
@@ -48,7 +51,7 @@
   
   h2 ~ p { margin-left: 20px; }
   h3 ~ table, h3 ~ p, h3 ~ ul, h3 ~ ol, h3 ~ pre { margin-left: 40px; }
-
+  
   th, td {
     padding-right: 12px;
   }
@@ -94,6 +97,7 @@
     h3 ~ table, h3 ~ p, h3 ~ ul, h3 ~ ol, h3 ~ pre { margin-left: 12px; }
     ul ul { margin-left: 0px;  padding-left: 1em }
     ul ul li {padding-left: 0px }
+    #logo, #header { height: 120px; }
   }
   </style>
 </head>
@@ -106,13 +110,13 @@
 <h1>
 Indycast
 </h1>
-<h2>
+<h3>
 A Distributed Open Source DVR for Independent Radio
-</h2>
+</h3>
 </div>
 </div>
 <h2 id="introduction">Introduction</h2>
-<p>Indycast is a set of community owned federated servers for time-shifting independent radio because</p>
+<p>Indycast is a set of community-run federated servers for time-shifting independent radio because</p>
 <ul>
 <li>Often the best shows are on at inconvenient hours</li>
 <li>Shows are rarely archived</li>
@@ -143,10 +147,10 @@ A Distributed Open Source DVR for Independent Radio
 <li><strong>Efficient</strong>: Able to be use minimal disk and network resources.</li>
 <li><strong>Self-contained</strong>: Able to be run multiple times on the same machine for different stations.</li>
 </ul>
-<p>It also is not:</p>
+<p>It is <strong>not</strong>:</p>
 <ul>
 <li>Requiring of significant dependencies.</li>
-<li>Be language-specific with arcane knowledge needed in order to get it running.</li>
+<li>Language-centric with arcane knowledge needed in order to get it running.</li>
 </ul>
 <p>It's in Python 2.7, Flask, and SQLite 3. The audio library is written by hand (more below on why)</p>
 <h2 id="user-experience">User-experience</h2>

@@ -1,11 +1,11 @@
 <div id='title'>
 <div id='logo'><img src=images/square-indycast_70.png></div><div id='header'>
-<h1>Indycast</h1><h2>A Distributed Open Source DVR for Independent Radio</h2></div>
+<h1>Indycast</h1><h3>A Distributed Open Source DVR for Independent Radio</h3></div>
 </div>
 
 ## Introduction
 
-Indycast is a set of community owned federated servers for time-shifting independent radio because
+Indycast is a set of community-run federated servers for time-shifting independent radio because
 
  * Often the best shows are on at inconvenient hours
  * Shows are rarely archived
@@ -38,10 +38,10 @@ The solution seeks to be:
  * **Efficient**: Able to be use minimal disk and network resources.
  * **Self-contained**: Able to be run multiple times on the same machine for different stations.
 
-It also is not:
+It is **not**:
 
  * Requiring of significant dependencies.
- * Be language-specific with arcane knowledge needed in order to get it running.
+ * Language-centric with arcane knowledge needed in order to get it running.
 
 It's in Python 2.7, Flask, and SQLite 3. The audio library is written by hand (more below on why)
 
