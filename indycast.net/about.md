@@ -246,6 +246,34 @@ However, Alice is a hacker.  She has no problem using a command line.
 
 She's in luck. Powerful things can be done in simple ways using the command line.
 
+The first thing thta Alice does is try to curl the main site.  Normally this is a stupid idea as she would get a bunch
+of terribly formatted server-generated html, but not with indycast.  Now here is what she sees:
+
+    $ curl http://indycast.net/    
+    The current stations are healthy:
+
+     * http://indycast.net/kcrw/
+     * http://indycast.net/kdvs/
+     * http://indycast.net/kpcc/
+     * http://indycast.net/kpfk/
+     * http://indycast.net/kspc/
+     * http://indycast.net/kusf/
+     * http://indycast.net/kvrx/
+     * http://indycast.net/kxlu/
+     * http://indycast.net/kzsu/
+     * http://indycast.net/wcbn/
+     * http://indycast.net/wfmu/
+     * http://indycast.net/wxyc/
+     * http://indycast.net/wzrd/
+
+    Query the /site-map end-point to see
+    supported features on a per-station basis.
+
+    Thanks for using curl/7.26.0 ;-).
+    $
+
+Finally someone cares about the hackers.  She can easily copy and paste the stubs to access the API.
+
 #### Subscribe to any show
 
 XMLs podcasts feed are generated with a simple url schema:
