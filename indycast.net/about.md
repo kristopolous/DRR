@@ -300,7 +300,7 @@ The logos are 16-color PNGs which make them small and fast (although admittedly 
 
 ### Disk space efficient
 
-VPSs generally don't give that much disk space and archiving audio would normally take a lot of them.  
+VPSs generally don't give that much disk space and archiving audio would normally take a lot of it.
 
 That's why there's support for cloud storage.  A survey was done to try to find the cheapest storage options:
 
@@ -363,9 +363,10 @@ size is large enough to avoid any errors.
 
 ## Conclusion
 
-I hope you enjoyed reading this and use indycast.  I've been working full-time, 7 days a week on this since
-June 2015.  I encourage you to become part of the community.  If there are stations you'd like to support, or
-better yet, money you'd like to donate, [a wiki has been set up](https://github.com/kristopolous/DRR/wiki) 
+I hope you enjoyed reading this and use indycast.  I've been working full-time, 7 days a week on it since
+June 2015 and encourage you to become part of the community.  
+
+If there are stations you'd like to support, or better yet, money you'd like to donate, [a wiki has been set up](https://github.com/kristopolous/DRR/wiki) 
 describing:
 
  * How to run your own server
