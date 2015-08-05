@@ -21,14 +21,12 @@
     float: left;
     margin-left: 10px;
     width: 70px;
-    height: 90px;
+    height: 120px;
   }
   #title { 
     margin-top: 20px;
   }
-  #logo-block {
-    margin-left: 30px;
-  }
+  #logo-block { margin-left: 30px; }
   #logo-block img {
     border: 1px solid rgba(128,128,128,0.5);
     margin: 2px;
@@ -36,7 +34,7 @@
   }
   #header {
     margin-left: 90px;
-    height: 90px;
+    height: 120px;
   }
   #header * { 
     margin: 0;
@@ -48,12 +46,9 @@
   h3 { margin-left: 20px; }
   h4 { margin-left: 40px; }
   
-  h2 ~ p {
-    margin-left: 20px;
-  }
-  h3 ~ table, h3 ~ p, h3 ~ ul, h3 ~ ol, h3 ~ pre {
-    margin-left: 40px;
-  }
+  h2 ~ p { margin-left: 20px; }
+  h3 ~ table, h3 ~ p, h3 ~ ul, h3 ~ ol, h3 ~ pre { margin-left: 40px; }
+
   th, td {
     padding-right: 12px;
   }
@@ -81,6 +76,24 @@
   }
   blockquote {
     border-left: 4px solid #eef;
+  }
+  @media screen and (max-width: 1280px) {
+    body{ background: white }
+    pre, code {
+      max-width: 100%;
+      overflow-x: auto;
+      font-size: 1em;
+      margin-right: 0;
+    }
+    li, p { line-height: 1.45em }
+    p, h2 { margin-left: 3px; }
+    h3 { margin-left: 6px; }
+    #logo-block, h4 { margin-left: 9px; }
+    
+    h2 ~ p { margin-left: 6px; }
+    h3 ~ table, h3 ~ p, h3 ~ ul, h3 ~ ol, h3 ~ pre { margin-left: 12px; }
+    ul ul { margin-left: 0px;  padding-left: 1em }
+    ul ul li {padding-left: 0px }
   }
   </style>
 </head>
