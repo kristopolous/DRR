@@ -53,8 +53,8 @@ The ideal user-experience of someone who wants to participate.
 #### Easy set-up
 Alice, a junior dev, is interested in adding her station, RDIO.  She 
 
- 1. Git clones the repository.
- 1. Runs a small shell script `bootstrap.sh` to install dependencies.
+ 1. Git clones [the repository](https://github.com/kristopolous/DRR).
+ 1. Runs a [small shell script](https://github.com/kristopolous/DRR/blob/master/bootstrap.sh) `bootstrap.sh` to install dependencies.
  1. Goes to RDIO's website and finds the live stream url.
  1. Puts the URL in a configuration file, say `server/configs/rdio.txt`.
  1. Runs the server with this configuration file, `server/indy_server.py -c server/configs/rdio.txt`.
@@ -67,7 +67,7 @@ When the server starts up, it
  * Forks processes from a manager thread, carefully naming them with their purpose.
  * Has an informative log file that tells the user what's going on: `~/radio/rdio/indycast.log`
  * Is easy to shut down and restart: `kill cat ~/radio/rdio/pid-manager`
- * Is remotely upgradable, replacing its own footprint seamlessly.
+ * Is remotely upgradable (through the `/upgrade` endpoint), replacing its own footprint seamlessly.
 
 #### Non-mysterious
 
@@ -239,7 +239,15 @@ If you'd like to find out what the station coverage is, there's a graph-drawing 
 ### Being a User
 The user of the service should be able to use the service in any reasonable way with any reasonable set of expectations.
 
-#### Subscribe to any time slot 
+#### Should be usable by novices
+If Alice doesn't really know how to use computers that well, there is a [web front end](http://indycast.net) that explains what indycast is and has a simple and attractive user-interface that she can operate on the device of her choosing.
+
+However, Alice is a hacker.  She has no problem using a command line. 
+
+She's in luck. Powerful things can be done in simple ways using the command line.
+
+#### Subscribe to any show
+
 XMLs podcasts feed are generated with a simple url schema:
 
     http://indycast.net/[station]/[weekday,...]/[start time]/[duration]/[name]
@@ -250,12 +258,12 @@ For instance, if there's a 2 hour show called, say "Darkwaves" at 2AM monday and
 
 And that url should be openable in anything that ostensibly accepts "podcasts".
 
-#### Listen to live radio with a delay
+#### Rewind, pause, and scrub live radio
 Alice turns on her radio and there's a fascinating interview going on.  Unfortunately, she missed the beginning of it.  Luckily, she is able to listen to RDIO starting say, 5 minutes ago, by doing the following:
 
     $ mplayer http://indycast.net/rdio/live/-5min
 
-Or, if she wants to listen starting at 1pm, this should work:
+Or, if she wants to listen starting at 1pm, this works:
     
     $ mpg321 http://indycast.net/rdio/live/1pm
 
@@ -264,8 +272,6 @@ If Alice just wants to listen to say, the Darkwaves show directly, from the comm
 
     $ mplayer2 http://indycast.net/rdio/at/monday_2am/2hr
 
-#### Should be usable by novices
-If Alice doesn't really know how to use computers that well, there is a [web front end](http://indycast.net) that explains what indycast is and has a simple and attractive user-interface that she can operate on the device of her choosing.
 
 #### Logos
 Logos for the podcasts are generated server-side at indycast.net so as not to require any image-processing
@@ -354,3 +360,21 @@ unusual.
 Bitrates are computed based on how many bits transit over the connection in a given duration as opposed
 to being internally taken from the file itself.  This is a much more direct computation and the sample
 size is large enough to avoid any errors.
+
+## Conclusion
+
+I hope you enjoyed reading this and use indycast.  I've been working full-time, 7 days a week on this since
+June 2015.  I encourage you to become part of the community.  If there are stations you'd like to support, or
+better yet, money you'd like to donate, [a wiki has been set up](https://github.com/kristopolous/DRR/wiki) 
+describing:
+
+ * How to run your own server
+ * The current cost and server architecture
+  
+I also encourage you to [pull down the code](https://github.com/kristopolous/DRR) which I have taken a serious
+effort on to be consistent and well-documented.  If you find issues, please feel free to send a pull-request.
+
+Thanks for reading.
+
+~chris.
+

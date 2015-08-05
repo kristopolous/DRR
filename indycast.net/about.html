@@ -142,8 +142,8 @@ A Distributed Open Source DVR for Independent Radio
 <h4 id="easy-set-up">Easy set-up</h4>
 <p>Alice, a junior dev, is interested in adding her station, RDIO. She</p>
 <ol style="list-style-type: decimal">
-<li>Git clones the repository.</li>
-<li>Runs a small shell script <code>bootstrap.sh</code> to install dependencies.</li>
+<li>Git clones <a href="https://github.com/kristopolous/DRR">the repository</a>.</li>
+<li>Runs a <a href="https://github.com/kristopolous/DRR/blob/master/bootstrap.sh">small shell script</a> <code>bootstrap.sh</code> to install dependencies.</li>
 <li>Goes to RDIO's website and finds the live stream url.</li>
 <li>Puts the URL in a configuration file, say <code>server/configs/rdio.txt</code>.</li>
 <li>Runs the server with this configuration file, <code>server/indy_server.py -c server/configs/rdio.txt</code>.</li>
@@ -155,7 +155,7 @@ A Distributed Open Source DVR for Independent Radio
 <li>Forks processes from a manager thread, carefully naming them with their purpose.</li>
 <li>Has an informative log file that tells the user what's going on: <code>~/radio/rdio/indycast.log</code></li>
 <li>Is easy to shut down and restart: <code>kill cat ~/radio/rdio/pid-manager</code></li>
-<li>Is remotely upgradable, replacing its own footprint seamlessly.</li>
+<li>Is remotely upgradable (through the <code>/upgrade</code> endpoint), replacing its own footprint seamlessly.</li>
 </ul>
 <h4 id="non-mysterious">Non-mysterious</h4>
 <p>There's an endpoint map so Alice can see everything that is accessible along with its documentation. As of the writing of this document, it looks like so:</p>
@@ -312,22 +312,24 @@ A Distributed Open Source DVR for Independent Radio
          kpcc coverage: 90.877315%</code></pre>
 <h3 id="being-a-user">Being a User</h3>
 <p>The user of the service should be able to use the service in any reasonable way with any reasonable set of expectations.</p>
-<h4 id="subscribe-to-any-time-slot">Subscribe to any time slot</h4>
+<h4 id="should-be-usable-by-novices">Should be usable by novices</h4>
+<p>If Alice doesn't really know how to use computers that well, there is a <a href="http://indycast.net">web front end</a> that explains what indycast is and has a simple and attractive user-interface that she can operate on the device of her choosing.</p>
+<p>However, Alice is a hacker. She has no problem using a command line.</p>
+<p>She's in luck. Powerful things can be done in simple ways using the command line.</p>
+<h4 id="subscribe-to-any-show">Subscribe to any show</h4>
 <p>XMLs podcasts feed are generated with a simple url schema:</p>
 <pre><code>http://indycast.net/[station]/[weekday,...]/[start time]/[duration]/[name]</code></pre>
 <p>For instance, if there's a 2 hour show called, say &quot;Darkwaves&quot; at 2AM monday and wednesday mornings, you could do:</p>
 <pre><code>http://indycast.net/rdio/mon,wed/2am/2hr/Darkwaves.xml</code></pre>
 <p>And that url should be openable in anything that ostensibly accepts &quot;podcasts&quot;.</p>
-<h4 id="listen-to-live-radio-with-a-delay">Listen to live radio with a delay</h4>
+<h4 id="rewind-pause-and-scrub-live-radio">Rewind, pause, and scrub live radio</h4>
 <p>Alice turns on her radio and there's a fascinating interview going on. Unfortunately, she missed the beginning of it. Luckily, she is able to listen to RDIO starting say, 5 minutes ago, by doing the following:</p>
 <pre><code>$ mplayer http://indycast.net/rdio/live/-5min</code></pre>
-<p>Or, if she wants to listen starting at 1pm, this should work:</p>
+<p>Or, if she wants to listen starting at 1pm, this works:</p>
 <pre><code>$ mpg321 http://indycast.net/rdio/live/1pm</code></pre>
 <h4 id="pick-any-arbitrary-time-slice">Pick any arbitrary time slice</h4>
 <p>If Alice just wants to listen to say, the Darkwaves show directly, from the command line, without all the hassle, she can specify a date, time, and duration, such as this:</p>
 <pre><code>$ mplayer2 http://indycast.net/rdio/at/monday_2am/2hr</code></pre>
-<h4 id="should-be-usable-by-novices">Should be usable by novices</h4>
-<p>If Alice doesn't really know how to use computers that well, there is a <a href="http://indycast.net">web front end</a> that explains what indycast is and has a simple and attractive user-interface that she can operate on the device of her choosing.</p>
 <h4 id="logos">Logos</h4>
 <p>Logos for the podcasts are generated server-side at indycast.net so as not to require any image-processing or font dependencies on the servers themselves. The background tint is chosen based on the word itself in order to create a diverse but distinct palette for the various logos.</p>
 <p>The schema for generating them looks like the following</p>
@@ -381,5 +383,14 @@ A Distributed Open Source DVR for Independent Radio
 <p>Since there was no library out there that did just the headers, one was written for this. It scans headers, hopping around the file, making a number of assumptions about things (such as CBR encoding) and as a result, audio can be brought down from the cloud storage, stitched together, and then sliced in under a second.</p>
 <p>Generally speaking, since the user is expecting to hear 1 or 2 hours of audio, this delay doesn't feel unusual.</p>
 <p>Bitrates are computed based on how many bits transit over the connection in a given duration as opposed to being internally taken from the file itself. This is a much more direct computation and the sample size is large enough to avoid any errors.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>I hope you enjoyed reading this and use indycast. I've been working full-time, 7 days a week on this since June 2015. I encourage you to become part of the community. If there are stations you'd like to support, or better yet, money you'd like to donate, <a href="https://github.com/kristopolous/DRR/wiki">a wiki has been set up</a> describing:</p>
+<ul>
+<li>How to run your own server</li>
+<li>The current cost and server architecture</li>
+</ul>
+<p>I also encourage you to <a href="https://github.com/kristopolous/DRR">pull down the code</a> which I have taken a serious effort on to be consistent and well-documented. If you find issues, please feel free to send a pull-request.</p>
+<p>Thanks for reading.</p>
+<p>~chris.</p>
 </body>
 </html>
