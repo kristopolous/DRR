@@ -3,16 +3,24 @@ include_once('db.php');
 $ua = strtolower($_SERVER['HTTP_USER_AGENT']);
 $device = 'device';
 
-if(strpos($ua, 'mobile') != False) {
+if(strpos($ua, 'curl') !== False) {
+  echo "The current stations are healthy:\n\n";
+  foreach(active_stations() as $station) {
+    echo ' * http://indycast.net/' . $station['callsign'] . "/\n";
+  }
+  echo "\nQuery the /site-map end-point to see\nsupported features on a per-station basis.\n\nThanks for using $ua ;-).\n";
+  exit(0);
+}
+if(strpos($ua, 'mobile') !== False) {
   $device = 'smartphone';
 }
-if(strpos($ua, 'android') != False) {
+if(strpos($ua, 'android') !== False) {
   $device = 'Android smartphone';
 }
-if(strpos($ua, 'iOS') != False or strpos($ua, 'iPhone') != False) {
+if(strpos($ua, 'iOS') !== False or strpos($ua, 'iPhone') != False) {
   $device = 'Apple device';
 }
-if(strpos($ua, 'windows') != False) {
+if(strpos($ua, 'windows') !== False) {
   $device = 'Windows machine';
 }
 
