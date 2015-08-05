@@ -117,16 +117,22 @@ def server_manager(config):
   # From http://stackoverflow.com/questions/13317536/get-a-list-of-all-routes-defined-in-the-app
   @app.route("/site-map")
   def site_map():
-    """ Shows all the end points supported by the current server. """
+    """ 
+    Shows all the end points supported by the current server, the options 
+    and the documentation.
+    """
     output = []
+
     for rule in app.url_map.iter_rules():
 
+      if rule.endpoint == 'static': continue
+     
       options = {}
       for arg in rule.arguments:
         options[arg] = "[{0}]".format(arg)
 
       url = url_for(rule.endpoint, **options)
-      line = urllib.unquote("{:25s} {}".format(rule.endpoint, url))
+      line = urllib.unquote("{:15s} {}".format(url, app.view_functions[rule.endpoint].__doc__))
       output.append(line)
 
     return Response('\n'.join(output), mimetype='text/plain')
@@ -134,13 +140,18 @@ def server_manager(config):
 
   @app.route('/uuid')
   def my_uuid():
-    """ Returns this servers uuid """
+    """ 
+    Returns this server's uuid which is generated each time it is run.
+    This is used to determine whether this is the official server or not.
+    """
     return misc.config['uuid']
 
 
   @app.route('/db')
   def database():
-    """ Backs up the current sqlite3 db and sends it over the net. """
+    """ 
+    Backs up the current sqlite3 db and sends a gzipped version of it as the response.
+    """
     filename = '%s/%s-%s.gz' % (misc.DIR_BACKUPS, misc.config['callsign'], time.strftime('%Y%m%d-%H%M', time.localtime()))
     os.popen('sqlite3 config.db .dump | gzip -9 > %s' % filename)
     time.sleep(1)
@@ -160,7 +171,10 @@ def server_manager(config):
 
   @app.route('/prune')
   def prune():
-    """ Starts the prune process which cleans up and offloads audio files. """
+    """ 
+    Starts the prune sub-process which cleans up and offloads audio files 
+    following the rules outlined in the configuration file (viewable with the stats call)
+    """
     cloud.prune()
     return "Pruning started"
 
@@ -206,7 +220,9 @@ def server_manager(config):
 
   @app.route('/restart')
   def restart():
-    """ Restarts an instance. """
+    """ 
+    Restarts an instance. This does so in a gapless non-overlapping way.
+    """
     cwd = os.getcwd()
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -247,7 +263,9 @@ def server_manager(config):
   def heartbeat():
     """
     A low resource version of the /stats call ... this is invoked
-    by the server health check.
+    by the server health check.  Only the uptime of the server is reported.
+    
+    This allows us to check if a restart happened between invocations.
     """
     return jsonify({
       'uptime': TS.uptime()
@@ -256,7 +274,10 @@ def server_manager(config):
 
   @app.route('/stats')
   def stats():
-    """ Reports various statistical metrics on a particular server """
+    """ 
+    Reports various statistical metrics on a particular server.  
+    Use this with the graph.py tool to see station coverage.
+    """
     misc.am_i_official()
     db = DB.connect()
 
@@ -280,7 +301,14 @@ def server_manager(config):
   # Using http://flask.pocoo.org/docs/0.10/patterns/streaming/ as a reference.
   @app.route('/live/<start>')
   def live(start, offset_min=0):
-    """ Sends off a live-stream equivalent """
+    """ 
+    Sends off a live-stream equivalent.  Two formats are supported:
+
+     * duration - In the form of strings such as "1pm" or "2:30pm"
+     * offset - starting with a negative "-", this means "from the present".
+        For instance, to start the stream from 5 minutes ago, you can do "-5"
+
+    """
     if start[0] == '-':
       # dump things like min or m
       start = re.sub('[a-z]', '', start)
@@ -327,6 +355,17 @@ def server_manager(config):
 
   @app.route('/at/<start>/<duration_string>')
   def at(start, duration_string='1hr'):
+    """
+    Sends a stream using a human-readable (and human-writable) definition at start time.
+    This uses the dateutils.parser library and so strings such as "Monday 2pm" are accepted.
+
+    Because the space, 0x20 is such a pain in HTTP, you can use "_", "-" or "+" to signify it.
+    For instance,
+
+        /at/monday_2pm/1hr
+
+    Will work fine
+    """
     start = re.sub('[+_-]', ' ', start)
     try:
       dt = dt_parser.parse(start)
@@ -346,8 +385,12 @@ def server_manager(config):
   @app.route('/<weekday>/<start>/<duration_string>/<showname>')
   def stream(weekday, start, duration_string, showname):
     """
-    Returns an xml file based on the weekday, start and duration
-    from the front end.
+    Returns a podcast xml file based on the weekday, start and duration.
+    This is designed to be read by podcasting software such as podkicker, itunes, and feedburner.
+
+    It should also be viewable in a modern web browser.
+
+    If you can find a podcaster that's not supported, please send an email to indycast@googlegroups.com.
     """
     
     # Supports multiple weekdays
