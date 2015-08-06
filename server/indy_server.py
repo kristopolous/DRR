@@ -562,7 +562,7 @@ def stream_download(callsign, url, my_pid, file_name):
 
   misc.change_proc_name("%s-download" % callsign)
 
-  nl = {'stream': False}
+  nl = {'stream': None}
 
   def dl_stop(signal, frame):
     sys.exit(0)
@@ -661,13 +661,13 @@ def stream_manager():
   # Number of seconds to be cycling
   cycle_time = misc.config['cycletime']
 
-  process = False
-  process_next = False
+  process = None
+  process_next = None
 
   server_pid = Process(target=server_manager, args=(misc.config,))
   server_pid.start()
 
-  file_name = False
+  file_name = None
 
   # A wrapper function to start a donwnload process
   def download_start(file_name):
@@ -817,7 +817,7 @@ def stream_manager():
       if process_next and process_next.is_alive():
         process_next.terminate()
 
-      process_next = process = False
+      process_next = process = None
 
     #
     # This needs to be on the outside loop in case we are doing a cascade
@@ -837,7 +837,7 @@ def stream_manager():
       process = process_next
 
       # and then clear out the old process_next pointer
-      process_next = False 
+      process_next = None
 
     # Increment the amount of time this has been running
     DB.incr('uptime', cycle_time)
@@ -889,7 +889,7 @@ def read_config(config):
     # The (second) time between cascaded streams
     'cascadetime': 60 * 15,
 
-    # Cloud credenials (ec2, azure etc)
+    # Cloud credentials (ec2, azure etc)
     'cloud': False,
 
     #
@@ -1005,7 +1005,7 @@ def read_config(config):
   misc.config['uuid'] = str(uuid.uuid4())
 
   signal.signal(signal.SIGINT, misc.shutdown)
-  signal.signal(signal.SIGHUP, misc.donothing)
+  signal.signal(signal.SIGHUP, misc.do_nothing)
 
 
 if __name__ == "__main__":

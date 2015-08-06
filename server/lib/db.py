@@ -232,7 +232,7 @@ def get(key, expiry=0, use_cache=True):
     g_params[key] = res[0]
     return res[0]
 
-  return False
+  return None
 
 
 def unregister_stream(name, do_all=False):

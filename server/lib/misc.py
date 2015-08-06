@@ -81,7 +81,7 @@ config = {}
 pid = {}
 lockMap = {'prune': Lock()}
 
-def donothing(signal, frame=False):
+def do_nothing(signal, frame=None):
   """ Catches signals that we would rather just ignore """
   return True
 
@@ -115,7 +115,7 @@ def public_config():
   global config 
   return {k: v for k, v in config.items() if k != '_private'}
 
-def shutdown(signal=15, frame=False):
+def shutdown(signal=15, frame=None):
   """ Shutdown is hit on the keyboard interrupt """
   global queue, start_time, config
 
@@ -161,7 +161,7 @@ def shutdown(signal=15, frame=False):
   sys.exit(0)
 
 
-def manager_is_running(pid=False):
+def manager_is_running(pid=None):
   """
   Checks to see if the manager is still running or if we should 
   shutdown.  It works by sending a signal(0) to a pid and seeing

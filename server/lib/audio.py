@@ -731,7 +731,7 @@ def stitch(file_list, force_stitch=False):
 
   if start_index == len(file_list):
     logging.error("Unable to find any files matching in the list for stitching.")
-    return False
+    return None
 
   siglist, offset = signature(first['name'])
 
@@ -763,7 +763,7 @@ def stitch(file_list, force_stitch=False):
     second['siglist'] = siglist
     second['offset'] = offset
 
-    isFound = True
+    is_found = True
 
     pos = -1
     try:
@@ -771,26 +771,26 @@ def stitch(file_list, force_stitch=False):
         # The pos will be the same frame in the second stream as the first.
         pos = second['siglist'].index(first['siglist'][-2], pos + 1)
 
-        isFound = True
+        is_found = True
         for i in xrange(5, 1, -1):
           if second['siglist'][pos - i + 2] != first['siglist'][-i]:
-            isFound = False
+            is_found = False
             logging.warn("Indices @%d do not match between %s and %s" % (pos, first['name'], second['name']))
             break
 
         # If we got here it means that everything matches
-        if isFound: break 
+        if is_found: break 
         else: continue
 
     except Exception as exc:
       logging.warn("Cannot find indices between %s and %s" % (first['name'], second['name']))
       pos = 1
 
-    if isFound or force_stitch:
+    if is_found or force_stitch:
       # Since the pos was the same frame, if we use that then we essentially
       # use the same frame twice ... so we need to start one ahead of it.  The
       # easiest way to do this is just to increment the pos var.
-      if isFound:
+      if is_found:
         pos += 1
         """
         import binascii

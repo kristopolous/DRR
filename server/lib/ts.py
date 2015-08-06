@@ -130,7 +130,7 @@ def to_utc(day_str, hour):
     day_number = ['mon','tue','wed','thu','fri','sat','sun'].index(day_str.lower())
 
   except Exception as exc:
-    return False
+    return None
 
   local = day_number * (60 * 24)
 
@@ -151,7 +151,7 @@ def to_utc(day_str, hour):
       local += int(my_time.groups()[1])
 
   if not my_time:
-    return False
+    return None
 
   # time is tricky if the hr is 12
   ampm = my_time.groups()[-1]

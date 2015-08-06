@@ -369,7 +369,7 @@ def prune_process(lockMap, reindex=False):
   # Remove all alices older than 4 hours.
   slice_cutoff = TS.unixtime('prune') - 0.1667 * TS.ONE_DAY_SECOND
 
-  cloud_cutoff = False
+  cloud_cutoff = None
   if misc.config['cloud']:
     cloud_cutoff = TS.unixtime('prune') - misc.config['cloudarchive'] * TS.ONE_DAY_SECOND
 
