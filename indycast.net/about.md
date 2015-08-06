@@ -21,10 +21,10 @@ Essentially the existing landscape is laborious to use, inconsistent, technicall
 
 The project's objectives:
 
- * **Non-commercial:** A way to provide listener-supported radio in a convenient manner.
  * **Free:** Trying to build a community instead of always looking to make a buck.
  * **Distributed:** People from other places can join the network using their stations without much effort.
  * **Hackable:** Every device and reasonable way of listening to content is supported.
+ * **Non-commercial:** A way to provide listener-supported radio in a convenient manner.
 
 ## Architecture
 
@@ -38,35 +38,33 @@ The solution seeks to be:
  * **Efficient**: Able to be use minimal disk and network resources.
  * **Self-contained**: Able to be run multiple times on the same machine for different stations.
 
-It is **not**:
-
- * Requiring of significant dependencies.
- * Language-centric with arcane knowledge needed in order to get it running.
-
-It's in Python 2.7, Flask, and SQLite 3. The audio library is written by hand (more below on why)
+The stack is Python 2.7 and SQLite 3. The audio library is written by hand (more below on why)
 
 ## User-experience
 
 ### Being an administrator
 
-Unlike with other projects, a minimal configuration to get a server up and running can be done in just 6 freakin lines! 
+Unlike with other projects, a minimal configuration to get a server up and running can be done in **just 6 lines**! 
 There are 14 example configurations which are about 7 lines each.
 
-There's a script to install dependencies but again, unlike with other things, it's 12 lines ... so if it doesn't work on your
-system, just cat the file and install the stuff yourself.
+There's a script to install dependencies but again, unlike with other things, [it's 12 lines](https://github.com/kristopolous/DRR/blob/master/bootstrap.sh) ... so if it doesn't work on your system, just `cat bootstrap.sh` and install the stuff yourself.
 
 Don't you hate it when some blackbox frameworky magic doesn't work and you helplessly try to figure out what's the code and what's the framework ... geez, I hate that.  No, not here.
 
-In fact, I've created a user-story for a would-be admin. Every interaction with a computer should be a thought-out interface.
+In fact, I've created a user-story for a would-be administrator. Every interaction with a computer should be a thought-out interface.
 
-#### Easy set-up
+#### Get a server up and running in under 60 seconds.
 Alice is interested in adding her station, RDIO.  She 
 
- 1. Git clones [the repository](https://github.com/kristopolous/DRR).
- 1. Runs a [small shell script](https://github.com/kristopolous/DRR/blob/master/bootstrap.sh) `bootstrap.sh` to install dependencies.
- 1. Goes to RDIO's website and finds the live stream url.
+ 1. Git clone [the repository](https://github.com/kristopolous/DRR): `git clone --depth=1 https://github.com/kristopolous/DRR`
+ 1. Runs a [small shell script](https://github.com/kristopolous/DRR/blob/master/bootstrap.sh) `bootstrap.sh` to install dependencies: `cd DRR; ./bootstrap.sh`
+ 1. Goes to RDIO's website and finds the live stream url. <sup>1</sup>
  1. Puts the URL in a configuration file, say `server/configs/rdio.txt`.
- 1. Runs the server with this configuration file, `server/indy_server.py -c server/configs/rdio.txt`.
+ 1. Runs the server with this configuration file, `./indy_server.py -c configs/rdio.txt`.
+
+<small>[1] or use one of the examples: `./indy_server.py -c configs/kpcc.txt`</small>
+
+With a fresh install of a Linode VPS instance, I was able to get a server up and running in <a href=images/record.png>23.87 seconds</a>.
 
 #### Self-contained
 

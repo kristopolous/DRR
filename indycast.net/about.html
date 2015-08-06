@@ -137,10 +137,10 @@ A Distributed Open Source DVR for Independent Radio
 <h2 id="making-things-easy-and-powerful">Making things easy and powerful</h2>
 <p>The project's objectives:</p>
 <ul>
-<li><strong>Non-commercial:</strong> A way to provide listener-supported radio in a convenient manner.</li>
 <li><strong>Free:</strong> Trying to build a community instead of always looking to make a buck.</li>
 <li><strong>Distributed:</strong> People from other places can join the network using their stations without much effort.</li>
 <li><strong>Hackable:</strong> Every device and reasonable way of listening to content is supported.</li>
+<li><strong>Non-commercial:</strong> A way to provide listener-supported radio in a convenient manner.</li>
 </ul>
 <h2 id="architecture">Architecture</h2>
 <p>There's no money behind this. It's designed to be cheap with a low barrier to entry for participation. People are encouraged to run and manage their own servers for their favorite radio station.</p>
@@ -152,27 +152,24 @@ A Distributed Open Source DVR for Independent Radio
 <li><strong>Efficient</strong>: Able to be use minimal disk and network resources.</li>
 <li><strong>Self-contained</strong>: Able to be run multiple times on the same machine for different stations.</li>
 </ul>
-<p>It is <strong>not</strong>:</p>
-<ul>
-<li>Requiring of significant dependencies.</li>
-<li>Language-centric with arcane knowledge needed in order to get it running.</li>
-</ul>
-<p>It's in Python 2.7, Flask, and SQLite 3. The audio library is written by hand (more below on why)</p>
+<p>The stack is Python 2.7 and SQLite 3. The audio library is written by hand (more below on why)</p>
 <h2 id="user-experience">User-experience</h2>
 <h3 id="being-an-administrator">Being an administrator</h3>
-<p>Unlike with other projects, a minimal configuration to get a server up and running can be done in just 6 freakin lines! There are 14 example configurations which are about 7 lines each.</p>
-<p>There's a script to install dependencies but again, unlike with other things, it's 12 lines ... so if it doesn't work on your system, just cat the file and install the stuff yourself.</p>
+<p>Unlike with other projects, a minimal configuration to get a server up and running can be done in <strong>just 6 lines</strong>! There are 14 example configurations which are about 7 lines each.</p>
+<p>There's a script to install dependencies but again, unlike with other things, <a href="https://github.com/kristopolous/DRR/blob/master/bootstrap.sh">it's 12 lines</a> ... so if it doesn't work on your system, just <code>cat bootstrap.sh</code> and install the stuff yourself.</p>
 <p>Don't you hate it when some blackbox frameworky magic doesn't work and you helplessly try to figure out what's the code and what's the framework ... geez, I hate that. No, not here.</p>
-<p>In fact, I've created a user-story for a would-be admin. Every interaction with a computer should be a thought-out interface.</p>
-<h4 id="easy-set-up">Easy set-up</h4>
+<p>In fact, I've created a user-story for a would-be administrator. Every interaction with a computer should be a thought-out interface.</p>
+<h4 id="get-a-server-up-and-running-in-under-60-seconds.">Get a server up and running in under 60 seconds.</h4>
 <p>Alice is interested in adding her station, RDIO. She</p>
 <ol style="list-style-type: decimal">
-<li>Git clones <a href="https://github.com/kristopolous/DRR">the repository</a>.</li>
-<li>Runs a <a href="https://github.com/kristopolous/DRR/blob/master/bootstrap.sh">small shell script</a> <code>bootstrap.sh</code> to install dependencies.</li>
-<li>Goes to RDIO's website and finds the live stream url.</li>
+<li>Git clone <a href="https://github.com/kristopolous/DRR">the repository</a>: <code>git clone --depth=1 https://github.com/kristopolous/DRR</code></li>
+<li>Runs a <a href="https://github.com/kristopolous/DRR/blob/master/bootstrap.sh">small shell script</a> <code>bootstrap.sh</code> to install dependencies: <code>cd DRR; ./bootstrap.sh</code></li>
+<li>Goes to RDIO's website and finds the live stream url. <sup>1</sup></li>
 <li>Puts the URL in a configuration file, say <code>server/configs/rdio.txt</code>.</li>
-<li>Runs the server with this configuration file, <code>server/indy_server.py -c server/configs/rdio.txt</code>.</li>
+<li>Runs the server with this configuration file, <code>./indy_server.py -c configs/rdio.txt</code>.</li>
 </ol>
+<p><small>[1] or use one of the examples: <code>./indy_server.py -c configs/kpcc.txt</code></small></p>
+<p>With a fresh install of a Linode VPS instance, I was able to get a server up and running in <a href=images/record.png>23.87 seconds</a>.</p>
 <h4 id="self-contained">Self-contained</h4>
 <p>When the server starts up, it</p>
 <ul>
