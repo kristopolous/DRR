@@ -17,36 +17,54 @@ include_once('common.php');
     <link href='http://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'>
   </head>
   <body>
-
-
 <style>
 label { font-size: 0.8em}
 </style>
+    <div id="main">
 
-<h2>Send a reminder</h2>
+      <header class="major container 75%">
+        <h2>
+        Set a Reminder
+        </h2>
+      </header>
+      <div class="box alt container">
+        <section class="feature left">
+          <a href="#" class="image icon fa-signal"><img src="/images/pic01.jpg" alt="" /><div id="description"></div></a>
+          <div class="content">
+            <h3>Choose the station</h3>
+            <div id='station-search-box'>
+              <i class="fa fa-search"></i>
+              <input type="text" placeholder="Search" id='station-query'>
+            </div>
+            <ul class="radio-group group" id="station"><?php
+              foreach(active_stations() as $station) {
+                echo '<li><a desc="' . $station['description'] . '" class="button">' . ($station['callsign']) . '</a></li>';
+              }
+            ?></ul>
+            <a href="#volunteer">Volunteer to add a station!</a>
+          </div>
+        </section>
+      </div>
 <form method='post'>
-  <label for="email">Email</label>
+  <label for="email">Email to Remind</label>
   <input type='email' name='email'>
-  <div id="callsign-chooser">
-    <div id="callsign-preselect">
-      Show the callsign if previously set
-
-      change callsign link
-    </div>
-    <div id="callsign-menu">
-      <ul class="radio-group group" id="station"><?php
-        foreach(active_stations() as $station) {
-          echo '<li><a desc="' . $station['description'] . '" class="button">' . ($station['callsign']) . '</a></li>';
-        }
-      ?></ul>
-      get the active stations
-    </div>
+  <label for="duration">What period?</label>
+  <ul class="week-group group" id="duration">
+    <li><a data="30" class="button">Current half hour</a></li>
+    <li><a data="1hr" class="button">Current hour</a></li>
+    <li><a data="1hr30" class="button">Custom</a></li>
+  </ul>
+  <div id="callsign-preselect">
+    Show the callsign if previously set
+  </div>
+  <div id="callsign-menu">
+    <ul class="radio-group group" id="station"><?php
+      foreach(active_stations() as $station) {
+        echo '<li><a desc="' . $station['description'] . '" class="button">' . ($station['callsign']) . '</a></li>';
+      }
+    ?></ul>
   </div>
 
-  <input type='text' name='callsign'>
-  suggestions of blocks of time
-  We presume that the time is local (although we will normalize it if it isn't) so
-  we just find the closest half hour and hour mark ... 
   <label for="notes">Notes</label>
   <input type='text' name='notes'>
   <button>Send me a reminder</button>
@@ -56,9 +74,8 @@ label { font-size: 0.8em}
 <p>Miss the beginning of something and want to catch it later?</p>
 <h3>We'll send you a reminder with a link to the audio. For free of course.</h3>
 
-<p>Simply tell the email you'd like to use, the station you are listening to and pick a time slot</p>
 <p>You can even leave notes for your future-self telling yourself why you think it's so awesome.</p>
-<p>Later on, when the show is over, an email reminder will be sent to you with a link and the notes you leave.</p>
+<p>Later on, when the show is over, an email will be sent to you with a link and the notes you leave.</p>
 
 <p><b>Privay policy:</b> We don't collect email addresses and we delete everything from our database after we send the email off to you.  Don't worry, we're on your side!</p>
 
