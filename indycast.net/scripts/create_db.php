@@ -2,7 +2,9 @@
 
 include_once('../common.php');
 
-$params = implode (',', sql_kv($schema, '', ''));
+foreach($schema as list($tbl_name, $tbl_schema)) {
+  $params = implode (',', sql_kv($tbl_schema, '', ''));
 
-$db->exec('create table stations(' . $params . ')');
+  $db->exec('create table ' . $tbl_name . ' (' . $params . ')');
+}
 

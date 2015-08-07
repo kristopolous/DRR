@@ -3,28 +3,44 @@ session_start();
 $db = new SQLite3("../db/main.db");
 
 $schema = [
-  'id'          => 'INTEGER PRIMARY KEY', 
-  
-  // FCC callsign or some other unique reference
-  'callsign'    => 'TEXT',
+  'stations' => [
+    'id'          => 'INTEGER PRIMARY KEY', 
+    
+    // FCC callsign or some other unique reference
+    'callsign'    => 'TEXT',
 
-  // an integer in megahertz * 100, such as 8990 or 9070 ... this matches the port usually.
-  'frequenty'   => 'INTEGER DEFAULT 0',
-  'description' => 'TEXT',
-  'base_url'    => 'TEXT',
-  'last_seen'   => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
-  'first_seen'  => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
-  'pings'       => 'INTEGER DEFAULT 0',
-  'drops'       => 'INTEGER DEFAULT 0',
-  'latency'     => 'INTEGER DEFAULT 0',
-  'active'      => 'INTEGER DEFAULT 1',
+    // an integer in megahertz * 100, such as 8990 or 9070 ... this matches the port usually.
+    'frequenty'   => 'INTEGER DEFAULT 0',
+    'description' => 'TEXT',
+    'base_url'    => 'TEXT',
+    'last_seen'   => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
+    'first_seen'  => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
+    'pings'       => 'INTEGER DEFAULT 0',
+    'drops'       => 'INTEGER DEFAULT 0',
+    'latency'     => 'INTEGER DEFAULT 0',
+    'active'      => 'INTEGER DEFAULT 1',
 
-  // Where the station is
-  'lat'         => 'DOUBLE default 0',
-  'long'        => 'DOUBLE default 0',
+    // Where the station is
+    'lat'         => 'DOUBLE default 0',
+    'long'        => 'DOUBLE default 0',
 
-  'log'         => 'TEXT',
-  'notes'       => 'TEXT'
+    'log'         => 'TEXT',
+    'notes'       => 'TEXT'
+  ],
+
+  // The reminders table is to email someone
+  // when they set a reminder for a particular station.
+  'reminders' => [
+    'id'          => 'INTEGER PRIMARY KEY', 
+
+    'start_time'  => 'TIMESTAMP',
+    'end_time'    => 'TIMESTAMP',
+
+    'callsign'    => 'TEXT',
+    'email'       => 'TEXT',
+
+    'notes'       => 'TEXT'
+  ]
 ];
 
 function is_read_only() {
