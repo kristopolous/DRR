@@ -1,0 +1,10 @@
+Subject: [indycast] {{ notes }} From {{ date }}
+
+Hi, You or someone using this email address requested to be notified of a show
+that was from {{ begin }} to {{ end }} on {{ date }} with the notes {{ notes
+}}.
+
+Well here is a link for you ... please listen within the next week or so,
+otherwise all bets are off.  Thanks
+
+{{ link }}
