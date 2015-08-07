@@ -1,9 +1,16 @@
 <?php 
 include_once('common.php'); 
 ?>
-Set a reminder
+<h2>Set a reminder</h2>
+<p>Listening to something right now but have to run and don't have the time to finish it?</p>
+<p>Miss the beginning of something and wnat to catch it later?</p>
+<h3>We'll send you a reminder with a link to the audio. For free of course.</h3>
 
-Get user info, current time, last email, last station
+<p>Simply tell the email you'd like to use, the station you are listening to and pick a time slot</p>
+<p>You can even leave notes for your future-self telling yourself why you think it's so awesome.</p>
+<p>Later on, when the show is over, an email reminder will be sent to you with a link and the notes you leave.</p>
+
+<p><b>Privay policy:</b> We don't collect email addresses and we delete everything from our database after we send the email off to you.  Don't worry, we're on your side!</p>
 
 <form method='post'>
   <input type='email' name='email'>
