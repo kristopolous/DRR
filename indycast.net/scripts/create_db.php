@@ -1,5 +1,6 @@
-<?php
-include_once('common.php');
+#!/usr/bin/php
+
+include_once('../common.php');
 
 $params = implode (',', sql_kv($schema, '', ''));
 

@@ -119,3 +119,13 @@ function add_station($dirty) {
   }
 }
 
+// Return all the call-signs ordered by the long/lat using a simple 
+// euclidean distance
+function order_stations_by_distance($long, $lat) {
+}
+
+// Looks for a user based on their ip address and the geoip lookup database,
+// returning their longitude and latitude
+function where_am_i() {
+}
+
