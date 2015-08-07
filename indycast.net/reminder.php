@@ -1,4 +1,6 @@
-<? include_once('db.php'); ?>
+<?php 
+include_once('common.php'); 
+?>
 Set a reminder
 
 Get user info, current time, last email, last station
@@ -23,3 +25,20 @@ Get user info, current time, last email, last station
   <input type='text' name='notes'>
   <button>Send me the link later</buton>
 </form>
+
+<script>
+function ls(key, value) {
+  if (arguments.length == 1) {
+    return localStorage[key] || false;
+  } else {
+    localStorage[key] = value;
+  }
+  return value;
+}
+
+var
+  email = ls('email'),
+  last_station = ls('last');
+
+  
+</script>
