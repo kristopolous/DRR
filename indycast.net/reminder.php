@@ -36,9 +36,14 @@ function ls(key, value) {
   return value;
 }
 
+// 2 range suggestions 30 min, 1 hr are always offered.
+// the 1 hour is always the current hour and the 30 minute
+// is always the nearest 30 minute that is the present
 var
   email = ls('email'),
-  last_station = ls('last');
+  last_station = ls('last'),
+  right_now = new Date(),
+  last_minute = right_now.getMinutes() % 30;
 
   
 </script>
