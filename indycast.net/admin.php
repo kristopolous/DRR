@@ -1,4 +1,4 @@
-<?php include_once('db.php'); ?>
+<?php include_once('common.php'); ?>
 <!doctype html5>
 <html><head>
 <title>admin | indycast</title>

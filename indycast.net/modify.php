@@ -1,5 +1,5 @@
 <?php
-include_once('db.php');
+include_once('common.php');
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
   if(isset($_POST['_action'])) {

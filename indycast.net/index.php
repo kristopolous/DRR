@@ -1,5 +1,5 @@
 <?php
-include_once('db.php');
+include_once('common.php');
 $ua = strtolower($_SERVER['HTTP_USER_AGENT']);
 $device = 'device';
 

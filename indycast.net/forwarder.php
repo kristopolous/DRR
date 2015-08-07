@@ -1,5 +1,5 @@
 <?php
-include_once('db.php');
+include_once('common.php');
 $parts = explode('/', $_SERVER['QUERY_STRING']);
 $callsign = array_shift($parts);
 $request = implode('/', $parts);
