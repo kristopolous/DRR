@@ -55,8 +55,8 @@
     border-bottom: 1px solid rgba(0,34,68,0.2);
   }
   
-  h2 ~ p { margin-left: 20px; }
-  h3 ~ table, h3 ~ p, h3 ~ ul, h3 ~ ol, h3 ~ pre { margin-left: 40px; }
+  h2 ~ p, h2 ~ iframe, { margin-left: 20px; }
+  h3 ~ table, h3 ~ iframe, h3 ~ p, h3 ~ ul, h3 ~ ol, h3 ~ pre { margin-left: 40px; }
   
   th, td {
     padding-right: 12px;
@@ -160,7 +160,7 @@ A Distributed Open Source DVR for Independent Radio
 <p>There's a script to install dependencies but again, unlike with other things, <a href="https://github.com/kristopolous/DRR/blob/master/bootstrap.sh">it's 12 lines</a> ... so if it doesn't work on your system, just <code>cat bootstrap.sh</code> and install the stuff yourself.</p>
 <p>Don't you hate it when some blackbox frameworky magic doesn't work and you helplessly try to figure out what's the code and what's the framework ... geez, I hate that. No, not here.</p>
 <p>In fact, I've created a user-story for a would-be administrator. Every interaction with a computer should be a thought-out interface.</p>
-<h4 id="get-a-server-up-and-running-in-under-60-seconds.">Get a server up and running in under 60 seconds.</h4>
+<h4 id="get-a-server-up-and-running-in-under-2-minutes.">Get a server up and running in under 2 minutes.</h4>
 <p>Alice is interested in adding her station, RDIO. She</p>
 <ol style="list-style-type: decimal">
 <li>Git clone <a href="https://github.com/kristopolous/DRR">the repository</a>: <code>git clone --depth=1 https://github.com/kristopolous/DRR</code></li>
@@ -171,6 +171,9 @@ A Distributed Open Source DVR for Independent Radio
 </ol>
 <p><small>[1] or use one of the examples: <code>./indy_server.py -c configs/kpcc.txt</code></small></p>
 <p>With a fresh install of a Linode VPS instance, I was able to get a server up and running in <a href=images/record.png>23.87 seconds</a>.</p>
+<p>Here I am, with a bunch of terrible typos, getting it up and running ... this is definitely not a speed run:</p>
+<iframe width="420" height="315" src="https://www.youtube.com/embed/8ZnFI1ncFcQ" frameborder="0" allowfullscreen>
+</iframe>
 <h4 id="self-contained">Self-contained</h4>
 <p>When the server starts up, it</p>
 <ul>
@@ -363,8 +366,20 @@ kcrw  kdvs  kpcc  kxlu  wxyc</code></pre>
 <p>The user of the service should be able to use the service in any reasonable way with any reasonable set of expectations.</p>
 <h4 id="should-be-easy-for-novices">Should be easy for novices</h4>
 <p>If Alice doesn't really know how to use computers that well, there is a <a href="http://indycast.net">web front end</a> that explains what indycast is and has a simple and attractive user-interface that she can operate on the device of her choosing.</p>
-<p>However, Alice is a hacker. She has no problem using a command line.</p>
-<p>She's in luck. Powerful things can be done in simple ways using the command line.</p>
+<p>There's <a href="https://github.com/kristopolous/DRR/issues/104">three cognitively distinct</a> ways to think about indycast:</p>
+<ul>
+<li><strong>Podcaster</strong>: A service where you specify time slices to use (I have 4 that I use)</li>
+<li><strong>DVR</strong>: You can start live radio in the past and then pause and scrub it.</li>
+<li><strong>Concierge</strong>: Set an email reminder to listen to a show later.</li>
+</ul>
+<h5 id="whats-a-concierge">What's a Concierge?</h5>
+<p>The Concierge service is the only one that ought to need explanation. Assume Alice is listening to a wonderful lecture, let's say <a href="http://media.bioneers.org/listing/intellectual-ecology-green-chemistry-and-biomimicry-john-warner/">Intellectual Ecology: Green Chemistry and Biomimicry</a> but it's on at an inconvenient time and she has things to do with her life.</p>
+<p>She can <a href="http://indycast.net/reminder">set a reminder</a> which uses <code>localStorage</code> to remember her email address and the last station she selected.</p>
+<p>There she has a convenient selection of specifying the current half hour, 1-hour, or 2-hour time slot. Then she can specify a note such as &quot;John Warner's subversive ideas on chemistry&quot;. And then, at some time later, an email gets sent back to her saying &quot;Hey here's the audio you requested with the notes your specified. Here's a download link&quot;.</p>
+<p>In that way, it's a radio concierge service, looking out for you.</p>
+<h5 id="convenient-for-all-levels-of-interaction">Convenient for all levels of interaction</h5>
+<p>Not only was this technology designed to be used by people who thumb around their smart-phones, but it was also designed for people who do Tux-cosplay at linux conferences and think DefCon is full of posers.</p>
+<p>If you are a hacker, read on. Alice is a hacker. She has no problem using a command line.</p>
 <h4 id="should-make-hackers-do-the-splits-while-shooting-party-poppers">Should make hackers do the splits while shooting <a href=http://i.dailymail.co.uk/i/pix/2014/12/21/24333D7D00000578-0-image-m-13_1419157979609.jpg>party poppers</a></h4>
 <p>The first thing that Alice does is curl the main indycast site.</p>
 <p>Normally this is a stupid idea as she would get a bunch of terribly formatted server-generated HTML, but not with indycast! Here is what she sees:</p>

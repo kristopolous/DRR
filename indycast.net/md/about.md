@@ -53,7 +53,7 @@ Don't you hate it when some blackbox frameworky magic doesn't work and you helpl
 
 In fact, I've created a user-story for a would-be administrator. Every interaction with a computer should be a thought-out interface.
 
-#### Get a server up and running in under 60 seconds.
+#### Get a server up and running in under 2 minutes.
 Alice is interested in adding her station, RDIO.  She 
 
  1. Git clone [the repository](https://github.com/kristopolous/DRR): `git clone --depth=1 https://github.com/kristopolous/DRR`
@@ -65,6 +65,11 @@ Alice is interested in adding her station, RDIO.  She
 <small>[1] or use one of the examples: `./indy_server.py -c configs/kpcc.txt`</small>
 
 With a fresh install of a Linode VPS instance, I was able to get a server up and running in <a href=images/record.png>23.87 seconds</a>.
+
+Here I am, with a bunch of terrible typos, getting it up and running ... this is definitely not a speed run:
+
+
+<iframe width="420" height="315" src="https://www.youtube.com/embed/8ZnFI1ncFcQ" frameborder="0" allowfullscreen></iframe>
 
 #### Self-contained
 
@@ -284,9 +289,29 @@ The user of the service should be able to use the service in any reasonable way 
 #### Should be easy for novices
 If Alice doesn't really know how to use computers that well, there is a [web front end](http://indycast.net) that explains what indycast is and has a simple and attractive user-interface that she can operate on the device of her choosing.
 
-However, Alice is a hacker.  She has no problem using a command line. 
+There's [three cognitively distinct](https://github.com/kristopolous/DRR/issues/104) ways to think about indycast:
 
-She's in luck. Powerful things can be done in simple ways using the command line.
+ * **Podcaster**: A service where you specify time slices to use (I have 4 that I use)
+ * **DVR**: You can start live radio in the past and then pause and scrub it.
+ * **Concierge**: Set an email reminder to listen to a show later.
+
+##### What's a Concierge?
+
+The Concierge service is the only one that ought to need explanation.  Assume Alice is listening to a wonderful lecture, let's say [Intellectual Ecology: Green Chemistry and Biomimicry](http://media.bioneers.org/listing/intellectual-ecology-green-chemistry-and-biomimicry-john-warner/) but it's on at an inconvenient time and she has things to do with her life.
+
+She can [set a reminder](http://indycast.net/reminder) which uses `localStorage` to remember her email address and the last station 
+she selected.
+
+There she has a convenient selection of specifying the current half hour, 1-hour, or 2-hour time slot.  Then she can specify a note such as "John Warner's subversive ideas on chemistry".  And then, at some time later, an email gets sent back to her saying "Hey here's the audio you requested with the notes your specified.  Here's a download link".
+
+In that way, it's a radio concierge service, looking out for you.
+
+##### Convenient for all levels of interaction
+
+Not only was this technology designed to be used by people who thumb around their smart-phones, but it was also designed for people who
+do Tux-cosplay at linux conferences and think DefCon is full of posers.  
+
+If you are a hacker, read on.  Alice is a hacker.  She has no problem using a command line. 
 
 #### Should make hackers do the splits while shooting <a href=http://i.dailymail.co.uk/i/pix/2014/12/21/24333D7D00000578-0-image-m-13_1419157979609.jpg>party poppers</a>
 
