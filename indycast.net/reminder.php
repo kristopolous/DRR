@@ -29,11 +29,13 @@ include_once('common.php');
         padding: 2em 0.5em !important;
       }
     }
+    #podcast-url h3 { font-size: 1.3em }
     #text-container { text-align: left }
     #text-container *  {display: block}
     #text-container label { float:left; width: 70px;clear: both }
     #text-container div { margin-left: 70px;}
     #text-container input {width: 100%;margin-bottom: 1em }
+    .box {margin-bottom: 0}
     
     label { font-size: 0.8em}
     </style>
@@ -52,17 +54,14 @@ include_once('common.php');
               <li><a data="1hr" class="button">Current hr</a></li>
               <li><a data="1hr30" class="button">Custom</a></li>
             </ul>
-          </div>
-          <div class="content">
-            <div id='station-search-box'>
-              <i class="fa fa-search"></i>
-              <input type="text" placeholder="Search" id='station-query'>
-            </div>
+            <label for="station">What station?</label>
             <ul class="radio-group group" id="station"><?php
               foreach(active_stations() as $station) {
                 echo '<li><a desc="' . $station['description'] . '" class="button">' . ($station['callsign']) . '</a></li>';
               }
             ?></ul>
+          </div>
+          <div class="content">
             <div id="text-container">
 
               <label id='email-label' for="email">Your Email</label>
@@ -75,20 +74,20 @@ include_once('common.php');
                 <input type='text' name='notes'>
               </div>
             </div>
+            <div id='podcast-url-container'>
+              <a id="podcast-url">
+                <span id='rss-top'>
+                  <div id='rss-img'>
+                    <i class="fa fa-envelope"></i>
+                  </div>
+                  <div id='rss-header'>
+                    <h3 id='rss-title'>Email me a reminder</h3>
+                  </div>
+                </span>
+              </a>
+            </div>
           </div>
         </section>
-        <div id='podcast-url-container'>
-          <a id="podcast-url">
-            <span id='rss-top'>
-              <div id='rss-img'>
-                <i class="fa fa-envelope"></i>
-              </div>
-              <div id='rss-header'>
-                <h3 id='rss-title'>Email me a reminder</h3>
-              </div>
-            </span>
-          </a>
-        </div>
       </div>
     </div>
     <div id="footer">
@@ -108,6 +107,14 @@ include_once('common.php');
 
           <p><b>Privacy policy:</b> We don't collect email addresses and we delete everything from our database after we send the email off to you.  Don't worry, we're on your side!</p>
         </div>
+        <ul class="icons">
+          <li><a href="https://twitter.com/indycaster" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
+          <li><a href="http://github.com/kristopolous/DRR/" class="icon fa-github"><span class="label">Github</span></a></li>
+        </ul>
+
+        <ul class="copyright">
+          <li>This is an <a href="https://github.com/kristopolous/DRR">open source project</a>.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+        </ul>
       </div>
     </div>
   </body>
