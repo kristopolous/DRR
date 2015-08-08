@@ -1,7 +1,7 @@
 @import url("font-awesome.min.css");
 @import url("http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,400italic,600,600italic,700,700italic");
 
-html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, pre, a, address, big, cite, code, del, dfn, em, img, q, s, small, strike, strong, sub, sup, tt, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend,  caption, tr, th, td, article, aside, details, embed, footer, header, section {
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, pre, a, code, del, em, img, q, s, small, strong, sub, sup, tt, u, i, center, ol, ul, li, form, label, caption, tr, th, td, article, aside,  embed, footer, header, section {
   margin: 0;
   padding: 0;
   border: 0;
@@ -152,9 +152,7 @@ em, i {
 p, ul, ol {
   margin: 0 0 2em 0;
 }
-body {
-  color: #2D2D2D;
-}
+body { color: #1D1D1D; }
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   letter-spacing: 0.125em;
@@ -256,7 +254,7 @@ label {
   text-transform: uppercase;
   margin: 0 0 0.5em 0;
 }
-input[type="text"],
+input[type="text"],input[type='email'],
 select {
   -moz-appearance: none;
   -webkit-appearance: none;
@@ -280,11 +278,11 @@ select {
   display: inline-block;
   height: 42px;
 }
-input[type="text"]:focus, select:focus {
+input[type='email']:focus,input[type="text"]:focus, select:focus {
   background: rgba(224, 224, 224, 0.15);
   border-color: #4eb980;
 }
-input[type="text"], select {
+input[type='email'],input[type="text"], select {
   line-height: 1em;
 }
 ::-webkit-input-placeholder {
@@ -311,9 +309,7 @@ input[type="text"], select {
   display: inline-block;
   position: relative;
 }
-.image img {
-  display: block;
-}
+.image img { display: block; }
 .image.icon {
   -moz-perspective: 500px;
   -webkit-perspective: 500px;
@@ -464,6 +460,7 @@ input[type="submit"].alt,
   box-shadow: inset 0 0 0 1px rgba(224, 224, 224, 0.75);
   color: #544d55;
 }
+input[type='email'].error,
 input[type="text"].error {
   border-color: red;
 }
@@ -556,7 +553,7 @@ input[type="submit"].fit,
 #header {
   background-attachment: scroll,							scroll,					fixed;
   background-image: url("images/top-3200.svg"), url('images/radio.png'), url("images/overlay.png"), url("../../images/header.jpg");
-  background-position: bottom center,					top left,				center center;
+  background-position: bottom center,			top left,				center center;
   background-repeat: repeat-x,						repeat,					no-repeat;
   background-size: 3200px 460px,					auto,					cover;
   color: rgba(255, 255, 255, 0.8);
@@ -616,7 +613,6 @@ input[type="submit"].fit,
     add additional top padding (to move our content out of its way)
     and a negative margin (to move everything up a bit).
   */
-
   margin-top: -260px;
   padding: calc(460px + 6em) 0 10em 0;
   position: relative;
@@ -745,7 +741,7 @@ input[type="submit"].fit,
   #header {
     background-attachment: scroll,							scroll,							scroll;
     background-image: url("images/top-1600.svg"), url('../images/overlay.png'), url("images/overlay.png"), url("../../images/header.jpg");
-    background-size: 1600px 230px,					auto,							cover;
+    background-size: 1600px 230px,	auto,		cover;
     padding: 6em 0 12em 0;
   }
 
@@ -753,10 +749,7 @@ input[type="submit"].fit,
     height: calc(100% - 25px);
   }
 
-  #header:after {
-    height: 25px;
-  }
-
+  #header:after { height: 25px; }
   #header h1 { font-size: 2em; }
   #header p { font-size: 1.15em; }
 
