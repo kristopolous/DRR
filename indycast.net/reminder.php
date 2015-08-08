@@ -20,16 +20,19 @@ include_once('common.php');
     #duration { width: 100 %}
     #duration li { width: 32% }
     #rss-img { font-size: 40px; width: 48px; min-height: auto; height: auto }
-    #rss-header { margin-left: 54px ; min-height: auto}
+    #rss-header { margin-left: 54px ; min-height: auto; margin-top: 3px}
     #podcast-done { display: block }
     #podcast-url { line-height: 0 }
-    .feature .content {
-      padding: 2em 0.5em !important;
+    #podcast-url-container { text-align: center;background: white }
+    @media screen and (max-width: 736px) {
+      .feature .content {
+        padding: 2em 0.5em !important;
+      }
     }
     #text-container { text-align: left }
     #text-container *  {display: block}
-    #text-container label { float:left; width: 80px;clear: both }
-    #text-container div { margin-left: 80px;}
+    #text-container label { float:left; width: 70px;clear: both }
+    #text-container div { margin-left: 70px;}
     #text-container input {width: 100%;margin-bottom: 1em }
     
     label { font-size: 0.8em}
@@ -67,23 +70,25 @@ include_once('common.php');
                 <input id='email-input' type='email' name='email'>
               </div>
 
-              <label for="notes">Notes</label>
+              <label for="notes">Show Notes</label>
               <div>
                 <input type='text' name='notes'>
               </div>
             </div>
-            <a id="podcast-url">
-              <span id='rss-top'>
-                <div id='rss-img'>
-                  <i class="fa fa-envelope"></i>
-                </div>
-                <div id='rss-header'>
-                  <h3 id='rss-title'>Email me a reminder</h3>
-                </div>
-              </span>
-            </a>
           </div>
         </section>
+        <div id='podcast-url-container'>
+          <a id="podcast-url">
+            <span id='rss-top'>
+              <div id='rss-img'>
+                <i class="fa fa-envelope"></i>
+              </div>
+              <div id='rss-header'>
+                <h3 id='rss-title'>Email me a reminder</h3>
+              </div>
+            </span>
+          </a>
+        </div>
       </div>
     </div>
     <div id="footer">
