@@ -15,11 +15,14 @@ include_once('common.php');
     <meta property="og:site_name" content="Indycast" />
     <link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'>
+    <style>
+    #rss-img { font-size: 40px; width: 48px; }
+    #rss-header { margin-left: 54px }
+    #podcast-done { display: block }
+    label { font-size: 0.8em}
+    </style>
   </head>
   <body>
-<style>
-label { font-size: 0.8em}
-</style>
     <div id="main">
 
       <header class="major container 75%">
@@ -61,7 +64,25 @@ label { font-size: 0.8em}
 
   <label for="notes">Notes</label>
   <input type='text' name='notes'>
-  <button>Send me a reminder</button>
+  <footer class="major container">
+    <div id="podcast-done">
+      <a id="podcast-url">
+
+      <span id='rss-top'>
+        <div id='rss-img'>
+          <i class="fa fa-envelope"></i>
+        </div>
+        <div id='rss-header'>
+          <h3 id='rss-title'>Email me a reminder</h3>
+          <span id='rss-time'><%= day %> at <%= time %> on <%= station %></span>
+        </div>
+      </span>
+      <span id='podcast-link'>
+        <%= parts.join(' <br> ') %>
+      </span>
+      </a>
+    </div>
+  </footer>
 </form>
     </div>
     <div id="footer">
