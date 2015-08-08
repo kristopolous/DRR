@@ -37,7 +37,7 @@ include_once('common.php');
     #text-container input {width: 100%;margin-bottom: 1em }
     .box {margin-bottom: 0}
     
-    label { font-size: 0.8em}
+    label { font-size: 0.8em; line-height: 1.3em }
     </style>
   </head>
   <body>
@@ -52,7 +52,7 @@ include_once('common.php');
             <ul class="week-group group" id="duration">
               <li><a data="30" class="button">Current &frac12;hr</a></li>
               <li><a data="1hr" class="button">Current hr</a></li>
-              <li><a data="1hr30" class="button">Custom</a></li>
+              <li><a data="custom" class="button">Custom</a></li>
             </ul>
             <label for="station">What station?</label>
             <ul class="radio-group group" id="station"><?php
@@ -174,21 +174,57 @@ include_once('common.php');
     );
   }
     
-  function easy_bind(map) {
-    if(_.isArray(map)) {
-      _.each(map, function(what) {
-        var node = document.querySelector('#' + what);
+  function easy_bind(list) {
+    _.each(list, function(what) {
+
+      var node = document.querySelector('#' + what);
+
+      if(!node) {
+        node = document.querySelector('input[name="' + what + '"]');
         if(!node) {
-          node = document.querySelector('input[name="' + what + '"]');
-          if(!node) {
-            throw new Error("Can't find anything matching ", what);
-          }
+          throw new Error("Can't find anything matching ", what);
         }
+      }
+
+      if(node.nodeName == 'INPUT') {
+
         $(node).on('blur focus change keyup', function() {
           ev(what, this.value, {node: this});
         });
+
+        ev(what, function(val){ 
+          node.value = val; 
+        });
+
+      } else {
+        $("a", node).on(listenEvent, function(){
+          // This tricks stupid iDevices into not fucking around and screwing with the user.
+          // (Requiring a user to tap twice to select anything.  WTF apple...)
+          var mthis = this;
+
+          setTimeout(function(){
+            ev(what, mthis.getAttribute('data') || mthis.innerHTML);
+          }, 0);
+        });
+
+        ev(what, function(val) {
+          $("a", node).removeClass('selected');
+          $("a:contains(" + val + ")", node).addClass("selected");
+          $("a[data='" + val + "']", node).addClass("selected");
+        });
+      }
+    });
+  }
+
+  function easy_sync(list) {
+    _.each(list, function(what) {
+      if(ls(what)) {
+        ev(what, ls(what));
+      }
+      ev.after(what, function(value) {
+        ls(what, value);
       });
-    }
+    });
   }
 
 
@@ -204,6 +240,9 @@ include_once('common.php');
   //
   var
     email = ls('email'),
+    isiDevice = navigator.userAgent.match(/ip(hone|od|ad)/i),
+    isMobile = true,
+    listenEvent = isiDevice ? 'touchend' : 'click',
     ev = EvDa({start_time: '', end_time: '', station: '', email: '', notes: ''}),
     last_station = ls('last'),
     right_now = new Date(),
@@ -220,10 +259,11 @@ include_once('common.php');
 
   $(function(){
 
-    $("#start,#name").bind('blur focus change keyup',function(){
-      ev(this.id, this.value, {node: this});
-    });
+    easy_bind(['email', 'notes', 'station', 'duration']);
+    easy_sync(['email', 'station']);
+
     $(".big-button").click(function(){
+      console.log(ev(''));
     });
 
   });
