@@ -1,7 +1,7 @@
 @import url("font-awesome.min.css");
 @import url("http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,400italic,600,600italic,700,700italic");
 
-html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, pre, a, code, del, em, img, q, s, small, strong, sub, sup, tt, u, i, center, ol, ul, li, form, label, caption, tr, th, td, article, aside,  embed, footer, header, section {
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, pre, a, code, em, img, q, s, small, strong, sub, sup, tt, u, i, center, ol, ul, li, form, label, caption, tr, th, td, article, aside, embed, footer, header, section {
   margin: 0;
   padding: 0;
   border: 0;
@@ -16,9 +16,7 @@ form {
   margin: 0;
   line-height: 1;
 }
-body {
-  line-height: 1;
-}
+body { line-height: 1; }
 ol, ul {
   list-style: none;
 }
@@ -329,9 +327,7 @@ input[type='email'],input[type="text"], select {
   width: 1em;
   z-index: 1;
 }
-span.image.icon {
-  cursor: default;
-}
+span.image.icon { cursor: default; }
 .icon {
   text-decoration: none;
   border-bottom: none;
@@ -551,11 +547,11 @@ input[type="submit"].fit,
   padding-left: 0;
 }
 #header {
-  background-attachment: scroll,							scroll,					fixed;
+  background-attachment: scroll,			scroll,			fixed;
   background-image: url("images/top-3200.svg"), url('images/radio.png'), url("images/overlay.png"), url("../../images/header.jpg");
-  background-position: bottom center,			top left,				center center;
-  background-repeat: repeat-x,						repeat,					no-repeat;
-  background-size: 3200px 460px,					auto,					cover;
+  background-position: bottom center,	top left,		center center;
+  background-repeat: repeat-x,				repeat,			no-repeat;
+  background-size: 3200px 460px,			auto,			cover;
   color: rgba(255, 255, 255, 0.8);
   padding: 10em 0 20em 0;
   position: relative;
@@ -569,13 +565,11 @@ input[type="submit"].fit,
   width: 1px;
   z-index: 0;
 }
-
 #header:before {
   height: calc(100% - 50px);
   opacity: 0.15;
   top: 0;
 }
-
 #header:after {
   bottom: 0;
   height: 50px;
@@ -914,13 +908,9 @@ input[type="submit"].fit,
     padding-left: 2em;
     padding-right: 2em;
   }
-  #header br {
-    display: none;
-  }
-  #podcast-url {
-    max-width: 100%;
-  }
-  #podcast-url,
+  #header br { display: none; }
+  .big-button { max-width: 100%; }
+  .big-button,
   #podcast-link { 
     overflow: hidden;
   }
@@ -933,7 +923,7 @@ form#donate {
   text-align:center;
   margin-top: 0;
 }
-#podcast-url {
+.big-button {
   text-transform: none;
   white-space: normal;
 }
@@ -971,7 +961,7 @@ form#donate {
   text-align: center;
   padding: 0;
 }
-#podcast-url h3 {
+.big-button h3 {
   font-weight: normal;
   font-size: 1.6em;
   letter-spacing: normal;
@@ -1004,11 +994,11 @@ form#donate {
   display: block; 
   width: 15em;
 }
-#podcast-url img {
+.big-button img {
   vertical-align: bottom;
   display: inline-block;
 }
-#podcast-url {
+.big-button {
   cursor: pointer;
   color: white;
   font-weight: bold;
@@ -1143,7 +1133,7 @@ small {
   #footer .copyright li a:hover, #footer .copyright li span:hover {
     color: #ffffff;
   }
-  #podcast-url:hover {
+  .big-button:hover {
     background: #3C9767;
     box-shadow: inset 0 0 10px 3px rgba(78, 185, 128, 0.85);
   }
