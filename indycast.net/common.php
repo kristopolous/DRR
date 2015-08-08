@@ -143,5 +143,25 @@ function order_stations_by_distance($long, $lat) {
 // Looks for a user based on their ip address and the geoip lookup database,
 // returning their longitude and latitude
 function where_am_i() {
+  $addr = $_SERVER['REMOTE_ADDR'];
+  if ($addr == '127.0.0.1') { 
+    // we'll just use this for testing... it was taken from a coffee shop
+    // in "UNINCORPORATED LOS ANGELES" --- also known as Palms.
+    $addr = '50.1.134.134';
+  }
+  $addr = escapeshellarg($addr);
+
+  $res = shell_exec ("/usr/bin/geoiplookup -f scripts/GeoLiteCity.dat $addr");
+  $parts = explode(',', $res);
+  
+  // This means we failed to find it
+  if (trim($parts[2]) == 'N/A') {
+    // return a null type
+    return Null;
+  }
+
+  // Otherwise we have a fairly decent regional 
+  // idea of where this person is.
+  return [$parts[5], $parts[6]];
 }
 
