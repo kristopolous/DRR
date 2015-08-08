@@ -75,7 +75,7 @@ include_once('common.php');
               </div>
             </div>
             <div id='podcast-url-container'>
-              <a id="podcast-url">
+              <a class='big-button'>
                 <span id='rss-top'>
                   <div id='rss-img'>
                     <i class="fa fa-envelope"></i>
@@ -118,6 +118,10 @@ include_once('common.php');
       </div>
     </div>
   </body>
+  <script src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js'></script>
+  <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="/assets/js/evda.min.js"></script>
+  <!--[if lte IE 8]><script src="/assets/js/ie/respond.min.js"></script><![endif]-->
   <script>
   function ls(key, value) {
     if (arguments.length == 1) {
@@ -170,7 +174,25 @@ include_once('common.php');
     );
   }
     
+  function easy_bind(map) {
+    if(_.isArray(map)) {
+      _.each(map, function(what) {
+        var node = document.querySelector('#' + what);
+        if(!node) {
+          node = document.querySelector('input[name="' + what + '"]');
+          if(!node) {
+            throw new Error("Can't find anything matching ", what);
+          }
+        }
+        $(node).on('blur focus change keyup', function() {
+          ev(what, this.value, {node: this});
+        });
+      });
+    }
+  }
 
+
+  //
   // 2 range suggestions 30 min, 1 hr are always offered.
   // the 1 hour is always the current hour and the 30 minute
   // is always the nearest 30 minute that is the present
@@ -182,6 +204,7 @@ include_once('common.php');
   //
   var
     email = ls('email'),
+    ev = EvDa({start_time: '', end_time: '', station: '', email: '', notes: ''}),
     last_station = ls('last'),
     right_now = new Date(),
     current_hour = [
@@ -194,5 +217,23 @@ include_once('common.php');
     ]
 
   console.log(current_hour, current_half_hour);  
+
+  $(function(){
+
+    $("#start,#name").bind('blur focus change keyup',function(){
+      ev(this.id, this.value, {node: this});
+    });
+    $(".big-button").click(function(){
+    });
+
+  });
+
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-28399789-2', 'auto');
+  ga('send', 'pageview');
   </script>
 </html>
