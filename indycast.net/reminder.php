@@ -54,6 +54,8 @@ include_once('common.php');
                 echo '<li><a desc="' . $station['description'] . '" class="button">' . ($station['callsign']) . '</a></li>';
               }
             ?></ul>
+      <label for="notes">Notes</label>
+      <input type='text' name='notes'>
       <a id="podcast-url">
         <span id='rss-top'>
           <div id='rss-img'>
@@ -67,18 +69,6 @@ include_once('common.php');
           </div>
         </section>
       </div>
-<form method='post'>
-  <div id="callsign-preselect">
-    Show the callsign if previously set
-  </div>
-
-  <label for="notes">Notes</label>
-  <input type='text' name='notes'>
-  <footer class="major container">
-    <div id="podcast-done">
-    </div>
-  </footer>
-</form>
     </div>
     <div id="footer">
       <div class="container 75%">
