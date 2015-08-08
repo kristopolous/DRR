@@ -29,7 +29,16 @@ label { font-size: 0.8em}
       </header>
       <div class="box alt container">
         <section class="feature left">
-          <a href="#" class="image icon fa-signal"><img src="/images/pic01.jpg" alt="" /><div id="description"></div></a>
+          <div class="content">
+  <label for="email">Email to Remind</label>
+  <input type='email' name='email'>
+  <label for="duration">What period?</label>
+  <ul class="week-group group" id="duration">
+    <li><a data="30" class="button">Current half hour</a></li>
+    <li><a data="1hr" class="button">Current hour</a></li>
+    <li><a data="1hr30" class="button">Custom</a></li>
+  </ul>
+          </div>
           <div class="content">
             <h3>Choose the station</h3>
             <div id='station-search-box'>
@@ -46,23 +55,8 @@ label { font-size: 0.8em}
         </section>
       </div>
 <form method='post'>
-  <label for="email">Email to Remind</label>
-  <input type='email' name='email'>
-  <label for="duration">What period?</label>
-  <ul class="week-group group" id="duration">
-    <li><a data="30" class="button">Current half hour</a></li>
-    <li><a data="1hr" class="button">Current hour</a></li>
-    <li><a data="1hr30" class="button">Custom</a></li>
-  </ul>
   <div id="callsign-preselect">
     Show the callsign if previously set
-  </div>
-  <div id="callsign-menu">
-    <ul class="radio-group group" id="station"><?php
-      foreach(active_stations() as $station) {
-        echo '<li><a desc="' . $station['description'] . '" class="button">' . ($station['callsign']) . '</a></li>';
-      }
-    ?></ul>
   </div>
 
   <label for="notes">Notes</label>
