@@ -74,6 +74,7 @@ include_once('common.php');
         <header class="major last">
           <h2>About</h2>
         </header>
+
         <div style="text-align: left">
           <p>Listening to something right now but have to run and don't have the time to finish it?</p>
           <p>Miss the beginning of something and want to catch it later?</p>
@@ -97,15 +98,71 @@ include_once('common.php');
     return value;
   }
 
+  //
+  // This is a python inspired way of doing things.
+  // change_map has datetime.timedelta syntax and operates
+  // 
+  //  as an override if it's an integer
+  //  as an eval if it's a string (such as +1 or -1)
+  //
+  // Currently all we care about are 
+  // hours and minutes.
+  //
+  // seconds and milliseconds are zeroed for us.
+  //
+  // It can be empty of course.
+  //
+  function date_diff(ts, change_map) {
+
+    change_map = change_map || {};
+
+    if( !('hours' in change_map) ) {
+      change_map['hours'] = ts.getHours();
+    } else if (change_map.hours.length) {
+      // oh noes! The spirit of Douglas Crockford has now cursed my family!
+      eval("change_map['hours'] = ts.getHours() " + change_map['hours']);
+    }
+
+    if( !('minutes' in change_map) ) {
+      change_map['minutes'] = ts.getMinutes();
+    } else if (change_map.minutes.length) {
+      eval("change_map['minutes'] = ts.getMinutes() " + change_map['minutes']);
+    }
+
+    return new Date(
+      ts.getFullYear(),
+      ts.getMonth(),
+      ts.getDay(),
+      change_map.hours,
+      change_map.minutes,
+      0,
+      0
+    );
+  }
+    
+
   // 2 range suggestions 30 min, 1 hr are always offered.
   // the 1 hour is always the current hour and the 30 minute
   // is always the nearest 30 minute that is the present
+  //
+  // The most laborious invocation appears to be our best friend here.
+  // That's this one, from mdn:
+  //
+  // new Date(year, month[, day[, hour[, minutes[, seconds[, milliseconds]]]]]);
+  //
   var
     email = ls('email'),
     last_station = ls('last'),
     right_now = new Date(),
-    last_minute = right_now.getMinutes() % 30;
+    current_hour = [
+      date_diff(right_now, {minutes: 0}),
+      date_diff(right_now, {minutes: 0, hours: "+1"})
+    ],
+    current_half_hour = [
+      date_diff(right_now, {minutes: "% 30 - (ts.getMinutes() % 30)"}),
+      date_diff(right_now, {minutes: "% 30 + 30 - (ts.getMinutes() % 30)"})
+    ]
 
-    
+  console.log(current_hour, current_half_hour);  
   </script>
 </html>
