@@ -139,7 +139,7 @@ if(isset($_GET['callsign'])) {
       <footer class="major container">
         <div id="podcast-done">
           <h3>Your podcast link</h3>
-          <a id="podcast-url"></a>
+          <a id="podcast-url" class='big-button'></a>
         </div>
         <div id="podcast-notdone">
           <h3>The podcast will appear here</h3>
