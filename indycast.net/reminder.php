@@ -18,11 +18,20 @@ include_once('common.php');
     <style>
     h1 { background: white } 
     #duration { width: 100 %}
-    #duration li { width: 33% }
+    #duration li { width: 32% }
     #rss-img { font-size: 40px; width: 48px; min-height: auto; height: auto }
     #rss-header { margin-left: 54px ; min-height: auto}
     #podcast-done { display: block }
     #podcast-url { line-height: 0 }
+    .feature .content {
+      padding: 2em 0.5em !important;
+    }
+    #text-container { text-align: left }
+    #text-container *  {display: block}
+    #text-container label { float:left; width: 80px;clear: both }
+    #text-container div { margin-left: 80px;}
+    #text-container input {width: 100%;margin-bottom: 1em }
+    
     label { font-size: 0.8em}
     </style>
   </head>
@@ -33,12 +42,11 @@ include_once('common.php');
       <div class="box alt container">
         <section class="feature left">
           <div class="content">
-            <label for="email">Email to Remind</label>
-            <input type='email' name='email'>
+
             <label for="duration">What period?</label>
             <ul class="week-group group" id="duration">
-              <li><a data="30" class="button">Current half hour</a></li>
-              <li><a data="1hr" class="button">Current hour</a></li>
+              <li><a data="30" class="button">Current &frac12;hr</a></li>
+              <li><a data="1hr" class="button">Current hr</a></li>
               <li><a data="1hr30" class="button">Custom</a></li>
             </ul>
           </div>
@@ -52,8 +60,18 @@ include_once('common.php');
                 echo '<li><a desc="' . $station['description'] . '" class="button">' . ($station['callsign']) . '</a></li>';
               }
             ?></ul>
-            <label for="notes">Notes</label>
-            <input type='text' name='notes'>
+            <div id="text-container">
+
+              <label id='email-label' for="email">Your Email</label>
+              <div>
+                <input id='email-input' type='email' name='email'>
+              </div>
+
+              <label for="notes">Notes</label>
+              <div>
+                <input type='text' name='notes'>
+              </div>
+            </div>
             <a id="podcast-url">
               <span id='rss-top'>
                 <div id='rss-img'>
