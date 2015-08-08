@@ -33,14 +33,14 @@ include_once('common.php');
       <div class="box alt container">
         <section class="feature left">
           <div class="content">
-  <label for="email">Email to Remind</label>
-  <input type='email' name='email'>
-  <label for="duration">What period?</label>
-  <ul class="week-group group" id="duration">
-    <li><a data="30" class="button">Current half hour</a></li>
-    <li><a data="1hr" class="button">Current hour</a></li>
-    <li><a data="1hr30" class="button">Custom</a></li>
-  </ul>
+            <label for="email">Email to Remind</label>
+            <input type='email' name='email'>
+            <label for="duration">What period?</label>
+            <ul class="week-group group" id="duration">
+              <li><a data="30" class="button">Current half hour</a></li>
+              <li><a data="1hr" class="button">Current hour</a></li>
+              <li><a data="1hr30" class="button">Custom</a></li>
+            </ul>
           </div>
           <div class="content">
             <h3>Choose the station</h3>
@@ -53,7 +53,16 @@ include_once('common.php');
                 echo '<li><a desc="' . $station['description'] . '" class="button">' . ($station['callsign']) . '</a></li>';
               }
             ?></ul>
-            <a href="#volunteer">Volunteer to add a station!</a>
+      <a id="podcast-url">
+        <span id='rss-top'>
+          <div id='rss-img'>
+            <i class="fa fa-envelope"></i>
+          </div>
+          <div id='rss-header'>
+            <h3 id='rss-title'>Email me a reminder</h3>
+          </div>
+        </span>
+      </a>
           </div>
         </section>
       </div>
@@ -66,21 +75,6 @@ include_once('common.php');
   <input type='text' name='notes'>
   <footer class="major container">
     <div id="podcast-done">
-      <a id="podcast-url">
-
-      <span id='rss-top'>
-        <div id='rss-img'>
-          <i class="fa fa-envelope"></i>
-        </div>
-        <div id='rss-header'>
-          <h3 id='rss-title'>Email me a reminder</h3>
-          <span id='rss-time'><%= day %> at <%= time %> on <%= station %></span>
-        </div>
-      </span>
-      <span id='podcast-link'>
-        <%= parts.join(' <br> ') %>
-      </span>
-      </a>
     </div>
   </footer>
 </form>
@@ -91,7 +85,7 @@ include_once('common.php');
         <header class="major last">
           <h2>About</h2>
         </header>
-        <div style="text-align: left">
+ <div style="text-align: left">
 <p>Listening to something right now but have to run and don't have the time to finish it?</p>
 <p>Miss the beginning of something and want to catch it later?</p>
 <h3>We'll send you a reminder with a link to the audio. For free of course.</h3>
@@ -101,6 +95,7 @@ include_once('common.php');
 
 <p><b>Privacy policy:</b> We don't collect email addresses and we delete everything from our database after we send the email off to you.  Don't worry, we're on your side!</p>
 
+</div>
 
 <script>
 function ls(key, value) {
