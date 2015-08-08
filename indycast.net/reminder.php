@@ -28,9 +28,7 @@ include_once('common.php');
   </head>
   <body>
     <div id="main">
-      <h1>
-      Set a Reminder
-      </h1>
+      <h1>Set a Reminder</h1>
 
       <div class="box alt container">
         <section class="feature left">
@@ -54,18 +52,18 @@ include_once('common.php');
                 echo '<li><a desc="' . $station['description'] . '" class="button">' . ($station['callsign']) . '</a></li>';
               }
             ?></ul>
-      <label for="notes">Notes</label>
-      <input type='text' name='notes'>
-      <a id="podcast-url">
-        <span id='rss-top'>
-          <div id='rss-img'>
-            <i class="fa fa-envelope"></i>
-          </div>
-          <div id='rss-header'>
-            <h3 id='rss-title'>Email me a reminder</h3>
-          </div>
-        </span>
-      </a>
+            <label for="notes">Notes</label>
+            <input type='text' name='notes'>
+            <a id="podcast-url">
+              <span id='rss-top'>
+                <div id='rss-img'>
+                  <i class="fa fa-envelope"></i>
+                </div>
+                <div id='rss-header'>
+                  <h3 id='rss-title'>Email me a reminder</h3>
+                </div>
+              </span>
+            </a>
           </div>
         </section>
       </div>
@@ -76,36 +74,38 @@ include_once('common.php');
         <header class="major last">
           <h2>About</h2>
         </header>
- <div style="text-align: left">
-<p>Listening to something right now but have to run and don't have the time to finish it?</p>
-<p>Miss the beginning of something and want to catch it later?</p>
-<h3>We'll send you a reminder with a link to the audio. For free of course.</h3>
+        <div style="text-align: left">
+          <p>Listening to something right now but have to run and don't have the time to finish it?</p>
+          <p>Miss the beginning of something and want to catch it later?</p>
+          <h3>We'll send you a reminder with a link to the audio. For free of course.</h3>
 
-<p>You can even leave notes for your future-self telling yourself why you think it's so awesome.</p>
-<p>Later on, when the show is over, an email will be sent to you with a link and the notes you leave.</p>
+          <p>You can even leave notes for your future-self telling yourself why you think it's so awesome.</p>
+          <p>Later on, when the show is over, an email will be sent to you with a link and the notes you leave.</p>
 
-<p><b>Privacy policy:</b> We don't collect email addresses and we delete everything from our database after we send the email off to you.  Don't worry, we're on your side!</p>
-
-</div>
-
-<script>
-function ls(key, value) {
-  if (arguments.length == 1) {
-    return localStorage[key] || false;
-  } else {
-    localStorage[key] = value;
+          <p><b>Privacy policy:</b> We don't collect email addresses and we delete everything from our database after we send the email off to you.  Don't worry, we're on your side!</p>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+  function ls(key, value) {
+    if (arguments.length == 1) {
+      return localStorage[key] || false;
+    } else {
+      localStorage[key] = value;
+    }
+    return value;
   }
-  return value;
-}
 
-// 2 range suggestions 30 min, 1 hr are always offered.
-// the 1 hour is always the current hour and the 30 minute
-// is always the nearest 30 minute that is the present
-var
-  email = ls('email'),
-  last_station = ls('last'),
-  right_now = new Date(),
-  last_minute = right_now.getMinutes() % 30;
+  // 2 range suggestions 30 min, 1 hr are always offered.
+  // the 1 hour is always the current hour and the 30 minute
+  // is always the nearest 30 minute that is the present
+  var
+    email = ls('email'),
+    last_station = ls('last'),
+    right_now = new Date(),
+    last_minute = right_now.getMinutes() % 30;
 
-  
-</script>
+    
+  </script>
+</html>
