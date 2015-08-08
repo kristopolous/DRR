@@ -163,9 +163,10 @@ $(function() {
     ev(this.id, this.value, {node: this});
   });
   
-  for(var el in {start:1,name:1}) {
-    var $node = $("#" + el),
-        val = $node.val();
+  for(var el in {start:1, name:1}) {
+    var 
+      $node = $("#" + el),
+      val = $node.val();
 
     if(val) {
       ev(el, val, {node: $node.get(0)});
