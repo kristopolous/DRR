@@ -16,20 +16,22 @@ include_once('common.php');
     <link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'>
     <style>
-    #rss-img { font-size: 40px; width: 48px; }
-    #rss-header { margin-left: 54px }
+    h1 { background: white } 
+    #duration { width: 100 %}
+    #duration li { width: 33% }
+    #rss-img { font-size: 40px; width: 48px; min-height: auto; height: auto }
+    #rss-header { margin-left: 54px ; min-height: auto}
     #podcast-done { display: block }
+    #podcast-url { line-height: 0 }
     label { font-size: 0.8em}
     </style>
   </head>
   <body>
     <div id="main">
+      <h1>
+      Set a Reminder
+      </h1>
 
-      <header class="major container 75%">
-        <h2>
-        Set a Reminder
-        </h2>
-      </header>
       <div class="box alt container">
         <section class="feature left">
           <div class="content">
@@ -43,7 +45,6 @@ include_once('common.php');
             </ul>
           </div>
           <div class="content">
-            <h3>Choose the station</h3>
             <div id='station-search-box'>
               <i class="fa fa-search"></i>
               <input type="text" placeholder="Search" id='station-query'>
