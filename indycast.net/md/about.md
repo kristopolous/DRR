@@ -497,6 +497,7 @@ Looks like so:
 </div>
 
 The logos are 16-color PNGs which make them small and fast (although admittedly kind of ugly).
+
 ### Is this legal?
 
 I have no idea; I'm not a lawyer. We're solving real-world problems here so let's see what happens.
