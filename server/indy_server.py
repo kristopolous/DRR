@@ -430,7 +430,7 @@ def server_manager(config):
   @app.route('/<weekday>/<start>/<duration_string>/<showname>')
   def stream(weekday, start, duration_string, showname):
     """
-    Returns a podcast xml file based on the weekday, start and duration.
+    Returns a podcast, m3u, or pls file based on the weekday, start and duration.
     This is designed to be read by podcasting software such as podkicker, 
     itunes, and feedburner.
 
@@ -441,7 +441,7 @@ def server_manager(config):
 
     /mon,tue,fri/4pm/1hr
     
-    The showname should be followed by an "xml" extension.
+    The showname should be followed by an xml, pls, or m3u extension.
 
     It should also be viewable in a modern web browser.
 
@@ -474,7 +474,8 @@ def server_manager(config):
     # If we are here then it looks like our input is probably good.
     
     # Strip the .xml from the showname ... this will be used in our xml.
-    showname = re.sub('.xml$', '', showname)
+    file_type = showname[-3:]
+    showname = showname[:-4]
 
     # We come in with spaces as underscores so here we translate that back
     showname = re.sub('_', ' ', showname)
@@ -495,7 +496,8 @@ def server_manager(config):
     # print feed_list
 
     # Then, taking those two things, make a feed list from them.
-    return server.generate_xml(
+    return server.generate_feed(
+      file_type=file_type,
       showname=showname, 
       feed_list=feed_list, 
       duration_min=duration_min, 

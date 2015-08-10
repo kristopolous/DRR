@@ -18,6 +18,17 @@ def do_error(errstr):
   """ Returns a server error as a JSON result. """
   return jsonify({'result': False, 'error':errstr}), 500
     
+def generate_feed(file_type, **kwargs)
+  if file_type == 'xml': return generate_xml(**kwargs)
+  if file_type == 'pls': return generate_pls(**kwargs)
+  if file_type == 'm3u': return generate_m3u(**kwargs)
+
+def generate_m3u(showname, feed_list, duration_min, weekday_list, start, duration_string):
+  return None
+
+def generate_pls(showname, feed_list, duration_min, weekday_list, start, duration_string):
+  return None
+
 def generate_xml(showname, feed_list, duration_min, weekday_list, start, duration_string):
   """
   It obviously returns an xml file ... I mean duh.
