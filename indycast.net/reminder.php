@@ -24,20 +24,31 @@ include_once('common.php');
     #podcast-done { display: block }
     #podcast-url { line-height: 0 }
     #podcast-url-container { text-align: center;background: white }
+    .big-button h3 { font-size: 1.3em }
+    #text-container { text-align: left }
+    #text-container *  {display: block}
+    #text-container label { float:left; width: 70px; clear: both }
+    #text-container div { margin-left: 70px;}
+    #text-container input { width: 100%; margin-bottom: 1em }
+    .box {margin-bottom: 0}
+    #custom-time { 
+      display: none; 
+      background: #D0D3CE; 
+      margin: 0 auto 1em auto;
+      padding: 0.25em; 
+      text-align: center; 
+      width: 97%;
+      border-radius: 5px;
+    }
+    #custom-time input { width: 48%; background: white }
+    
+    label { font-size: 0.8em; line-height: 1.3em }
+
     @media screen and (max-width: 736px) {
       .feature .content {
         padding: 2em 0.5em !important;
       }
     }
-    #podcast-url h3 { font-size: 1.3em }
-    #text-container { text-align: left }
-    #text-container *  {display: block}
-    #text-container label { float:left; width: 70px;clear: both }
-    #text-container div { margin-left: 70px;}
-    #text-container input {width: 100%;margin-bottom: 1em }
-    .box {margin-bottom: 0}
-    
-    label { font-size: 0.8em; line-height: 1.3em }
     </style>
   </head>
   <body>
@@ -49,11 +60,18 @@ include_once('common.php');
           <div class="content">
 
             <label for="duration">What period?</label>
+
             <ul class="week-group group" id="duration">
               <li><a data="30" class="button">Current &frac12;hr</a></li>
               <li><a data="1hr" class="button">Current hr</a></li>
               <li><a data="custom" class="button">Custom</a></li>
             </ul>
+
+            <div id="custom-time">
+              <input id="start_time" type="text" placeholder="start time">
+              <input id="end_time" type="text" placeholder="end time">
+            </div>
+
             <label for="station">What station?</label>
             <ul class="radio-group group" id="station"><?php
               foreach(active_stations() as $station) {
@@ -246,10 +264,12 @@ include_once('common.php');
     ev = EvDa({start_time: '', end_time: '', station: '', email: '', notes: ''}),
     last_station = ls('last'),
     right_now = new Date(),
+
     current_hour = [
       date_diff(right_now, {minutes: 0}),
       date_diff(right_now, {minutes: 0, hours: "+1"})
     ],
+    
     current_half_hour = [
       date_diff(right_now, {minutes: "% 30 - (ts.getMinutes() % 30)"}),
       date_diff(right_now, {minutes: "% 30 + 30 - (ts.getMinutes() % 30)"})
@@ -266,6 +286,14 @@ include_once('common.php');
       console.log(ev(''));
     });
 
+  });
+
+  ev('duration', function(what, meta) {
+    if(what == 'custom') {
+      $("#custom-time").slideDown();
+    } else if (meta.old == 'custom') {
+      $("#custom-time").slideUp();
+    }
   });
 
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
