@@ -512,7 +512,7 @@ If you're really concerned, then go ahead and run your own network of servers fo
 can easily stuff 25 stations on any half-assed modern consumer-grade internet connection. Each instance takes 
 up about 80MB of resident memory so we are still just talking 2GB for all that.
 
-## Have the goals been met?
+### Making things suck less.
 
 In writing this software I wanted to have something that worked and follows principles in usability, transparency,
 adaptability, and simplicity that are held dearly by me.  I've tried to create this in the way that I want software
