@@ -314,7 +314,7 @@ do Tux-cosplay at Linux conferences and think DefCon is full of posers.
 
 If you are a hacker, read on.  Alice is a hacker.  She has no problem using a command line. 
 
-#### Makes hackers do the splits while shooting <a href=http://i.dailymail.co.uk/i/pix/2014/12/21/24333D7D00000578-0-image-m-13_1419157979609.jpg>party poppers</a>
+## Makes hackers do the splits while shooting <a href=http://i.dailymail.co.uk/i/pix/2014/12/21/24333D7D00000578-0-image-m-13_1419157979609.jpg>party poppers</a>
 
 The first thing that Alice does is `curl` the main indycast site.  
 
