@@ -1,2 +1,0 @@
-pandoc about.md -T "About Indycast" -H style.css.html > ../about.html
-date
