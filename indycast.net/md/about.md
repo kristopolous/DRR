@@ -57,7 +57,10 @@ Don't you hate it when some blackbox frameworky magic doesn't work and you helpl
 
 In fact, I've created a user-story for a would-be administrator. Every interaction with a computer should be a thought-out interface.
 
-#### Get a server up and running in under 2 minutes.
+## Up and running in under 2 minutes.
+
+Try this out right now.  It's easy and there's no risk.
+
 <a href=http://i.imgur.com/YI3Qu5bl.jpg>Alice</a> is interested in adding her station, RDIO.  She 
 
  1. Git clones [https://github.com/kristopolous/DRR](https://github.com/kristopolous/DRR).
