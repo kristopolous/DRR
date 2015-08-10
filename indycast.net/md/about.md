@@ -30,13 +30,15 @@ All the code, APIs, and services are:
 
 ## Modest goals for friendly software
 
-The server architecture is carefully designed to be cheap to operate with low barriers to entry.  You are encouraged to run and manage your own servers for your favorite radio station.  Special care has been taken to make the software:
+The server architecture is carefully designed to be cheap to operate with low barriers to entry.  [You are encouraged](https://github.com/kristopolous/DRR/wiki/Join-the-Federation) to run and manage your own servers for your favorite radio station.  Special care has been taken to make the software:
 
  * **Simple**: Easy and quick to setup - I've timed multiple people who have been asked to get it up and running.
  * **Small**: A small-footprint, unobtrusive system that can piggy-back on servers doing other things.
  * **Customizable**: Highly configurable with reasonable defaults.
  * **Efficient**: Able to be use minimal disk and network resources - extensive monitoring has been done.
  * **Self-contained**: Able to be run multiple times on the same machine for different stations - this is what is done in production.
+
+You can make a significant and meaningful contribution to this project cheap and effortlessly.
 
 The stack is Python 2.7 and SQLite 3. The audio library is written by hand (more below on why)
 
