@@ -17,26 +17,26 @@ Indycast is a set of community-run federated servers for time-shifting independe
 
 Essentially the existing landscape is laborious to use, inconsistent, technically restricted, and very incomplete in coverage.
 
+Let's make things suck less. I'd like that, wouldn't you?
+
 ## Making things easy and powerful
 
 The project's objectives:
 
- * **Free:** Trying to build a community instead of always looking to make a buck.
+ * **Free:** Build a community instead of looking to make a buck.
  * **Distributed:** People from other places can join the network using their stations without much effort.
  * **Hackable:** Every device and reasonable way of listening to content is supported.
  * **Non-commercial:** A way to provide listener-supported radio in a convenient manner.
 
 ## Architecture
 
-There's no money behind this. It's designed to be cheap with a low barrier to entry for participation.  People are encouraged to run and manage their own servers for their favorite radio station.  
+There's no money behind this and it's designed to be cheap with a low barrier to entry for participation.  People are encouraged to run and manage their own servers for their favorite radio station.  Special care has been taken to make the software:
 
-The solution seeks to be:
-
- * **Simple**: Easy and quick to setup.
+ * **Simple**: Easy and quick to setup - I've timed multiple people who have been asked to get it up and running.
  * **Small**: A small-footprint, unobtrusive system that can piggy-back on servers doing other things.
  * **Customizable**: Highly configurable with reasonable defaults.
- * **Efficient**: Able to be use minimal disk and network resources.
- * **Self-contained**: Able to be run multiple times on the same machine for different stations.
+ * **Efficient**: Able to be use minimal disk and network resources - extensive monitoring has been done.
+ * **Self-contained**: Able to be run multiple times on the same machine for different stations - this is what is done in production.
 
 The stack is Python 2.7 and SQLite 3. The audio library is written by hand (more below on why)
 
@@ -44,10 +44,10 @@ The stack is Python 2.7 and SQLite 3. The audio library is written by hand (more
 
 ### Being an administrator
 
-Unlike with other projects, a minimal configuration to get a server up and running can be done in **just 6 lines**! 
-There are 14 example configurations which are about 7 lines each.
+Unlike with other projects, a minimal configuration to get a server up and running can be done in **[just 6 lines](https://github.com/kristopolous/DRR/blob/master/server/configs/kxlu.txt)**! 
+There are [14 example configurations](https://github.com/kristopolous/DRR/tree/master/server/configs) which are about 7 lines each. These are the ones that are used in production. No kidding.
 
-There's a script to install dependencies but again, unlike with other things, [it's 12 lines](https://github.com/kristopolous/DRR/blob/master/bootstrap.sh) ... so if it doesn't work on your system, just `cat bootstrap.sh` and install the stuff yourself.
+There's a script to install dependencies but again, [it's 12 lines](https://github.com/kristopolous/DRR/blob/master/bootstrap.sh) ... so if it doesn't work on your system, just `cat bootstrap.sh` and install the stuff yourself.
 
 Don't you hate it when some blackbox frameworky magic doesn't work and you helplessly try to figure out what's the code and what's the framework ... geez, I hate that.  No, not here.
 
