@@ -108,7 +108,7 @@ Refreshing huh?
 #### A zero mystery policy 
 
 There's an endpoint map so Alice can see everything that is accessible along with its
-documentation. As of the writing of this document, it looks like so:
+documentation. As of the writing of this document (v0.9-[Inkanyamba](https://roadtravel1.files.wordpress.com/2013/09/inkanyamba-1.jpg)), the help looks like this:
 
     $ curl indycast.net/kpcc/help
     -=#[ Welcome to indycast v0.9-Inkanyamba-75-g10234a0 API help ]#=-
