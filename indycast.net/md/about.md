@@ -30,7 +30,7 @@ All the code, APIs, and services are:
 
 ## Modest goals for friendly software
 
-The server architecture is carefully designed to be cheap to operate with a low barrier to entry for participation.  You are encouraged to run and manage your own servers for your favorite radio station.  Special care has been taken to make the software:
+The server architecture is carefully designed to be cheap to operate with low barriers to entry.  You are encouraged to run and manage your own servers for your favorite radio station.  Special care has been taken to make the software:
 
  * **Simple**: Easy and quick to setup - I've timed multiple people who have been asked to get it up and running.
  * **Small**: A small-footprint, unobtrusive system that can piggy-back on servers doing other things.
