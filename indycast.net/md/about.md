@@ -12,14 +12,14 @@ Indycast is a set of [community-run servers](https://github.com/kristopolous/DRR
  * When shows are archived, they often have the following properties
     * A proprietary solution such as iTunes is required.
     * They are broken into small units that must be reconstituted manually.
-    * Every show and station has a different website with a different layout.
+    * Every show and station has a different website and can be hard to navigate.
     * The retention policy of the audio and when it is availabe widely varies.
 
-Essentially the existing landscape is laborious to use, inconsistent, technically restricted, and very incomplete in coverage.
+The existing landscape is laborious to use, inconsistent, technically restricted, and very incomplete in coverage.
 
-Let's make things suck less. I'd like that, wouldn't you?
+Let's make things suck less. 
 
-## Making things easy and powerful
+## Easy, extendable, transparent, and powerful
 
 All the code, APIs, and services are:
 
@@ -30,7 +30,7 @@ All the code, APIs, and services are:
 
 ## Modest goals for friendly software
 
-There's no money behind this and it's designed to be cheap with a low barrier to entry for participation.  People are encouraged to run and manage their own servers for their favorite radio station.  Special care has been taken to make the software:
+The server architecture is carefully designed to be cheap with a low barrier to entry for participation.  You are encouraged to run and manage your own servers for your favorite radio station.  Special care has been taken to make the software:
 
  * **Simple**: Easy and quick to setup - I've timed multiple people who have been asked to get it up and running.
  * **Small**: A small-footprint, unobtrusive system that can piggy-back on servers doing other things.
@@ -40,7 +40,7 @@ There's no money behind this and it's designed to be cheap with a low barrier to
 
 The stack is Python 2.7 and SQLite 3. The audio library is written by hand (more below on why)
 
-Did you know these types of articles get better response rates in social media when you have an architecture diagram? So here's a run-down of everything, in picture format:
+Here's a run-down of everything, in picture format:
 
 <img id='arch' style='max-width:95%' src=images/indy-arch.png>
 
