@@ -499,9 +499,10 @@ Looks like so:
 
 The logos are 16-color PNGs which make them small and fast (although admittedly kind of ugly).
 
-### Is this legal?
+#### Is this legal?
 
-I have no idea; I'm not a lawyer. We're solving real-world problems here so let's see what happens.
+*I have no idea; I'm not a lawyer*. We're solving real-world problems here so let's see what happens. This technology
+has been a total game-changer in the way I listen to radio. Really.
 
 If you're really concerned, then go ahead and run your own network of servers for personal private use - you
 can easily stuff 25 stations on any half-assed modern consumer-grade internet connection. Each instance takes 
