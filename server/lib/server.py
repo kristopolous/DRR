@@ -18,16 +18,43 @@ def do_error(errstr):
   """ Returns a server error as a JSON result. """
   return jsonify({'result': False, 'error':errstr}), 500
     
-def generate_feed(file_type, **kwargs)
-  if file_type == 'xml': return generate_xml(**kwargs)
-  if file_type == 'pls': return generate_pls(**kwargs)
-  if file_type == 'm3u': return generate_m3u(**kwargs)
+def generate_feed(file_type, **kwargs):
+  """
+  Take the file extension that the user supplied and then try to return
+  a feed based on it
+  """
+  if file_type == 'pls': 
+    payload = generate_pls(**kwargs)
+    mime = 'audio/x-scpls'
+
+  elif file_type == 'm3u': 
+    payload = generate_m3u(**kwargs)
+    mime = 'audio/x-scpls'
+
+  # If we fail to find one, we revert to xml
+  else: 
+    payload = generate_xml(**kwargs)
+    mime = 'text/xml'
+
+  return Response(payload, mimetype=mime )
+
 
 def generate_m3u(showname, feed_list, duration_min, weekday_list, start, duration_string):
   return None
 
 def generate_pls(showname, feed_list, duration_min, weekday_list, start, duration_string):
-  return None
+  payload = ["[playlist]", "NumberOfEntries=%d" % len(feed_list)]
+  base_url = 'http://%s.indycast.net:%d/' % (misc.config['callsign'], misc.config['port'])
+
+  stream_number = 1
+  # Show the most recent feeds first
+  for feed in reversed(feed_list):
+    link = "%s%s" % (base_url, feed['name'])
+    payload.append('Title%d=%s - %s' % (stream_number, showname, feed['start_date'].strftime("%Y.%m.%d")))
+    payload.append('File%d=%s' % (stream_number, link, ))
+    stream_number += 1
+
+  return "\n".join(payload)
 
 def generate_xml(showname, feed_list, duration_min, weekday_list, start, duration_string):
   """
@@ -137,5 +164,5 @@ def generate_xml(showname, feed_list, duration_min, weekday_list, start, duratio
 
   tree = ET.ElementTree(root)
 
-  return Response(ET.tostring(tree, pretty_print=True, xml_declaration=True, encoding="UTF-8"), mimetype='text/xml')
+  return ET.tostring(tree, pretty_print=True, xml_declaration=True, encoding="UTF-8")
 
