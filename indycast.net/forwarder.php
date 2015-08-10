@@ -11,6 +11,8 @@ if($station) {
 
   if (
     strpos($request, '.xml') !== false || 
+    strpos($request, '.pls') !== false || 
+    strpos($request, '.m3u') !== false || 
     array_search($request, ['my_uuid', 'heartbeat', 'help', 'stats']) !== false
   ) {
     $ch = curl_init();
