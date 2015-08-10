@@ -3,7 +3,7 @@
 <h1><a href="/">Indycast</a></h1><h3>A Distributed [Open Source](https://github.com/kristopolous/DRR) DVR for Independent Radio</h3></div>
 </div>
 
-## A Free open-source service
+## A free open-source service
 
 Indycast is a set of [community-run servers](https://github.com/kristopolous/DRR/wiki/Current-Architecture) for time-shifting independent radio because
 
@@ -23,14 +23,14 @@ Let's make things suck less.
 
 All the code, APIs, and services are:
 
- * **Free:** Build a community instead of looking to make a buck.
- * **Distributed:** People from other places can join the network using their stations without much effort.
+ * **Free:** Community, not commercially driven.
+ * **Distributed:** People from other places can join the network using their stations with little effort.
  * **Hackable:** Every device and reasonable way of listening to content is supported.
  * **Non-commercial:** A way to provide listener-supported radio in a convenient manner.
 
 ## Modest goals for friendly software
 
-The server architecture is carefully designed to be cheap with a low barrier to entry for participation.  You are encouraged to run and manage your own servers for your favorite radio station.  Special care has been taken to make the software:
+The server architecture is carefully designed to be cheap to operate with a low barrier to entry for participation.  You are encouraged to run and manage your own servers for your favorite radio station.  Special care has been taken to make the software:
 
  * **Simple**: Easy and quick to setup - I've timed multiple people who have been asked to get it up and running.
  * **Small**: A small-footprint, unobtrusive system that can piggy-back on servers doing other things.
