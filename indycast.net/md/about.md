@@ -58,7 +58,7 @@ Don't you hate it when some blackbox frameworky magic doesn't work and you helpl
 In fact, I've created a user-story for a would-be administrator. Every interaction with a computer should be a thought-out interface.
 
 #### Get a server up and running in under 2 minutes.
-Alice is interested in adding her station, RDIO.  She 
+<a href=http://i.imgur.com/YI3Qu5bl.jpg>Alice</a> is interested in adding her station, RDIO.  She 
 
  1. Git clones [https://github.com/kristopolous/DRR](https://github.com/kristopolous/DRR).
  1. Runs a [small shell script](https://github.com/kristopolous/DRR/blob/master/bootstrap.sh) `bootstrap.sh` to install dependencies: `cd DRR; ./bootstrap.sh`
