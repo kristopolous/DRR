@@ -40,6 +40,9 @@ There's no money behind this and it's designed to be cheap with a low barrier to
 
 The stack is Python 2.7 and SQLite 3. The audio library is written by hand (more below on why)
 
+Did you know these types of articles get better response rates in social media when you have a architecture diagram?  
+So I drew this just for you!
+
 <img id='arch' style='max-width:92%' src=images/indy-arch.png>
 
 ## Focus on all the users
