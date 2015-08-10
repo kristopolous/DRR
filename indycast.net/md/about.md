@@ -1,11 +1,11 @@
 <div id='title'>
 <div id='logo'><img src=images/square-indycast_70.png></div><div id='header'>
-<h1>Indycast</h1><h3>A Distributed Open Source DVR for Independent Radio</h3></div>
+<h1>Indycast</h1><h3>A Distributed [Open Source](https://github.com/kristopolous/DRR) DVR for Independent Radio</h3></div>
 </div>
 
 ## What is this?
 
-Indycast is a set of community-run servers for time-shifting independent radio because
+Indycast is a set of [community-run servers](https://github.com/kristopolous/DRR/wiki/Current-Architecture) for time-shifting independent radio because
 
  * Often the best shows are on at inconvenient hours
  * Shows are rarely archived
