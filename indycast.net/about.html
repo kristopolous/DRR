@@ -154,7 +154,7 @@ A Distributed Open Source DVR for Independent Radio
 <li><strong>Self-contained</strong>: Able to be run multiple times on the same machine for different stations - this is what is done in production.</li>
 </ul>
 <p>The stack is Python 2.7 and SQLite 3. The audio library is written by hand (more below on why)</p>
-<h2 id="user-experience">User-experience</h2>
+<h2 id="focus-on-all-the-users">Focus on all the users</h2>
 <h3 id="being-an-administrator">Being an administrator</h3>
 <p>Unlike with other projects, a minimal configuration to get a server up and running can be done in <strong><a href="https://github.com/kristopolous/DRR/blob/master/server/configs/kxlu.txt">just 6 lines</a></strong>! There are <a href="https://github.com/kristopolous/DRR/tree/master/server/configs">14 example configurations</a> which are about 7 lines each. These are the ones that are used in production. No kidding.</p>
 <p>There's a script to install dependencies but again, <a href="https://github.com/kristopolous/DRR/blob/master/bootstrap.sh">it's 12 lines</a> ... so if it doesn't work on your system, just <code>cat bootstrap.sh</code> and install the stuff yourself.</p>
@@ -362,9 +362,9 @@ kcrw  kdvs  kpcc  kxlu  wxyc</code></pre>
          +-0---1---2---3---4---5---6---7---8---9---10--11--12--13--14--15--16--17--18--19--20--21--22--23--+
 
          kpcc coverage: 90.877315%</code></pre>
-<h3 id="being-a-user">Being a User</h3>
-<p>The user of the service should be able to use the service in any reasonable way with any reasonable set of expectations.</p>
-<h4 id="should-be-easy-for-novices">Should be easy for novices</h4>
+<h3 id="being-a-consumer">Being a Consumer</h3>
+<p>The consumer the service should be able to use the service in any reasonable way with any reasonable set of expectations.</p>
+<h4 id="easy-for-novices">Easy for novices</h4>
 <p>If Alice doesn't really know how to use computers that well, there is a <a href="http://indycast.net">web front end</a> that explains what indycast is and has a simple and attractive user-interface that she can operate on the device of her choosing.</p>
 <p>There's <a href="https://github.com/kristopolous/DRR/issues/104">three cognitively distinct</a> ways to think about indycast:</p>
 <ul>
@@ -380,7 +380,7 @@ kcrw  kdvs  kpcc  kxlu  wxyc</code></pre>
 <h5 id="convenient-for-all-levels-of-interaction">Convenient for all levels of interaction</h5>
 <p>Not only was this technology designed to be used by people who thumb around their smart-phones, but it was also designed for people who do Tux-cosplay at Linux conferences and think DefCon is full of posers.</p>
 <p>If you are a hacker, read on. Alice is a hacker. She has no problem using a command line.</p>
-<h4 id="should-make-hackers-do-the-splits-while-shooting-party-poppers">Should make hackers do the splits while shooting <a href=http://i.dailymail.co.uk/i/pix/2014/12/21/24333D7D00000578-0-image-m-13_1419157979609.jpg>party poppers</a></h4>
+<h4 id="makes-hackers-do-the-splits-while-shooting-party-poppers">Makes hackers do the splits while shooting <a href=http://i.dailymail.co.uk/i/pix/2014/12/21/24333D7D00000578-0-image-m-13_1419157979609.jpg>party poppers</a></h4>
 <p>The first thing that Alice does is <code>curl</code> the main indycast site.</p>
 <p>Normally this is a stupid idea as she would get a bunch of terribly formatted server-generated HTML, but not with indycast! Here is what she sees:</p>
 <pre><code>$ curl http://indycast.net/    

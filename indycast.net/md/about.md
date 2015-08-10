@@ -40,7 +40,7 @@ There's no money behind this and it's designed to be cheap with a low barrier to
 
 The stack is Python 2.7 and SQLite 3. The audio library is written by hand (more below on why)
 
-## User-experience
+## Focus on all the users
 
 ### Being an administrator
 
@@ -283,10 +283,10 @@ If you'd like to find out what the station coverage is, there's a graph-drawing 
              kpcc coverage: 90.877315%
 
 
-### Being a User
-The user of the service should be able to use the service in any reasonable way with any reasonable set of expectations.
+### Being a Consumer
+The consumer the service should be able to use the service in any reasonable way with any reasonable set of expectations.
 
-#### Should be easy for novices
+#### Easy for novices
 If Alice doesn't really know how to use computers that well, there is a [web front end](http://indycast.net) that explains what indycast is and has a simple and attractive user-interface that she can operate on the device of her choosing.
 
 There's [three cognitively distinct](https://github.com/kristopolous/DRR/issues/104) ways to think about indycast:
@@ -313,7 +313,7 @@ do Tux-cosplay at Linux conferences and think DefCon is full of posers.
 
 If you are a hacker, read on.  Alice is a hacker.  She has no problem using a command line. 
 
-#### Should make hackers do the splits while shooting <a href=http://i.dailymail.co.uk/i/pix/2014/12/21/24333D7D00000578-0-image-m-13_1419157979609.jpg>party poppers</a>
+#### Makes hackers do the splits while shooting <a href=http://i.dailymail.co.uk/i/pix/2014/12/21/24333D7D00000578-0-image-m-13_1419157979609.jpg>party poppers</a>
 
 The first thing that Alice does is `curl` the main indycast site.  
 
