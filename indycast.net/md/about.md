@@ -309,13 +309,13 @@ In that way, it's a radio concierge service, looking out for you.
 ##### Convenient for all levels of interaction
 
 Not only was this technology designed to be used by people who thumb around their smart-phones, but it was also designed for people who
-do Tux-cosplay at linux conferences and think DefCon is full of posers.  
+do Tux-cosplay at Linux conferences and think DefCon is full of posers.  
 
 If you are a hacker, read on.  Alice is a hacker.  She has no problem using a command line. 
 
 #### Should make hackers do the splits while shooting <a href=http://i.dailymail.co.uk/i/pix/2014/12/21/24333D7D00000578-0-image-m-13_1419157979609.jpg>party poppers</a>
 
-The first thing that Alice does is curl the main indycast site.  
+The first thing that Alice does is `curl` the main indycast site.  
 
 Normally this is a stupid idea as she would get a bunch of terribly formatted server-generated HTML, but not with indycast!  Here is what she sees:
 
@@ -393,28 +393,6 @@ See how this is similar to the podcast link of
 Simply by omitting the christening of the show and stopping after the duration, the server figures you just want the most recent 
 episode and gives it to you.  How nice for Bob.
 
-#### Logos
-Logos for the podcasts are generated server-side at indycast.net so as not to require any image-processing
-or font dependencies on the servers themselves.  The background tint is chosen based on the word 
-itself in order to create a diverse but distinct palette for the various logos. 
-
-The schema for generating them looks like the following
-
-    http://indycast.net/icon/(Arbitrary_string)_(size).png
-
-For instance:
-
-    <img src=http://indycast.net/icon/Here+is+one_120.png>
-    <img src=http://indycast.net/icon/And+here+is+another_120.png>
-    <img src=http://indycast.net/icon/You+can+go+small_90.png>
-
-Looks like so:
-
-<div id='logo-block'>
-<img src=http://indycast.net/icon/Here+is+one_120.png><img src=http://indycast.net/icon/And+here+is+another_120.png><img src=http://indycast.net/icon/You+can+go+small_90.png>
-</div>
-
-The logos are 16-color PNGs which make them small and fast (although admittedly kind of ugly).
 
 ## Fast and small
 
@@ -435,7 +413,7 @@ credentials, the server will use an Azure account to offload the valuable disk s
 
 A tool `tools/cloud.py` computes the current cost for the stations specified.  Also, a tool
 `tools/cleanup_cloud.sh` will analyze all the content on the cloud and make sure that it's valid
-and in use. Here is an example:
+and in use by looking at a recent backup and doing a station-by-station comparison. Here is an example:
 
     $ tools/cloud.py
 
@@ -489,6 +467,36 @@ to being internally taken from what the file says it is.
 This is a much more direct and format agnostic computation.  The sample size is large enough to avoid any 
 errors (in fact, for HE-AAC+ streams, it performs more accurate duration measurements then `ffprobe` ... really).
 
+### Offloaded dependencies
+
+When things would take too many dependencies, the task was intentionally off-loaded to the main website in order to
+minimize the complexity and responsibilities behind running a server.  The server has a distinct and unique purpose in life.
+
+But that doesn't stop us from our fun hacking.
+
+#### Restful logo generation
+
+Logos for the podcasts are generated server-side at indycast.net so as not to require any image-processing
+or font dependencies on the servers themselves.  The background tint is chosen based on the word 
+itself in order to create a diverse but distinct palette for the various logos. 
+
+The schema for generating them looks like the following
+
+    http://indycast.net/icon/(Arbitrary_string)_(size).png
+
+For instance:
+
+    <img src=http://indycast.net/icon/Here+is+one_120.png>
+    <img src=http://indycast.net/icon/And+here+is+another_120.png>
+    <img src=http://indycast.net/icon/You+can+go+small_90.png>
+
+Looks like so:
+
+<div id='logo-block'>
+<img src=http://indycast.net/icon/Here+is+one_120.png><img src=http://indycast.net/icon/And+here+is+another_120.png><img src=http://indycast.net/icon/You+can+go+small_90.png>
+</div>
+
+The logos are 16-color PNGs which make them small and fast (although admittedly kind of ugly).
 ### Is this legal?
 
 I have no idea; I'm not a lawyer. We're solving real-world problems here so let's see what happens.

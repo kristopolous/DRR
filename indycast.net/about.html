@@ -378,10 +378,10 @@ kcrw  kdvs  kpcc  kxlu  wxyc</code></pre>
 <p>There she has a convenient selection of specifying the current half hour, 1-hour, or 2-hour time slot. Then she can specify a note such as &quot;John Warner's subversive ideas on chemistry&quot;. And then, at some time later, an email gets sent back to her saying &quot;Hey here's the audio you requested with the notes your specified. Here's a download link&quot;.</p>
 <p>In that way, it's a radio concierge service, looking out for you.</p>
 <h5 id="convenient-for-all-levels-of-interaction">Convenient for all levels of interaction</h5>
-<p>Not only was this technology designed to be used by people who thumb around their smart-phones, but it was also designed for people who do Tux-cosplay at linux conferences and think DefCon is full of posers.</p>
+<p>Not only was this technology designed to be used by people who thumb around their smart-phones, but it was also designed for people who do Tux-cosplay at Linux conferences and think DefCon is full of posers.</p>
 <p>If you are a hacker, read on. Alice is a hacker. She has no problem using a command line.</p>
 <h4 id="should-make-hackers-do-the-splits-while-shooting-party-poppers">Should make hackers do the splits while shooting <a href=http://i.dailymail.co.uk/i/pix/2014/12/21/24333D7D00000578-0-image-m-13_1419157979609.jpg>party poppers</a></h4>
-<p>The first thing that Alice does is curl the main indycast site.</p>
+<p>The first thing that Alice does is <code>curl</code> the main indycast site.</p>
 <p>Normally this is a stupid idea as she would get a bunch of terribly formatted server-generated HTML, but not with indycast! Here is what she sees:</p>
 <pre><code>$ curl http://indycast.net/    
 The current stations are healthy:
@@ -432,19 +432,6 @@ $</code></pre>
 <p>See how this is similar to the podcast link of</p>
 <pre><code>http://indycast.net/rdio/mon/2am/2hr/Darkwaves.xml</code></pre>
 <p>Simply by omitting the christening of the show and stopping after the duration, the server figures you just want the most recent episode and gives it to you. How nice for Bob.</p>
-<h4 id="logos">Logos</h4>
-<p>Logos for the podcasts are generated server-side at indycast.net so as not to require any image-processing or font dependencies on the servers themselves. The background tint is chosen based on the word itself in order to create a diverse but distinct palette for the various logos.</p>
-<p>The schema for generating them looks like the following</p>
-<pre><code>http://indycast.net/icon/(Arbitrary_string)_(size).png</code></pre>
-<p>For instance:</p>
-<pre><code>&lt;img src=http://indycast.net/icon/Here+is+one_120.png&gt;
-&lt;img src=http://indycast.net/icon/And+here+is+another_120.png&gt;
-&lt;img src=http://indycast.net/icon/You+can+go+small_90.png&gt;</code></pre>
-<p>Looks like so:</p>
-<div id="logo-block">
-<p><img src=http://indycast.net/icon/Here+is+one_120.png><img src=http://indycast.net/icon/And+here+is+another_120.png><img src=http://indycast.net/icon/You+can+go+small_90.png></p>
-</div>
-<p>The logos are 16-color PNGs which make them small and fast (although admittedly kind of ugly).</p>
 <h2 id="fast-and-small">Fast and small</h2>
 <h3 id="disk-space-efficient">Disk space efficient</h3>
 <p>VPSs generally don't give that much disk space and archiving audio would normally take a lot of it.</p>
@@ -456,7 +443,7 @@ $</code></pre>
 <li>Microsoft Azure: $0.024 / GB</li>
 </ul>
 <p>Coming in at less than half the price of EC2, MS Azure was the obvious choice. If configured with credentials, the server will use an Azure account to offload the valuable disk space on the VPS. If you would rather use another service, <a href="https://github.com/kristopolous/DRR/issues">open a bug</a>.</p>
-<p>A tool <code>tools/cloud.py</code> computes the current cost for the stations specified. Also, a tool <code>tools/cleanup_cloud.sh</code> will analyze all the content on the cloud and make sure that it's valid and in use. Here is an example:</p>
+<p>A tool <code>tools/cloud.py</code> computes the current cost for the stations specified. Also, a tool <code>tools/cleanup_cloud.sh</code> will analyze all the content on the cloud and make sure that it's valid and in use by looking at a recent backup and doing a station-by-station comparison. Here is an example:</p>
 <pre><code>$ tools/cloud.py
 
  Station   Files   Space (GB)
@@ -488,7 +475,22 @@ $</code></pre>
 <p>The audio processing engine wasn't designed to process all MP3 and AAC files ... in fact, it was designed to deal with broken headers, files that are cut off, that begin in the middle of a payload, etc.</p>
 <p>Bitrates in fact, are computed based on the rate of the bits transiting over the connection in a given duration as opposed to being internally taken from what the file says it is.</p>
 <p>This is a much more direct and format agnostic computation. The sample size is large enough to avoid any errors (in fact, for HE-AAC+ streams, it performs more accurate duration measurements then <code>ffprobe</code> ... really).</p>
-<h3 id="is-this-legal">Is this legal?</h3>
+<h3 id="offloaded-dependencies">Offloaded dependencies</h3>
+<p>When things would take too many dependencies, the task was intentionally off-loaded to the main website in order to minimize the complexity and responsibilities behind running a server. The server has a distinct and unique purpose in life.</p>
+<p>But that doesn't stop us from our fun hacking.</p>
+<h4 id="restful-logo-generation">Restful logo generation</h4>
+<p>Logos for the podcasts are generated server-side at indycast.net so as not to require any image-processing or font dependencies on the servers themselves. The background tint is chosen based on the word itself in order to create a diverse but distinct palette for the various logos.</p>
+<p>The schema for generating them looks like the following</p>
+<pre><code>http://indycast.net/icon/(Arbitrary_string)_(size).png</code></pre>
+<p>For instance:</p>
+<pre><code>&lt;img src=http://indycast.net/icon/Here+is+one_120.png&gt;
+&lt;img src=http://indycast.net/icon/And+here+is+another_120.png&gt;
+&lt;img src=http://indycast.net/icon/You+can+go+small_90.png&gt;</code></pre>
+<p>Looks like so:</p>
+<div id="logo-block">
+<p><img src=http://indycast.net/icon/Here+is+one_120.png><img src=http://indycast.net/icon/And+here+is+another_120.png><img src=http://indycast.net/icon/You+can+go+small_90.png></p>
+</div>
+<p>The logos are 16-color PNGs which make them small and fast (although admittedly kind of ugly). ### Is this legal?</p>
 <p>I have no idea; I'm not a lawyer. We're solving real-world problems here so let's see what happens.</p>
 <p>If you're really concerned, then go ahead and run your own network of servers for personal private use - you can easily stuff 25 stations on any half-assed modern consumer-grade internet connection. Each instance takes up about 80MB of resident memory so we are still just talking 2GB for all that.</p>
 <h2 id="conclusion">Conclusion</h2>
