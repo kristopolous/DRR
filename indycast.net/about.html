@@ -468,11 +468,17 @@ $</code></pre>
 <p>Let's say there's a 2 hour show called, say <em>Darkwaves</em> at 2AM Monday and Wednesday mornings, you could do:</p>
 <pre><code>http://indycast.net/kpcc/mon,wed/2am/2hr/Darkwaves.xml</code></pre>
 <p>That URL would happily works with anything that ostensibly accepts so-called <em>podcasts</em>.</p>
+<p>What if you don't use a podcaster? What if you use something that accepts m3u files? Fine then,</p>
+<pre><code>http://indycast.net/kpcc/mon,wed/2am/2hr/Darkwaves.m3u</code></pre>
+<p>Alright, what about pls?</p>
+<pre><code>http://indycast.net/kpcc/mon,wed/2am/2hr/Darkwaves.pls</code></pre>
 <p>Or if you prefer, since the XML gets printed in a human readable pretty-print format, we can just cut the BS and do something like this:</p>
 <pre><code>$ curl -s kxlu.indycast.net:8890/sun/7pm/1hr/show.xml | grep enclosure 
   &lt;enclosure url=&quot;http://kxlu.indycast.net:8890/slices/kxlu-201507261900_62.mp3&quot; length=&quot;59520000&quot; type=&quot;audio/mpeg&quot;/&gt;
   &lt;enclosure url=&quot;http://kxlu.indycast.net:8890/slices/kxlu-201508021900_62.mp3&quot; length=&quot;59520000&quot; type=&quot;audio/mpeg&quot;/&gt;
-$</code></pre>
+
+# or maybe
+$ curl -s kxlu.indycast.net:8890/sun/7pm/1hr/show.m3u | grep -v \# | xargs mplayer</code></pre>
 <p>Like a boss. Alice is a boss.</p>
 <p>BTW, the audio intentionally starts a bit early and goes a bit over because in the real world, shows don't end on some exact NTP millisecond.</p>
 <h3 id="rewind-pause-and-scrub-live-radio">Rewind, pause, and scrub live radio</h3>

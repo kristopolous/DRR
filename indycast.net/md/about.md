@@ -363,12 +363,23 @@ Let's say there's a 2 hour show called, say *Darkwaves* at 2AM Monday and Wednes
 
 That URL would happily works with anything that ostensibly accepts so-called *podcasts*.
 
+What if you don't use a podcaster?  What if you use something that accepts m3u files? Fine then,
+
+    http://indycast.net/kpcc/mon,wed/2am/2hr/Darkwaves.m3u
+    
+Alright, what about pls?
+
+    http://indycast.net/kpcc/mon,wed/2am/2hr/Darkwaves.pls
+
 Or if you prefer, since the XML gets printed in a human readable pretty-print format, we can just cut the BS and do something like this:
 
     $ curl -s kxlu.indycast.net:8890/sun/7pm/1hr/show.xml | grep enclosure 
       <enclosure url="http://kxlu.indycast.net:8890/slices/kxlu-201507261900_62.mp3" length="59520000" type="audio/mpeg"/>
       <enclosure url="http://kxlu.indycast.net:8890/slices/kxlu-201508021900_62.mp3" length="59520000" type="audio/mpeg"/>
-    $
+
+    # or maybe
+    $ curl -s kxlu.indycast.net:8890/sun/7pm/1hr/show.m3u | grep -v \# | xargs mplayer
+    
 
 Like a boss. Alice is a boss.  
 
