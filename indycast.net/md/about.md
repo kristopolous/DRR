@@ -56,7 +56,7 @@ In fact, I've created a user-story for a would-be administrator. Every interacti
 #### Get a server up and running in under 2 minutes.
 Alice is interested in adding her station, RDIO.  She 
 
- 1. Git clone [the repository](https://github.com/kristopolous/DRR): `git clone --depth=1 https://github.com/kristopolous/DRR`
+ 1. Git clones [https://github.com/kristopolous/DRR](https://github.com/kristopolous/DRR).
  1. Runs a [small shell script](https://github.com/kristopolous/DRR/blob/master/bootstrap.sh) `bootstrap.sh` to install dependencies: `cd DRR; ./bootstrap.sh`
  1. Goes to RDIO's website and finds the live stream url. <sup>1</sup>
  1. Puts the URL in a configuration file, say `server/configs/rdio.txt`.
