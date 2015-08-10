@@ -42,7 +42,7 @@ The stack is Python 2.7 and SQLite 3. The audio library is written by hand (more
 
 ## Focus on all the users
 
-### Being an administrator
+### Smooth and painless administration
 
 Unlike with other projects, a minimal configuration to get a server up and running can be done in **[just 6 lines](https://github.com/kristopolous/DRR/blob/master/server/configs/kxlu.txt)**! 
 There are [14 example configurations](https://github.com/kristopolous/DRR/tree/master/server/configs) which are about 7 lines each. These are the ones that are used in production. No kidding.
@@ -101,7 +101,7 @@ No voodoo and nothing cryptic. You can engage as much or as little with the tech
 Refreshing huh?
 
 
-#### Non-mysterious
+#### A zero mystery policy 
 
 There's an endpoint map so Alice can see everything that is accessible along with its
 documentation. As of the writing of this document, it looks like so:
