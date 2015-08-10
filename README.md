@@ -1,4 +1,4 @@
-# Podcasting the World's Independent Radio
+<img src=https://raw.githubusercontent.com/kristopolous/DRR/master/indycast.net/images/gh-header_4.png>
 
 This is the source code for [Indycast](http://indycast.net), a DVR for independent radio. 
 
