@@ -3,7 +3,7 @@
 <h1><a href="/">Indycast</a></h1><h3>A Distributed [Open Source](https://github.com/kristopolous/DRR) DVR for Independent Radio</h3></div>
 </div>
 
-## What is this?
+## A free open-source service
 
 Indycast is a set of [community-run servers](https://github.com/kristopolous/DRR/wiki/Current-Architecture) for time-shifting independent radio because
 
