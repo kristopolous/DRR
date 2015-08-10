@@ -29,7 +29,7 @@ def generate_feed(file_type, **kwargs):
 
   elif file_type == 'm3u': 
     payload = generate_m3u(**kwargs)
-    mime = 'audio/x-scpls'
+    mime = 'audio/x-mpegurl'
 
   # If we fail to find one, we revert to xml
   else: 
@@ -40,7 +40,16 @@ def generate_feed(file_type, **kwargs):
 
 
 def generate_m3u(showname, feed_list, duration_min, weekday_list, start, duration_string):
-  return None
+  payload = ['#EXTM3U']
+  base_url = 'http://%s.indycast.net:%d/' % (misc.config['callsign'], misc.config['port'])
+
+  for feed in reversed(feed_list):
+    link = "%s%s" % (base_url, feed['name'])
+    payload.append('#EXTINF:%d,%s - %s' % (duration_min, showname, feed['start_date'].strftime("%Y.%m.%d")))
+    payload.append(link)
+
+  return "\n".join(payload)
+
 
 def generate_pls(showname, feed_list, duration_min, weekday_list, start, duration_string):
   payload = ["[playlist]", "NumberOfEntries=%d" % len(feed_list)]
@@ -55,6 +64,7 @@ def generate_pls(showname, feed_list, duration_min, weekday_list, start, duratio
     stream_number += 1
 
   return "\n".join(payload)
+
 
 def generate_xml(showname, feed_list, duration_min, weekday_list, start, duration_string):
   """
