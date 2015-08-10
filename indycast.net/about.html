@@ -34,6 +34,10 @@
     margin-left: 10px;
     line-height: 1.4em;
   }
+  iframe {
+    width: 420px;
+    height: 315px;
+  }
   #logo {
     float: left;
     margin-left: 10px;
@@ -108,6 +112,10 @@
   }
   @media screen and (max-width: 1280px) {
     body{ background: white }
+    iframe {
+      width: 95%;
+      max-width: 420px;
+    }
     pre, code {
       max-width: 100%;
       overflow-x: auto;
@@ -192,7 +200,7 @@ A Distributed <a href="https://github.com/kristopolous/DRR">Open Source</a> DVR 
 <p><small>[1] or use one of the examples: <code>./indy_server.py -c configs/kpcc.txt</code></small></p>
 <p>With a fresh install of a Linode VPS instance, I was able to get a server up and running in <a href=images/record.png>23.87 seconds</a>.</p>
 <p>Here I am, with a bunch of terrible typos, getting it up and running ... this is definitely not a speed run:</p>
-<iframe width="420" height="315" src="https://www.youtube.com/embed/8ZnFI1ncFcQ" frameborder="0" allowfullscreen>
+<iframe src="https://www.youtube.com/embed/8ZnFI1ncFcQ" frameborder="0" allowfullscreen>
 </iframe>
 <h4 id="self-contained">Self-contained</h4>
 <p>When the server starts up, it</p>

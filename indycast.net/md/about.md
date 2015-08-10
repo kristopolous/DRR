@@ -68,8 +68,7 @@ With a fresh install of a Linode VPS instance, I was able to get a server up and
 
 Here I am, with a bunch of terrible typos, getting it up and running ... this is definitely not a speed run:
 
-
-<iframe width="420" height="315" src="https://www.youtube.com/embed/8ZnFI1ncFcQ" frameborder="0" allowfullscreen></iframe>
+<iframe src="https://www.youtube.com/embed/8ZnFI1ncFcQ" frameborder="0" allowfullscreen></iframe>
 
 #### Self-contained
 
