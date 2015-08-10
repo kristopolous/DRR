@@ -1,6 +1,6 @@
 <div id='title'>
-<div id='logo'><img src=images/square-indycast_70.png></div><div id='header'>
-<h1>Indycast</h1><h3>A Distributed [Open Source](https://github.com/kristopolous/DRR) DVR for Independent Radio</h3></div>
+<div id='logo'><a href="/"><img src=images/square-indycast_70.png></a></div><div id='header'>
+<h1><a href="/">Indycast</a></h1><h3>A Distributed [Open Source](https://github.com/kristopolous/DRR) DVR for Independent Radio</h3></div>
 </div>
 
 ## What is this?
