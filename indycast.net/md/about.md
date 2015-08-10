@@ -70,7 +70,7 @@ Here I am, with a bunch of terrible typos, getting it up and running ... this is
 
 <iframe src="https://www.youtube.com/embed/8ZnFI1ncFcQ" frameborder="0" allowfullscreen></iframe>
 
-#### Self-contained
+#### Self-contained and hassle free
 
 When the server starts up, it 
 
@@ -96,7 +96,9 @@ And if we dip into one of these, (notice how I'm not root or using sudo or any o
     ./indycast.log
     ./streams
    
-No voodoo and nothing cryptic. Refreshing huh?
+No voodoo and nothing cryptic. You can engage as much or as little with the technology as you want: all the way from auto-pilot to manual transmission.
+
+Refreshing huh?
 
 
 #### Non-mysterious
