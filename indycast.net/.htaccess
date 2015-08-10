@@ -1,5 +1,9 @@
 Options +FollowSymLinks
 RewriteEngine on
 
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule (.*) $1.php [L]
+
 RewriteCond %{REQUEST_FILENAME} !-f 
 RewriteRule ^(.+)$      forwarder.php?$1 [L]
