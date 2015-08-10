@@ -3,9 +3,9 @@
 <h1>Indycast</h1><h3>A Distributed Open Source DVR for Independent Radio</h3></div>
 </div>
 
-## Introduction
+## What is this?
 
-Indycast is a set of community-run federated servers for time-shifting independent radio because
+Indycast is a set of community-run servers for time-shifting independent radio because
 
  * Often the best shows are on at inconvenient hours
  * Shows are rarely archived
@@ -28,7 +28,7 @@ The project's objectives:
  * **Hackable:** Every device and reasonable way of listening to content is supported.
  * **Non-commercial:** A way to provide listener-supported radio in a convenient manner.
 
-## Architecture
+## Modest goals for friendly software
 
 There's no money behind this and it's designed to be cheap with a low barrier to entry for participation.  People are encouraged to run and manage their own servers for their favorite radio station.  Special care has been taken to make the software:
 
