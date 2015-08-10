@@ -503,16 +503,15 @@ Looks like so:
 
 The logos are 16-color PNGs which make them small and fast (although admittedly kind of ugly).
 
-#### Is this legal?
+#### Share this with the world, or not.
 
-*I have no idea; I'm not a lawyer*. We're solving real-world problems here so let's see what happens. This technology
-has been a total game-changer in the way I listen to radio. Really.
-
-If you're really concerned, then go ahead and run your own network of servers for personal private use - you
-can easily stuff 25 stations on any half-assed modern consumer-grade internet connection. Each instance takes 
+If you want it all for yourself, it's easy to run your own network of servers for personal private use - you
+can easily stuff 25 stations on any modern consumer-grade internet connection. Each instance takes 
 up about 80MB of resident memory so we are still just talking 2GB for all that.
 
 ### Making things suck less.
+
+This technology has been a total game-changer in the way I listen to radio. Really.
 
 In writing this software I wanted to have something that worked and follows principles in usability, transparency,
 adaptability, and simplicity that are held dearly by me.  I've tried to create this in the way that I want software
