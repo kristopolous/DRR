@@ -37,6 +37,7 @@ if [ -z "$DOWNLOAD" ]; then
   # The most recent backup can be found by just doing this:
   echo "Using most recent backup. Start like '$ DOWNLOAD=1 ./cleanup_cloud.sh' to generate a new backup."
   backup_dir=~/backups/indycast/`ls -1t ~/backups/indycast | head -1`
+
 else
   echo "Running backup on all hosts to get database list..."
   backup_dir=`./backup.sh 1`
