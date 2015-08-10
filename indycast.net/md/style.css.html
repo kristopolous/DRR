@@ -19,7 +19,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="favicon.ico" >
 <style>
-body { background: url('images/crossword.png'); }
+body { 
+  background: url('images/crossword.png'); }
 * { font-family: 'Lora', serif; }
 p {
   max-width: 700px;
@@ -100,8 +101,21 @@ pre > code {
   text-shadow: 0 0;
 }
 blockquote {
-  border-left: 4px solid #eef;
+  border-top: 4px solid #eef;
+  border-bottom: 4px solid #eef;
+  font-size: 1.25em;
+  color: #555;
+  width: 30%;
+  float: right;
+  padding: 0.5em 1em;
+  background: rgba(216,216,255, 0.1);
+  margin: 0.1em 0.2em 0.1em 0.4em;
 }
+blockquote p {
+  margin: 0
+}
+body { max-width: 800px}
+
 @media screen and (max-width: 1280px) {
   body{ background: white }
   iframe {

@@ -53,6 +53,8 @@ There are [14 example configurations](https://github.com/kristopolous/DRR/tree/m
 
 There's a bash script to install dependencies but again, [it's 12 lines](https://github.com/kristopolous/DRR/blob/master/bootstrap.sh) ... so if it doesn't work on your system, just `cat bootstrap.sh` and install the stuff yourself.  composer, gemfile, vundle, bower, something else? No! none of that - let's not re-invent things that are already easy.
 
+> The record for upping a server from a fresh install is in <a href=images/record.png>23.87 seconds</a>.
+
 Don't you hate it when some blackbox frameworky magic doesn't work and you helplessly try to figure out what's the code and what's the framework ... geez, I hate that.  No, none of that nonsense here.
 
 In fact, I've created a user-story for a would-be administrator. Every interaction with a computer should be a thought-out interface.
@@ -61,17 +63,12 @@ In fact, I've created a user-story for a would-be administrator. Every interacti
 
 Try this out right now.  It's easy and there's no risk.
 
-<a href=http://i.imgur.com/YI3Qu5bl.jpg>Alice</a> is interested in adding her station, RDIO.  She 
+<a href=http://i.imgur.com/YI3Qu5bl.jpg>Alice</a> is interested in adding her favorite station, KPCC.  She 
 
  1. Git clones [https://github.com/kristopolous/DRR](https://github.com/kristopolous/DRR).
  1. Runs a [small shell script](https://github.com/kristopolous/DRR/blob/master/bootstrap.sh) `bootstrap.sh` to install dependencies: `cd DRR; ./bootstrap.sh`
- 1. Goes to RDIO's website and finds the live stream url. <sup>1</sup>
- 1. Puts the URL in a configuration file, say `server/configs/rdio.txt`.
- 1. Runs the server with this configuration file, `./indy_server.py -c configs/rdio.txt`.
+ 1. Runs the server with one of the example configuration files, `./indy_server.py -c configs/kpcc.txt`.
 
-<small>[1] or use one of the examples: `./indy_server.py -c configs/kpcc.txt`</small>
-
-With a fresh install of a Linode VPS instance, I was able to get a server up and running in <a href=images/record.png>23.87 seconds</a>.
 
 Here I am, with a bunch of terrible typos, getting it up and running ... this is definitely not a speed run:
 
@@ -81,10 +78,10 @@ Here I am, with a bunch of terrible typos, getting it up and running ... this is
 
 When the server starts up, it 
 
- * Puts everything in a single directory with a simple to understand hierarchy: `~/radio/rdio/` (configurable)
+ * Puts everything in a single directory with a simple to understand hierarchy: `~/radio/kpcc/` (configurable)
  * Forks processes from a manager thread, carefully naming them with their purpose.
- * Has an informative log file that tells the user what's going on: `~/radio/rdio/indycast.log`
- * Is easy to shut down and restart: `kill cat ~/radio/rdio/pid-manager`
+ * Has an informative log file that tells the user what's going on: `~/radio/kpcc/indycast.log`
+ * Is easy to shut down and restart: `kill cat ~/radio/kpcc/pid-manager`
  * Is remotely upgradable (through the `/upgrade` endpoint), replacing its own footprint seamlessly.
 
 In fact if you run multiple stations you can see something like this:
@@ -360,7 +357,7 @@ XMLs podcasts feed are generated with a simple url schema:
 
 Let's say there's a 2 hour show called, say *Darkwaves* at 2AM Monday and Wednesday mornings, you could do:
   
-    http://indycast.net/rdio/mon,wed/2am/2hr/Darkwaves.xml
+    http://indycast.net/kpcc/mon,wed/2am/2hr/Darkwaves.xml
 
 That URL would happily works with anything that ostensibly accepts so-called *podcasts*.
 
@@ -376,27 +373,27 @@ Like a boss. Alice is a boss.
 BTW, the audio intentionally starts a bit early and goes a bit over because in the real world, shows don't end on some exact NTP millisecond.
 
 ### Rewind, pause, and scrub live radio
-Alice turns on her radio and there's a fascinating interview going on.  Unfortunately, she missed the beginning of it.  Luckily, she is able to listen to RDIO starting say, 5 minutes ago, by doing the following:
+Alice turns on her radio and there's a fascinating interview going on.  Unfortunately, she missed the beginning of it.  Luckily, she is able to listen to KPCC starting say, 5 minutes ago, by doing the following:
 
-    $ mplayer http://indycast.net/rdio/live/-5min
+    $ mplayer http://indycast.net/kpcc/live/-5min
 
 Or, if she wants to listen starting at 1pm, this works:
     
-    $ mpg321 http://indycast.net/rdio/live/1pm
+    $ mpg321 http://indycast.net/kpcc/live/1pm
 
 
 #### Listen to user-specified arbitrary time slices
 If Alice just wants to listen to say, the Darkwaves show directly, from the command line, without all the hassle, she can specify a date, time, and duration, such as this:
 
-    $ mplayer2 http://indycast.net/rdio/at/monday_2am/2hr
+    $ mplayer2 http://indycast.net/kpcc/at/monday_2am/2hr
 
 In fact, there's another more orthogonal way to do this, for Bob, who is forgetful and lazy:
 
-    $ mpv http://indycast.net/rdio/mon/2am/2hr
+    $ mpv http://indycast.net/kpcc/mon/2am/2hr
 
 See how this is similar to the podcast link of 
 
-    http://indycast.net/rdio/mon/2am/2hr/Darkwaves.xml
+    http://indycast.net/kpcc/mon/2am/2hr/Darkwaves.xml
 
 Simply by omitting the christening of the show and stopping after the duration, the server figures you just want the most recent 
 episode and gives it to you.  How nice for Bob.

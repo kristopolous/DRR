@@ -27,7 +27,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="favicon.ico" >
   <style>
-  body { background: url('images/crossword.png'); }
+  body { 
+    background: url('images/crossword.png'); }
   * { font-family: 'Lora', serif; }
   p {
     max-width: 700px;
@@ -108,8 +109,21 @@
     text-shadow: 0 0;
   }
   blockquote {
-    border-left: 4px solid #eef;
+    border-top: 4px solid #eef;
+    border-bottom: 4px solid #eef;
+    font-size: 1.25em;
+    color: #555;
+    width: 30%;
+    float: right;
+    padding: 0.5em 1em;
+    background: rgba(216,216,255, 0.1);
+    margin: 0.1em 0.2em 0.1em 0.4em;
   }
+  blockquote p {
+    margin: 0
+  }
+  body { max-width: 800px}
+  
   @media screen and (max-width: 1280px) {
     body{ background: white }
     iframe {
@@ -197,30 +211,29 @@ A Distributed <a href="https://github.com/kristopolous/DRR">Open Source</a> DVR 
 <h3 id="smooth-and-painless-administration">Smooth and painless administration</h3>
 <p>Unlike with other projects, a minimal configuration to get a server up and running can be done in <strong><a href="https://github.com/kristopolous/DRR/blob/master/server/configs/kxlu.txt">just 6 lines</a></strong>! There are <a href="https://github.com/kristopolous/DRR/tree/master/server/configs">14 example configurations</a> which are about 7 lines each. These are the ones that are used in production. No kidding.</p>
 <p>There's a bash script to install dependencies but again, <a href="https://github.com/kristopolous/DRR/blob/master/bootstrap.sh">it's 12 lines</a> ... so if it doesn't work on your system, just <code>cat bootstrap.sh</code> and install the stuff yourself. composer, gemfile, vundle, bower, something else? No! none of that - let's not re-invent things that are already easy.</p>
+<blockquote>
+<p>The record for upping a server from a fresh install is in <a href=images/record.png>23.87 seconds</a>.</p>
+</blockquote>
 <p>Don't you hate it when some blackbox frameworky magic doesn't work and you helplessly try to figure out what's the code and what's the framework ... geez, I hate that. No, none of that nonsense here.</p>
 <p>In fact, I've created a user-story for a would-be administrator. Every interaction with a computer should be a thought-out interface.</p>
 <h2 id="up-and-running-in-under-2-minutes.">Up and running in under 2 minutes.</h2>
 <p>Try this out right now. It's easy and there's no risk.</p>
-<p><a href=http://i.imgur.com/YI3Qu5bl.jpg>Alice</a> is interested in adding her station, RDIO. She</p>
+<p><a href=http://i.imgur.com/YI3Qu5bl.jpg>Alice</a> is interested in adding her favorite station, KPCC. She</p>
 <ol style="list-style-type: decimal">
 <li>Git clones <a href="https://github.com/kristopolous/DRR" class="uri">https://github.com/kristopolous/DRR</a>.</li>
 <li>Runs a <a href="https://github.com/kristopolous/DRR/blob/master/bootstrap.sh">small shell script</a> <code>bootstrap.sh</code> to install dependencies: <code>cd DRR; ./bootstrap.sh</code></li>
-<li>Goes to RDIO's website and finds the live stream url. <sup>1</sup></li>
-<li>Puts the URL in a configuration file, say <code>server/configs/rdio.txt</code>.</li>
-<li>Runs the server with this configuration file, <code>./indy_server.py -c configs/rdio.txt</code>.</li>
+<li>Runs the server with one of the example configuration files, <code>./indy_server.py -c configs/kpcc.txt</code>.</li>
 </ol>
-<p><small>[1] or use one of the examples: <code>./indy_server.py -c configs/kpcc.txt</code></small></p>
-<p>With a fresh install of a Linode VPS instance, I was able to get a server up and running in <a href=images/record.png>23.87 seconds</a>.</p>
 <p>Here I am, with a bunch of terrible typos, getting it up and running ... this is definitely not a speed run:</p>
 <iframe src="https://www.youtube.com/embed/8ZnFI1ncFcQ" frameborder="0" allowfullscreen>
 </iframe>
 <h4 id="self-contained-and-hassle-free">Self-contained and hassle free</h4>
 <p>When the server starts up, it</p>
 <ul>
-<li>Puts everything in a single directory with a simple to understand hierarchy: <code>~/radio/rdio/</code> (configurable)</li>
+<li>Puts everything in a single directory with a simple to understand hierarchy: <code>~/radio/kpcc/</code> (configurable)</li>
 <li>Forks processes from a manager thread, carefully naming them with their purpose.</li>
-<li>Has an informative log file that tells the user what's going on: <code>~/radio/rdio/indycast.log</code></li>
-<li>Is easy to shut down and restart: <code>kill cat ~/radio/rdio/pid-manager</code></li>
+<li>Has an informative log file that tells the user what's going on: <code>~/radio/kpcc/indycast.log</code></li>
+<li>Is easy to shut down and restart: <code>kill cat ~/radio/kpcc/pid-manager</code></li>
 <li>Is remotely upgradable (through the <code>/upgrade</code> endpoint), replacing its own footprint seamlessly.</li>
 </ul>
 <p>In fact if you run multiple stations you can see something like this:</p>
@@ -451,7 +464,7 @@ $</code></pre>
 <p>XMLs podcasts feed are generated with a simple url schema:</p>
 <pre><code>http://indycast.net/[station]/[weekday,...]/[start time]/[duration]/[name]</code></pre>
 <p>Let's say there's a 2 hour show called, say <em>Darkwaves</em> at 2AM Monday and Wednesday mornings, you could do:</p>
-<pre><code>http://indycast.net/rdio/mon,wed/2am/2hr/Darkwaves.xml</code></pre>
+<pre><code>http://indycast.net/kpcc/mon,wed/2am/2hr/Darkwaves.xml</code></pre>
 <p>That URL would happily works with anything that ostensibly accepts so-called <em>podcasts</em>.</p>
 <p>Or if you prefer, since the XML gets printed in a human readable pretty-print format, we can just cut the BS and do something like this:</p>
 <pre><code>$ curl -s kxlu.indycast.net:8890/sun/7pm/1hr/show.xml | grep enclosure 
@@ -461,17 +474,17 @@ $</code></pre>
 <p>Like a boss. Alice is a boss.</p>
 <p>BTW, the audio intentionally starts a bit early and goes a bit over because in the real world, shows don't end on some exact NTP millisecond.</p>
 <h3 id="rewind-pause-and-scrub-live-radio">Rewind, pause, and scrub live radio</h3>
-<p>Alice turns on her radio and there's a fascinating interview going on. Unfortunately, she missed the beginning of it. Luckily, she is able to listen to RDIO starting say, 5 minutes ago, by doing the following:</p>
-<pre><code>$ mplayer http://indycast.net/rdio/live/-5min</code></pre>
+<p>Alice turns on her radio and there's a fascinating interview going on. Unfortunately, she missed the beginning of it. Luckily, she is able to listen to KPCC starting say, 5 minutes ago, by doing the following:</p>
+<pre><code>$ mplayer http://indycast.net/kpcc/live/-5min</code></pre>
 <p>Or, if she wants to listen starting at 1pm, this works:</p>
-<pre><code>$ mpg321 http://indycast.net/rdio/live/1pm</code></pre>
+<pre><code>$ mpg321 http://indycast.net/kpcc/live/1pm</code></pre>
 <h4 id="listen-to-user-specified-arbitrary-time-slices">Listen to user-specified arbitrary time slices</h4>
 <p>If Alice just wants to listen to say, the Darkwaves show directly, from the command line, without all the hassle, she can specify a date, time, and duration, such as this:</p>
-<pre><code>$ mplayer2 http://indycast.net/rdio/at/monday_2am/2hr</code></pre>
+<pre><code>$ mplayer2 http://indycast.net/kpcc/at/monday_2am/2hr</code></pre>
 <p>In fact, there's another more orthogonal way to do this, for Bob, who is forgetful and lazy:</p>
-<pre><code>$ mpv http://indycast.net/rdio/mon/2am/2hr</code></pre>
+<pre><code>$ mpv http://indycast.net/kpcc/mon/2am/2hr</code></pre>
 <p>See how this is similar to the podcast link of</p>
-<pre><code>http://indycast.net/rdio/mon/2am/2hr/Darkwaves.xml</code></pre>
+<pre><code>http://indycast.net/kpcc/mon/2am/2hr/Darkwaves.xml</code></pre>
 <p>Simply by omitting the christening of the show and stopping after the duration, the server figures you just want the most recent episode and gives it to you. How nice for Bob.</p>
 <h2 id="fast-and-small">Fast and small</h2>
 <h3 id="disk-space-efficient">Disk space efficient</h3>
