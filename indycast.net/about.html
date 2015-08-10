@@ -448,12 +448,12 @@ $</code></pre>
 $</code></pre>
 <p>Like a boss. Alice is a boss.</p>
 <p>BTW, the audio intentionally starts a bit early and goes a bit over because in the real world, shows don't end on some exact NTP millisecond.</p>
-<h4 id="rewind-pause-and-scrub-live-radio">Rewind, pause, and scrub live radio</h4>
+<h3 id="rewind-pause-and-scrub-live-radio">Rewind, pause, and scrub live radio</h3>
 <p>Alice turns on her radio and there's a fascinating interview going on. Unfortunately, she missed the beginning of it. Luckily, she is able to listen to RDIO starting say, 5 minutes ago, by doing the following:</p>
 <pre><code>$ mplayer http://indycast.net/rdio/live/-5min</code></pre>
 <p>Or, if she wants to listen starting at 1pm, this works:</p>
 <pre><code>$ mpg321 http://indycast.net/rdio/live/1pm</code></pre>
-<h4 id="pick-any-arbitrary-time-slice">Pick any arbitrary time slice</h4>
+<h4 id="listen-to-user-specified-arbitrary-time-slices">Listen to user-specified arbitrary time slices</h4>
 <p>If Alice just wants to listen to say, the Darkwaves show directly, from the command line, without all the hassle, she can specify a date, time, and duration, such as this:</p>
 <pre><code>$ mplayer2 http://indycast.net/rdio/at/monday_2am/2hr</code></pre>
 <p>In fact, there's another more orthogonal way to do this, for Bob, who is forgetful and lazy:</p>
