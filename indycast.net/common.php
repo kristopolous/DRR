@@ -43,6 +43,20 @@ $schema = [
   ]
 ];
 
+function sanitize($list) {
+  $ret = [];
+
+  foreach($list as $key) {
+    if(isset($_REQUEST[$key])) {
+      $ret[$key] = SQLite3::escapeString($_REQUEST[$key]);
+    } else {
+      $ret[$key] = false;
+    }
+  }
+
+  return $ret;
+}
+
 function is_read_only() {
   return empty($_SESSION['admin']) || $_SESSION['admin'] != 1;
 }
