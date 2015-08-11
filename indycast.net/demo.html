@@ -1,0 +1,103 @@
+<style>
+#radio-random { 
+  background: black;
+  border-radius: 4px;
+  padding: 0.5em;
+  display: inline-block;
+  color: white;
+  font-family: sans-serif; 
+}
+#radio-random h2 {
+  margin: 0;
+  font-weight: normal;
+  display: inline-block;
+  font-size: 20px;
+}
+#radio-random audio {
+  display: block;
+  width: 100%;
+  margin-top: 0.5em;
+}
+#button-random {
+  background: black;
+  color: white;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  font-size: 14px;
+  margin-right: 0.5em;
+  vertical-align: text-bottom;
+}
+</style>
+<div id="radio-random">
+  <button id='button-random' onclick=do_random()>&#8635;</button><h2 id='url'></h2>
+  <audio id="radio-control" controls type='audio/mpeg'>
+</div>
+<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script>
+var 
+  station_list = [],
+  random = {
+    num: function(max, min) {
+      min = min || 0;
+      max = max || 1;
+      return Math.round(Math.random() * max + min);
+    },
+    time: function(){
+       return random.num(11, 1) + ['am','pm'][random.num()];
+    },
+    day: function(){
+      return ['sun','mon','tue','wed','thu','fri','sat'][random.num(7)];
+    },
+    duration: function() {
+      var 
+        in_minutes = random.num(9, 1) * 15, 
+        ret = '';
+
+      if(in_minutes > 60) {
+        ret += Math.floor(in_minutes / 60) + 'hr'
+      }
+
+      if(in_minutes % 60) {
+        ret += in_minutes % 60;
+      }
+      return ret;
+    },
+    station: function() {
+      return station_list[random.num(station_list.length - 1)];
+    }
+  };
+
+function do_random() {
+  set_player(random_url());
+}
+
+function set_player(url) {
+  $("#url").html(url);
+  var audio = document.getElementById('radio-control');
+  audio.src = url;
+  audio.play();
+}
+
+function random_url(){
+  var 
+    station = random.station(),
+    day = random.day(),
+    duration = random.duration();
+
+  //if(random.num() == 0) {
+    return 'http://indycast.net/' + station + '/live/' + random.time();
+  //} else {
+  //  return 'http://indycast.net/' + [station, day, random.time(), duration].join('/');
+  //}
+}
+
+$(function(){
+  $.getJSON('/api/stations', function(list) {
+    for (var ix = 0; ix < list.length; ix++) {
+      console.log(list[ix]);
+      station_list.push(list[ix].callsign);
+    }
+    do_random();
+  });
+});
+</script>
