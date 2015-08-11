@@ -369,7 +369,11 @@ def server_manager(config):
     start_second = (requested_time - start_info['start_date']).total_seconds()
     # print start_info, requested_time, start_second
 
-    return Response(audio.list_slice_stream(start_info, start_second), mimetype=audio.our_mime())
+    response = Response(audio.list_slice_stream(start_info, start_second), mimetype=audio.our_mime())
+
+    # some audio players (such as flow-player) need this
+    response.headers.add('content-length', 2**40)
+    return response
 
 
   @app.route('/at/<start>/<duration_string>')
