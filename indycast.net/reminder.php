@@ -18,7 +18,7 @@ include_once('common.php');
     <style>
     h1 { background: white } 
     a { cursor: pointer }
-    #duration { width: 100 %}
+    #duration { width: 100%; text-align: center }
     #duration li { width: 32% }
     #rss-img { font-size: 40px; width: 48px; min-height: auto; height: auto }
     #rss-header { margin-left: 54px ; min-height: auto; margin-top: 3px}
@@ -65,7 +65,7 @@ include_once('common.php');
 
             <ul class="week-group group" id="duration">
               <li><a data="30" class="button">Current &frac12;hr</a></li>
-              <li><a data="1hr" class="button">Current hr</a></li>
+              <li><a data="60" class="button">Current hr</a></li>
               <li><a data="custom" class="button">Custom</a></li>
             </ul>
 
@@ -261,35 +261,29 @@ include_once('common.php');
   // new Date(year, month[, day[, hour[, minutes[, seconds[, milliseconds]]]]]);
   //
   var
-    email = ls('email'),
     isiDevice = navigator.userAgent.match(/ip(hone|od|ad)/i),
-    isMobile = true,
     listenEvent = isiDevice ? 'touchend' : 'click',
     ev = EvDa({start_time: '', end_time: '', station: '', email: '', notes: ''}),
-    last_station = ls('last'),
     right_now = new Date(),
 
-    current_hour = [
-      date_diff(right_now, {minutes: 0}),
-      date_diff(right_now, {minutes: 0, hours: "+1"})
-    ],
+    current_hour = {
+      start_time: date_diff(right_now, {minutes: 0}),
+      end_time: date_diff(right_now, {minutes: 0, hours: "+1"})
+    },
     
-    current_half_hour = [
-      date_diff(right_now, {minutes: "% 30 - (ts.getMinutes() % 30)"}),
-      date_diff(right_now, {minutes: "% 30 + 30 - (ts.getMinutes() % 30)"})
-    ]
-
-  console.log(current_hour, current_half_hour);  
+    current_half_hour = {
+      start_time: date_diff(right_now, {minutes: "% 30 - (ts.getMinutes() % 30)"}),
+      end_time: date_diff(right_now, {minutes: "% 30 + 30 - (ts.getMinutes() % 30)"})
+    }
 
   function station_select() {
     $("#station-preselect").slideUp();
     $("#station").slideDown();
   }
 
-
   $(function(){
 
-    easy_bind(['email', 'notes', 'station', 'duration']);
+    easy_bind(['email', 'notes', 'station', 'duration', 'start_time', 'end_time']);
     var what = easy_sync(['email', 'station']);
 
     if(what.station) {
@@ -301,6 +295,16 @@ include_once('common.php');
     } else {
       station_select();
     } 
+
+    ev('duration', function(what) {
+      if(what == '30') {
+        ev(current_half_hour);
+      } else if (what == '60') {
+        ev(current_hour);
+      } else if (what == 'custom') {
+        ev({start_time: '', end_time: ''});
+      }
+    });
 
     $(".big-button").click(function(){
       console.log(ev(''));
