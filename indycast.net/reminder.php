@@ -26,6 +26,16 @@ include_once('common.php');
     #podcast-url { line-height: 0 }
     #podcast-url-container { text-align: center;background: white }
     .big-button h3 { font-size: 1.3em }
+    .big-button.disabled { 
+      color: grey;
+      border-color: silver;
+      cursor: default;
+      background: silver }
+    .big-button.disabled:hover {
+      background: silver;
+      box-shadow: 0 0;
+    }
+    #podcast-url-container { height: 40px }
     #text-container { text-align: left }
     #text-container *  {display: block}
     #text-container label { float:left; width: 70px; clear: both }
@@ -42,7 +52,8 @@ include_once('common.php');
       border-radius: 5px;
     }
     #custom-time input { width: 48%; background: white }
-    #station, #station-preselect { display: none }
+    #thanks, #station, #station-preselect { display: none }
+    #thanks { position: relative; top: 0; left: 0; }
     
     label { font-size: 0.8em; line-height: 1.3em }
 
@@ -96,7 +107,8 @@ include_once('common.php');
               </div>
             </div>
             <div id='podcast-url-container'>
-              <a class='big-button'>
+              <div id="thanks">Thanks, we'll notify you when the show is over and ready for download.</div>
+              <a class='big-button disabled'>
                 <span id='rss-top'>
                   <div id='rss-img'>
                     <i class="fa fa-envelope"></i>
@@ -281,6 +293,14 @@ include_once('common.php');
     $("#station").slideDown();
   }
 
+  ev('', function(map) {
+    if(map.email && map.station && map.start_time && map.end_time) {
+      $(".big-button").removeClass('disabled');
+    } else {
+      $(".big-button").addClass('disabled');
+    }
+  });
+
   $(function(){
 
     easy_bind(['email', 'notes', 'station', 'duration', 'start_time', 'end_time']);
@@ -307,6 +327,11 @@ include_once('common.php');
     });
 
     $(".big-button").click(function(){
+      if($(this).hasClass('disabled')) {
+        return;
+      }
+      $(this).slideUp();
+      $("#thanks").slideDown();
       console.log(ev(''));
     });
 
