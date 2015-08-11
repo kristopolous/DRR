@@ -41,18 +41,17 @@ function set_fallback(url) {
   $f("radio-widget", "http://releases.flowplayer.org/swf/flowplayer-3.2.18.swf", {
     clip: {
       url: url,
-      provider: 'audio'
+      provider: 'audio',
+      live: true,
+      autoPlay: !is_first
     },
     plugins: {
       controls: {
         height: 30,
         autoHide: false
       },
-      clip: {
-        autoPlay: !is_first,
-      },
       audio: {
-        url: "flowplayer.audio-3.2.11.swf"
+        url: "flowplayer.audio-3.2.11.swf",
       }
     }
   });
@@ -89,20 +88,22 @@ function random_url(){
   var 
     station = random.station(),
     day = random.day(),
+    what_time = random.time(),
     duration = random.duration();
 
   //if(random.num() == 0) {
-    return 'http://indycast.net/' + station + '/live/' + random.time();
+    return 'http://indycast.net/' + station + '/live/' + what_time;
   //} else {
   //  return 'http://indycast.net/' + [station, day, random.time(), duration].join('/');
   //}
 }
 
 $(function(){
+  var callsign;
   $.getJSON('/api/stations', function(list) {
     for (var ix = 0; ix < list.length; ix++) {
-      console.log(list[ix]);
-      station_list.push(list[ix].callsign);
+      callsign = list[ix].callsign;
+      station_list.push(callsign);
     }
     do_random();
   });
