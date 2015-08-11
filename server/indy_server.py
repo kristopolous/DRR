@@ -371,8 +371,6 @@ def server_manager(config):
 
     response = Response(audio.list_slice_stream(start_info, start_second), mimetype=audio.our_mime())
 
-    # some audio players (such as flow-player) need this
-    response.headers.add('content-length', 2**40)
     return response
 
 
