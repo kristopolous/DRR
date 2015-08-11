@@ -17,6 +17,7 @@ include_once('common.php');
     <link href='http://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'>
     <style>
     h1 { background: white } 
+    a { cursor: pointer }
     #duration { width: 100 %}
     #duration li { width: 32% }
     #rss-img { font-size: 40px; width: 48px; min-height: auto; height: auto }
@@ -41,6 +42,7 @@ include_once('common.php');
       border-radius: 5px;
     }
     #custom-time input { width: 48%; background: white }
+    #station, #station-preselect { display: none }
     
     label { font-size: 0.8em; line-height: 1.3em }
 
@@ -73,6 +75,7 @@ include_once('common.php');
             </div>
 
             <label for="station">What station?</label>
+            <div id="station-preselect"></div>
             <ul class="radio-group group" id="station"><?php
               foreach(active_stations() as $station) {
                 echo '<li><a desc="' . $station['description'] . '" class="button">' . ($station['callsign']) . '</a></li>';
@@ -243,6 +246,7 @@ include_once('common.php');
         ls(what, value);
       });
     });
+    return ev('');
   }
 
 
@@ -277,10 +281,26 @@ include_once('common.php');
 
   console.log(current_hour, current_half_hour);  
 
+  function station_select() {
+    $("#station-preselect").slideUp();
+    $("#station").slideDown();
+  }
+
+
   $(function(){
 
     easy_bind(['email', 'notes', 'station', 'duration']);
-    easy_sync(['email', 'station']);
+    var what = easy_sync(['email', 'station']);
+
+    if(what.station) {
+      $("#station-preselect")
+        .html("Auto-selected from previous use: <b>" + what.station.toUpperCase() + "</b><br/>")
+        .append($("<a>Select a different station</a>").click(station_select))
+        .show()
+
+    } else {
+      station_select();
+    } 
 
     $(".big-button").click(function(){
       console.log(ev(''));
