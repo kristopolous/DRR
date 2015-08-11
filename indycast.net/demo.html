@@ -35,6 +35,7 @@
 <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 <script>
 var 
+  is_first = true,
   station_list = [],
   random = {
     num: function(max, min) {
@@ -75,7 +76,12 @@ function set_player(url) {
   $("#url").html(url);
   var audio = document.getElementById('radio-control');
   audio.src = url;
-  audio.play();
+
+  // Don't auto-play
+  if (!is_first) {
+    audio.play();
+  }
+  is_first = false;
 }
 
 function random_url(){
