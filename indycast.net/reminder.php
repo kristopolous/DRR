@@ -52,8 +52,8 @@ include_once('common.php');
       border-radius: 5px;
     }
     #custom-time input { width: 48%; background: white }
-    #thanks, #station, #station-preselect { display: none }
-    #thanks { position: relative; top: 0; left: 0; }
+    #err, #thanks, #station, #station-preselect { display: none }
+    #err, #thanks { position: relative; top: 0; left: 0; }
     
     label { font-size: 0.8em; line-height: 1.3em }
 
@@ -108,6 +108,7 @@ include_once('common.php');
             </div>
             <div id='podcast-url-container'>
               <div id="thanks">Thanks, we'll notify you when the show is over and ready for download.</div>
+              <div id="err">Woops, unable to register this reminder. Please try again. If the problem persists, <a href=mailto:indycast@googlegroups.com>Email us</a> with details.</div>
               <a class='big-button disabled'>
                 <span id='rss-top'>
                   <div id='rss-img'>
@@ -246,6 +247,7 @@ include_once('common.php');
           $("a[data='" + val + "']", node).addClass("selected");
         });
       }
+      ev.fire(what); 
     });
   }
 
@@ -253,7 +255,7 @@ include_once('common.php');
     _.each(list, function(what) {
       if(ls(what)) {
         ev(what, ls(what));
-      }
+      } 
       ev.after(what, function(value) {
         ls(what, value);
       });
@@ -275,7 +277,7 @@ include_once('common.php');
   var
     isiDevice = navigator.userAgent.match(/ip(hone|od|ad)/i),
     listenEvent = isiDevice ? 'touchend' : 'click',
-    ev = EvDa({start_time: '', end_time: '', station: '', email: '', notes: ''}),
+    ev = EvDa({start_time: '', end_time: '', duration: '30', station: '', email: '', notes: 'your show'}),
     right_now = new Date(),
 
     current_hour = {
@@ -330,9 +332,14 @@ include_once('common.php');
       if($(this).hasClass('disabled')) {
         return;
       }
-      $(this).slideUp();
-      $("#thanks").slideDown();
-      console.log(ev(''));
+      $.post('/api/reminder', ev(''), function(res) {
+        $('.big-button').slideUp();
+        if(res != 'true') {
+          $("#err").slideDown();
+        } else {
+          $("#thanks").slideDown();
+        }
+      });
     });
 
   });
