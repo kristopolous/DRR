@@ -6,12 +6,13 @@ function pl_reminder($what) {
     ['start_time', 'end_time', 'email', 'notes', 'callsign']
   );
 
-  $lhs = array_keys($dirty); $rhs = array_values($dirty);
+  $lhs = array_keys($param_map); $rhs = array_values($param_map);
   if(array_search(false, $rhs, true) !== false) {
-    return false;
+    return 'false';
   }
 
-  return $db->exec('insert into reminders (' . implode(',', $lhs) . ') values ("' . implode('","', $rhs) . '")');
+  $db->exec('insert into reminders (' . implode(',', $lhs) . ') values ("' . implode('","', $rhs) . '")');
+  return 'true';
 }
 
 function pl_stations() {
