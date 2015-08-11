@@ -18,7 +18,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $dir = 'http://indycast.net/';
   }
 
-  header('Location: ' . $dir . 'admin.php');
+  header('Location: /admin.php');
   exit(0);
 }
 
@@ -47,10 +47,14 @@ button { padding: 0}
 </style>
 <form method="post">
   <?php
-    foreach($schema as $key => $value) {
-      if($value == 'TEXT') {
+    foreach($schema['stations'] as $key => $value) {
+      if($value == 'TEXT' || $key == 'active') {
         echo "<div><label for='$key'>$key</label>";
-        if($key == 'description') {
+        if($key == 'active') {
+          echo '<input type="radio" name="active" value="1" ' . ($station[$key] == '1' ? 'checked' : '') . '>yes';
+          echo '<input type="radio" name="active" value="0" ' . ($station[$key] == '0' ? 'checked' : '') . '>no';
+          echo '</div>';
+        } else if($key == 'description') {
           echo "<textarea
             rows='5'
             cols='60'
