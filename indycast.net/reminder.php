@@ -295,7 +295,7 @@ include_once('common.php');
     $("#station").slideDown();
   }
 
-  ev('', function(map) {
+  ev.after('', function(map) {
     if(map.email && map.station && map.start_time && map.end_time) {
       $(".big-button").removeClass('disabled');
     } else {
@@ -304,19 +304,6 @@ include_once('common.php');
   });
 
   $(function(){
-
-    easy_bind(['email', 'notes', 'station', 'duration', 'start_time', 'end_time']);
-    var what = easy_sync(['email', 'station']);
-
-    if(what.station) {
-      $("#station-preselect")
-        .html("Auto-selected from previous use: <b>" + what.station.toUpperCase() + "</b><br/>")
-        .append($("<a>Select a different station</a>").click(station_select))
-        .show()
-
-    } else {
-      station_select();
-    } 
 
     ev('duration', function(what) {
       if(what == '30') {
@@ -327,6 +314,25 @@ include_once('common.php');
         ev({start_time: '', end_time: ''});
       }
     });
+
+    easy_bind(['email', 'notes', 'station', 'duration', 'start_time', 'end_time']);
+
+    ev({
+      duration: '30',
+      notes: 'your show'
+    });
+
+    var what = easy_sync(['email', 'station', 'duration']);
+
+    if(what.station) {
+      $("#station-preselect")
+        .html("Auto-selected from previous use: <b>" + what.station.toUpperCase() + "</b><br/>")
+        .append($("<a>Select a different station</a>").click(station_select))
+        .show()
+
+    } else {
+      station_select();
+    } 
 
     $(".big-button").click(function(){
       if($(this).hasClass('disabled')) {
