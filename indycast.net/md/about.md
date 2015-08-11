@@ -24,7 +24,7 @@ Let's make things suck less.
 Here's a random URL generator that allows you to see `/live` endpoints on healthy stations ... in more sophisticated
 audio players you could scrub up to the current time.  Click on the button to the left of the URL to go to a new station and time
 
-<div id="radio-random"><button id='button-random' onclick=do_random()>&#8635;</button><h2 id='url'></h2><div id='radio-widget'><audio id="radio-control" controls type='audio/mpeg'></div></div>
+<div id="radio-random"><button id='button-random' onclick=do_random()>&#8635;</button><h2 id='url'></h2><div id='radio-widget'><div id='html5-widget'><audio id="radio-control" controls type='audio/mpeg'></div><div id='flash-widget'></div></div></div>
 
 There's much more where that came from - weekly podcasts, email reminders, m3u, pls files, and more.  Read on!
 
@@ -555,3 +555,7 @@ Thanks for reading.
 
 ~chris.
 
+<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="/assets/js/demo.js"></script>
+<script src="http://releases.flowplayer.org/js/flowplayer-3.2.13.min.js"></script>
+<script src="http://releases.flowplayer.org/js/flowplayer.controls-3.2.11.min.js"></script>

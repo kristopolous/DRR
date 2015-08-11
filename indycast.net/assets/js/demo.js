@@ -1,7 +1,7 @@
 var 
-  is_first = true,
-  use_fallback = false,
+  audio_count = 0,
   station_list = [],
+  html5_audio,
   random = {
     num: function(max, min) {
       min = min || 0;
@@ -37,17 +37,25 @@ function do_random() {
   set_player(random_url());
 }
 
-function set_fallback(url) {
-  $f("radio-widget", "http://releases.flowplayer.org/swf/flowplayer-3.2.18.swf", {
+function set_fallback(url, count) {
+  $("#flash-widget").show();
+
+  $f("flash-widget", "http://releases.flowplayer.org/swf/flowplayer-3.2.18.swf", {
+    onError: function() {
+      // this means that both the html5 and flash player failed ... so we
+      // just move on to a new track.
+      set_player(random_url());
+    },
     clip: {
       url: url,
       provider: 'audio',
       live: true,
-      autoPlay: !is_first
+      autoPlay: count
     },
     plugins: {
       controls: {
         height: 30,
+        fullscreen: false,
         autoHide: false
       },
       audio: {
@@ -55,33 +63,31 @@ function set_fallback(url) {
       }
     }
   });
-  is_first = false;
 }
 
 function set_player(url) {
+  var local = audio_count;
+
   $("#url").html(url);
-  if(use_fallback) {
-    set_fallback(url);
-    return;
-  }
 
-  var audio = document.getElementById('radio-control');
-
-  audio.src = url;
-  
-  audio.addEventListener('error', function() {
-    $("#radio-widget").empty().css('height', '30px');
-    use_fallback = true;
-    is_first = true;
-    set_fallback(url);
+  $("#flash-widget").hide();
+  html5_audio.addEventListener('error', function() {
+    $("#html5-widget").fadeOut();
+    set_fallback(url, local);
   });
 
-  // Don't auto-play
-  if (!is_first) {
-    audio.play();
+  html5_audio.addEventListener('loadstart', function(){
+    $("#html5-widget").fadeIn();
+  });
+
+  html5_audio.src = url;
+
+  // Don't auto-play if it's the first
+  if (audio_count > 0) {
+    html5_audio.play();
   }
 
-  is_first = false;
+  audio_count ++;
 }
 
 function random_url(){
@@ -100,6 +106,9 @@ function random_url(){
 
 $(function(){
   var callsign;
+
+  html5_audio = document.getElementById('radio-control');
+
   $.getJSON('/api/stations', function(list) {
     for (var ix = 0; ix < list.length; ix++) {
       callsign = list[ix].callsign;

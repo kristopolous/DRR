@@ -145,8 +145,12 @@
     display: block;
     width: 100%;
   }
+  #flash-widget {
+    height: 30px;
+  }
   #radio-widget {
     margin-top: 0.5em;
+    height: 30px;
   }
   #button-random {
     background: black;
@@ -189,10 +193,6 @@
     #logo, #header { height: 120px; }
   }
   </style>
-  <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
-  <script src="/assets/js/demo.js"></script>
-  <script src="http://releases.flowplayer.org/js/flowplayer-3.2.13.min.js"></script>
-  <script src="http://releases.flowplayer.org/js/flowplayer.controls-3.2.11.min.js"></script>
 </head>
 <body>
 <div id="title">
@@ -232,7 +232,12 @@ A Distributed <a href="https://github.com/kristopolous/DRR">Open Source</a> DVR 
 <h2 id="url">
 </h2>
 <div id='radio-widget'>
+<div id='html5-widget'>
 <audio id="radio-control" controls type='audio/mpeg'>
+</div>
+<div id="flash-widget">
+
+</div>
 </div>
 </div>
 <p>There's much more where that came from - weekly podcasts, email reminders, m3u, pls files, and more. Read on!</p>
@@ -615,5 +620,9 @@ $ curl -s kxlu.indycast.net:8890/sun/7pm/1hr/show.m3u | grep -v \# | xargs mplay
 <p>I also encourage you to <a href="https://github.com/kristopolous/DRR">pull down the code</a> which I have taken a serious effort on to be consistent and well-documented. If you find issues, please feel free to send a pull-request.</p>
 <p>Thanks for reading.</p>
 <p>~chris.</p>
+<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="/assets/js/demo.js"></script>
+<script src="http://releases.flowplayer.org/js/flowplayer-3.2.13.min.js"></script>
+<script src="http://releases.flowplayer.org/js/flowplayer.controls-3.2.11.min.js"></script>
 </body>
 </html>
