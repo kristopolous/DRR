@@ -301,7 +301,8 @@ def server_manager(config):
       'free': os.popen("df -h / | tail -1").read().strip(),
       'load': os.popen("uptime").read().strip(),
       'plist': os.popen("ps auxf | grep %s" % misc.config['callsign']).read().strip().split('\n'),
-      'disk': sum(os.path.getsize(f) for f in os.listdir('.') if os.path.isfile(f)),
+      # Reporting the list as fractional GB is more useful.
+      'disk': (sum(os.path.getsize(f) for f in os.listdir('.') if os.path.isfile(f))) / (1024.0 ** 3),
       'streams': DB.all('streams', sort_by='start_unix'),
       'version': __version__,
       'config': misc.public_config()
