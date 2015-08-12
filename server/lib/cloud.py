@@ -47,8 +47,9 @@ def connect(config=False):
 def unlink(path, config=False):
   """ Remove a file from the cloud service. """
   fname = os.path.basename(path)
+  print path, fname
   blob_service, container = connect(config)
-  return blob_service.delete_blob(container, path)
+  return blob_service.delete_blob(container, fname)
 
 
 def put(path):
@@ -426,7 +427,8 @@ def prune_process(lockMap, reindex=False):
 
   unlink_list = db['c'].execute('select name from streams where end_unix < date("now", "-%d seconds")' % archive_duration).fetchall()
 
-  for file_name in unlink_list:
+  for file_name_tuple in unlink_list:
+    file_name = str(file_name_tuple[0])
     # If there's a cloud account at all then we need to unlink the 
     # equivalent mp3 file
     if cloud_cutoff:
