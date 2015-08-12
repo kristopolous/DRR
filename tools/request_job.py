@@ -7,13 +7,13 @@ import ConfigParser
 import lib.misc as misc
 
 # Taken from https://bradgignac.com/2014/05/12/sending-email-with-python-and-the-mailgun-api.html
-def send_email(who, subject, body):
-  key = 'YOUR API KEY HERE'
+def send_email(config, who, subject, body):
+  key = config['base_key']
+  request_url = "%s/%s" % (config['base_url'].strip('/'), 'messages')
 
-  request_url = 'https://api.mailgun.net/v3/indycast.net'
-
+  print request_url
   request = requests.post(request_url, auth=('api', key), data={
-    'from': 'do-not-reply@indycast.net',
+    'from': 'Indycast Reminders <reminders@indycast.net>',
     'to': who,
     'subject': subject,
     'text': body
@@ -43,12 +43,10 @@ def do_template(template_file, settings):
     body = '\n'.join(template_rows[1:])
 
     return {
-      'subject': re.sub('{{([\s\w]*)}}', repl, subject_line)
+      'subject': re.sub('{{([\s\w]*)}}', repl, subject_line),
       'body': re.sub('{{([\s\w]*)}}', repl, body)
     } 
 
-
-do_template(template_file='email_reminder_template.txt', settings={'notes': 'some show', 'link': 'somelink', 'begin': 'begin', 'end': 'end', 'date': 'date'})
 
 cfg = os.environ.get('CLOUD_CFG')
 
@@ -61,3 +59,15 @@ args = parser.parse_args()
 if args.config is None:
   print "Define the cloud configuration location with the CLOUD_CFG environment variable or using the -c option"
   sys.exit(-1)
+
+cloud_config = ConfigParser.ConfigParser()
+cloud_config.read(args.config)
+
+config = misc.config_section_map('Mailgun', cloud_config)
+email = do_template(template_file='email_reminder_template.txt', settings={'notes': 'some show', 'link': 'somelink', 'begin': 'begin', 'end': 'end', 'callsign': 'kxlu'})
+
+print email
+
+res = send_email(config=config, who='kristopolous@yahoo.com', subject=email['subject'], body=email['body'])
+
+#print res
