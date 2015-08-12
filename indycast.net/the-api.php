@@ -6,6 +6,14 @@ function pl_reminder($what) {
     ['start_time', 'end_time', 'email', 'notes', 'station']
   );
 
+  foreach(['start_time', 'end_time'] as $date_key) {
+    $param_map[$date_key] = strtotime($param_map[$date_key]);
+
+    if(!is_numeric($param_map[$date_key])) {
+      return 'false';
+    }
+  }
+
   $lhs = array_keys($param_map); $rhs = array_values($param_map);
 
   if(array_search(false, $rhs, true) !== false) {
