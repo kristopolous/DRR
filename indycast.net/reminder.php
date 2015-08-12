@@ -53,7 +53,7 @@ include_once('common.php');
     }
     #custom-time input { width: 48%; background: white }
     #err, #thanks, #station, #station-preselect { display: none }
-    #err, #thanks { position: relative; top: 0; left: 0; }
+    #err, #thanks { position: relative; top: 0; left: 0; line-height: 1.25em }
     
     label { font-size: 0.8em; line-height: 1.3em }
 
