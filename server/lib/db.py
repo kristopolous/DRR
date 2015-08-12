@@ -33,8 +33,6 @@ SCHEMA = {
      ('start_minute', 'REAL DEFAULT 0'),
      ('end_minute', 'REAL DEFAULT 0'),
      ('week_number', 'INTEGER DEFAULT 0'),
-     ('created_at', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'),
-     ('accessed_at', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'),
      ('size', 'INTEGER DEFAULT 0'),
    ]
 }
@@ -71,6 +69,25 @@ def upgrade():
       db['c'].execute('alter table %s add column %s %s' % (table, key, our_schema))
       db['conn'].commit()
 
+    to_remove = my_set(existing_column_names).difference(my_set(our_column_names))
+
+    if len(to_remove) > 0:
+      our_schema = ','.join(["%s %s" % (key, klass) for key, klass in schema])
+      our_columns = ','.join(our_column_names)
+
+      drop_column_sql = """
+      CREATE TEMPORARY TABLE my_backup(%s);
+      INSERT INTO my_backup SELECT %s FROM %s;
+      DROP TABLE %s;
+      CREATE TABLE %s(%s);
+      INSERT INTO %s SELECT %s FROM my_backup;
+      DROP TABLE my_backup;
+      """ % (our_schema, our_columns, table, table,    table, our_schema, table, our_columns)
+
+      for sql_line in drop_column_sql.strip().split('\n'):
+        db['c'].execute(sql_line)
+
+      db['conn'].commit()
 
 def map(row_list, table):
   """ 
