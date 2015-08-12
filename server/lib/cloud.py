@@ -366,7 +366,7 @@ def prune_process(lockMap, reindex=False):
   archive_duration = misc.config['archivedays'] * TS.ONE_DAY_SECOND
   cutoff = TS.unixtime('prune') - archive_duration
 
-  # Remove all alices older than 4 hours.
+  # Remove all slices older than 4 hours.
   slice_cutoff = TS.unixtime('prune') - 0.1667 * TS.ONE_DAY_SECOND
 
   cloud_cutoff = None
@@ -423,7 +423,8 @@ def prune_process(lockMap, reindex=False):
   # The map names are different since there may or may not be a corresponding
   # cloud thingie associated with it.
   db = DB.connect()
-  unlink_list = db['c'].execute('select name from streams where created_at < (current_timestamp - ?)', (archive_duration, )).fetchall()
+
+  unlink_list = db['c'].execute('select name from streams where end_unix < date("now", "-%d seconds")' % archive_duration).fetchall()
 
   for file_name in unlink_list:
     # If there's a cloud account at all then we need to unlink the 
