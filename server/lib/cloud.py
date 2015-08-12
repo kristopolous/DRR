@@ -432,22 +432,25 @@ def prune_process(lockMap, reindex=False):
   # cloud thingie associated with it.
   db = DB.connect()
 
-  unlink_list = db['c'].execute('select name from streams where end_unix < date("now", "-%d seconds")' % archive_duration).fetchall()
+  unlink_list = db['c'].execute('select name, id from streams where end_unix < date("now", "-%d seconds")' % archive_duration).fetchall()
 
   for file_name_tuple in unlink_list:
     file_name = str(file_name_tuple[0])
+    id = file_name_tuple[1]
+
     # If there's a cloud account at all then we need to unlink the 
     # equivalent mp3 file
     if cloud_cutoff:
       "cloud.";unlink(file_name)
 
+      # After we remove these streams then we delete them from the db.
+      db['c'].execute('delete from streams where id = %d' % id)
+      db['conn'].commit()
+
     # now only after we've deleted from the cloud can we delete the local file
     if os.path.exists(file_name):
       os.unlink(file_name)
 
-  # After we remove these streams then we delete them from the db.
-  db['c'].execute('delete from streams where name in ("%s")' % ('","'.join(unlink_list)))
-  db['conn'].commit()
 
   logging.info("Found %d files older than %s days." % (count, misc.config['archivedays']))
   lockMap['prune'].release()
