@@ -1,5 +1,4 @@
-Subject: [indycast] {{ notes }} From {{ date }}
-
+[indycast] {{ notes }} From {{ date }}
 Hi, You or someone using this email address requested to be notified of a show
 that was from {{ begin }} to {{ end }} on {{ date }} with the notes {{ notes
 }}.
