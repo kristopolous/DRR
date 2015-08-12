@@ -1,6 +1,6 @@
 <?
 session_start();
-$db = new SQLite3("../db/main.db");
+$db = new SQLite3(__DIR__ . "/../db/main.db");
 
 $schema = [
   'stations' => [
@@ -36,7 +36,7 @@ $schema = [
     'start_time'  => 'TIMESTAMP',
     'end_time'    => 'TIMESTAMP',
 
-    'callsign'    => 'TEXT',
+    'station'    => 'TEXT',
     'email'       => 'TEXT',
 
     'notes'       => 'TEXT'
