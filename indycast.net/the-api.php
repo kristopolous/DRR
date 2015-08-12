@@ -3,14 +3,16 @@ include_once('common.php');
 
 function pl_reminder($what) {
   $param_map = sanitize(
-    ['start_time', 'end_time', 'email', 'notes', 'callsign']
+    ['start_time', 'end_time', 'email', 'notes', 'station']
   );
 
   $lhs = array_keys($param_map); $rhs = array_values($param_map);
+
   if(array_search(false, $rhs, true) !== false) {
     return 'false';
   }
 
+  $db = db_connect();
   $db->exec('insert into reminders (' . implode(',', $lhs) . ') values ("' . implode('","', $rhs) . '")');
   return 'true';
 }

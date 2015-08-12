@@ -2,6 +2,11 @@
 session_start();
 $db = new SQLite3(__DIR__ . "/../db/main.db");
 
+function db_connect() {
+  global $db;
+  return $db;
+}
+
 $schema = [
   'stations' => [
     'id'          => 'INTEGER PRIMARY KEY', 
