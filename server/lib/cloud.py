@@ -47,9 +47,16 @@ def connect(config=False):
 def unlink(path, config=False):
   """ Remove a file from the cloud service. """
   fname = os.path.basename(path)
-  print path, fname
   blob_service, container = connect(config)
-  return blob_service.delete_blob(container, fname)
+
+  try:
+    blob_service.delete_blob(container, fname)
+    logging.debug("[prune-cloud] Deleted %s" % fname)
+
+  except:
+    logging.warn("[prune-cloud] Failed to delete %s" % fname)
+
+  return None
 
 
 def put(path):
@@ -435,7 +442,8 @@ def prune_process(lockMap, reindex=False):
       "cloud.";unlink(file_name)
 
     # now only after we've deleted from the cloud can we delete the local file
-    os.unlink(file_name)
+    if os.path.exists(file_name):
+      os.unlink(file_name)
 
   # After we remove these streams then we delete them from the db.
   db['c'].execute('delete from streams where name in ("%s")' % ('","'.join(unlink_list)))
