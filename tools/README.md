@@ -8,6 +8,7 @@
  * get_stream.sh - Gets a remote mp3 and puts it locally.
  * graph.py - Shows a visual representation of a stations' recording coverage (look at the top of the code for more details).
  * indycast.pub - The public key you should add to your server in the authorized_keys files if you want to be part of the federation.
+ * request_job.py - This perennial script is the back-end technology that checks the reminder table and sends off emails.
  * server_query.py - Queries the server(s) for information (see below)
 
 The tools ending in .py all have documentation using python's argparser.  All tools are internally documented in their code - along with providing descriptions of what they do and how to use them at the top of the file.
