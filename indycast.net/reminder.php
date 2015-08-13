@@ -277,7 +277,16 @@ include_once('common.php');
   var
     isiDevice = navigator.userAgent.match(/ip(hone|od|ad)/i),
     listenEvent = isiDevice ? 'touchend' : 'click',
-    ev = EvDa({start_time: '', end_time: '', duration: '30', station: '', email: '', notes: 'your show'}),
+    ev = EvDa({
+      // find out the local tz offset
+      offset: (new Date()).getTimezoneOffset(), 
+      start_time: '', 
+      end_time: '', 
+      duration: '30', 
+      station: '', 
+      email: '', 
+      notes: 'your show'
+    }),
     right_now = new Date(),
 
     current_hour = {

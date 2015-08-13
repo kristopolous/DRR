@@ -41,19 +41,35 @@ $schema = [
     'start_time'  => 'TIMESTAMP',
     'end_time'    => 'TIMESTAMP',
 
-    'station'    => 'TEXT',
+    // This is the TZ offset in minutes, as reported
+    // by the browsers' JS engine in order to make sure
+    // that emails are sent out reflecting the right 
+    // offset time.
+    'offset'      => 'INTEGER DEFAULT 0',
+
+    'station'     => 'TEXT',
     'email'       => 'TEXT',
 
     'notes'       => 'TEXT'
   ]
 ];
 
+define('INT', 0);
+define('STR', 1);
+
 function sanitize($list) {
   $ret = [];
 
-  foreach($list as $key) {
+  foreach($list as $key => $type) {
     if(isset($_REQUEST[$key])) {
-      $ret[$key] = SQLite3::escapeString($_REQUEST[$key]);
+      $base = SQLite3::escapeString($_REQUEST[$key]);
+
+      if($type == STR) {
+        $ret[$key] = '"' . $base . '"';
+      } else {
+        $ret[$key] = $base;
+      } 
+
     } else {
       $ret[$key] = false;
     }
