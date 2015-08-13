@@ -366,7 +366,7 @@ Normally this is a stupid idea as she would get a bunch of terribly formatted se
      * http://indycast.net/wxyc/
      * http://indycast.net/wzrd/
 
-    Query the /site-map end-point to see
+    Query the /help end-point to see
     supported features on a per-station basis.
 
     Thanks for using curl/7.26.0 ;-).
