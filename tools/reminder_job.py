@@ -19,7 +19,8 @@ def send_email(config, who, subject, body):
     'from': 'Indycast Reminders <reminders@indycast.net>',
     'to': who,
     'subject': subject,
-    'text': body
+    'text': re.sub('<[^<]+?>', '', body),
+    'html': body
   })
 
   return request
