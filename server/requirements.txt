@@ -2,3 +2,4 @@ flask
 lxml
 setproctitle
 azure
+requests
