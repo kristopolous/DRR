@@ -118,6 +118,12 @@ Refreshing huh?
 
 #### A zero mystery policy 
 
+##### No secret backend
+Usually with most other projects, there's a secret "admin" backend that you, lowly outer-party developer don't get to see.  You need an account, and to know the secret handshake ... screw that.  
+
+With indycast, there is an admin interface, [and it's right here](http://indycast.net/admin.php).  You need to know a password to edit it or reveal sensitive information of course --- but you are free to see *all the inner-workings* of the platform. 
+
+##### What's this? A help endpoint? *ce n'est pas possible!*
 There's an endpoint map so Alice can see everything that is accessible along with its
 documentation. As of the writing of this document (v0.9-[Inkanyamba](https://roadtravel1.files.wordpress.com/2013/09/inkanyamba-1.jpg)), the help looks like this:
 
@@ -530,6 +536,8 @@ The logos are 16-color PNGs which make them small and fast (although admittedly 
 If you want it all for yourself, it's easy to run your own network of servers for personal private use - you
 can easily stuff 25 stations on any modern consumer-grade internet connection. Each instance takes 
 up about 80MB of resident memory so we are still just talking 2GB for all that.
+
+Anarchy with a small 'a'. Let's try it.
 
 ### Making things suck less.
 

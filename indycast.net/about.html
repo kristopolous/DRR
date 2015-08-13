@@ -306,6 +306,10 @@ kcrw  kdvs  kpcc  kxlu  wxyc</code></pre>
 <p>No voodoo and nothing cryptic. You can engage as much or as little with the technology as you want: all the way from auto-pilot to manual transmission.</p>
 <p>Refreshing huh?</p>
 <h4 id="a-zero-mystery-policy">A zero mystery policy</h4>
+<h5 id="no-secret-backend">No secret backend</h5>
+<p>Usually with most other projects, there's a secret &quot;admin&quot; backend that you, lowly outer-party developer don't get to see. You need an account, and to know the secret handshake ... screw that.</p>
+<p>With indycast, there is an admin interface, <a href="http://indycast.net/admin.php">and it's right here</a>. You need to know a password to edit it or reveal sensitive information of course --- but you are free to see <em>all the inner-workings</em> of the platform.</p>
+<h5 id="whats-this-a-help-endpoint-ce-nest-pas-possible">What's this? A help endpoint? <em>ce n'est pas possible!</em></h5>
 <p>There's an endpoint map so Alice can see everything that is accessible along with its documentation. As of the writing of this document (v0.9-<a href="https://roadtravel1.files.wordpress.com/2013/09/inkanyamba-1.jpg">Inkanyamba</a>), the help looks like this:</p>
 <pre><code>$ curl indycast.net/kpcc/help
 -=#[ Welcome to indycast v0.9-Inkanyamba-75-g10234a0 API help ]#=-
@@ -608,6 +612,7 @@ $ curl -s kxlu.indycast.net:8890/sun/7pm/1hr/show.m3u | grep -v \# | xargs mplay
 <p>The logos are 16-color PNGs which make them small and fast (although admittedly kind of ugly).</p>
 <h4 id="share-this-with-the-world-or-not.">Share this with the world, or not.</h4>
 <p>If you want it all for yourself, it's easy to run your own network of servers for personal private use - you can easily stuff 25 stations on any modern consumer-grade internet connection. Each instance takes up about 80MB of resident memory so we are still just talking 2GB for all that.</p>
+<p>Anarchy with a small 'a'. Let's try it.</p>
 <h3 id="making-things-suck-less.">Making things suck less.</h3>
 <p>This technology has been a total game-changer in the way I listen to radio. Really.</p>
 <p>In writing this software I wanted to have something that worked and follows principles in usability, transparency, adaptability, and simplicity that are held dearly by me. I've tried to create this in the way that I want software to be written.</p>
