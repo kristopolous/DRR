@@ -4,7 +4,7 @@ var
   isiDevice = navigator.userAgent.match(/ip(hone|od|ad)/i),
   isMobile = true,
   listenEvent = isiDevice ? 'touchend' : 'click',
-  ev = EvDa({start: '', name: '', station: '', ampm: '', day: []}),
+  ev = EvDa({start: '', name: '', day: []}),
   fullName = {
     sun: 'Sundays', mon: 'Mondays', tue: 'Tuesdays', wed: 'Wednesdays',
     thu: 'Thursdays', fri: 'Fridays', sat: 'Saturdays'
