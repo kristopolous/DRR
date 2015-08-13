@@ -2,6 +2,7 @@
 import threading
 import logging
 import sqlite3
+import os
 from datetime import datetime, timedelta, date
 
 g_db = {}
@@ -137,7 +138,7 @@ def schema(table):
   return [ key for key, value in SCHEMA[table] ]
 
 
-def connect():
+def connect(db_file='config.db'):
   """
   A "singleton pattern" or some other fancy $10-world style of maintaining 
   the database connection throughout the execution of the script.
@@ -160,7 +161,11 @@ def connect():
   instance = g_db[thread_id]
 
   if 'conn' not in instance:
-    conn = sqlite3.connect('config.db')
+
+    if not os.path.exists(db_file):
+      print "Info: Creating db file %s" % db_file
+
+    conn = sqlite3.connect(db_file)
     instance['conn'] = conn
     instance['c'] = conn.cursor()
 
