@@ -1,14 +1,11 @@
 [indycast] {{ notes }} is ready!
 Hi, 
 
-You requested to be notified when a broadcast that was  
-{{ human_time }} on {{ station }} with the notes 
-"{{ notes }}" was available.
+You requested to be notified when a broadcast that was {{ human_time }} on {{ station }} with the notes "{{ notes }}" was available.
 
 That time is now.  Here is a link to listen.  Thanks!
 
-{{ link }}
+<a href="{{ link }}">{{ link }}</a>
 
 Sincerely,
 indycast.net
-
