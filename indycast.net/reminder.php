@@ -200,7 +200,7 @@ include_once('common.php');
     return new Date(
       ts.getFullYear(),
       ts.getMonth(),
-      ts.getDay(),
+      ts.getDate(),
       change_map.hours,
       change_map.minutes,
       0,
