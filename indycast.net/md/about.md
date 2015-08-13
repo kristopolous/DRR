@@ -41,6 +41,8 @@ All the code, APIs, and services are:
 
 The server architecture is carefully designed to be cheap to operate with low barriers to entry.  [You are encouraged](https://github.com/kristopolous/DRR/wiki/Join-the-Federation) to run and manage your own servers for your favorite radio station.  Special care has been taken to make the software:
 
+> *Natural* products feel like they've always been there - when you have try hard to remember life before.
+
  * **Simple**: Easy and quick to setup - I've timed multiple people who have been asked to get it up and running.
  * **Small**: A small-footprint, unobtrusive system that can piggy-back on servers doing other things.
  * **Customizable**: Highly configurable with reasonable defaults.
@@ -330,8 +332,14 @@ In that way, it's a radio concierge service, looking out for you.
 
 ##### Convenient for all levels of interaction
 
-Not only was this technology designed to be used by people who thumb around their smart-phones, but it was also designed for people who
-do Tux-cosplay at Linux conferences and think DefCon is full of posers.  
+In *Getting Everything You Can Out of All You've Got*, Jay Abraham takes elaborates on what a *client* is ... outlining how it becomes a paternal relationship - creating a level of trust where your mindshare can be given away to another entity.  A great product doesn't have customers, it has clients.
+
+> *client*: Anyone under the care of another.
+
+When designing software, it's often instructive to make yourself the first client.  If you can't trust the solution to simplify your life and solve integral problems, then nobody else should either.
+
+Given that, not only was this technology designed to be used by people who thumb around their smart-phones, but it was also designed for people who
+do Tux-cosplay at Linux conferences and think DefCon is full of posers. (*ahem*, *cough cough*, me) 
 
 If you are a hacker, read on.  Alice is a hacker.  She has no problem using a command line. 
 
