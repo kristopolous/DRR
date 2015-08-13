@@ -6,7 +6,7 @@ import argparse
 import ConfigParser
 import lib.misc as misc
 import lib.db as DB
-#time zone dilemma
+import time
 
 # Taken from https://bradgignac.com/2014/05/12/sending-email-with-python-and-the-mailgun-api.html
 def send_email(config, who, subject, body):
@@ -25,8 +25,9 @@ def send_email(config, who, subject, body):
 
 
 def find_requests(config):
-  db = DB.connect()
+  db = DB.connect('../db/main.db')
   now = time.time()
+  print now
   what_we_be_done_with = db['c'].execute('select * from reminders where (end_time + offset * 60) < %d' % now).fetchall()
 
   for row in what_we_be_done_with:
