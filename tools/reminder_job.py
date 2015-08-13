@@ -30,11 +30,13 @@ def find_requests(config):
   print now
   what_we_be_done_with = db['c'].execute('select * from reminders where (end_time + offset * 60) < %d' % now).fetchall()
 
-  for row in what_we_be_done_with:
-    print row
+  for row in DB.map(what_we_be_done_with, 'reminders'):
+    row['link'] = "http://indycast.net/%s/streams/%s-%s_%d.mp3" % ( row['station'], row['station'], time.strftime("%Y%m%d%H%M", time.gmtime(row['start_time'])), (row['end_time'] - row['start_time']) / 60)
 
-    #email = do_template(template_file='email_reminder_template.txt', settings={'notes': 'some show', 'link': 'somelink', 'begin': 'begin', 'end': 'end', 'callsign': 'kxlu'})
-    #res = send_email(config=config, who='kristopolous@yahoo.com', subject=email['subject'], body=email['body'])
+    email = do_template(template_file='email_reminder_template.txt', settings=row)
+    res = send_email(config=config, who='kristopolous@yahoo.com', subject=email['subject'], body=email['body'])
+    db['c'].execute('delete from reminders where id = %d' % row['id'])
+    db['conn'].commit()
 
   return None
 
@@ -45,7 +47,7 @@ def do_template(template_file, settings):
     if token in settings:
       return settings[token]
 
-    return ''
+    return 'NO VARIABLE: %s' % token
 
   if not os.path.exists(template_file):
     raise Exception("%s file wasn't found." % template_file)
