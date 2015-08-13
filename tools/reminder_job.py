@@ -24,9 +24,17 @@ def send_email(config, who, subject, body):
   return request
 
 
-def find_requests():
+def find_requests(config):
   db = DB.connect()
-  db['c']
+  now = time.time()
+  what_we_be_done_with = db['c'].execute('select * from reminders where (end_time + offset * 60) < %d' % now).fetchall()
+
+  for row in what_we_be_done_with:
+    print row
+
+    #email = do_template(template_file='email_reminder_template.txt', settings={'notes': 'some show', 'link': 'somelink', 'begin': 'begin', 'end': 'end', 'callsign': 'kxlu'})
+    #res = send_email(config=config, who='kristopolous@yahoo.com', subject=email['subject'], body=email['body'])
+
   return None
 
 def do_template(template_file, settings):
@@ -55,26 +63,25 @@ def do_template(template_file, settings):
     } 
 
 
-cfg = os.environ.get('CLOUD_CFG')
+def setup():
+  cfg = os.environ.get('CLOUD_CFG')
 
-os.chdir(os.path.dirname(os.path.realpath(__file__)))
+  os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-c", "--config", default=cfg, help="cloud credential file to use")
-args = parser.parse_args()
+  parser = argparse.ArgumentParser()
+  parser.add_argument("-c", "--config", default=cfg, help="cloud credential file to use")
+  args = parser.parse_args()
 
-if args.config is None:
-  print "Define the cloud configuration location with the CLOUD_CFG environment variable or using the -c option"
-  sys.exit(-1)
+  if args.config is None:
+    print "Define the cloud configuration location with the CLOUD_CFG environment variable or using the -c option"
+    sys.exit(-1)
 
-cloud_config = ConfigParser.ConfigParser()
-cloud_config.read(args.config)
+  cloud_config = ConfigParser.ConfigParser()
+  cloud_config.read(args.config)
 
-config = misc.config_section_map('Mailgun', cloud_config)
-email = do_template(template_file='email_reminder_template.txt', settings={'notes': 'some show', 'link': 'somelink', 'begin': 'begin', 'end': 'end', 'callsign': 'kxlu'})
+  return misc.config_section_map('Mailgun', cloud_config)
 
-print email
+config = setup()
 
-res = send_email(config=config, who='kristopolous@yahoo.com', subject=email['subject'], body=email['body'])
+find_requests(config)
 
-#print res
