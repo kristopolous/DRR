@@ -31,7 +31,7 @@ def find_requests(config):
   what_we_be_done_with = db['c'].execute('select * from reminders where (end_time + offset * 60) < %d' % now).fetchall()
 
   for row in DB.map(what_we_be_done_with, 'reminders'):
-    row['link'] = "http://indycast.net/%s/slices/%s-%s_%d.mp3" % ( row['station'], row['station'], time.strftime("%Y%m%d%H%M", time.gmtime(row['start_time'])), (row['end_time'] - row['start_time']) / 60)
+    row['link'] = "http://indycast.net/%s/slices/%s-%s_%d.mp3" % ( row['station'], row['station'], time.strftime("%Y%m%d%H%M", time.gmtime(row['start_time'] - row['offset'] * 60)), (row['end_time'] - row['start_time']) / 60)
 
     email = do_template(template_file='email_reminder_template.txt', settings=row)
     res = send_email(config=config, who='kristopolous@yahoo.com', subject=email['subject'], body=email['body'])
