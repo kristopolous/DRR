@@ -5,6 +5,7 @@ import requests
 import argparse
 import ConfigParser
 import lib.misc as misc
+import lib.db as DB
 #time zone dilemma
 
 # Taken from https://bradgignac.com/2014/05/12/sending-email-with-python-and-the-mailgun-api.html
@@ -24,6 +25,8 @@ def send_email(config, who, subject, body):
 
 
 def find_requests():
+  db = DB.connect()
+  db['c']
   return None
 
 def do_template(template_file, settings):

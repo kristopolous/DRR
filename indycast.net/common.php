@@ -41,6 +41,10 @@ $schema = [
     'start_time'  => 'TIMESTAMP',
     'end_time'    => 'TIMESTAMP',
 
+    // The human specifies the time in a term such as
+    // "current half hour" or someo other way.
+    'human_time'  => 'TEXT',
+
     // This is the TZ offset in minutes, as reported
     // by the browsers' JS engine in order to make sure
     // that emails are sent out reflecting the right 

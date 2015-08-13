@@ -290,11 +290,13 @@ include_once('common.php');
     right_now = new Date(),
 
     current_hour = {
+      human_time: 'the current hour',
       start_time: date_diff(right_now, {minutes: 0}),
       end_time: date_diff(right_now, {minutes: 0, hours: "+1"})
     },
     
     current_half_hour = {
+      human_time: 'the current half hour',
       start_time: date_diff(right_now, {minutes: "% 30 - (ts.getMinutes() % 30)"}),
       end_time: date_diff(right_now, {minutes: "% 30 + 30 - (ts.getMinutes() % 30)"})
     }
@@ -347,6 +349,10 @@ include_once('common.php');
       if($(this).hasClass('disabled')) {
         return;
       }
+      if(ev('duration') == 'custom') {
+        ev('human_time', 'from ' + ev('start_time') + ' to ' + ev('end_time'));
+      }
+
       $.post('/api/reminder', ev(''), function(res) {
         $('.big-button').slideUp();
         if(res != 'true') {

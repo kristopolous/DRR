@@ -11,6 +11,7 @@ function pl_reminder($what) {
     'email' => STR, 
     'notes' => STR, 
     'station' => STR, 
+    'human_time' => STR,
     'offset' => INT
   ]);
 
