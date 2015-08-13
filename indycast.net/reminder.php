@@ -51,6 +51,7 @@ include_once('common.php');
       width: 97%;
       border-radius: 5px;
     }
+    #duration a { line-height: 1.7em;padding: 0.5em 0}
     #custom-time input { width: 48%; background: white }
     #err, #thanks, #station, #station-preselect { display: none }
     #err, #thanks { position: relative; top: 0; left: 0; line-height: 1.25em }
@@ -75,9 +76,9 @@ include_once('common.php');
             <label for="duration">What period?</label>
 
             <ul class="week-group group" id="duration">
-              <li><a data="30" class="button">Current &frac12;hr</a></li>
-              <li><a data="60" class="button">Current hr</a></li>
-              <li><a data="custom" class="button">Custom</a></li>
+              <li><a data="-30" class="button">Last<br/>half hour</a></li>
+              <li><a data="30" class="button">Current<br/>half hour</a></li>
+              <li><a data="60" class="button">Current<br/>hour</a></li>
             </ul>
 
             <div id="custom-time">
@@ -295,6 +296,12 @@ include_once('common.php');
       end_time: +date_diff(right_now, {minutes: 0, hours: "+1"}) / 1000
     },
     
+    last_half_hour = {
+      human_time: 'the previous half hour',
+      start_time: +date_diff(right_now, {minutes: "% 30 - 30 - (ts.getMinutes() % 30)"}) / 1000,
+      end_time: +date_diff(right_now, {minutes: "% 30 - (ts.getMinutes() % 30)"}) / 1000
+    }
+
     current_half_hour = {
       human_time: 'the current half hour',
       start_time: +date_diff(right_now, {minutes: "% 30 - (ts.getMinutes() % 30)"}) / 1000,
