@@ -14,7 +14,6 @@ def send_email(config, who, subject, body):
   key = config['base_key']
   request_url = "%s/%s" % (config['base_url'].strip('/'), 'messages')
 
-  print request_url
   request = requests.post(request_url, auth=('api', key), data={
     'from': 'Indycast Reminders <reminders@indycast.net>',
     'to': who,
@@ -29,7 +28,7 @@ def send_email(config, who, subject, body):
 def find_requests(config):
   db = DB.connect('../db/main.db')
   now = time.time()
-  what_we_be_done_with = db['c'].execute('select * from reminders where (end_time + offset * 60) < %d' % now).fetchall()
+  what_we_be_done_with = db['c'].execute('select * from reminders where end_time < %d' % now).fetchall()
 
   for row in DB.map(what_we_be_done_with, 'reminders'):
     row['link'] = "http://indycast.net/%s/slices/%s-%s_%d.mp3" % ( row['station'], row['station'], time.strftime("%Y%m%d%H%M", time.gmtime(row['start_time'] - row['offset'] * 60)), (row['end_time'] - row['start_time']) / 60)
