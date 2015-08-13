@@ -16,7 +16,13 @@ function pl_reminder($what) {
   ]);
 
   foreach(['start_time', 'end_time'] as $date_key) {
-    $param_map[$date_key] = strtotime($param_map[$date_key]);
+    $value = $param_map[$date_key];
+
+    if(strval(intval($value)) == $value) {
+      $param_map[$date_key] = intval($value);
+    } else {
+      $param_map[$date_key] = strtotime($value);
+    }
 
     if(!is_numeric($param_map[$date_key])) {
       return 'false';

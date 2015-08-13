@@ -287,18 +287,19 @@ include_once('common.php');
       email: '', 
       notes: 'your show'
     }),
+
     right_now = new Date(),
 
     current_hour = {
       human_time: 'the current hour',
-      start_time: date_diff(right_now, {minutes: 0}),
-      end_time: date_diff(right_now, {minutes: 0, hours: "+1"})
+      start_time: +date_diff(right_now, {minutes: 0}) / 1000,
+      end_time: +date_diff(right_now, {minutes: 0, hours: "+1"}) / 1000
     },
     
     current_half_hour = {
       human_time: 'the current half hour',
-      start_time: date_diff(right_now, {minutes: "% 30 - (ts.getMinutes() % 30)"}),
-      end_time: date_diff(right_now, {minutes: "% 30 + 30 - (ts.getMinutes() % 30)"})
+      start_time: +date_diff(right_now, {minutes: "% 30 - (ts.getMinutes() % 30)"}) / 1000,
+      end_time: +date_diff(right_now, {minutes: "% 30 + 30 - (ts.getMinutes() % 30)"}) / 1000
     }
 
   function station_select() {
