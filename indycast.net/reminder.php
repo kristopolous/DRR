@@ -20,8 +20,8 @@ include_once('common.php');
     a { cursor: pointer }
     #duration { width: 100%; text-align: center }
     #duration li { width: 32% }
-    #rss-img { font-size: 40px; width: 48px; min-height: auto; height: auto }
-    #rss-header { margin-left: 54px ; min-height: auto; margin-top: 3px}
+    #rss-img { height: auto; font-size: 40px; width: 48px; min-height: 0; }
+    #rss-header { height: auto; margin-left: 54px; min-height: 0; margin-top: 3px}
     #podcast-done { display: block }
     #podcast-url { line-height: 0 }
     #podcast-url-container { text-align: center;background: white }
