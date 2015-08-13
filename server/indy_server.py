@@ -627,7 +627,7 @@ def stream_download(callsign, url, my_pid, file_name):
     nl['stream'].close()
     # This is where we are sure of the stats on this file, because
     # we just closed it ... so we can register it here.
-    db.register_stream(stream_info(file_name))
+    DB.register_stream(stream_info(file_name))
 
 
 def stream_manager():
