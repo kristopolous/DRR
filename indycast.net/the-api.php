@@ -1,10 +1,18 @@
 <?php
+// This is the api entry point for the /api/* calls. It's basically a really
+// poor-mans router and controller that doesn't distinguish between HTTP verbs.
 include_once('common.php');
 
 function pl_reminder($what) {
-  $param_map = sanitize(
-    ['start_time', 'end_time', 'email', 'notes', 'station']
-  );
+
+  $param_map = sanitize([
+    'start_time' => INT, 
+    'end_time' => INT, 
+    'email' => STR, 
+    'notes' => STR, 
+    'station' => STR, 
+    'offset' => INT
+  ]);
 
   foreach(['start_time', 'end_time'] as $date_key) {
     $param_map[$date_key] = strtotime($param_map[$date_key]);
@@ -21,7 +29,8 @@ function pl_reminder($what) {
   }
 
   $db = db_connect();
-  $db->exec('insert into reminders (' . implode(',', $lhs) . ') values ("' . implode('","', $rhs) . '")');
+  $db->exec('insert into reminders (' . implode(',', $lhs) . ') values (' . implode(',', $rhs) . ')');
+
   return 'true';
 }
 
