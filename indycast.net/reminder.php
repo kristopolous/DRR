@@ -283,7 +283,6 @@ include_once('common.php');
       start_time: '', 
       end_time: '', 
       duration: '30', 
-      station: '', 
       email: '', 
       notes: 'your show'
     }),
