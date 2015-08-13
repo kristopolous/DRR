@@ -332,7 +332,7 @@ In that way, it's a radio concierge service, looking out for you.
 
 ##### Convenient for all levels of interaction
 
-In *Getting Everything You Can Out of All You've Got*, Jay Abraham takes elaborates on what a *client* is ... outlining how it becomes a paternal relationship - creating a level of trust where your mindshare can be given away to another entity.  A great product doesn't have customers, it has clients.
+In *Getting Everything You Can Out of All You've Got*, Jay Abraham takes time to elaborate on what a *client* is ... outlining how it becomes a paternal relationship - creating a level of trust where your mindshare can be given away to another entity.  A great product doesn't have customers, it has clients.
 
 > *client*: Anyone under the care of another.
 
@@ -484,7 +484,7 @@ and in use by looking at a recent backup and doing a station-by-station comparis
 
 ### CPU efficient
 
-There is **no audio processing done** on the server.  No ffmpeg, avconv, lame, mencoder.  No
+There is **no conventional audio processing done** on the server.  No ffmpeg, avconv, lame, mencoder.  No
 none of that.  It can all be cleverly avoided - lemee 'splain:
 
 Because audio streams are just binary files, and the binary files are identical 
@@ -495,15 +495,17 @@ In order to find matching payloads, you can look at a sequence of bytes, called 
 the beginning of the payloads, and simply match that.  No audio-fingerprinting or FFT between 
 time and frequenc... no none of that.  It's much faster.
 
+> A blazingly fast and unique approach to audio-processing
+
 But since there was no library out there that did just this, I had to roll my own (see [server/lib/audio.py](https://github.com/kristopolous/DRR/blob/master/server/lib/audio.py)).  It scans headers, hopping around the file, making a number of 
 bold assumptions about things (such as CBR encoding) and as a result, audio can be brought down 
 from the cloud storage, stitched together, and then sliced in under a second.
 
-The audio processing engine wasn't designed to process all MP3 and AAC files ... in fact, it was designed 
-to deal with broken headers, files that are cut off, that begin in the middle of a payload, etc.
+The audio processing engine wasn't designed to process all types of MP3 and AAC files but it was instead designed to deal with broken headers, files that are cut off, that begin in the middle of a payload, etc.  
 
-Bitrates in fact, are computed based on the rate of the bits transiting over the connection in a given duration as opposed
-to being internally taken from what the file says it is.  
+Being able to deal with broken files in the real world without *freaking out* is always more useful than supporting arcane obscure parts of a format that were written by the standards body and then promptly forgotten about the next day.
+
+Bitrates in fact, are computed based on the rate of the bits transiting over the connection in a given duration as opposed to being internally taken from what the file says it is.  
 
 This is a much more direct and format agnostic computation.  The sample size is large enough to avoid any 
 errors (in fact, for HE-AAC+ streams, it performs more accurate duration measurements then `ffprobe` ... really).

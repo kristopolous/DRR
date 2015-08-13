@@ -8,6 +8,8 @@
   <style type="text/css">code{white-space: pre;}</style>
   <link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Arvo' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Slabo+27px' rel='stylesheet' type='text/css'>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta charset="utf-8" />
   <meta name="description" content="indycast: community driven podcasting" />
@@ -38,6 +40,10 @@
   iframe {
     width: 420px;
     height: 315px;
+  }
+  em {
+   font-family: 'Slabo 27px', serif;
+   font-size: 1.05em;
   }
   #logo {
     float: left;
@@ -494,7 +500,7 @@ kcrw  kdvs  kpcc  kxlu  wxyc</code></pre>
 <p>There she has a convenient selection of specifying the current half hour, 1-hour, or 2-hour time slot. Then she can specify a note such as &quot;John Warner's subversive ideas on chemistry&quot;. And then, at some time later, an email gets sent back to her saying &quot;Hey here's the audio you requested with the notes your specified. Here's a download link&quot;.</p>
 <p>In that way, it's a radio concierge service, looking out for you.</p>
 <h5 id="convenient-for-all-levels-of-interaction">Convenient for all levels of interaction</h5>
-<p>In <em>Getting Everything You Can Out of All You've Got</em>, Jay Abraham takes elaborates on what a <em>client</em> is ... outlining how it becomes a paternal relationship - creating a level of trust where your mindshare can be given away to another entity. A great product doesn't have customers, it has clients.</p>
+<p>In <em>Getting Everything You Can Out of All You've Got</em>, Jay Abraham takes time to elaborate on what a <em>client</em> is ... outlining how it becomes a paternal relationship - creating a level of trust where your mindshare can be given away to another entity. A great product doesn't have customers, it has clients.</p>
 <blockquote>
 <p><em>client</em>: Anyone under the care of another.</p>
 </blockquote>
@@ -595,11 +601,15 @@ $ curl -s kxlu.indycast.net:8890/sun/7pm/1hr/show.m3u | grep -v \# | xargs mplay
 
  *using $0.024/GB azure pricing</code></pre>
 <h3 id="cpu-efficient">CPU efficient</h3>
-<p>There is <strong>no audio processing done</strong> on the server. No ffmpeg, avconv, lame, mencoder. No none of that. It can all be cleverly avoided - lemee 'splain:</p>
+<p>There is <strong>no conventional audio processing done</strong> on the server. No ffmpeg, avconv, lame, mencoder. No none of that. It can all be cleverly avoided - lemee 'splain:</p>
 <p>Because audio streams are just binary files, and the binary files are identical independent of the user downloading them, then in order to overlap or splice the audio all you need is the ability to parse and find the headers ... not the payloads themselves.</p>
 <p>In order to find matching payloads, you can look at a sequence of bytes, called a signature, at the beginning of the payloads, and simply match that. No audio-fingerprinting or FFT between time and frequenc... no none of that. It's much faster.</p>
+<blockquote>
+<p>A blazingly fast and unique approach to audio-processing</p>
+</blockquote>
 <p>But since there was no library out there that did just this, I had to roll my own (see <a href="https://github.com/kristopolous/DRR/blob/master/server/lib/audio.py">server/lib/audio.py</a>). It scans headers, hopping around the file, making a number of bold assumptions about things (such as CBR encoding) and as a result, audio can be brought down from the cloud storage, stitched together, and then sliced in under a second.</p>
-<p>The audio processing engine wasn't designed to process all MP3 and AAC files ... in fact, it was designed to deal with broken headers, files that are cut off, that begin in the middle of a payload, etc.</p>
+<p>The audio processing engine wasn't designed to process all types of MP3 and AAC files but it was instead designed to deal with broken headers, files that are cut off, that begin in the middle of a payload, etc.</p>
+<p>Being able to deal with broken files in the real world without <em>freaking out</em> is always more useful than supporting arcane obscure parts of a format that were written by the standards body and then promptly forgotten about the next day.</p>
 <p>Bitrates in fact, are computed based on the rate of the bits transiting over the connection in a given duration as opposed to being internally taken from what the file says it is.</p>
 <p>This is a much more direct and format agnostic computation. The sample size is large enough to avoid any errors (in fact, for HE-AAC+ streams, it performs more accurate duration measurements then <code>ffprobe</code> ... really).</p>
 <h3 id="offloaded-dependencies">Offloaded dependencies</h3>
