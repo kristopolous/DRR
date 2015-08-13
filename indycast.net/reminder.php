@@ -59,6 +59,9 @@ include_once('common.php');
     label { font-size: 0.8em; line-height: 1.3em }
 
     @media screen and (max-width: 736px) {
+      #rss-img { font-size: 30px; width: 33px }
+      #rss-header { margin-left: 38px; }
+      .big-button h3 { font-size: 1.1em }
       .feature .content {
         padding: 2em 0.5em !important;
       }
