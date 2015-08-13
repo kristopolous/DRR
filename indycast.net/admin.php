@@ -65,5 +65,35 @@ while($row = prune($res)) {
 <?php if (!is_read_only()) { 
   echo '<a href="modify.php">Add Station</a>';
 }
+$now = time();
+
+echo '<p>Now: ' . $now . '</p>';
+
+echo '<table>';
+$res = $db->query('select * from reminders');
+$isFirst = true;
+
+while($row = prune($res)) {
+  if($isFirst) {
+    echo '<thead><tr>';
+    echo '<th>' . implode('</th><th>', array_keys($row)) . '</th>';
+    echo '</thead><tbody>';
+    $isFirst = False;
+  }
+
+
+  if (is_read_only()) {
+    $row['email'] = '<em>(hidden)</em>';
+  }
+
+  $intval = intval($row['end_time']);
+  $row['end_time'] = "$intval<br><small>(" . ($now - $intval) . ')</small>';
+  echo '<tr><td>' . implode('</td><td>', array_values($row)) . '</td>';
+  echo '<td>';
+  echo '</tr>';
+}
+
 ?>
+</tbody>
+</table>
 </body></html>
