@@ -132,10 +132,12 @@ def all(table, field_list='*', sort_by='id'):
 
 def schema(table):
   """ Returns the schema for a given table. """
-  if table not in SCHEMA:
-    return None 
+  db = connect()
+  existing_schema = db['c'].execute('pragma table_info(%s)' % table).fetchall()
+  if existing_schema:
+    return [str(row[1]) for row in existing_schema]
 
-  return [ key for key, value in SCHEMA[table] ]
+  return None
 
 
 def connect(db_file='config.db'):
