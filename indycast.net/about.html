@@ -117,7 +117,9 @@
     text-shadow: 0 0;
   }
   blockquote small {
+    margin-top: 0.25em;
     display: block;
+    color: #667;
     line-height: 1.2em;
     font-size: 0.7em;
   }
@@ -125,7 +127,7 @@
     border-top: 4px solid #eef;
     border-bottom: 4px solid #eef;
     font-size: 1.25em;
-    color: #555;
+    color: #334;
     width: 30%;
     float: right;
     padding: 0.5em 1em;
@@ -133,7 +135,8 @@
     margin: 0.1em 0.2em 0.1em 0.4em;
   }
   blockquote p {
-    margin: 0
+    line-height: 1.15em;
+    margin: 0;
   }
   body { max-width: 800px}
   #radio-random { 
@@ -278,6 +281,10 @@ A Distributed <a href="https://github.com/kristopolous/DRR">Open Source</a> DVR 
 <p>The stack is Python 2.7 and SQLite 3. The audio library is written by hand (more below on why)</p>
 <p>Here's a run-down of everything, in picture format:</p>
 <p><img id='arch' style='max-width:95%' src=images/indy-arch.png></p>
+<h3 id="there-is-no-app.-repeat-there-is-no-app.">There is no app. Repeat: there is no app.</h3>
+<p>This has been one of the hardest sales to people. This is intentionally designed this to fit within the out-of-the-box capabilities of most consumer hardware. Explaining this to people has been an uphill battle.</p>
+<p>People have become accustomed to having to download the app, register for the service, click on a confirmation email ... but this is just a website that works with your device; there should be no perceived risk.</p>
+<p>However, giving access to minute-addressable streams of radio over any device through minimalistic url schemes just seems to flutter away like some kind of gibberish. The system works though, there's dozens of users I've pitched in person, by hand (and growing daily).</p>
 <h2 id="focus-on-all-the-users">Focus on all the users</h2>
 <h3 id="smooth-and-painless-administration">Smooth and painless administration</h3>
 <p>Unlike with other projects, a minimal configuration to get a server up and running can be done in <strong><a href="https://github.com/kristopolous/DRR/blob/master/server/configs/kxlu.txt">just 6 lines</a></strong>! There are <a href="https://github.com/kristopolous/DRR/tree/master/server/configs">14 example configurations</a> which are about 7 lines each. These are the ones that are used in production. No kidding.</p>
@@ -285,7 +292,7 @@ A Distributed <a href="https://github.com/kristopolous/DRR">Open Source</a> DVR 
 <blockquote>
 <p>The record for upping a server from a fresh install is in <a href=images/record.png>23.87 seconds</a>.</p>
 </blockquote>
-<p>Don't you hate it when some blackbox frameworky magic doesn't work and you helplessly try to figure out what's the code and what's the framework ... geez, I hate that. No, none of that nonsense here.</p>
+<p>Don't you hate it when some blackbox frameworky magic doesn't work and you helplessly try to figure out what's the code and what's the framework ... No, none of that nonsense here.</p>
 <p>In fact, I've created a user-story for a would-be administrator. Every interaction with a computer should be a thought-out interface.</p>
 <h2 id="up-and-running-in-under-2-minutes.">Up and running in under 2 minutes.</h2>
 <p>Try this out right now. It's easy and there's no risk.</p>
@@ -295,7 +302,7 @@ A Distributed <a href="https://github.com/kristopolous/DRR">Open Source</a> DVR 
 <li>Runs a <a href="https://github.com/kristopolous/DRR/blob/master/bootstrap.sh">small shell script</a> <code>bootstrap.sh</code> to install dependencies: <code>cd DRR; ./bootstrap.sh</code></li>
 <li>Runs the server with one of the example configuration files, <code>./indy_server.py -c configs/kpcc.txt</code>.</li>
 </ol>
-<p>Here I am, with a bunch of terrible typos, getting it up and running ... this is definitely not a speed run:</p>
+<p>Here with a bunch of terrible typos, getting it up and running ... this is definitely not a speed run:</p>
 <iframe src="https://www.youtube.com/embed/8ZnFI1ncFcQ" frameborder="0" allowfullscreen>
 </iframe>
 <h4 id="self-contained-and-hassle-free">Self-contained and hassle free</h4>
@@ -421,7 +428,7 @@ kcrw  kdvs  kpcc  kxlu  wxyc</code></pre>
     /at ... it uses the same notation but instead returns an audio file
     directly.
 
-    You must specify a single weekday ... I know, total bummer.
+    You must specify a single weekday ... total bummer.
     
 
 /slices/[path] 
@@ -447,10 +454,10 @@ kcrw  kdvs  kpcc  kxlu  wxyc</code></pre>
         For instance, to start the stream from 5 minutes ago, you can do &quot;-5&quot;</code></pre>
 <h5 id="bulk-queries-with-json-output">Bulk Queries with JSON output</h5>
 <p>These endpoints can be conveniently queried in bulk using a server query tool, located in <code>tools/server_query.py</code>.</p>
-<p>It can query any endpoint on any number of stations and parse JSON if desired. For instance, if I wanted to see how much disk space kpcc is using I can do the following:</p>
+<p>It can query any endpoint on any number of stations and parse JSON if desired. For instance, if you wanted to see how much disk space kpcc is using you can do the following:</p>
 <pre><code>$ tools/server_query.py -k disk -c kpcc
 {&quot;url&quot;: &quot;kpcc.indycast.net:8930&quot;, &quot;latency&quot;: 2.824465036392212, &quot;disk&quot;: 2000112}</code></pre>
-<p>Or, if I wanted to find out the uptime and disk space of kpcc and kxlu:</p>
+<p>Or, if you wanted to find out the uptime and disk space of kpcc and kxlu:</p>
 <pre><code>$ tools/server_query.py -k disk,uptime -c kpcc,kxlu
 [
 {&quot;url&quot;: &quot;kxlu.indycast.net:8890&quot;, &quot;latency&quot;: 3.542130947113037, &quot;uptime&quot;: 5235, &quot;disk&quot;: 2283312},
@@ -478,7 +485,7 @@ kcrw  kdvs  kpcc  kxlu  wxyc</code></pre>
 <p>If Alice doesn't really know how to use computers that well, there is a <a href="http://indycast.net">web front end</a> that explains what indycast is and has a simple and attractive user-interface that she can operate on the device of her choosing.</p>
 <p>There's <a href="https://github.com/kristopolous/DRR/issues/104">three cognitively distinct</a> ways to think about indycast:</p>
 <ul>
-<li><strong>Podcaster</strong>: A service where you specify time slices to use (I have 4 that I use)</li>
+<li><strong>Podcaster</strong>: A service where you specify time slices to use</li>
 <li><strong>DVR</strong>: You can start live radio in the past and then pause and scrub it.</li>
 <li><strong>Concierge</strong>: Set an email reminder to listen to a show later.</li>
 </ul>
@@ -578,7 +585,7 @@ $ curl -s kxlu.indycast.net:8890/sun/7pm/1hr/show.m3u | grep -v \# | xargs mplay
 <blockquote>
 <p>A blazingly fast and unique approach to audio-processing</p>
 </blockquote>
-<p>But since there was no library out there that did just this, I had to roll my own (see <a href="https://github.com/kristopolous/DRR/blob/master/server/lib/audio.py">server/lib/audio.py</a>). It scans headers, hopping around the file, making a number of bold assumptions about things (such as CBR encoding) and as a result, audio can be brought down from the cloud storage, stitched together, and then sliced in under a second.</p>
+<p>But since there was no library out there that did just this, it was hand-rolled (see <a href="https://github.com/kristopolous/DRR/blob/master/server/lib/audio.py">server/lib/audio.py</a>). It scans headers, hopping around the file, making a number of bold assumptions about things (such as CBR encoding) and as a result, audio can be brought down from the cloud storage, stitched together, and then sliced in under a second.</p>
 <p>The audio processing engine wasn't designed to process all types of MP3 and AAC files but it was instead designed to deal with broken headers, files that are cut off, that begin in the middle of a payload, etc.</p>
 <p>Being able to deal with broken files in the real world without <em>freaking out</em> is always more useful than supporting arcane obscure parts of a format that were written by the standards body and then promptly forgotten about the next day.</p>
 <p>Bitrates in fact, are computed based on the rate of the bits transiting over the connection in a given duration as opposed to being internally taken from what the file says it is.</p>
@@ -601,11 +608,8 @@ $ curl -s kxlu.indycast.net:8890/sun/7pm/1hr/show.m3u | grep -v \# | xargs mplay
 <p>The logos are 16-color PNGs which make them small and fast (although admittedly kind of ugly).</p>
 <h4 id="share-this-with-the-world-or-not.">Share this with the world, or not.</h4>
 <p>If you want it all for yourself, it's easy to run your own network of servers for personal private use - you can easily stuff 25 stations on any modern consumer-grade internet connection. Each instance takes up about 80MB of resident memory so we are still just talking 2GB for all that.</p>
-<p>Anarchy with a small 'a'. Let's try it.</p>
+<p>Anarchy with a small <em>a</em>. Let's try it.</p>
 <h3 id="making-things-suck-less.">Making things suck less.</h3>
-<blockquote>
-<p>Fighting bad music can be as militant a campaign and marshal as varied resources as any political battle. <small>Edward Barnays, <em>Propaganda</em></small></p>
-</blockquote>
 <p>This technology has been a total game-changer in the way I listen to radio. Really.</p>
 <p>In writing this software I wanted to have something that worked and follows principles in usability, transparency, adaptability, and simplicity that are held dearly by me. I've tried to create this in the way that I want software to be written.</p>
 <p>Given that, I hope you enjoyed reading this and use indycast. I've been working full-time, 7 days a week on it since June 2015 and encourage you to become part of the community.</p>
@@ -616,7 +620,7 @@ $ curl -s kxlu.indycast.net:8890/sun/7pm/1hr/show.m3u | grep -v \# | xargs mplay
 </ul>
 <p>I also encourage you to <a href="https://github.com/kristopolous/DRR">pull down the code</a> which I have taken a serious effort on to be consistent and well-documented. If you find issues, please feel free to send a pull-request.</p>
 <p>Thanks for reading.</p>
-<p>~chris.</p>
+<p>~chris.<br/>August, 2015</p>
 <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 <script src="/assets/js/demo.js"></script>
 <script src="http://releases.flowplayer.org/js/flowplayer-3.2.13.min.js"></script>

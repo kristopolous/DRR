@@ -57,6 +57,16 @@ Here's a run-down of everything, in picture format:
 
 <img id='arch' style='max-width:95%' src=images/indy-arch.png>
 
+### There is no app. Repeat: there is no app.
+
+This has been one of the hardest sales to people.  This is intentionally designed this to fit within the out-of-the-box capabilities of most 
+consumer hardware.  Explaining this to people has been an uphill battle.  
+
+People have become accustomed to having to download the app, register for the service, click on a confirmation email ... but this is just a website that works with your device; there should be no perceived risk.
+
+However, giving access to minute-addressable streams of radio over any device through minimalistic url schemes just seems to flutter away like 
+some kind of gibberish.  The system works though, there's dozens of users I've pitched in person, by hand (and growing daily).
+
 ## Focus on all the users
 
 ### Smooth and painless administration
@@ -68,7 +78,7 @@ There's a bash script to install dependencies but again, [it's 12 lines](https:/
 
 > The record for upping a server from a fresh install is in <a href=images/record.png>23.87 seconds</a>.
 
-Don't you hate it when some blackbox frameworky magic doesn't work and you helplessly try to figure out what's the code and what's the framework ... geez, I hate that.  No, none of that nonsense here.
+Don't you hate it when some blackbox frameworky magic doesn't work and you helplessly try to figure out what's the code and what's the framework ... No, none of that nonsense here.
 
 In fact, I've created a user-story for a would-be administrator. Every interaction with a computer should be a thought-out interface.
 
@@ -83,7 +93,7 @@ Try this out right now.  It's easy and there's no risk.
  1. Runs the server with one of the example configuration files, `./indy_server.py -c configs/kpcc.txt`.
 
 
-Here I am, with a bunch of terrible typos, getting it up and running ... this is definitely not a speed run:
+Here with a bunch of terrible typos, getting it up and running ... this is definitely not a speed run:
 
 <iframe src="https://www.youtube.com/embed/8ZnFI1ncFcQ" frameborder="0" allowfullscreen></iframe>
 
@@ -224,7 +234,7 @@ documentation. As of the writing of this document (v0.9-[Inkanyamba](https://roa
         /at ... it uses the same notation but instead returns an audio file
         directly.
 
-        You must specify a single weekday ... I know, total bummer.
+        You must specify a single weekday ... total bummer.
         
 
     /slices/[path] 
@@ -255,12 +265,12 @@ documentation. As of the writing of this document (v0.9-[Inkanyamba](https://roa
 
 These endpoints can be conveniently queried in bulk using a server query tool, located in `tools/server_query.py`.  
 
-It can query any endpoint on any number of stations and parse JSON if desired.  For instance, if I wanted to see how much disk space kpcc is using I can do the following:
+It can query any endpoint on any number of stations and parse JSON if desired.  For instance, if you wanted to see how much disk space kpcc is using you can do the following:
 
     $ tools/server_query.py -k disk -c kpcc
     {"url": "kpcc.indycast.net:8930", "latency": 2.824465036392212, "disk": 2000112}
 
-Or, if I wanted to find out the uptime and disk space of kpcc and kxlu:
+Or, if you wanted to find out the uptime and disk space of kpcc and kxlu:
 
     $ tools/server_query.py -k disk,uptime -c kpcc,kxlu
     [
@@ -297,7 +307,7 @@ If Alice doesn't really know how to use computers that well, there is a [web fro
 
 There's [three cognitively distinct](https://github.com/kristopolous/DRR/issues/104) ways to think about indycast:
 
- * **Podcaster**: A service where you specify time slices to use (I have 4 that I use)
+ * **Podcaster**: A service where you specify time slices to use 
  * **DVR**: You can start live radio in the past and then pause and scrub it.
  * **Concierge**: Set an email reminder to listen to a show later.
 
@@ -462,7 +472,7 @@ time and frequenc... no none of that.  It's much faster.
 
 > A blazingly fast and unique approach to audio-processing
 
-But since there was no library out there that did just this, I had to roll my own (see [server/lib/audio.py](https://github.com/kristopolous/DRR/blob/master/server/lib/audio.py)).  It scans headers, hopping around the file, making a number of 
+But since there was no library out there that did just this, it was hand-rolled (see [server/lib/audio.py](https://github.com/kristopolous/DRR/blob/master/server/lib/audio.py)).  It scans headers, hopping around the file, making a number of 
 bold assumptions about things (such as CBR encoding) and as a result, audio can be brought down 
 from the cloud storage, stitched together, and then sliced in under a second.
 
@@ -512,11 +522,9 @@ If you want it all for yourself, it's easy to run your own network of servers fo
 can easily stuff 25 stations on any modern consumer-grade internet connection. Each instance takes 
 up about 80MB of resident memory so we are still just talking 2GB for all that.
 
-Anarchy with a small 'a'. Let's try it.
+Anarchy with a small *a*. Let's try it.
 
 ### Making things suck less.
-
->  Fighting bad music can be as militant a campaign and marshal as varied resources as any political battle. <small>Edward Barnays, *Propaganda*</small>
 
 This technology has been a total game-changer in the way I listen to radio. Really.
 
@@ -538,7 +546,7 @@ effort on to be consistent and well-documented.  If you find issues, please feel
 
 Thanks for reading.
 
-~chris.
+~chris.<br/>August, 2015
 
 <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 <script src="/assets/js/demo.js"></script>
