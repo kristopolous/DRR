@@ -330,12 +330,11 @@ def server_manager(config):
     # The start is expressed in times like "11:59am ..." We utilize the
     # library we wrote for streaming to get the minute of day this is.
     if start[0] == 'm':
-      candidate = start[1:]
+      requested_minute = int(start[1:]) % TS.ONE_DAY_MINUTE 
 
     else:
       candidate = start
-
-    requested_minute = TS.to_utc('mon', candidate) - offset_min
+      requested_minute = TS.to_utc('mon', candidate) - offset_min
 
     offset_sec = 0
     range_header = request.headers.get('Range', None)
@@ -355,6 +354,7 @@ def server_manager(config):
     now_time = TS.now()
     requested_time = now_time - timedelta(minutes=current_minute) + timedelta(minutes=requested_minute)
 
+    # print requested_time, now_time, requested_minute, current_minute
     # If the requested minute is greater than the current one, then we can presume that
     # the requested minute refers to yesterday ... as in, someone wants 11pm
     # and now it's 1am.
@@ -368,7 +368,6 @@ def server_manager(config):
     start_info, requested_time_available = cloud.get_file_for_ts(target_time=requested_time, bias=-1)
     requested_time = max(requested_time, requested_time_available)
     start_second = (requested_time - start_info['start_date']).total_seconds()
-    # print start_info, requested_time, start_second
 
     response = Response(audio.list_slice_stream(start_info, start_second), mimetype=audio.our_mime())
 

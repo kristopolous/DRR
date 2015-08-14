@@ -274,7 +274,7 @@ def get_file_for_ts(target_time, bias=None, exclude_path=None):
     if candidate_path == exclude_path: continue
 
     info_candidate = audio.stream_info(candidate_path)
-    if not info_candidate or info_candidate['duration_sec'] < 25.0:
+    if not info_candidate or info_candidate['duration_sec'] < 10.0:
       next
 
     difference = info_candidate['start_date'] - target_time
@@ -297,6 +297,7 @@ def get_file_for_ts(target_time, bias=None, exclude_path=None):
       best_after_time = difference
       best_after_info = info_candidate
 
+  # print best_before_time, best_before_info, best_after_time, best_after_info
   if bias == -1:
     # Make sure that our candidate has our time within it
     # print best_before_info['start_date'], timedelta(seconds=best_before_info['duration_sec']) , target_time
