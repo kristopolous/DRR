@@ -116,6 +116,11 @@
     color: #131;
     text-shadow: 0 0;
   }
+  blockquote small {
+    display: block;
+    line-height: 1.2em;
+    font-size: 0.7em;
+  }
   blockquote {
     border-top: 4px solid #eef;
     border-bottom: 4px solid #eef;
@@ -317,10 +322,14 @@ kcrw  kdvs  kpcc  kxlu  wxyc</code></pre>
 <p>No voodoo and nothing cryptic. You can engage as much or as little with the technology as you want: all the way from auto-pilot to manual transmission.</p>
 <p>Refreshing huh?</p>
 <h4 id="a-zero-mystery-policy">A zero mystery policy</h4>
+<p>Everything is laid bare for inspection, both statically, and while running in production. You can get the statistics or any information on the running servers. The APIs are public and self-documented.</p>
 <h5 id="no-secret-backend">No secret backend</h5>
+<blockquote>
+<p>Systems are vastly improved by the act of making visible what was invisible before. <small>Donald Norman, <em>The Design of Everyday Things</em></small></p>
+</blockquote>
 <p>Usually with most other projects, there's a secret &quot;admin&quot; backend that you, lowly outer-party developer don't get to see. You need an account, and to know the secret handshake ... screw that.</p>
 <p>With indycast, there is an admin interface, <a href="http://indycast.net/admin.php">and it's right here</a>. You need to know a password to edit it or reveal sensitive information of course --- but you are free to see <em>all the inner-workings</em> of the platform.</p>
-<h5 id="whats-this-a-help-endpoint-ce-nest-pas-possible">What's this? A help endpoint? <em>ce n'est pas possible!</em></h5>
+<h5 id="whats-this-a-help-endpoint-ce-nest-pas-possible">What's this? A help endpoint? <em>Ce n'est pas possible!</em></h5>
 <p>There's an endpoint map so Alice can see everything that is accessible along with its documentation. As of the writing of this document (v0.9-<a href="https://roadtravel1.files.wordpress.com/2013/09/inkanyamba-1.jpg">Inkanyamba</a>), the help looks like this:</p>
 <pre><code>$ curl indycast.net/kpcc/help
 -=#[ Welcome to indycast v0.9-Inkanyamba-75-g10234a0 API help ]#=-
@@ -481,7 +490,7 @@ kcrw  kdvs  kpcc  kxlu  wxyc</code></pre>
 <h5 id="convenient-for-all-levels-of-interaction">Convenient for all levels of interaction</h5>
 <p>In <em>Getting Everything You Can Out of All You've Got</em>, Jay Abraham takes time to elaborate on what a <em>client</em> is ... outlining how it becomes a paternal relationship - creating a level of trust where your mindshare can be given away to another entity. A great product doesn't have customers, it has clients.</p>
 <blockquote>
-<p><em>client</em>: Anyone under the care of another.</p>
+<p><em>client</em>: Anyone under the care of another. <small>Jay Abraham <em>Getting Everything You Can Out of All You've Got</em></small></p>
 </blockquote>
 <p>When designing software, it's often instructive to make yourself the first client. If you can't trust the solution to simplify your life and solve integral problems, then nobody else should either.</p>
 <p>Given that, not only was this technology designed to be used by people who thumb around their smart-phones, but it was also designed for people who do Tux-cosplay at Linux conferences and think DefCon is full of posers. (<em>ahem</em>, <em>cough cough</em>, me)</p>
@@ -594,6 +603,9 @@ $ curl -s kxlu.indycast.net:8890/sun/7pm/1hr/show.m3u | grep -v \# | xargs mplay
 <p>If you want it all for yourself, it's easy to run your own network of servers for personal private use - you can easily stuff 25 stations on any modern consumer-grade internet connection. Each instance takes up about 80MB of resident memory so we are still just talking 2GB for all that.</p>
 <p>Anarchy with a small 'a'. Let's try it.</p>
 <h3 id="making-things-suck-less.">Making things suck less.</h3>
+<blockquote>
+<p>Fighting bad music can be as militant a campaign and marshal as varied resources as any political battle. <small>Edward Barnays, <em>Propaganda</em></small></p>
+</blockquote>
 <p>This technology has been a total game-changer in the way I listen to radio. Really.</p>
 <p>In writing this software I wanted to have something that worked and follows principles in usability, transparency, adaptability, and simplicity that are held dearly by me. I've tried to create this in the way that I want software to be written.</p>
 <p>Given that, I hope you enjoyed reading this and use indycast. I've been working full-time, 7 days a week on it since June 2015 and encourage you to become part of the community.</p>

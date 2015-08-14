@@ -120,12 +120,17 @@ Refreshing huh?
 
 #### A zero mystery policy 
 
+Everything is laid bare for inspection, both statically, and while running in production.  You can get the statistics or any information on the running servers. The APIs are public and self-documented. 
+
 ##### No secret backend
+> Systems are vastly improved by the act of making visible what was invisible before. <small>Donald Norman, *The Design of Everyday Things*</small>
+
 Usually with most other projects, there's a secret "admin" backend that you, lowly outer-party developer don't get to see.  You need an account, and to know the secret handshake ... screw that.  
 
 With indycast, there is an admin interface, [and it's right here](http://indycast.net/admin.php).  You need to know a password to edit it or reveal sensitive information of course --- but you are free to see *all the inner-workings* of the platform. 
 
-##### What's this? A help endpoint? *ce n'est pas possible!*
+##### What's this? A help endpoint? *Ce n'est pas possible!*
+
 There's an endpoint map so Alice can see everything that is accessible along with its
 documentation. As of the writing of this document (v0.9-[Inkanyamba](https://roadtravel1.files.wordpress.com/2013/09/inkanyamba-1.jpg)), the help looks like this:
 
@@ -311,7 +316,7 @@ In that way, it's a radio concierge service, looking out for you.
 
 In *Getting Everything You Can Out of All You've Got*, Jay Abraham takes time to elaborate on what a *client* is ... outlining how it becomes a paternal relationship - creating a level of trust where your mindshare can be given away to another entity.  A great product doesn't have customers, it has clients.
 
-> *client*: Anyone under the care of another.
+> *client*: Anyone under the care of another. <small>Jay Abraham *Getting Everything You Can Out of All You've Got*</small>
 
 When designing software, it's often instructive to make yourself the first client.  If you can't trust the solution to simplify your life and solve integral problems, then nobody else should either.
 
@@ -510,6 +515,8 @@ up about 80MB of resident memory so we are still just talking 2GB for all that.
 Anarchy with a small 'a'. Let's try it.
 
 ### Making things suck less.
+
+>  Fighting bad music can be as militant a campaign and marshal as varied resources as any political battle. <small>Edward Barnays, *Propaganda*</small>
 
 This technology has been a total game-changer in the way I listen to radio. Really.
 
