@@ -61,7 +61,7 @@ if(isset($_GET['callsign'])) {
   <body>
     <div id="header">
       <h1>Indycast DVR</h1>
-      <p>A <a href="/about.html">new technology</a> to record and deliver <?= $callsign ? strtoupper($callsign) : "the world's best radio" ?>
+      <p>A <a href="/about.html">technology</a> to record the <?= $callsign ? strtoupper($callsign) : "radio that doesn't get podcasted" ?>
       <?php if ($callsign) { ?><br/><small>(<a href="/">and more</a>)</small><?php } ?></p>
       <small>Works on your <?= $device ?>. No signup or app needed.</small>
     </div>
