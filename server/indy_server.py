@@ -328,12 +328,12 @@ def server_manager(config):
     if start[0] == '-' or start.endswith('min'):
       # dump things like min or m
       start = re.sub('[a-z]', '', start)
-      return redirect('/live/m%d' % (int(TS.minute_now() - abs(float(start)))), code=302)
+      return redirect('/live/m%f' % (float(TS.minute_now() - abs(float(start)))), code=302)
 
     # The start is expressed in times like "11:59am ..." We utilize the
     # library we wrote for streaming to get the minute of day this is.
     if start[0] == 'm':
-      requested_minute = int(start[1:]) % TS.ONE_DAY_MINUTE 
+      requested_minute = float(start[1:]) % TS.ONE_DAY_MINUTE 
 
     else:
       candidate = start

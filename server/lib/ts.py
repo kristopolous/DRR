@@ -136,6 +136,7 @@ def to_utc(day_str, hour):
 
   time_re_solo = re.compile('^(\d{1,2})([ap]m|)$', re.I)
   time_re_min = re.compile('^(\d{1,2}):(\d{2})([ap]m|)', re.I)
+  time_re_sec = re.compile('^(\d{1,2}):(\d{2}):(\d{2})([ap]m|)', re.I)
 
   my_time = time_re_solo.match(hour)
   if my_time:
@@ -149,6 +150,16 @@ def to_utc(day_str, hour):
       hr = int(my_time.groups()[0])
       local += hr * 60
       local += int(my_time.groups()[1])
+
+    else:
+      my_time = time_re_sec.match(hour)
+
+      if my_time:
+        hr = int(my_time.groups()[0])
+        local += hr * 60
+        local += int(my_time.groups()[1])
+        # store seconds as fractional monutes
+        local += float(my_time.groups()[2] / 60)
 
   if not my_time:
     return None
