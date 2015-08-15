@@ -280,7 +280,10 @@ def server_manager(config):
     This allows us to check if a restart happened between invocations.
     """
     return jsonify({
-      'uptime': TS.uptime()
+      'uptime': TS.uptime(),
+      'last_recorded': DB.get('last_recorded'),
+      'now': time.time(),
+      'version': __version__
     }), 200
 
 
@@ -626,7 +629,14 @@ def stream_download(callsign, url, my_pid, file_name):
     nl['stream'].close()
     # This is where we are sure of the stats on this file, because
     # we just closed it ... so we can register it here.
-    DB.register_stream(stream_info(file_name))
+    info = stream_info(file_name)
+
+    # If there's a size record the time that is now as the last
+    # recorded time.
+    if info['size']:
+      DB.set('last_recorded', time.time())
+
+    DB.register_stream(info)
 
 
 def stream_manager():
