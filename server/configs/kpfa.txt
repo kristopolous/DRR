@@ -1,0 +1,7 @@
+[Main]
+callsign=kpfa
+long=-122.272747
+lat=37.871593
+stream=http://stations.pacifica.org:8000/kpfa_64
+port=9410
+cloud=~/cloudcreds.cfg
