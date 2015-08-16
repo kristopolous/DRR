@@ -106,6 +106,11 @@ for station in all_stations:
     data = stream.read()
     stop = time.time()
 
+    if args.query == 'heartbeat':
+      document = json.loads(data)
+      document['delta'] = document['now'] - float(document['last_recorded'])
+      data = json.dumps(document, indent=2)
+
     if args.key:
       document = json.loads(data)
       result_map = {}
@@ -153,12 +158,11 @@ for station in all_stations:
 
       print data
 
-    if db:
-      if args.query == 'heartbeat':
-        document = json.loads(data)
-        db['c'].execute('update stations set active = 1, log = ?, latency = latency + ?, pings = pings + 1, last_seen = current_timestamp where callsign = ?', ( str(stop - start), str(document['last_recorded']), str(station[CALLSIGN]) ))
+    if db and args.query == 'heartbeat':
+      db['c'].execute('update stations set active = 1, log = ?, latency = latency + ?, pings = pings + 1, last_seen = current_timestamp where callsign = ?', ( str(stop - start), str(document['last_recorded']), str(station[CALLSIGN]) ))
 
   except Exception as e:
+    exc_type, exc_value, exc_traceback = sys.exc_info()
     hasFailure = str(e)
 
   # If this wasn't hit that means that we weren't able to access the host for
@@ -166,7 +170,7 @@ for station in all_stations:
   if hasFailure:
     # Stop the timer and register it as a drop.
     stop = time.time()
-    print "[ %d:%s ] Failure: %s\n" % (stop - start, url, hasFailure)
+    print "[ %d:%s ] Failure(@%d): %s\n" % (stop - start, url, exc_traceback.tb_lineno, hasFailure)
 
     if db:
       db['c'].execute('update stations set drops = drops + 1 where callsign = "%s"' % station[CALLSIGN] )
