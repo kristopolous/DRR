@@ -281,7 +281,7 @@ def server_manager(config):
     """
     return jsonify({
       'uptime': TS.uptime(),
-      'last_recorded': DB.get('last_recorded'),
+      'last_recorded': float(DB.get('last_recorded')),
       'now': time.time(),
       'version': __version__
     }), 200
