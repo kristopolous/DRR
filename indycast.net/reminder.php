@@ -70,7 +70,7 @@ include_once('common.php');
   </head>
   <body>
     <div id="main">
-      <h1>Set a Reminder</h1>
+      <h1>Indycast Reminders<br/>Listen later to what's on now</h1>
 
       <div class="box alt container">
         <section class="feature left">
@@ -107,7 +107,7 @@ include_once('common.php');
 
               <label for="notes">Show Notes</label>
               <div>
-                <input type='text' name='notes'>
+                <input type='text' name='notes' placeholder="To help remember what this is">
               </div>
             </div>
             <div id='podcast-url-container'>
@@ -136,9 +136,8 @@ include_once('common.php');
         </header>
 
         <div style="text-align: left">
-          <p>Listening to something right now but have to run and don't have the time to finish it?</p>
-          <p>Miss the beginning of something and want to catch it later?</p>
-          <h3>We'll send you a reminder with a link to the audio. For free of course.</h3>
+          <p>Listening to something right now but have to run and don't have the time to finish it? Miss the beginning of something and want to catch it later?</p>
+          <h3>We'll send you a reminder with a link to the audio. (For free of course)</h3>
 
           <p>You can even leave notes for your future-self telling yourself why you think it's so awesome.</p>
           <p>Later on, when the show is over, an email will be sent to you with a link and the notes you leave.</p>
@@ -288,7 +287,7 @@ include_once('common.php');
       end_time: '', 
       duration: '30', 
       email: '', 
-      notes: 'your show'
+      notes: ''
     }),
 
     right_now = new Date(),
@@ -340,7 +339,6 @@ include_once('common.php');
 
     ev({
       duration: '30',
-      notes: 'your show'
     });
 
     var what = easy_sync(['email', 'station', 'duration']);

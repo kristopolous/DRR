@@ -33,7 +33,7 @@ if(isset($_GET['callsign'])) {
 <!DOCTYPE HTML>
 <html>
   <head>
-    <title>Indycast - Podcasting <?= $callsign ? strtoupper($callsign) : "the World's Independent Radio" ?></title>
+    <title>Indycast DVR - A technology to record <?= $callsign ? strtoupper($callsign) : "the radio" ?> that isn't podcasted</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -59,6 +59,7 @@ if(isset($_GET['callsign'])) {
     <link rel="icon" href="favicon.ico" >
   </head>
   <body>
+    <a id='reminder' href="reminder"><b>New:</b> Listen later to what's on now!</a>
     <div id="header">
       <h1>Indycast DVR</h1>
       <p>A <a href="/about.html">technology</a> to record the <?= $callsign ? strtoupper($callsign) : "radio that doesn't get podcasted" ?>

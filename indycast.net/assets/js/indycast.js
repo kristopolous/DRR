@@ -113,6 +113,23 @@ function htmldo(what) {
 
 $(function() {
   tpl.podcast = _.template($("#tpl-podcast").html());
+  var reminder_visible = false;
+
+  setTimeout(function(){
+    $("#reminder").slideDown();
+    reminder_visible = true;
+  }, 1000);
+
+  $(window).scroll(function(){
+    if(window.scrollY > 500 && reminder_visible) {
+      $("#reminder").slideUp();
+      reminder_visible = false;
+    }
+    else if (window.scrollY < 400 && !reminder_visible ) {
+      $("#reminder").slideDown();
+      reminder_visible = true;
+    }
+  });
 
   $(".radio-group a").hover(function(){
     $("#description").html("<h2>" + this.innerHTML + "</h2>" + htmldo(this.getAttribute('desc'))).show();
