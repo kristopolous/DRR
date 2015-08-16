@@ -72,7 +72,7 @@ some kind of gibberish.  The system works though, there's dozens of users I've p
 ### Smooth and painless administration
 
 Unlike with other projects, a minimal configuration to get a server up and running can be done in **[just 6 lines](https://github.com/kristopolous/DRR/blob/master/server/configs/kxlu.txt)**! 
-There are [15 example configurations](https://github.com/kristopolous/DRR/tree/master/server/configs) which are about 7 lines each. These are the ones that are used in production. No kidding.
+There are [16 example configurations](https://github.com/kristopolous/DRR/tree/master/server/configs) which are about 7 lines each. These are the ones that are used in production. No kidding.
 
 There's a bash script to install dependencies but again, [it's 12 lines](https://github.com/kristopolous/DRR/blob/master/bootstrap.sh) ... so if it doesn't work on your system, just `cat bootstrap.sh` and install the stuff yourself.  composer, gemfile, vundle, bower, something else? No! none of that - let's not re-invent things that are already easy.
 
