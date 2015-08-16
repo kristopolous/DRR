@@ -154,7 +154,8 @@ for station in all_stations:
       print data
 
     if db:
-      db['c'].execute('update stations set active = 1, latency = latency + ?, pings = pings + 1, last_seen = current_timestamp where callsign = ?', ( str(stop - start), str(station[CALLSIGN]) ))
+      document = json.loads(data)
+      db['c'].execute('update stations set active = 1, log = ?, latency = latency + ?, pings = pings + 1, last_seen = current_timestamp where callsign = ?', ( str(stop - start), str(document['last_recorded']), str(station[CALLSIGN]) ))
 
   except Exception as e:
     hasFailure = str(e)
