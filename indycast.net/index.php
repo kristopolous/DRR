@@ -70,9 +70,9 @@ if(isset($_GET['callsign'])) {
 
       <header class="major container 75%">
         <h2>
-        Listen on your time and
+        Subscribe to any broadcast
         <br />
-        Never miss that <?= $callsign ?> show again!
+        Just by knowing when it's on.
         </h2>
       </header>
 
