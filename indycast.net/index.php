@@ -41,19 +41,19 @@ if(isset($_GET['callsign'])) {
     <link rel="stylesheet" href="/assets/css/main.css" />
     <!--[if lte IE 8]><link rel="stylesheet" href="/assets/css/ie8.css" /><![endif]-->
 
-    <meta name="description" content="<?= $callsign ? strtoupper($callsign) : "the World's Independent Radio" ?> - podcasted." />
+    <meta name="description" content="Subscribe to the <?= $callsign ?> radio that isn't ever podcasted. Rewind, pause and email yourself radio." />
     <meta property="og:site_name" content="Indycast" />
     <meta property="og:url" content="http://indycast.net" />
-    <meta property="og:title" content="Indycast - Podcasting <?= $callsign ? strtoupper($callsign) : "the World's Independent Radio" ?>" />
+    <meta property="og:title" content="Indycast DVR - A new technology for enjoying <?= $callsign ? strtoupper($callsign) : "radio" ?>" />
     <meta property="og:type" content="website" />
-    <meta property="og:description" content="Subscribe to your favorite <?= $callsign ?> shows. Listen on your time, not airtime." />
+    <meta property="og:description" content="Subscribe to the <?= $callsign ?> radio that isn't ever podcasted. Rewind, pause and email yourself radio." />
     <meta property="og:image" content="http://indycast.net/og-image.php" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@indycaster" />
     <meta name="twitter:creator" content="@indycaster" />
-    <meta name="twitter:title" content="Indycast - Podcasting <?= $callsign ? strtoupper($callsign) : "the World's Independent Radio" ?>" />
+    <meta name="twitter:title" content="Indycast DVR - A new technology for enjoying <?= $callsign ? strtoupper($callsign) : "radio" ?>" />
     <meta name="twitter:url" content="http://indycast.net" />
-    <meta name="twitter:description" content="Subscribe to your <?= $callsign ?> favorite shows. Listen on your time, not airtime." />
+    <meta name"twitter:description" content="Subscribe to the <?= $callsign ?> radio that isn't ever podcasted. Rewind, pause and email yourself radio." />
     <meta name="twitter:image:src" content="http://indycast.net/images/twit-image.jpg" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="favicon.ico" >
