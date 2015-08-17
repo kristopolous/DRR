@@ -36,6 +36,8 @@ socket.getaddrinfo = getAddrInfoWrapper
 import urllib2
 import urllib
 
+
+from logging.handlers import RotatingFileHandler
 from datetime import datetime, timedelta, date
 from dateutil import parser as dt_parser
 from glob import glob
@@ -529,7 +531,7 @@ def server_manager(config):
     while TS.unixtime('delay') - start < patience:
       try:
         print "Listening on %s" % config['port']
-        app.logger.addHandler(logging.StreamHandler())
+        app.logger.addHandler(logging.getLogger())
         app.run(threaded=True, port=config['port'], host='0.0.0.0')
         break
 
@@ -1009,7 +1011,13 @@ def read_config(config):
   if not isinstance(numeric_level, int):
     raise ValueError('Invalid log level: %s' % loglevel)
 
-  logging.basicConfig(level=numeric_level, filename='indycast.log', datefmt='%Y-%m-%d %H:%M:%S', format='%(asctime)s %(message)s')
+  logger = logging.getLogger()
+  formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', '%Y%m%d_%H%M_%S')
+  handler = RotatingFileHandler('indycast.log', maxBytes=500000, backupCount=2)
+  handler.setFormatter(formatter)
+  handler.setLevel(numeric_level)
+  logger.setLevel(numeric_level)
+  logger.addHandler(handler)
 
   # Increment the number of times this has been run so we can track the stability of remote 
   # servers and instances.
