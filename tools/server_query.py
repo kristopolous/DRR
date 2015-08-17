@@ -122,22 +122,30 @@ for station in all_stations:
         key_parts = re.sub('\[', '.', full_key).strip('.').split('.')
 
         my_node = document
-        for key in key_parts:
-          try:
-            # This takes care of the closing brace left above
-            key_numeric = int(key.strip(']'))
-            
-          except:
-            pass
+        if len(key_parts) > 1 and key_parts[0] == 'kv':
+          kv_key = key_parts[1]
+          for row in document['kv']:
+            if row[1] == kv_key:
+              my_node = row[2]
+              break
 
-          if key in my_node:
-            my_node = my_node[key]
+        else:
+          for key in key_parts:
+            try:
+              # This takes care of the closing brace left above
+              key_numeric = int(key.strip(']'))
+              
+            except:
+              pass
 
-          elif type(my_node) is list and type(key_numeric) is int and key_numeric < len(my_node):
-            my_node = my_node[key_numeric]
+            if key in my_node:
+              my_node = my_node[key]
 
-          else:
-            my_node = '<Invalid key>'
+            elif type(my_node) is list and type(key_numeric) is int and key_numeric < len(my_node):
+              my_node = my_node[key_numeric]
+
+            else:
+              my_node = '<Invalid key>'
 
         result_map[full_key] = my_node
 
