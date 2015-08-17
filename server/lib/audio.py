@@ -495,7 +495,7 @@ def mp3_signature(file_name, blockcount=-1):
           file_handle.seek(go_back, 1)
           go_back = -1
 
-          next
+          continue
 
         if not assumed_set and attempt_set:
           assumed_set = attempt_set
