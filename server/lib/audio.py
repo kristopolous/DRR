@@ -749,7 +749,7 @@ def stitch(file_list, force_stitch=False):
     end_byte = first['offset'][-2]
 
   else:
-    logging.warn("File %s is only %d frames" % (first[name], len(offset)))
+    logging.warn("File %s is only %d frames" % (first['name'], len(offset)))
 
   args = [{
     'name': first['name'], 
