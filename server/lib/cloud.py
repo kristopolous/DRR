@@ -12,6 +12,22 @@ from glob import glob
 from datetime import datetime, timedelta, date
 from multiprocessing import Process, Queue
 
+def size(basedir):
+  total = 0
+
+  for basename in os.listdir(basedir):
+    
+    path = "%s/%s" % (basedir, basename)
+
+    if os.path.isdir(path):
+      total += size(path)
+
+    elif os.path.isfile(path):
+      total += os.path.getsize(path)
+
+  return total
+
+
 def get(path, do_open=True):
   """
   If the file exists locally then we return it, otherwise
