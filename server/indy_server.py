@@ -529,6 +529,7 @@ def server_manager(config):
     while TS.unixtime('delay') - start < patience:
       try:
         print "Listening on %s" % config['port']
+        app.logger.addHandler(logging.StreamHandler())
         app.run(threaded=True, port=config['port'], host='0.0.0.0')
         break
 
@@ -617,11 +618,11 @@ def stream_download(callsign, url, my_pid, file_name):
       misc.shutdown()
 
   # signal.signal(signal.SIGTERM, dl_stop)
+  g_params['isFirst'] = True
   curl_handle = pycurl.Curl()
   curl_handle.setopt(curl_handle.URL, url)
   curl_handle.setopt(pycurl.WRITEFUNCTION, cback)
   curl_handle.setopt(pycurl.FOLLOWLOCATION, True)
-  g_params['isFirst'] = True
 
   try:
     curl_handle.perform()
@@ -871,7 +872,7 @@ def read_config(config):
   
   defaults = {
     # The log level to be put into the indycast.log file.
-    'loglevel': 'WARN',
+    'loglevel': 'DEBUG',
 
     # The recording mode, either 'full' meaning to record everything, or != 'full' 
     # meaning to record only when an intent is matched.
