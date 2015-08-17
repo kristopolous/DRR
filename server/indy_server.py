@@ -307,7 +307,7 @@ def server_manager(config):
       'load': os.popen("uptime").read().strip(),
       'plist': os.popen("ps auxf | grep %s" % misc.config['callsign']).read().strip().split('\n'),
       # Reporting the list as fractional GB is more useful.
-      'disk': (sum(os.path.getsize(f) for f in os.listdir('.') if os.path.isfile(f))) / (1024.0 ** 2),
+      'disk': cloud.size('.') / (1024.0 ** 3),
       'streams': DB.all('streams', sort_by='start_unix'),
       'version': __version__,
       'config': misc.public_config()
