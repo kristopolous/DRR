@@ -138,28 +138,85 @@ def stream_name(list_in, absolute_start_minute, duration_minute, relative_start_
   return fname
 
 
-def mp3_info(byte):
-  freqTable = [ 44100, 48000, 32000, 0 ]
+def mp3_info(byte, b1):
+  failCase = [ False, False, False, False ]
 
-  brTable = [
-    0,   32,  40,  48, 
-    56,  64,  80,  96, 
-    112, 128, 160, 192, 
-    224, 256, 320, 0
+  mpegTable = [ 2, 1 ]
+  layerTable = [ None, 3, 2, 1 ]
+  
+  freqTable = [  
+    None,
+    [ 44100, 48000, 32000, 0 ],
+    [ 22050, 24000, 16000, 0 ]
   ]
 
-  samp_rate = freqTable[(byte & 0x0f) >> 2]
-  bit_rate = brTable[byte >> 4]
+  brTable = [
+    None, # MPEG-0 (doesn't exist)
+
+    [ #MPEG-1 
+
+      None, # layer 0 (Doesn't exist)
+
+      [ # layer I 
+        0,   32,  64,  96,  
+        128, 160, 192, 224, 
+        256, 288, 320, 352,
+        384, 416, 448, 0 ],
+
+      [ # layer II 
+        0,   32,  48,  56, 
+        64,  80,  96,  112, 
+        128, 160, 192, 224, 
+        256, 320, 384, 0 ],
+
+      [ # layer III 
+        0,   32,  40,  48, 
+        56,  64,  80,  96, 
+        112, 128, 160, 192, 
+        224, 256, 320, 0 ]
+    ],
+
+    [ # MPEG-2
+
+      None, # layer 0 (Doesn't exist)
+
+      [ # layer 1
+        0,   32,  64,  96, 
+        128, 160, 192, 224, 
+        256, 288, 320, 352,
+        384, 416, 448, 0 ],
+
+      [ # layer II 
+        0,   32,  48,  56, 
+        64,  80,  96,  112, 
+        128, 160, 192, 224, 
+        256, 320, 384, 0 ],
+
+      [ # layer III 
+        0,   8,   16,  24,
+        32,  64,  80,  56,
+        64,  128, 160, 112, 
+        128, 256, 320, 0 ]
+    ]
+  ]
+
+  b = b1 & 0xf
+  mpeg = mpegTable[b >> 3]
+  layer = layerTable[(b >> 1) & 0x3]
+
+  if mpeg is None or layer != 3: return failCase
+
+  samp_rate = freqTable[mpeg][(byte & 0x0f) >> 2]
+  bit_rate = brTable[mpeg][layer][byte >> 4]
   pad_bit = (byte & 0x3) >> 1
 
-  try:
-    # from http://id3.org/mp3Frame
-    frame_size = (144000 * bit_rate / samp_rate) + pad_bit
+  if not bit_rate or not samp_rate: return failCase
 
-  except:
-    return False, False, False, False
+  # from http://id3.org/mp3Frame
+  frame_size = (144000 * bit_rate / samp_rate) + pad_bit
 
   return frame_size, samp_rate, bit_rate, pad_bit
+
 
 def get_audio_format(file_name):
   """ 
@@ -188,11 +245,11 @@ def get_audio_format(file_name):
         audio_format = FORMAT_AAC, pos
         break
 
-      elif b1 == 0xfb or b1 == 0xfa:
+      elif b1 >> 4 == 0xf:
         # In order to see if it's an mp3 or not we read the next byte
         # and try to get the stats on the frame
         b = ord(file_handle.read(1))
-        frame_size, samp_rate, bit_rate, pad_bit = mp3_info(b)
+        frame_size, samp_rate, bit_rate, pad_bit = mp3_info(b, b1)
 
         # If there's a computed frame_size then we can continue
         if frame_size:
@@ -379,6 +436,10 @@ def mp3_signature(file_name, blockcount=-1):
   is_stream = False
   start_pos = None
 
+  frame_size = None
+  assumed_set = None
+  attempt_set = None
+
   if isinstance(file_name, basestring):
     file_handle = open(file_name, 'rb')
 
@@ -403,7 +464,9 @@ def mp3_signature(file_name, blockcount=-1):
     header = file_handle.read(2)
     if header:
 
-      if header == '\xff\xfb' or header == '\xff\xfa':
+      b1 = ord(header[1])
+
+      if header[0] == '\xff' and (b1 >> 4) == 0xf:
 
         try:
           b = ord(file_handle.read(1))
@@ -411,10 +474,24 @@ def mp3_signature(file_name, blockcount=-1):
         except:
           break
 
-        frame_size, samp_rate, bit_rate, pad_bit = mp3_info(b)
+        if frame_size and not assumed_set:
+          attempt_set = [samp_rate, bit_rate, pad_bit]
+
+        frame_size, samp_rate, bit_rate, pad_bit = mp3_info(b, b1)
 
         if not frame_size:
+          f.seek(-1, 1)
           continue
+
+        if not assumed_set and attempt_set:
+          assumed_set = attempt_set
+          attempt_set = False
+
+        # This is another indicator that we could be screwing up ... 
+        elif assumed_set and samp_rate != assumed_set[0] and bit_rate != assumed_set[1]:
+          f.seek(-1, 1)
+          continue
+
 
         if not first_header_seen:
           first_header_seen = True
@@ -458,7 +535,7 @@ def mp3_signature(file_name, blockcount=-1):
         # We are at the end of file, but let's just continue.
         next
 
-      elif first_header_seen or header_attempts > MAX_HEADER_ATTEMPTS:
+      elif header_attempts > MAX_HEADER_ATTEMPTS:
         if not is_stream:
           import binascii
           logging.debug('[mp3-sig] %d[%d/%d]%s:%s:%s %s %d' % (len(frame_sig), header_attempts, MAX_HEADER_ATTEMPTS, binascii.b2a_hex(header), binascii.b2a_hex(file_handle.read(5)), file_name, hex(file_handle.tell()), len(start_byte) * (1152.0 / 44100) / 60))
@@ -478,6 +555,12 @@ def mp3_signature(file_name, blockcount=-1):
 
         else:
           break
+
+      elif first_header_seen:
+        header_attempts += 1 
+        if header_attempts > 2:
+          # Go 1 back.
+          f.seek(-1, 1)
 
     else:
       break

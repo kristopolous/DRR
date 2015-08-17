@@ -103,10 +103,10 @@ def mp3_info(byte, header):
 def mp3_sig(fname, blockcount = -1):
   frame_sig = []
   start_byte = []
-  assumed_set = None
   chain = []
   rsize = 4
   frame_size = None
+  assumed_set = None
   attempt_set = None
 
   f = open(fname, 'rb')
@@ -153,6 +153,7 @@ def mp3_sig(fname, blockcount = -1):
         elif assumed_set and samp_rate != assumed_set[0] and bit_rate != assumed_set[1]:
           f.seek(-1, 1)
           continue
+
 
         if not first_header_seen:
           first_header_seen = True
