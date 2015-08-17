@@ -739,13 +739,20 @@ def stitch(file_list, force_stitch=False):
   first['siglist'] = siglist
   first['offset'] = offset
 
+  end_byte = first['offset'][0]
+  if len(first['offset']) > 2:
+    end_byte = first['offset'][-2]
+
+  else:
+    logging.warn("File %s is only %d frames" % (first[name], len(offset)))
+
   args = [{
     'name': first['name'], 
     # We don't let the first byte be the beginning because we want
     # to produce valid files.
     'start_byte': first['offset'][0], 
     'start_offset': 0,
-    'end_byte': first['offset'][-2],
+    'end_byte': end_byte,
     'start_minute': 0,
     'duration_sec': (len(first['offset']) - 1) * FRAME_LENGTH
   }]
