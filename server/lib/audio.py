@@ -451,6 +451,7 @@ def mp3_signature(file_name, blockcount=-1):
   frame_size = None
   assumed_set = None
   attempt_set = None
+  go_back = -1
 
   if isinstance(file_name, basestring):
     file_handle = open(file_name, 'rb')
@@ -469,8 +470,7 @@ def mp3_signature(file_name, blockcount=-1):
     else:
       header_attempts += 1 
       if header_attempts > 2:
-        # Go 1 back.
-        file_handle.seek(-1, 1)
+        file_handle.seek(go_back, 1)
 
     frame_start = file_handle.tell()
     header = file_handle.read(2)
@@ -492,8 +492,10 @@ def mp3_signature(file_name, blockcount=-1):
         frame_size, samp_rate, bit_rate, pad_bit = mp3_info(b, b1)
 
         if not frame_size:
-          file_handle.seek(-1, 1)
-          continue
+          file_handle.seek(go_back, 1)
+          go_back = -1
+
+          next
 
         if not assumed_set and attempt_set:
           assumed_set = attempt_set
@@ -502,7 +504,7 @@ def mp3_signature(file_name, blockcount=-1):
 
         # This is another indicator that we could be screwing up ... 
         elif assumed_set and samp_rate != assumed_set[0] and bit_rate != assumed_set[1]:
-          file_handle.seek(-1, 1)
+          file_handle.seek(go_back, 1)
           continue
 
 
@@ -514,13 +516,14 @@ def mp3_signature(file_name, blockcount=-1):
 
         # Get the signature
         sig = file_handle.read(read_size)
-
         frame_sig.append(sig)
-
         start_byte.append(frame_start)
 
         # Move forward the frame file_handle.read size + 4 byte header
         throw_away = file_handle.read(frame_size - (read_size + 4))
+
+        if file_handle.tell() > 3:
+          go_back = -3
 
       # ID3 tag for some reason
       elif header == '\x49\x44':
@@ -572,7 +575,8 @@ def mp3_signature(file_name, blockcount=-1):
       elif first_header_seen:
         header_attempts += 1 
         if header_attempts > 2:
-          file_handle.seek(-1, 1)
+          file_handle.seek(go_back, 1)
+          go_back = -1
 
     else:
       break
