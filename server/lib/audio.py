@@ -16,7 +16,7 @@ from datetime import datetime, timedelta, date
 
 # Most common frame-length ... in practice, I haven't 
 # seen other values in the real world.
-FRAME_LENGTH = (1152.0 / 44100)
+FRAME_LENGTH = (1152.0 / DB.get('samp', default=44100))
 
 FORMAT_MP3 = 'mp3'
 FORMAT_AAC = 'aac'
@@ -137,6 +137,26 @@ def stream_name(list_in, absolute_start_minute, duration_minute, relative_start_
   fname = "%s/%s-%s_%d.mp3" % (misc.DIR_SLICES, info['callsign'], ts, duration_minute)
   return fname
 
+# We need to be a bit fancy in determining our sample since there's
+# plenty of weird false positives that arive from our heuristic methods
+samp_distribution = {}
+def samp_guess(sample):
+  if DB.get('samp'): return True
+
+  global samp_distribution
+
+  # first to this amount is our winner
+  cutoff = 10
+
+  if sample not in samp_distribution:
+    samp_distribution[sample] = 0
+
+  samp_distribution[sample] += 1
+
+  if samp_distribution[sample] > cutoff:
+    DB.set('samp', samp)
+    globals()['FRAME_LENGTH'] = (1152.0 / samp)
+
 
 def mp3_info(byte, b1):
   failCase = [ False, False, False, False ]
@@ -144,7 +164,7 @@ def mp3_info(byte, b1):
   mpegTable = [ 2, 1 ]
   layerTable = [ None, 3, 2, 1 ]
   
-  freqTable = [  
+  sampTable = [  
     None,
     [ 44100, 48000, 32000, 0 ],
     [ 22050, 24000, 16000, 0 ]
@@ -206,7 +226,7 @@ def mp3_info(byte, b1):
 
   if mpeg is None or layer != 3: return failCase
 
-  samp_rate = freqTable[mpeg][(byte & 0x0f) >> 2]
+  samp_rate = sampTable[mpeg][(byte & 0x0f) >> 2]
   bit_rate = brTable[mpeg][layer][byte >> 4]
   pad_bit = (byte & 0x3) >> 1
 
@@ -383,7 +403,6 @@ def aac_signature(file_name, blockcount=-1):
     # O     11  Buffer fullness
     # P     2   Number of AAC frames (RDBs) in ADTS frame minus 1, for maximum compatibility always use 1 AAC frame per ADTS frame
     # Q     16  CRC if protection absent is 0 
-    
 
     # A and C (yes this is 0xf SIX and 0xf ZERO)
     if b0 != 0xff or (b1 & 0xf6 != 0xf0): 
@@ -497,9 +516,10 @@ def mp3_signature(file_name, blockcount=-1):
 
           continue
 
+        samp_guess(samp_rate)
+
         if not assumed_set and attempt_set:
           assumed_set = attempt_set
-          FRAME_LENGTH = (1152.0 / attempt_set[0])
           attempt_set = False
 
         # This is another indicator that we could be screwing up ... 
@@ -554,7 +574,7 @@ def mp3_signature(file_name, blockcount=-1):
       elif header_attempts > MAX_HEADER_ATTEMPTS:
         if not is_stream:
           import binascii
-          logging.debug('[mp3-sig] %d[%d/%d]%s:%s:%s %s %d' % (len(frame_sig), header_attempts, MAX_HEADER_ATTEMPTS, binascii.b2a_hex(header), binascii.b2a_hex(file_handle.read(5)), file_name, hex(file_handle.tell()), len(start_byte) * (1152.0 / 44100) / 60))
+          logging.debug('[mp3-sig] %d[%d/%d]%s:%s:%s %s %d' % (len(frame_sig), header_attempts, MAX_HEADER_ATTEMPTS, binascii.b2a_hex(header), binascii.b2a_hex(file_handle.read(5)), file_name, hex(file_handle.tell()), len(start_byte) * (1152.0 / DB.get('samp', default=44100)) / 60))
 
         # This means that perhaps we didn't guess the start correct so we try this again
         if len(frame_sig) == 1 and header_attempts < MAX_HEADER_ATTEMPTS:
