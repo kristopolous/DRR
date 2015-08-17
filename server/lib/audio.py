@@ -30,7 +30,7 @@ TS_RE = re.compile('(\w*)-(\d*)[.|_]')
 # In practice, 217 appears to be enough, so we make it about
 # ten times that and cross our fingers.
 #
-MAX_HEADER_ATTEMPTS = 2048
+MAX_HEADER_ATTEMPTS = 8192
 
 def list_info(file_list):
   """ A version of the stream_info that accepts a list. """
@@ -223,7 +223,14 @@ def get_audio_format(file_name):
   Determines the audio format of file_name and return 
   where the start of the audio block is.
   """
-  file_handle = open(file_name, 'rb')
+
+  if isinstance(file_name, (str, unicode)):
+    is_stream = False 
+    file_handle = open(file_name, 'rb')
+
+  else:
+    is_stream = True
+    file_handle = file_name
 
   audio_format = None, None
 
@@ -261,7 +268,7 @@ def get_audio_format(file_name):
           # we should now be at the start of the next frame.
           b0, b1 = [ord(byte) for byte in file_handle.read(2)]
 
-          if b0 == 0xff and b1 == 0xfb or b1 == 0xfa:
+          if b0 == 0xff and b1 >> 4 == 0xf:
             # That's good enough for us
             file_handle.close()
             audio_format = FORMAT_MP3, pos
@@ -269,7 +276,7 @@ def get_audio_format(file_name):
 
       file_handle.seek(pos + 1)
 
-  file_handle.close()
+  if not is_stream: file_handle.close()
   return audio_format
 
 
@@ -287,13 +294,18 @@ def signature(fname, blockcount=-1):
       logging.warn("Can't determine type of file for %s." % fname)
       return False
   
-  if audio_format == FORMAT_MP3: 
-    return mp3_signature(fname, blockcount)
-
+  block = None
   if audio_format == FORMAT_AAC:
-    return aac_signature(fname, blockcount)
+    sig, block = aac_signature(fname, blockcount)
 
-  return None
+  if audio_format == FORMAT_MP3 or not block: 
+    sig, block = mp3_signature(fname, blockcount)
+
+    if len(block) > 0 and audio_format == FORMAT_AAC:
+      DB.set('format', FORMAT_MP3)
+      DB.clear_cache()
+
+  return sig, block
 
 
 # using http://wiki.multimedia.cx/index.php?title=ADTS
@@ -301,7 +313,7 @@ def aac_signature(file_name, blockcount=-1):
   is_stream = False
   start_pos = None
 
-  if type(file_name) is str:
+  if isinstance(file_name, basestring):
     file_handle = open(file_name, 'rb')
 
   else:
@@ -480,16 +492,17 @@ def mp3_signature(file_name, blockcount=-1):
         frame_size, samp_rate, bit_rate, pad_bit = mp3_info(b, b1)
 
         if not frame_size:
-          f.seek(-1, 1)
+          file_handle.seek(-1, 1)
           continue
 
         if not assumed_set and attempt_set:
           assumed_set = attempt_set
+          FRAME_LENGTH = (1152.0 / attempt_set[0])
           attempt_set = False
 
         # This is another indicator that we could be screwing up ... 
         elif assumed_set and samp_rate != assumed_set[0] and bit_rate != assumed_set[1]:
-          f.seek(-1, 1)
+          file_handle.seek(-1, 1)
           continue
 
 
@@ -559,8 +572,7 @@ def mp3_signature(file_name, blockcount=-1):
       elif first_header_seen:
         header_attempts += 1 
         if header_attempts > 2:
-          # Go 1 back.
-          f.seek(-1, 1)
+          file_handle.seek(-1, 1)
 
     else:
       break
