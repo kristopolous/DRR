@@ -241,7 +241,7 @@ def set(key, value):
   return value
 
 
-def get(key, expiry=0, use_cache=True):
+def get(key, expiry=0, use_cache=True, default=None):
   """ 
   Retrieves a value from the database, tentative on the expiry. 
   If the cache is set to true then it retrieves it from in-memory if available, otherwise
@@ -263,10 +263,12 @@ def get(key, expiry=0, use_cache=True):
   res = db['c'].execute('select value, created_at from kv where key = ?', (key, )).fetchone()
 
   if res:
+    if default and type(default) is int: res[0] = int(res[0])
+
     g_params[key] = res[0]
     return res[0]
 
-  return None
+  return default
 
 
 def unregister_stream(name, do_all=False):
