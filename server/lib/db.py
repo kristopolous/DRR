@@ -205,6 +205,12 @@ def incr(key, value=1):
   db['conn'].commit()
 
 
+def flush_cache(): 
+  global g_params
+  g_params = {}
+  return True
+
+
 def set(key, value):
   """ 
   Sets (or replaces) a given key to a specific value.  
@@ -215,14 +221,18 @@ def set(key, value):
 
   db = connect()
   
-  # From http://stackoverflow.com/questions/418898/sqlite-upsert-not-insert-or-replace
-  res = db['c'].execute('''
-    INSERT OR REPLACE INTO kv (key, value, created_at) 
-      VALUES ( 
-        COALESCE((SELECT key FROM kv WHERE key = ?), ?),
-        ?,
-        current_timestamp 
-    )''', (key, key, value, ))
+  if value is None:
+    res = db['c'].execute('delete from kv where key = ?', (key, ))
+    
+  else:
+    # From http://stackoverflow.com/questions/418898/sqlite-upsert-not-insert-or-replace
+    res = db['c'].execute('''
+      INSERT OR REPLACE INTO kv (key, value, created_at) 
+        VALUES ( 
+          COALESCE((SELECT key FROM kv WHERE key = ?), ?),
+          ?,
+          current_timestamp 
+      )''', (key, key, value, ))
 
   db['conn'].commit()
 
