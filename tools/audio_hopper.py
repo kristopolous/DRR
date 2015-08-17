@@ -113,7 +113,6 @@ def mp3_sig(fname, blockcount = -1):
   assumed_set = None
   attempt_set = None
   go_back = -1
-  success = None
 
   file_handle = open(fname, 'rb')
 
@@ -129,7 +128,6 @@ def mp3_sig(fname, blockcount = -1):
       header_attempts += 1 
       if header_attempts > 2:
         sys.stdout.write('!')
-        # Go 1 back.
         file_handle.seek(go_back, 1)
 
     frame_start = file_handle.tell()
@@ -152,11 +150,8 @@ def mp3_sig(fname, blockcount = -1):
         frame_size, samp_rate, bit_rate, pad_bit = mp3_info(b, b1)
 
         if not frame_size:
-          if success:
-            file_handle.seek(go_back, 1)
-            go_back = -1
-          else: 
-            file_handle.seek(go_back, 1)
+          file_handle.seek(go_back, 1)
+          go_back = -1
 
           sys.stdout.write('#')
           next
@@ -168,7 +163,6 @@ def mp3_sig(fname, blockcount = -1):
 
         # This is another indicator that we could be screwing up ... 
         elif assumed_set and samp_rate != assumed_set[0] and bit_rate != assumed_set[1]:
-          sys.stdout.write('$')
           file_handle.seek(go_back, 1)
           continue
 
@@ -186,6 +180,7 @@ def mp3_sig(fname, blockcount = -1):
         #  print "%s" % (' '.join([binascii.b2a_hex(block) for block in chain]))
         #  chain.pop(0)
           
+        # Get the signature
         sig = file_handle.read(rsize)
         frame_sig.append(sig)
         start_byte.append(frame_start)
@@ -246,11 +241,7 @@ def mp3_sig(fname, blockcount = -1):
           sys.stdout.write('!')
           print binascii.b2a_hex(header), "%x" % file_handle.tell()
           
-          if success:
-            file_handle.seek(go_back, 1)
-          else:
-            file_handle.seek(go_back, 1)
-
+          file_handle.seek(go_back, 1)
           go_back = -1
 
     else:
