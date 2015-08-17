@@ -86,6 +86,7 @@ def mp3_info(byte, b1):
   b = b1 & 0xf
   mpeg = mpegTable[b >> 3]
   layer = layerTable[(b >> 1) & 0x3]
+  protection_bit = b & 1
 
   if mpeg is None or layer != 3: return failCase
 
@@ -93,7 +94,9 @@ def mp3_info(byte, b1):
   bit_rate = brTable[mpeg][layer][byte >> 4]
   pad_bit = (byte & 0x3) >> 1
 
+
   if not bit_rate or not samp_rate: return failCase
+  print "%x" % byte, samp_rate, bit_rate, pad_bit, protection_bit, (144.0 * (bit_rate * 1000) / samp_rate) + pad_bit
 
   # from http://id3.org/mp3Frame
   frame_size = (144000 * bit_rate / samp_rate) + pad_bit
@@ -109,6 +112,8 @@ def mp3_sig(fname, blockcount = -1):
   frame_size = None
   assumed_set = None
   attempt_set = None
+  go_back = -1
+  success = None
 
   file_handle = open(fname, 'rb')
 
@@ -123,8 +128,9 @@ def mp3_sig(fname, blockcount = -1):
     else:
       header_attempts += 1 
       if header_attempts > 2:
+        sys.stdout.write('!')
         # Go 1 back.
-        file_handle.seek(-1, 1)
+        file_handle.seek(go_back, 1)
 
     frame_start = file_handle.tell()
     header = file_handle.read(2)
@@ -146,16 +152,24 @@ def mp3_sig(fname, blockcount = -1):
         frame_size, samp_rate, bit_rate, pad_bit = mp3_info(b, b1)
 
         if not frame_size:
-          file_handle.seek(-1, 1)
-          continue
+          if success:
+            file_handle.seek(go_back, 1)
+            go_back = -1
+          else: 
+            file_handle.seek(go_back, 1)
+
+          sys.stdout.write('#')
+          next
 
         if not assumed_set and attempt_set:
           assumed_set = attempt_set
+          print assumed_set
           attempt_set = False
 
         # This is another indicator that we could be screwing up ... 
         elif assumed_set and samp_rate != assumed_set[0] and bit_rate != assumed_set[1]:
-          file_handle.seek(-1, 1)
+          sys.stdout.write('$')
+          file_handle.seek(go_back, 1)
           continue
 
 
@@ -179,6 +193,10 @@ def mp3_sig(fname, blockcount = -1):
 
         # Move forward the frame file_handle.read size + 4 byte header
         throw_away = file_handle.read(frame_size - (rsize + 4))
+        sys.stdout.write('.')
+
+        if file_handle.tell() > 3:
+          go_back = -3
 
       #ID3 tag for some reason
       elif header == '\x49\x44':
@@ -225,8 +243,15 @@ def mp3_sig(fname, blockcount = -1):
       elif first_header_seen:
         header_attempts += 1 
         if header_attempts > 2:
-          # Go 1 back.
-          file_handle.seek(-1, 1)
+          sys.stdout.write('!')
+          print binascii.b2a_hex(header), "%x" % file_handle.tell()
+          
+          if success:
+            file_handle.seek(go_back, 1)
+          else:
+            file_handle.seek(go_back, 1)
+
+          go_back = -1
 
     else:
       break
