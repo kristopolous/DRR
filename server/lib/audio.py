@@ -140,7 +140,7 @@ def stream_name(list_in, absolute_start_minute, duration_minute, relative_start_
 # We need to be a bit fancy in determining our sample since there's
 # plenty of weird false positives that arive from our heuristic methods
 samp_distribution = {}
-def samp_guess(sample):
+def samp_guess(samp):
   if DB.get('samp'): return True
 
   global samp_distribution
@@ -148,12 +148,12 @@ def samp_guess(sample):
   # first to this amount is our winner
   cutoff = 10
 
-  if sample not in samp_distribution:
-    samp_distribution[sample] = 0
+  if samp not in samp_distribution:
+    samp_distribution[samp] = 0
 
-  samp_distribution[sample] += 1
+  samp_distribution[samp] += 1
 
-  if samp_distribution[sample] > cutoff:
+  if samp_distribution[samp] > cutoff:
     DB.set('samp', samp)
     globals()['FRAME_LENGTH'] = (1152.0 / samp)
 
