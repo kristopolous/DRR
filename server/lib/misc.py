@@ -80,6 +80,7 @@ start_time = None
 config = {}
 pid = {}
 lockMap = {'prune': Lock()}
+last_official_query = None
 
 def do_nothing(signal, frame=None):
   """ Catches signals that we would rather just ignore """
@@ -92,15 +93,18 @@ def am_i_official():
   If those values match our uuid then we claim that we are the official instance
   and can do various privileged things.  Otherwise, we try not to intrude.
   """
-  global config
+  global config, last_official_query
 
   # Don't cache a true value ... see https://github.com/kristopolous/DRR/issues/84 for details
-  if 'official' not in config or config['official']:
+  # Actually we'll cache it for a few seconds.
+  if 'official' not in config or (config['official'] and (not last_official_query or last_official_query + 10 > time.time())):
     endpoint = "http://%s.indycast.net:%d/uuid" % (config['callsign'], config['port'])
+
     try: 
       stream = urllib2.urlopen(endpoint)
       data = stream.read()
       config['official'] = (data.strip() == config['uuid'])
+      last_official_query = time.time()
 
     except:
       # We can't contact the server so we just return false
