@@ -5,7 +5,30 @@ import math
 import binascii
 import os
 import sys
+import struct
 import audio_hopper as AH
+
+# using ospace.tistory.com/attachment/jk12.pdf
+def flv_skip(file_handle):
+  # version + flags
+  throwaway = file_handle.read(1 + 1 + 4) 
+
+  # now we go through tags ... this is so funnnn. (*cries*)
+  # And of course python doesn't support uint_24 ... no, why would it 
+  # be useful (ug bash)
+
+  print file_handle.tell()
+  # 4 + 1 + 2 + 1 + 2 + 1 + 4
+  flv_header = file_handle.read(15)
+
+  # i (uint32)       B (uint8) H (uint16)       B (uint8)       H (uint16)    B (uint8)     i (uint32)
+  previous_tag_size, tag_type, body_length_u16, body_length_l8, timstamp_u16, timestamp_l8, padding  = struct.unpack('>iBHBHBi', flv_header)
+
+  print tag_type, body_length_u16, body_length_l8
+  body_length = body_length_u16 << 8 | body_length_l8
+
+  print body_length
+  
 
 # using http://wiki.multimedia.cx/index.php?title=ADTS
 def aac_decode(fname, c=0):
@@ -13,7 +36,12 @@ def aac_decode(fname, c=0):
 
   # This tries to find the first readable SOF bytes
   while True:
-    if ord(f.read(1)) == 0xff:
+    b0 = f.read(1)
+    # oh great, fucking FLV
+    if b0 == 'F' and f.read(2) == 'LV':
+      if flv_skip(f): break
+
+    if ord(b0) == 0xff:
       if ord(f.read(1)) & 0xf6 == 0xf0:
         f.seek(f.tell() - 2)
         break
@@ -88,6 +116,9 @@ def aac_decode(fname, c=0):
  
   f.close()
   return [frame_sig, start_byte]
+
+aac_decode(sys.argv[1])
+sys.exit(0)
 
 for fname in glob('wzrd*mp3') + glob('/home/chris/radio/kxlu/streams/*mp3'):
   if os.path.getsize(fname) > 0:
