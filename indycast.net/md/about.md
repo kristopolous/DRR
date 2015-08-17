@@ -314,7 +314,7 @@ If you'd like to find out what the station coverage is, there's a graph-drawing 
 
 
 ### Being a Client
-The client the service should be able to use the service in any reasonable way with any reasonable set of expectations. Furthermore, the client should be able to trust the service to take care of all reasonable problems within the scope of the solution.
+A client should be able to use the service in any reasonable way with any reasonable set of expectations. Furthermore, the client should be able to trust the service to take care of all reasonable problems within the service's scope.  That's always true, regardless of the "service" - we could be talking about banks or hookers here.  But on, we are talking software - and yes, it still holds.
 
 #### Easy for novices
 If Alice doesn't really know how to use computers that well, there is a [web front end](http://indycast.net) that explains what indycast is and has a simple and attractive user-interface that she can operate on the device of her choosing.
