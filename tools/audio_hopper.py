@@ -21,7 +21,7 @@ def make_map(fname):
   print len(obj[0])
   marshal.dump(obj, open(fname + '.map', 'wb'))
 
-def mp3_info(byte, header):
+def mp3_info(byte, b1):
   failCase = [ False, False, False, False ]
 
   mpegTable = [ 2, 1 ]
@@ -83,7 +83,7 @@ def mp3_info(byte, header):
     ]
   ]
 
-  b = ord(header[1]) & 0xf
+  b = b1 & 0xf
   mpeg = mpegTable[b >> 3]
   layer = layerTable[(b >> 1) & 0x3]
 
@@ -104,12 +104,13 @@ def mp3_sig(fname, blockcount = -1):
   frame_sig = []
   start_byte = []
   chain = []
-  rsize = 4
+  rsize = 8
+
   frame_size = None
   assumed_set = None
   attempt_set = None
 
-  f = open(fname, 'rb')
+  file_handle = open(fname, 'rb')
 
   first_header_seen = False
   header_attempts = 0
@@ -123,15 +124,18 @@ def mp3_sig(fname, blockcount = -1):
       header_attempts += 1 
       if header_attempts > 2:
         # Go 1 back.
-        f.seek(-1, 1)
+        file_handle.seek(-1, 1)
 
-    frame_start = f.tell()
-    header = f.read(2)
+    frame_start = file_handle.tell()
+    header = file_handle.read(2)
     if header:
 
-      if header[0] == '\xff' and (ord(header[1]) >> 4) == 0xf:
+      b1 = ord(header[1])
+
+      if header[0] == '\xff' and (b1 >> 4) == 0xf:
+
         try:
-          b = ord(f.read(1))
+          b = ord(file_handle.read(1))
           # If we are at the EOF
         except:
           break
@@ -139,10 +143,10 @@ def mp3_sig(fname, blockcount = -1):
         if frame_size and not assumed_set:
           attempt_set = [samp_rate, bit_rate, pad_bit]
 
-        frame_size, samp_rate, bit_rate, pad_bit = mp3_info(b, header)
+        frame_size, samp_rate, bit_rate, pad_bit = mp3_info(b, b1)
 
         if not frame_size:
-          f.seek(-1, 1)
+          file_handle.seek(-1, 1)
           continue
 
         if not assumed_set and attempt_set:
@@ -151,7 +155,7 @@ def mp3_sig(fname, blockcount = -1):
 
         # This is another indicator that we could be screwing up ... 
         elif assumed_set and samp_rate != assumed_set[0] and bit_rate != assumed_set[1]:
-          f.seek(-1, 1)
+          file_handle.seek(-1, 1)
           continue
 
 
@@ -159,7 +163,7 @@ def mp3_sig(fname, blockcount = -1):
           first_header_seen = True
 
         # Rest of the header
-        throw_away = f.read(1)
+        throw_away = file_handle.read(1)
         # print samp_rate, bit_rate, hex(ord(throw_away))
 
         # Get the signature
@@ -168,18 +172,18 @@ def mp3_sig(fname, blockcount = -1):
         #  print "%s" % (' '.join([binascii.b2a_hex(block) for block in chain]))
         #  chain.pop(0)
           
-        sig = f.read(rsize)
+        sig = file_handle.read(rsize)
         frame_sig.append(sig)
         start_byte.append(frame_start)
         # print 'start %x' % frame_start
 
-        # Move forward the frame f.read size + 4 byte header
-        throw_away = f.read(frame_size - (rsize + 4))
+        # Move forward the frame file_handle.read size + 4 byte header
+        throw_away = file_handle.read(frame_size - (rsize + 4))
 
       #ID3 tag for some reason
       elif header == '\x49\x44':
         # Rest of the header
-        throw_away = f.read(4)
+        throw_away = file_handle.read(4)
 
         # Quoting http://id3.org/d3v2.3.0
         #
@@ -188,26 +192,26 @@ def mp3_sig(fname, blockcount = -1):
         # of 28 bits. The zeroed bits are ignored, so a 257 bytes long tag is
         # represented as $00 00 02 01.
         #
-        candidate = struct.unpack('>I', f.read(4))[0]
+        candidate = struct.unpack('>I', file_handle.read(4))[0]
         size = ((candidate & 0x007f0000) >> 2 ) | ((candidate & 0x00007f00) >> 1 ) | (candidate & 0x0000007f)
         
-        f.read(size)
+        file_handle.read(size)
 
       # ID3 TAG -- 128 bytes long
       elif header == '\x54\x41':
         # We've already read 2 so we can go 126 forward
-        f.read(126)
+        file_handle.read(126)
 
       elif header_attempts > MAX_HEADER_ATTEMPTS:
 
-        print "%d[%d/%d]%s:%s:%s %s %d" % (len(frame_sig), header_attempts, MAX_HEADER_ATTEMPTS, binascii.b2a_hex(header), binascii.b2a_hex(f.read(5)), fname, hex(f.tell()), len(start_byte) * (1152.0 / 44100) / 60)
+        print "%d[%d/%d]%s:%s:%s %s %d" % (len(frame_sig), header_attempts, MAX_HEADER_ATTEMPTS, binascii.b2a_hex(header), binascii.b2a_hex(file_handle.read(5)), fname, hex(file_handle.tell()), len(start_byte) * (1152.0 / 44100) / 60)
 
         # This means that perhaps we didn't guess the start correct so we try this again
         if len(frame_sig) == 1 and header_attempts < MAX_HEADER_ATTEMPTS:
           print "False start -- trying again"
 
           # seek to the first start byte + 1
-          f.seek(start_byte[0] + 2)
+          file_handle.seek(start_byte[0] + 2)
 
           # discard what we thought was the first start byte and
           # frame signature
@@ -222,12 +226,12 @@ def mp3_sig(fname, blockcount = -1):
         header_attempts += 1 
         if header_attempts > 2:
           # Go 1 back.
-          f.seek(-1, 1)
+          file_handle.seek(-1, 1)
 
     else:
       break
 
-  f.close()
+  file_handle.close()
   return [frame_sig, start_byte]
 
 # serialize takes a list of ordinal tuples and makes
