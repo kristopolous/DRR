@@ -293,7 +293,17 @@ A Distributed <a href="https://github.com/kristopolous/DRR">Open Source</a> DVR 
 <p>The record for upping a server from a fresh install is in <a href=images/record.png>23.87 seconds</a>.</p>
 </blockquote>
 <p>Don't you hate it when some blackbox frameworky magic doesn't work and you helplessly try to figure out what's the code and what's the framework ... No, none of that nonsense here.</p>
-<p>In fact, I've created a user-story for a would-be administrator. Every interaction with a computer should be a thought-out interface.</p>
+<p>Take gitlab for instance. It requires runit, redis, chef, postgres, nginx, ruby, unicorn, sidekiq, rails, logrotate, installs over 100,000 files into the /opt directory, takes up 3GB of disk (before doing anything) and eats up about 800MB of memory. Even after you &quot;uninstall&quot; it, it still leaves behind 1.1GB of files just for the memories.</p>
+<p>Their tagline should be <em>Gitlab: The most elaborate and sophisticated way to store and view categorized blobs of text - A perverse exercise in absurdist art</em>. You're supposed to look and think &quot;Ah yes, a fancifully exagerrated work commenting on a race to the obtuse which has characterized the zeitgeist of modern programming - very well done&quot;. But lo! They are serious.</p>
+<p>Let's build some contrast. indycast:</p>
+<ul>
+<li>doesn't come with its own init system that nobody knows how to use.</li>
+<li>doesn't fire up an SQL server, nosql store, or cache layer.</li>
+<li>doesn't need a sandbox because indycast plays nicely with others - as a responsible citizen in the community known as a Linux system.</li>
+</ul>
+<p>Really, this won't be an episode of <em>Programmers Gone Wild!</em> Are you in?</p>
+<p>Good.</p>
+<p>I've created a user-story for a would-be administrator because every interaction with a computer should be a thought-out interface.</p>
 <h2 id="up-and-running-in-under-2-minutes.">Up and running in under 2 minutes.</h2>
 <p>Try this out right now. It's easy and there's no risk.</p>
 <p><a href=http://i.imgur.com/YI3Qu5bl.jpg>Alice</a> is interested in adding her favorite station, KPCC. She</p>

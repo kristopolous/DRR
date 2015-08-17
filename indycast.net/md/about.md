@@ -80,7 +80,21 @@ There's a bash script to install dependencies but again, [it's 12 lines](https:/
 
 Don't you hate it when some blackbox frameworky magic doesn't work and you helplessly try to figure out what's the code and what's the framework ... No, none of that nonsense here.
 
-In fact, I've created a user-story for a would-be administrator. Every interaction with a computer should be a thought-out interface.
+Take gitlab for instance.  It requires runit, redis, chef, postgres, nginx, ruby, unicorn, sidekiq, rails, logrotate, installs over 100,000 files into the /opt directory, takes up 3GB of disk (before doing anything) and eats up about 800MB of memory.  Even after you "uninstall" it, it still leaves behind 1.1GB of files just for the memories.  
+
+Their tagline should be *Gitlab: The most elaborate and sophisticated way to store and view categorized blobs of text - A perverse exercise in absurdist art*.  You're supposed to look and think "Ah yes, a fancifully exagerrated work commenting on a race to the obtuse which has characterized the zeitgeist of modern programming - very well done".  But lo! They are serious. 
+
+Let's build some contrast. indycast:
+
+ * doesn't come with its own init system that nobody knows how to use.
+ * doesn't fire up an SQL server, nosql store, or cache layer.
+ * doesn't need a sandbox because indycast plays nicely with others - as a responsible citizen in the community known as a Linux system.
+
+Really, this won't be an episode of *Programmers Gone Wild!* Are you in?
+
+Good.
+
+I've created a user-story for a would-be administrator because every interaction with a computer should be a thought-out interface.
 
 ## Up and running in under 2 minutes.
 
