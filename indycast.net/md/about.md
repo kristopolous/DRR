@@ -316,7 +316,7 @@ If you'd like to find out what the station coverage is, there's a graph-drawing 
 ### Being a Client
 A client should be able to use the service in any reasonable way with any reasonable set of expectations. Furthermore, the client should be able to trust the service to take care of all reasonable problems within the service's scope.  
 
-That's always true, regardless of the "service" - we could be talking about banks or hookers here.  But no, we are talking software - and yes, it still holds.
+That's always true, regardless of the service; we could be talking about banks or hookers here.  But no, we are talking software - and yes, it still holds.
 
 #### Easy for novices
 If Alice doesn't really know how to use computers that well, there is a [web front end](http://indycast.net) that explains what indycast is and has a simple and attractive user-interface that she can operate on the device of her choosing.
@@ -486,7 +486,7 @@ In order to find matching payloads, you can look at a sequence of bytes, called 
 the beginning of the payloads, and simply match that.  No audio-fingerprinting or FFT between 
 time and frequenc... no none of that.  It's much faster.
 
-> A blazingly fast and unique approach to audio-processing
+> A blazingly fast and unique approach to audio-processing. <small>Indycast author, *Specious Claims & Unfounded Hype*</small>
 
 But since there was no library out there that did just this, it was hand-rolled (see [server/lib/audio.py](https://github.com/kristopolous/DRR/blob/master/server/lib/audio.py)).  It scans headers, hopping around the file, making a number of 
 bold assumptions about things (such as CBR encoding) and as a result, audio can be brought down 

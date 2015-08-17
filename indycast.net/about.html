@@ -491,7 +491,7 @@ kcrw  kdvs  kpcc  kxlu  wxyc</code></pre>
          kpcc coverage: 90.877315%</code></pre>
 <h3 id="being-a-client">Being a Client</h3>
 <p>A client should be able to use the service in any reasonable way with any reasonable set of expectations. Furthermore, the client should be able to trust the service to take care of all reasonable problems within the service's scope.</p>
-<p>That's always true, regardless of the &quot;service&quot; - we could be talking about banks or hookers here. But no, we are talking software - and yes, it still holds.</p>
+<p>That's always true, regardless of the service; we could be talking about banks or hookers here. But no, we are talking software - and yes, it still holds.</p>
 <h4 id="easy-for-novices">Easy for novices</h4>
 <p>If Alice doesn't really know how to use computers that well, there is a <a href="http://indycast.net">web front end</a> that explains what indycast is and has a simple and attractive user-interface that she can operate on the device of her choosing.</p>
 <p>There's <a href="https://github.com/kristopolous/DRR/issues/104">three cognitively distinct</a> ways to think about indycast:</p>
@@ -594,7 +594,7 @@ $ curl -s kxlu.indycast.net:8890/sun/7pm/1hr/show.m3u | grep -v \# | xargs mplay
 <p>Because audio streams are just binary files, and the binary files are identical independent of the user downloading them, then in order to overlap or splice the audio all you need is the ability to parse and find the headers ... not the payloads themselves.</p>
 <p>In order to find matching payloads, you can look at a sequence of bytes, called a signature, at the beginning of the payloads, and simply match that. No audio-fingerprinting or FFT between time and frequenc... no none of that. It's much faster.</p>
 <blockquote>
-<p>A blazingly fast and unique approach to audio-processing</p>
+<p>A blazingly fast and unique approach to audio-processing. <small>Indycast author, <em>Specious Claims &amp; Unfounded Hype</em></small></p>
 </blockquote>
 <p>But since there was no library out there that did just this, it was hand-rolled (see <a href="https://github.com/kristopolous/DRR/blob/master/server/lib/audio.py">server/lib/audio.py</a>). It scans headers, hopping around the file, making a number of bold assumptions about things (such as CBR encoding) and as a result, audio can be brought down from the cloud storage, stitched together, and then sliced in under a second.</p>
 <p>The audio processing engine wasn't designed to process all types of MP3 and AAC files but it was instead designed to deal with broken headers, files that are cut off, that begin in the middle of a payload, etc.</p>
