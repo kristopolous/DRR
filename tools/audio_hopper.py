@@ -303,7 +303,7 @@ def audio_type(fname):
         # In order to see if it's an mp3 or not we read the next byte
         # and try to get the stats on the frame
         b = ord(f.read(1))
-        frame_size, samp_rate, bit_rate, pad_bit = mp3_info(b)
+        frame_size, samp_rate, bit_rate, pad_bit = mp3_info(b, b1)
 
         # If there's a computed frame_size then we can continue
         if frame_size:
