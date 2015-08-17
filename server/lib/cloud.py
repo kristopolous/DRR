@@ -77,9 +77,6 @@ def unlink(path, config=False):
 
 def put(path):
   """ Place a file, given a path, in the cloud. """
-  if 'test' in misc.config['_private']['azure']:
-    return False
-
   if not misc.am_i_official():
     logging.info ("I would have uploaded %s but I'm not the official %s server" % (path, misc.config['callsign']) )
     return False
