@@ -97,7 +97,7 @@ def am_i_official():
 
   # Don't cache a true value ... see https://github.com/kristopolous/DRR/issues/84 for details
   # Actually we'll cache it for a few seconds.
-  if 'official' not in config or (config['official'] and (not last_official_query or last_official_query + 10 > time.time())):
+  if 'official' not in config or (config['official'] and (not last_official_query or last_official_query + 10 < time.time())):
     endpoint = "http://%s.indycast.net:%d/uuid" % (config['callsign'], config['port'])
 
     try: 
