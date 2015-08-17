@@ -11,7 +11,7 @@ import base64
 import marshal
 from glob import glob
 
-MAX_HEADER_ATTEMPTS = 1024
+MAX_HEADER_ATTEMPTS = 102400
 def hash_test(file_list):
   for name in file_list:
     mp3_sig(name)
@@ -21,19 +21,65 @@ def make_map(fname):
   print len(obj[0])
   marshal.dump(obj, open(fname + '.map', 'wb'))
 
-def mp3_info(byte):
-  freqTable = [ 44100, 48000, 32000, 0 ]
-
-  brTable = [
-    0,   32,  40,  48, 
-    56,  64,  80,  96, 
-    112, 128, 160, 192, 
-    224, 256, 320, 0
+def mp3_info(byte, header):
+  mpegTable = [ 2, 1 ]
+  layerTable = [ None, 3, 2, 1 ]
+  
+  freqTable = [  
+    None,
+    [ 44100, 48000, 32000, 0 ],
+    [ 22050, 24000, 16000, 0 ]
   ]
 
-  samp_rate = freqTable[(byte & 0x0f) >> 2]
+  brTable = [
+    [ #MPEG-1, 
+      [ # layer I 
+        0,   32,  64,  96,  
+        128, 160, 192, 224, 
+        256, 288, 320, 352,
+        384, 416, 448, 0 ],
+
+      [ # layer II 
+        0,   32,  48,  56, 
+        64,  80,  96,  112, 
+        128, 160, 192, 224, 
+        256, 320, 384, 0 ],
+
+      [ # layer III 
+        0,   32,  40,  48, 
+        56,  64,  80,  96, 
+        112, 128, 160, 192, 
+        224, 256, 320, 0 ]
+    ],
+    [ # MPEG-2
+      [ # layer 1
+        0,   32,  64,  96, 
+        128, 160, 192, 224, 
+        256, 288, 320, 352,
+        384, 416, 448, 0 ],
+
+      [ # layer II 
+        0,   32,  48,  56, 
+        64,  80,  96,  112, 
+        128, 160, 192, 224, 
+        256, 320, 384, 0 ],
+
+      [ # layer III 
+        0,   8,   16,  24,
+        32,  64,  80,  56,
+        64,  128, 160, 112, 
+        128, 256, 320, 0 ]
+    ]
+  ]
+
+  b = ord(header[1]) & 0xf
+  mpeg = mpegTable[b >> 3]
+  layer = layerTable[(b >> 1) & 0x3]
+  print layer, mpeg
+  samp_rate = freqTable[mpeg][(byte & 0x0f) >> 2]
   bit_rate = brTable[byte >> 4]
   pad_bit = (byte & 0x3) >> 1
+  print samp_rate, bit_rate, pad_bit
 
   try:
     # from http://id3.org/mp3Frame
@@ -78,7 +124,8 @@ def mp3_sig(fname, blockcount = -1):
         except:
           break
 
-        frame_size, samp_rate, bit_rate, pad_bit = mp3_info(b)
+        frame_size, samp_rate, bit_rate, pad_bit = mp3_info(b, header)
+        print samp_rate, bit_rate, pad_bit
 
         if not frame_size:
           continue
@@ -88,7 +135,7 @@ def mp3_sig(fname, blockcount = -1):
 
         # Rest of the header
         throw_away = f.read(1)
-        #print samp_rate, bit_rate, hex(ord(throw_away))
+        # print samp_rate, bit_rate, hex(ord(throw_away))
 
         # Get the signature
         #print "%s %d" % (hex(frame_start), rsize)
@@ -308,9 +355,11 @@ def audiotag(source, length_sec, out):
       out.write(infile.read())
 
 if __name__ == "__main__":
+  mp3_sig(sys.argv[1])
+  sys.exit(0)
+
   audiotag('/home/chris/radio/kpcc/streams/kpcc-1437707563.mp3', 2 * 60 * 60, '/tmp/audio')
 
-  sys.exit(0)
 
   for f in fail_list.split(' '):
     fsize = os.path.getsize(f)
@@ -325,12 +374,11 @@ if __name__ == "__main__":
   sys.exit(0)
   # success case
   #make_map(sys.argv[1])
-  #mp3_sig(sys.argv[1])
 
   #sys.exit(0)
-  isSuccess = audio_stitch(["/var/radio/kpcc-1435670337.mp3","/var/radio/kpcc-1435671243.mp3"])
+  #isSuccess = audio_stitch(["/var/radio/kpcc-1435670337.mp3","/var/radio/kpcc-1435671243.mp3"])
 
   # failure case
   #stitch_attempt('/var/radio/kpcc-1435670339.mp3', '/var/radio/kpcc-1435669435.mp3')
 
-  audio_slice('/tmp/serialize.mp3', 14 * 60, 16 * 60)
+ # audio_slice('/tmp/serialize.mp3', 14 * 60, 16 * 60)
