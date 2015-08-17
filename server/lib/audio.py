@@ -321,6 +321,11 @@ def aac_signature(file_name, blockcount=-1):
       if not is_stream:
         logging.warn('[aac] %s Broken at frame#%d' % (file_name, frame_number))
 
+        # We second guess our format decision
+        if frame_number == 1:
+          DB.set('format', None)
+          DB.flush_cache()
+
       break
 
     #
