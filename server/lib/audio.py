@@ -30,7 +30,7 @@ TS_RE = re.compile('(\w*)-(\d*)[.|_]')
 # In practice, 217 appears to be enough, so we make it about
 # ten times that and cross our fingers.
 #
-MAX_HEADER_ATTEMPTS = 8192
+MAX_HEADER_ATTEMPTS = 32000
 
 def list_info(file_list):
   """ A version of the stream_info that accepts a list. """
