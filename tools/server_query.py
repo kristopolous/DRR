@@ -159,7 +159,14 @@ for station in all_stations:
       print data
 
     if db and args.query == 'heartbeat':
-      db['c'].execute('update stations set active = 1, log = ?, latency = latency + ?, pings = pings + 1, last_seen = current_timestamp where callsign = ?', ( str(stop - start), str(document['last_recorded']), str(station[CALLSIGN]) ))
+      db['c'].execute('''
+        update stations set 
+          active = 1, 
+          log = ?, 
+          latency = latency + ?, 
+          pings = pings + 1, 
+          last_seen = current_timestamp 
+        where callsign = ?''', ( str(document['delta']), str(stop - start), str(station[CALLSIGN]) ))
 
   except Exception as e:
     exc_type, exc_value, exc_traceback = sys.exc_info()
