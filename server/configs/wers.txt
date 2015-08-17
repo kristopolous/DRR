@@ -1,7 +1,0 @@
-[Main]
-callsign=wers
-lat=42.360082
-long=-71.058880
-stream=http://1591.live.streamtheworld.com/WERSFMAAC
-port=8890
-cloud=~/cloudcreds.cfg
