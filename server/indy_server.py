@@ -283,7 +283,7 @@ def server_manager(config):
     """
     return jsonify({
       'uptime': TS.uptime(),
-      'last_recorded': float(DB.get('last_recorded')),
+      'last_recorded': float(DB.get('last_recorded', use_cache=False)),
       'now': time.time(),
       'version': __version__
     }), 200
@@ -708,6 +708,7 @@ def stream_manager():
   # see https://github.com/kristopolous/DRR/issues/91:
   # Randomize prune to offload disk peaks
   prune_duration = misc.config['pruneevery'] + (1 / 8.0 - random.random() / 4.0)
+  last_recorded = 0
 
   while True:
     #
@@ -745,6 +746,9 @@ def stream_manager():
 
       elif what == 'heartbeat':
         flag = True
+
+        if value[1] > 100 and value[0] - last_recorded > 10:
+          DB.set('last_recorded', value[0])
 
         if not has_bitrate: 
 
