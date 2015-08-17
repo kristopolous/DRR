@@ -94,7 +94,6 @@ def mp3_info(byte, b1):
   bit_rate = brTable[mpeg][layer][byte >> 4]
   pad_bit = (byte & 0x3) >> 1
 
-
   if not bit_rate or not samp_rate: return failCase
   print "%x" % byte, samp_rate, bit_rate, pad_bit, protection_bit, (144.0 * (bit_rate * 1000) / samp_rate) + pad_bit
 
@@ -128,6 +127,7 @@ def mp3_sig(fname, blockcount = -1):
       header_attempts += 1 
       if header_attempts > 2:
         sys.stdout.write('!')
+        print binascii.b2a_hex(header), "%x" % file_handle.tell()
         file_handle.seek(go_back, 1)
 
     frame_start = file_handle.tell()
@@ -154,7 +154,7 @@ def mp3_sig(fname, blockcount = -1):
           go_back = -1
 
           sys.stdout.write('#')
-          next
+          continue
 
         if not assumed_set and attempt_set:
           assumed_set = attempt_set
@@ -172,7 +172,7 @@ def mp3_sig(fname, blockcount = -1):
 
         # Rest of the header
         throw_away = file_handle.read(1)
-        # print samp_rate, bit_rate, hex(ord(throw_away))
+        print samp_rate, bit_rate, hex(ord(throw_away))
 
         # Get the signature
         #print "%s %d" % (hex(frame_start), rsize)
