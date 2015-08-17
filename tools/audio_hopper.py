@@ -22,6 +22,8 @@ def make_map(fname):
   marshal.dump(obj, open(fname + '.map', 'wb'))
 
 def mp3_info(byte, header):
+  failCase = [ False, False, False, False ]
+
   mpegTable = [ 2, 1 ]
   layerTable = [ None, 3, 2, 1 ]
   
@@ -32,7 +34,12 @@ def mp3_info(byte, header):
   ]
 
   brTable = [
-    [ #MPEG-1, 
+    None, # MPEG-0 (doesn't exist)
+
+    [ #MPEG-1 
+
+      None, # layer 0 (Doesn't exist)
+
       [ # layer I 
         0,   32,  64,  96,  
         128, 160, 192, 224, 
@@ -51,7 +58,11 @@ def mp3_info(byte, header):
         112, 128, 160, 192, 
         224, 256, 320, 0 ]
     ],
+
     [ # MPEG-2
+
+      None, # layer 0 (Doesn't exist)
+
       [ # layer 1
         0,   32,  64,  96, 
         128, 160, 192, 224, 
@@ -75,26 +86,28 @@ def mp3_info(byte, header):
   b = ord(header[1]) & 0xf
   mpeg = mpegTable[b >> 3]
   layer = layerTable[(b >> 1) & 0x3]
-  print layer, mpeg
+
+  if mpeg is None or layer != 3: return failCase
+
   samp_rate = freqTable[mpeg][(byte & 0x0f) >> 2]
-  bit_rate = brTable[byte >> 4]
+  bit_rate = brTable[mpeg][layer][byte >> 4]
   pad_bit = (byte & 0x3) >> 1
-  print samp_rate, bit_rate, pad_bit
 
-  try:
-    # from http://id3.org/mp3Frame
-    frame_size = (144000 * bit_rate / samp_rate) + pad_bit
+  if not bit_rate or not samp_rate: return failCase
 
-  except:
-    return False, False, False, False
+  # from http://id3.org/mp3Frame
+  frame_size = (144000 * bit_rate / samp_rate) + pad_bit
 
   return frame_size, samp_rate, bit_rate, pad_bit
 
 def mp3_sig(fname, blockcount = -1):
   frame_sig = []
   start_byte = []
+  assumed_set = None
   chain = []
   rsize = 4
+  frame_size = None
+  attempt_set = None
 
   f = open(fname, 'rb')
 
@@ -112,22 +125,33 @@ def mp3_sig(fname, blockcount = -1):
         # Go 1 back.
         f.seek(-1, 1)
 
-
     frame_start = f.tell()
     header = f.read(2)
     if header:
 
-      if header == '\xff\xfb' or header == '\xff\xfa':
+      if header[0] == '\xff' and (ord(header[1]) >> 4) == 0xf:
         try:
           b = ord(f.read(1))
           # If we are at the EOF
         except:
           break
 
+        if frame_size and not assumed_set:
+          attempt_set = [samp_rate, bit_rate, pad_bit]
+
         frame_size, samp_rate, bit_rate, pad_bit = mp3_info(b, header)
-        print samp_rate, bit_rate, pad_bit
 
         if not frame_size:
+          f.seek(-1, 1)
+          continue
+
+        if not assumed_set and attempt_set:
+          assumed_set = attempt_set
+          attempt_set = False
+
+        # This is another indicator that we could be screwing up ... 
+        elif assumed_set and samp_rate != assumed_set[0] and bit_rate != assumed_set[1]:
+          f.seek(-1, 1)
           continue
 
         if not first_header_seen:
@@ -146,6 +170,7 @@ def mp3_sig(fname, blockcount = -1):
         sig = f.read(rsize)
         frame_sig.append(sig)
         start_byte.append(frame_start)
+        # print 'start %x' % frame_start
 
         # Move forward the frame f.read size + 4 byte header
         throw_away = f.read(frame_size - (rsize + 4))
@@ -172,7 +197,7 @@ def mp3_sig(fname, blockcount = -1):
         # We've already read 2 so we can go 126 forward
         f.read(126)
 
-      elif first_header_seen or header_attempts > MAX_HEADER_ATTEMPTS:
+      elif header_attempts > MAX_HEADER_ATTEMPTS:
 
         print "%d[%d/%d]%s:%s:%s %s %d" % (len(frame_sig), header_attempts, MAX_HEADER_ATTEMPTS, binascii.b2a_hex(header), binascii.b2a_hex(f.read(5)), fname, hex(f.tell()), len(start_byte) * (1152.0 / 44100) / 60)
 
@@ -191,6 +216,12 @@ def mp3_sig(fname, blockcount = -1):
 
         else:
           break
+
+      elif first_header_seen:
+        header_attempts += 1 
+        if header_attempts > 2:
+          # Go 1 back.
+          f.seek(-1, 1)
 
     else:
       break
@@ -355,7 +386,8 @@ def audiotag(source, length_sec, out):
       out.write(infile.read())
 
 if __name__ == "__main__":
-  mp3_sig(sys.argv[1])
+  sig, block = mp3_sig(sys.argv[1])
+  print len(block)
   sys.exit(0)
 
   audiotag('/home/chris/radio/kpcc/streams/kpcc-1437707563.mp3', 2 * 60 * 60, '/tmp/audio')
