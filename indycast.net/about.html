@@ -294,7 +294,7 @@ A Distributed <a href="https://github.com/kristopolous/DRR">Open Source</a> DVR 
 </blockquote>
 <p>Don't you hate it when some blackbox frameworky magic doesn't work and you helplessly try to figure out what's the code and what's the framework ... No, none of that nonsense here.</p>
 <p>Take gitlab for instance. It requires runit, redis, chef, postgres, nginx, ruby, unicorn, sidekiq, rails, logrotate, installs over 100,000 files into the /opt directory, takes up 3GB of disk (before doing anything) and eats up about 800MB of memory. Even after you &quot;uninstall&quot; it, it still leaves behind 1.1GB of files just for the memories.</p>
-<p>Their tagline should be <em>Gitlab: The most elaborate and sophisticated way to store and view categorized blobs of text - A perverse exercise in absurdist art</em>. You're supposed to look and think &quot;Ah yes, a fancifully exagerrated work commenting on a race to the obtuse which has characterized the zeitgeist of modern programming - very well done&quot;. But lo! They are serious.</p>
+<p>Their tagline should be <em>Gitlab: The most elaborate and sophisticated way to store and view categorized blobs of text - A perverse exercise in absurdist art</em>. You're supposed to look and think &quot;Ah yes, a fancifully exagerrated work commenting on a race to the obtuse which has characterized the zeitgeist of modern programming - very well done&quot;. But lo! They are serious. /me vigorously fans some flames</p>
 <p>Let's build some contrast. indycast:</p>
 <ul>
 <li>doesn't come with its own init system that nobody knows how to use.</li>
@@ -321,13 +321,28 @@ A Distributed <a href="https://github.com/kristopolous/DRR">Open Source</a> DVR 
 <li>Puts everything in a single directory with a simple to understand hierarchy: <code>~/radio/kpcc/</code> (configurable)</li>
 <li>Forks processes from a manager thread, carefully naming them with their purpose.</li>
 <li>Has an informative log file that tells the user what's going on: <code>~/radio/kpcc/indycast.log</code></li>
-<li>Is easy to shut down and restart: <code>kill cat ~/radio/kpcc/pid-manager</code></li>
+<li>Is easy to shut down and restart: <code>kill cat ~/radio/kpcc/pid-manager</code> or even <code>pkill callsign</code></li>
 <li>Is remotely upgradable (through the <code>/upgrade</code> endpoint), replacing its own footprint seamlessly.</li>
 </ul>
 <p>In fact if you run multiple stations you can see something like this:</p>
 <pre><code>$ ls ~/radio
-kcrw  kdvs  kpcc  kxlu  wxyc</code></pre>
-<p>And if we dip into one of these, (notice how I'm not root or using sudo or any of that nonsense?) we'll see something like this:</p>
+kpfa  kpfk  kpcc </code></pre>
+<p>In fact, if I look at the process tree of this machine I see this:</p>
+<pre><code>$ ps af -o comm= | grep kp
+ kpfa-manager
+  \_ kpfa-webserver
+  \_ kpfa-download
+ kpfk-manager
+  \_ kpfk-webserver
+  \_ kpfk-download
+ kpcc-manager
+  \_ kpcc-webserver
+  \_ kpcc-download
+
+$ uptime
+00:34:02 up 579 days, 18:04,  1 user,  load average: 0.01, 0.01, 0.01</code></pre>
+<p>0.01 ... for 3 of them</p>
+<p>If we dip into one of these, (notice how I'm not root or using sudo or any of that nonsense?) we'll see something like this:</p>
 <pre><code>$ cd kpcc; find . | grep -v mp3
 .
 ./config.db

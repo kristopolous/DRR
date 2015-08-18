@@ -82,7 +82,7 @@ Don't you hate it when some blackbox frameworky magic doesn't work and you helpl
 
 Take gitlab for instance.  It requires runit, redis, chef, postgres, nginx, ruby, unicorn, sidekiq, rails, logrotate, installs over 100,000 files into the /opt directory, takes up 3GB of disk (before doing anything) and eats up about 800MB of memory.  Even after you "uninstall" it, it still leaves behind 1.1GB of files just for the memories.  
 
-Their tagline should be *Gitlab: The most elaborate and sophisticated way to store and view categorized blobs of text - A perverse exercise in absurdist art*.  You're supposed to look and think "Ah yes, a fancifully exagerrated work commenting on a race to the obtuse which has characterized the zeitgeist of modern programming - very well done".  But lo! They are serious. 
+Their tagline should be *Gitlab: The most elaborate and sophisticated way to store and view categorized blobs of text - A perverse exercise in absurdist art*.  You're supposed to look and think "Ah yes, a fancifully exagerrated work commenting on a race to the obtuse which has characterized the zeitgeist of modern programming - very well done".  But lo! They are serious. /me vigorously fans some flames
 
 Let's build some contrast. indycast:
 
@@ -118,15 +118,34 @@ When the server starts up, it
  * Puts everything in a single directory with a simple to understand hierarchy: `~/radio/kpcc/` (configurable)
  * Forks processes from a manager thread, carefully naming them with their purpose.
  * Has an informative log file that tells the user what's going on: `~/radio/kpcc/indycast.log`
- * Is easy to shut down and restart: `kill cat ~/radio/kpcc/pid-manager`
+ * Is easy to shut down and restart: `kill cat ~/radio/kpcc/pid-manager` or even `pkill callsign`
  * Is remotely upgradable (through the `/upgrade` endpoint), replacing its own footprint seamlessly.
 
 In fact if you run multiple stations you can see something like this:
 
     $ ls ~/radio
-    kcrw  kdvs  kpcc  kxlu  wxyc
+    kpfa  kpfk  kpcc 
   
-And if we dip into one of these, (notice how I'm not root or using sudo or any of that nonsense?) we'll see something like this:
+In fact, if I look at the process tree of this machine I see this:
+
+    
+    $ ps af -o comm= | grep kp
+     kpfa-manager
+      \_ kpfa-webserver
+      \_ kpfa-download
+     kpfk-manager
+      \_ kpfk-webserver
+      \_ kpfk-download
+     kpcc-manager
+      \_ kpcc-webserver
+      \_ kpcc-download
+
+    $ uptime
+    00:34:02 up 579 days, 18:04,  1 user,  load average: 0.01, 0.01, 0.01
+
+0.01 ... for 3 of them
+
+If we dip into one of these, (notice how I'm not root or using sudo or any of that nonsense?) we'll see something like this:
 
     $ cd kpcc; find . | grep -v mp3
     .
