@@ -80,7 +80,7 @@ There's a bash script to install dependencies but again, [it's 12 lines](https:/
 
 Don't you hate it when some blackbox frameworky magic doesn't work and you helplessly try to figure out what's the code and what's the framework ... No, none of that nonsense here.
 
-Take gitlab for instance.  It requires runit, redis, chef, postgres, nginx, ruby, unicorn, sidekiq, rails, logrotate, installs over 100,000 files into the /opt directory, takes up 3GB of disk (before doing anything) and eats up about 800MB of memory.  Even after you "uninstall" it, it still leaves behind 1.1GB of files just for the memories.  
+Take omnibus-gitlab for instance.  It requires runit, redis, chef, postgres, nginx, ruby, unicorn, sidekiq, rails, logrotate, installs over 100,000 files into the /opt directory, takes up 3GB of disk (before doing anything) and eats up about 800MB of memory.  Even after you "uninstall" it, it still leaves behind 1.1GB of files just for the memories.  
 
 Their tagline should be *Gitlab: The most elaborate and sophisticated way to store and view categorized blobs of text - A perverse exercise in absurdist art*.  You're supposed to look and think "Ah yes, a fancifully exagerrated work commenting on a race to the obtuse which has characterized the zeitgeist of modern programming - very well done".  But lo! They are serious. /me vigorously fans some flames
 
@@ -164,6 +164,8 @@ Refreshing huh?
 #### A zero mystery policy 
 
 Everything is laid bare for inspection, both statically, and while running in production.  You can get the statistics or any information on the running servers. The APIs are public and self-documented. 
+
+This is to encourage a "policy of least magic" because when such tricks don't work, one must reverse-engineer trickery - thus it's better to avoid trickery.
 
 ##### No secret backend
 > Systems are vastly improved by the act of making visible what was invisible before. <small>Donald Norman, *The Design of Everyday Things*</small>
@@ -311,7 +313,7 @@ Or, if you wanted to find out the uptime and disk space of kpcc and kxlu:
     {"url": "kpcc.indycast.net:8930", "latency": 2.451361894607544, "uptime": 5250, "disk": 2000112}
     ]
 
-The server query presents the output as valid JSON to do with it whatever you please.
+The server query presents the output as valid JSON to do with it whatever you please.  No more "easy things hard and everything else impossible".
 
 ##### Graphical comprehension 
 

@@ -218,13 +218,12 @@
 <div id="header">
 <h1>
 <a href="/">Indycast</a>
-</h1>
-<h3>
+</h1><h3>
 A Distributed <a href="https://github.com/kristopolous/DRR">Open Source</a> DVR for Independent Radio
-</h3>
+</h3></div>
 </div>
-</div>
-<h2 id="a-free-open-source-service">A free open-source service</h2>
+
+<h2>A free open-source service</h2>
 <p>Indycast is a set of <a href="https://github.com/kristopolous/DRR/wiki/Current-Architecture">community-run servers</a> for time-shifting independent radio because</p>
 <ul>
 <li>Often the best shows are on at inconvenient hours</li>
@@ -239,16 +238,12 @@ A Distributed <a href="https://github.com/kristopolous/DRR">Open Source</a> DVR 
 </ul>
 <p>The existing landscape is laborious to use, inconsistent, technically restricted, and very incomplete in coverage.</p>
 <p>Let's make things suck less.</p>
-<h2 id="demo-time">Demo Time!</h2>
+<h2>Demo Time!</h2>
 <p>Here's a random URL generator that allows you to see <code>/live</code> endpoints on healthy stations ... in more sophisticated audio players you could scrub up to the current time. Click on the button to the left of the URL to go to a new station and time</p>
 <div id="radio-random">
-<button id="button-random" onclick="do_random()">
+<button id='button-random' onclick=do_random()>
 ↻
-</button>
-<h2 id="url">
-</h2>
-<div id='radio-widget'>
-<div id='html5-widget'>
+</button><h2 id='url'></h2><div id='radio-widget'><div id='html5-widget'>
 <audio id="radio-control" controls type='audio/mpeg'>
 </div>
 <div id="flash-widget">
@@ -293,7 +288,7 @@ A Distributed <a href="https://github.com/kristopolous/DRR">Open Source</a> DVR 
 <p>The record for upping a server from a fresh install is in <a href=images/record.png>23.87 seconds</a>.</p>
 </blockquote>
 <p>Don't you hate it when some blackbox frameworky magic doesn't work and you helplessly try to figure out what's the code and what's the framework ... No, none of that nonsense here.</p>
-<p>Take gitlab for instance. It requires runit, redis, chef, postgres, nginx, ruby, unicorn, sidekiq, rails, logrotate, installs over 100,000 files into the /opt directory, takes up 3GB of disk (before doing anything) and eats up about 800MB of memory. Even after you &quot;uninstall&quot; it, it still leaves behind 1.1GB of files just for the memories.</p>
+<p>Take omnibus-gitlab for instance. It requires runit, redis, chef, postgres, nginx, ruby, unicorn, sidekiq, rails, logrotate, installs over 100,000 files into the /opt directory, takes up 3GB of disk (before doing anything) and eats up about 800MB of memory. Even after you &quot;uninstall&quot; it, it still leaves behind 1.1GB of files just for the memories.</p>
 <p>Their tagline should be <em>Gitlab: The most elaborate and sophisticated way to store and view categorized blobs of text - A perverse exercise in absurdist art</em>. You're supposed to look and think &quot;Ah yes, a fancifully exagerrated work commenting on a race to the obtuse which has characterized the zeitgeist of modern programming - very well done&quot;. But lo! They are serious. /me vigorously fans some flames</p>
 <p>Let's build some contrast. indycast:</p>
 <ul>
@@ -308,13 +303,13 @@ A Distributed <a href="https://github.com/kristopolous/DRR">Open Source</a> DVR 
 <p>Try this out right now. It's easy and there's no risk.</p>
 <p><a href=http://i.imgur.com/YI3Qu5bl.jpg>Alice</a> is interested in adding her favorite station, KPCC. She</p>
 <ol style="list-style-type: decimal">
-<li>Git clones <a href="https://github.com/kristopolous/DRR" class="uri">https://github.com/kristopolous/DRR</a>.</li>
+<li>Git clones <a href="https://github.com/kristopolous/DRR">https://github.com/kristopolous/DRR</a>.</li>
 <li>Runs a <a href="https://github.com/kristopolous/DRR/blob/master/bootstrap.sh">small shell script</a> <code>bootstrap.sh</code> to install dependencies: <code>cd DRR; ./bootstrap.sh</code></li>
 <li>Runs the server with one of the example configuration files, <code>./indy_server.py -c configs/kpcc.txt</code>.</li>
 </ol>
 <p>Here with a bunch of terrible typos, getting it up and running ... this is definitely not a speed run:</p>
-<iframe src="https://www.youtube.com/embed/8ZnFI1ncFcQ" frameborder="0" allowfullscreen>
-</iframe>
+<iframe src="https://www.youtube.com/embed/8ZnFI1ncFcQ" frameborder="0" allowfullscreen></iframe>
+
 <h4 id="self-contained-and-hassle-free">Self-contained and hassle free</h4>
 <p>When the server starts up, it</p>
 <ul>
@@ -355,6 +350,7 @@ $ uptime
 <p>Refreshing huh?</p>
 <h4 id="a-zero-mystery-policy">A zero mystery policy</h4>
 <p>Everything is laid bare for inspection, both statically, and while running in production. You can get the statistics or any information on the running servers. The APIs are public and self-documented.</p>
+<p>This is to encourage a &quot;policy of least magic&quot; because when such tricks don't work, one must reverse-engineer trickery - thus it's better to avoid trickery.</p>
 <h5 id="no-secret-backend">No secret backend</h5>
 <blockquote>
 <p>Systems are vastly improved by the act of making visible what was invisible before. <small>Donald Norman, <em>The Design of Everyday Things</em></small></p>
@@ -488,7 +484,7 @@ $ uptime
 {&quot;url&quot;: &quot;kxlu.indycast.net:8890&quot;, &quot;latency&quot;: 3.542130947113037, &quot;uptime&quot;: 5235, &quot;disk&quot;: 2283312},
 {&quot;url&quot;: &quot;kpcc.indycast.net:8930&quot;, &quot;latency&quot;: 2.451361894607544, &quot;uptime&quot;: 5250, &quot;disk&quot;: 2000112}
 ]</code></pre>
-<p>The server query presents the output as valid JSON to do with it whatever you please.</p>
+<p>The server query presents the output as valid JSON to do with it whatever you please. No more &quot;easy things hard and everything else impossible&quot;.</p>
 <h5 id="graphical-comprehension">Graphical comprehension</h5>
 <p>If you'd like to find out what the station coverage is, there's a graph-drawing tool that tells you.</p>
 <pre><code>$ tools/server_query.py -q stats -c kpcc | tools/graph.py 
@@ -629,7 +625,7 @@ $ curl -s kxlu.indycast.net:8890/sun/7pm/1hr/show.m3u | grep -v \# | xargs mplay
 &lt;img src=http://indycast.net/icon/You+can+go+small_90.png&gt;</code></pre>
 <p>Looks like so:</p>
 <div id="logo-block">
-<p><img src=http://indycast.net/icon/Here+is+one_120.png><img src=http://indycast.net/icon/And+here+is+another_120.png><img src=http://indycast.net/icon/You+can+go+small_90.png></p>
+<img src=http://indycast.net/icon/Here+is+one_120.png><img src=http://indycast.net/icon/And+here+is+another_120.png><img src=http://indycast.net/icon/You+can+go+small_90.png>
 </div>
 <p>The logos are 16-color PNGs which make them small and fast (although admittedly kind of ugly).</p>
 <h4 id="share-this-with-the-world-or-not.">Share this with the world, or not.</h4>
