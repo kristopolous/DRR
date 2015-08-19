@@ -1,3 +1,6 @@
+<?
+include_once('../indycast.net/common.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -90,13 +93,6 @@
                           </div>
                             Dashboard <small>Statistics Overview</small>
                         </h1>
-<div class="list-group">
-  <button type="button" class="list-group-item">Cras justo odio</button>
-  <button type="button" class="list-group-item">Dapibus ac facilisis in</button>
-  <button type="button" class="list-group-item">Morbi leo risus</button>
-  <button type="button" class="list-group-item">Porta ac consectetur ac</button>
-  <button type="button" class="list-group-item">Vestibulum at eros</button>
-</div>
                         <ol class="breadcrumb">
                             <li class="active">
                                 <i class="fa fa-dashboard"></i> Dashboard
@@ -242,39 +238,10 @@
                                 <h3 class="panel-title"><i class="fa fa-clock-o fa-fw"></i> Tasks Panel</h3>
                             </div>
                             <div class="panel-body">
-                                <div class="list-group">
-                                    <a href="#" class="list-group-item">
-                                        <span class="badge">just now</span>
-                                        <i class="fa fa-fw fa-calendar"></i> Calendar updated
-                                    </a>
-                                    <a href="#" class="list-group-item">
-                                        <span class="badge">4 minutes ago</span>
-                                        <i class="fa fa-fw fa-comment"></i> Commented on a post
-                                    </a>
-                                    <a href="#" class="list-group-item">
-                                        <span class="badge">23 minutes ago</span>
-                                        <i class="fa fa-fw fa-truck"></i> Order 392 shipped
-                                    </a>
-                                    <a href="#" class="list-group-item">
-                                        <span class="badge">46 minutes ago</span>
-                                        <i class="fa fa-fw fa-money"></i> Invoice 653 has been paid
-                                    </a>
-                                    <a href="#" class="list-group-item">
-                                        <span class="badge">1 hour ago</span>
-                                        <i class="fa fa-fw fa-user"></i> A new user has been added
-                                    </a>
-                                    <a href="#" class="list-group-item">
-                                        <span class="badge">2 hours ago</span>
-                                        <i class="fa fa-fw fa-check"></i> Completed task: "pick up dry cleaning"
-                                    </a>
-                                    <a href="#" class="list-group-item">
-                                        <span class="badge">yesterday</span>
-                                        <i class="fa fa-fw fa-globe"></i> Saved the world
-                                    </a>
-                                    <a href="#" class="list-group-item">
-                                        <span class="badge">two days ago</span>
-                                        <i class="fa fa-fw fa-check"></i> Completed task: "fix error on sales page"
-                                    </a>
+                                <div class="list-group"><?
+                                  foreach(active_stations() as $station) {
+                                    echo '<a desc="' . $station['description'] . '" class="list-group-item button">' . ($station['callsign']) . '</a>';
+                                  }?>
                                 </div>
                                 <div class="text-right">
                                     <a href="#">View All Activity <i class="fa fa-arrow-circle-right"></i></a>
