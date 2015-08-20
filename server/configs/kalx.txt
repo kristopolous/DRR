@@ -1,0 +1,7 @@
+[Main]
+callsign=kalx
+long=-122.272747
+lat=37.871593
+stream=http://icecast.media.berkeley.edu:8000/kalx-128.mp3
+port=9070
+cloud=~/cloudcreds.cfg
