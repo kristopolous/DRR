@@ -3,21 +3,23 @@
 
 include_once(__DIR__ . '/../common.php');
 
-function get_column_list($tbl_name) {
-  $res = $db->query("pragma table_info( $tbl_name )");
+function get_column_list($table_name) {
+  global $db;
+  $res = $db->query("pragma table_info( $table_name )");
 
   return array_map(function($row) { 
     return $row['name'];
   }, sql_all($res));
 }
 
-foreach($schema as $tbl_name => $tbl_schema) {
-  $existing_column_name_list = get_column_list($tbl_name);
+foreach($schema as $table_name => $tbl_schema) {
+  $existing_column_name_list = get_column_list($table_name);
 
   // This means we need to create the table
   if (count($existing_column_name_list) == 0) {
+
     $schema = implode (',', sql_kv($tbl_schema, '', ''));
-    $db->exec("create table $tbl_name ( $schema )");
+    $db->exec("create table $table_name ( $schema )");
 
   } else {
 
@@ -30,39 +32,31 @@ foreach($schema as $tbl_name => $tbl_schema) {
 
       foreach($column_to_add_list as $column_to_add) {
         $column_to_add_schema = $tbl_schema[$column_to_add];
-        $db->exec("alter table $table add column $column_to_add $column_to_add_schema");
+        $db->exec("alter table $table_name add column $column_to_add $column_to_add_schema");
       }
 
       // If we added columns then we need to revisit our pragma
-      $existing_column_name_list = get_column_list($tbl_name);
+      $existing_column_name_list = get_column_list($table_name);
     }
     $column_to_remove_list = array_diff($existing_column_name_list, $our_column_name_list);
-  }
 
-}
-
-
-
-/*
-
-
-    to_remove = my_set(existing_column_names).difference(my_set(our_column_names))
-
-    if (count($to_remove) > 0) {
-      our_schema = ','.join(["%s %s" % (key, klass) for key, klass in schema])
-      $our_columns = implode(',', $our_column_names);
+    // See if we need to remove any columns
+    if (count($column_to_remove_list) > 0) {
+      $our_schema = implode(',', sql_kv($tbl_schema, '', ''));
+      $our_columns = implode(',', $our_column_name_list);
 
       $drop_column_sql = "
-      CREATE TEMPORARY TABLE my_backup($our_schema);
-      INSERT INTO my_backup SELECT $our_columns FROM $table;
-      DROP TABLE $table;
-      CREATE TABLE $table($our_schema);
-      INSERT INTO $table SELECT $our_columns FROM my_backup;
-      DROP TABLE my_backup;
+        CREATE TEMPORARY TABLE my_backup($our_schema);
+        INSERT INTO my_backup SELECT $our_columns FROM $table_name;
+        DROP TABLE $table_name;
+        CREATE TABLE $table_name($our_schema);
+        INSERT INTO $table_name SELECT $our_columns FROM my_backup;
+        DROP TABLE my_backup;
       ";
 
-      for sql_line in drop_column_sql.strip().split('\n'):
-        db['c'].execute(sql_line)
+      foreach(explode('\n', trim($drop_column_sql)) as $sql_line) {
+        $db->exec($sql_line);
+      }
     }
-
- */
+  }
+}
