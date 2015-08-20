@@ -25,6 +25,8 @@ import time
 import random
 from glob import glob
 
+fail_list = []
+
 CALLSIGN = 'callsign'
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 try:
@@ -169,12 +171,22 @@ for station in all_stations:
     if db and args.query == 'heartbeat':
       db['c'].execute('''
         update stations set 
-          active = 1, 
-          log = ?, 
-          latency = latency + ?, 
           pings = pings + 1, 
-          last_seen = current_timestamp 
-        where callsign = ?''', ( str(document['delta']), str(stop - start), str(station[CALLSIGN]) ))
+          active = 1, 
+          last_seen = current_timestamp,
+
+          disk = ?,
+          last_record = ?, 
+          latency = latency + ?, 
+          load = ?
+        where callsign = ?''', ( 
+          str(document['disk']), 
+          str(document['delta']), 
+          str(stop - start), 
+          str(document['load'][0]), 
+          str(station[CALLSIGN]) 
+        )
+      )
 
   except Exception as e:
     exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -186,6 +198,7 @@ for station in all_stations:
     # Stop the timer and register it as a drop.
     stop = time.time()
     print "[ %d:%s ] Failure(@%d): %s\n" % (stop - start, url, exc_traceback.tb_lineno, hasFailure)
+    fail_list.append(url)
 
     if db:
       db['c'].execute('update stations set drops = drops + 1 where callsign = "%s"' % station[CALLSIGN] )
@@ -196,3 +209,5 @@ if args.query == 'heartbeat' and db:
 if args.key and station_count > 1:
   sys.stdout.write(']')
 
+else:
+  print "Failure", fail_list
