@@ -49,7 +49,6 @@ from multiprocessing import Process, Queue
 
 g_download_pid = 0
 g_params = {}
-__version__ = os.popen("git describe").read().strip()
 
 ##
 ## Storage and file related
@@ -123,7 +122,7 @@ def server_manager(config):
     Shows all the end points supported by the current server, the options 
     and the documentation.
     """
-    output = ['-=#| Welcome to indycast %s API help |#=-' % __version__, '']
+    output = ['-=#| Welcome to indycast %s API help |#=-' % misc.__version__, '']
 
     for rule in app.url_map.iter_rules():
 
@@ -262,16 +261,16 @@ def server_manager(config):
     # See what the version is after the pull
     newversion = os.popen("git describe").read().strip()
 
-    if newversion != __version__:
+    if newversion != misc.__version__:
       os.system('pip install --user -r requirements.txt') 
 
       # from http://blog.petrzemek.net/2014/03/23/restarting-a-python-script-within-itself/
       shutdown_server()
       misc.queue.put(('restart', True))
-      return "Upgrading from %s to %s" % (__version__, newversion)
+      return "Upgrading from %s to %s" % (misc.__version__, newversion)
 
     os.chdir(cwd)
-    return 'Version %s is current' % __version__
+    return 'Version %s is current' % misc.__version__
 
 
   @app.route('/heartbeat')
@@ -285,13 +284,7 @@ def server_manager(config):
     
     This allows us to check if a restart happened between invocations.
     """
-    return jsonify({
-      'uptime': TS.uptime(),
-      'last_recorded': float(DB.get('last_recorded', use_cache=False) or 0),
-      'now': time.time(),
-      'version': __version__,
-      'disk': cloud.size('.') / (1024.0 ** 3)
-    }), 200
+    return jsonify(misc.base_stats()), 200
 
 
   @app.route('/stats')
@@ -303,20 +296,19 @@ def server_manager(config):
     misc.am_i_official()
     db = DB.connect()
 
-    stats = {
+    stats = misc.base_stats()
+
+    stats.update({
       'intents': DB.all('intents'),
       'hits': db['c'].execute('select sum(read_count) from intents').fetchone()[0],
       'kv': DB.all('kv'),
       'uptime': TS.uptime(),
       'free': os.popen("df -h / | tail -1").read().strip(),
-      'load': os.popen("uptime").read().strip(),
       'plist': os.popen("ps auxf | grep %s" % misc.config['callsign']).read().strip().split('\n'),
       # Reporting the list as fractional GB is more useful.
-      'disk': cloud.size('.') / (1024.0 ** 3),
       'streams': DB.all('streams', sort_by='start_unix'),
-      'version': __version__,
       'config': misc.public_config()
-    }
+    })
 
     return jsonify(stats), 200
   
@@ -1053,7 +1045,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--config", default="./indy_config.txt", help="Configuration file (default ./indy_config.txt)")
-    parser.add_argument('--version', action='version', version='indycast %s :: Aug 2015' % __version__)
+    parser.add_argument('--version', action='version', version='indycast %s :: Aug 2015' % misc.__version__)
     args = parser.parse_args()
     read_config(args.config)      
 

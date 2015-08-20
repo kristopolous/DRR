@@ -6,6 +6,7 @@ import time
 import logging
 import sys
 import socket
+__version__ = os.popen("git describe").read().strip()
 
 #
 # This is needed to force ipv4 on ipv6 devices. It's sometimes needed
@@ -42,6 +43,7 @@ import urllib
 
 import ts as TS
 import db as DB
+import cloud
 from multiprocessing import Process, Queue, Lock
 
 #
@@ -86,6 +88,20 @@ def do_nothing(signal, frame=None):
   """ Catches signals that we would rather just ignore """
   return True
 
+
+def base_stats():
+  """
+  Reports base-level statistical information about the health of the server.
+  This is used for the /stats and /heartbeat call.
+  """
+  return {
+    'uptime': TS.uptime(),
+    'last_recorded': float(DB.get('last_recorded', use_cache=False) or 0),
+    'now': time.time(),
+    'version': __version__,
+    'load': [float(unit) for unit in os.popen("uptime | awk -F : ' { print $NF } '").read().split(', ')],
+    'disk': cloud.size('.') / (1024.0 ** 3)
+  }
 
 def am_i_official():
   """ 
