@@ -14,8 +14,6 @@ $schema = [
     // FCC callsign or some other unique reference
     'callsign'    => 'TEXT',
 
-    // an integer in megahertz * 100, such as 8990 or 9070 ... this matches the port usually.
-    'frequency'   => 'INTEGER DEFAULT 0',
     'description' => 'TEXT',
     'base_url'    => 'TEXT',
     'last_seen'   => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
