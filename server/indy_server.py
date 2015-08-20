@@ -287,7 +287,7 @@ def server_manager(config):
     """
     return jsonify({
       'uptime': TS.uptime(),
-      'last_recorded': float(DB.get('last_recorded', use_cache=False)),
+      'last_recorded': float(DB.get('last_recorded', use_cache=False) or 0),
       'now': time.time(),
       'version': __version__,
       'disk': cloud.size('.') / (1024.0 ** 3)
