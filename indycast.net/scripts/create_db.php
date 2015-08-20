@@ -4,7 +4,7 @@
 include_once(__DIR__ . '/../common.php');
 
 function get_column_list($tbl_name) {
-  $res = $db->query('pragma table_info(' . $tbl_name . ')');
+  $res = $db->query("pragma table_info( $tbl_name )");
 
   return array_map(function($row) { 
     return $row['name'];
@@ -12,28 +12,31 @@ function get_column_list($tbl_name) {
 }
 
 foreach($schema as $tbl_name => $tbl_schema) {
-  $existing_column_names = get_column_list($tbl_name);
+  $existing_column_name_list = get_column_list($tbl_name);
 
   // This means we need to create the table
-  if (count($existing_column_names) == 0) {
-    $params = implode (',', sql_kv($tbl_schema, '', ''));
+  if (count($existing_column_name_list) == 0) {
+    $schema = implode (',', sql_kv($tbl_schema, '', ''));
+    $db->exec("create table $tbl_name ( $schema )");
 
-    $db->exec('create table ' . $tbl_name . ' (' . $params . ')');
   } else {
-    // Otherwise we may need to add columns to the table
-    $our_column_names = array_keys($tbl_schema);
 
-    $column_to_add_list = array_diff($our_column_names, $existing_column_names);
+    // Otherwise we may need to add columns to the table
+    $our_column_name_list = array_keys($tbl_schema);
+
+    $column_to_add_list = array_diff($our_column_name_list, $existing_column_name_list);
 
     if(count($column_to_add_list)) {
+
       foreach($column_to_add_list as $column_to_add) {
         $column_to_add_schema = $tbl_schema[$column_to_add];
-        $db->exec('alter table ' . $table . ' add column ' . $column_to_add . ' ' . $column_to_add_schema);
+        $db->exec("alter table $table add column $column_to_add $column_to_add_schema");
       }
 
       // If we added columns then we need to revisit our pragma
-      $existing_column_names = get_column_list($tbl_name);
+      $existing_column_name_list = get_column_list($tbl_name);
     }
+    $column_to_remove_list = array_diff($existing_column_name_list, $our_column_name_list);
   }
 
 }
