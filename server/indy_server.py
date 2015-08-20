@@ -278,7 +278,10 @@ def server_manager(config):
   def heartbeat():
     """
     A low resource version of the /stats call ... this is invoked
-    by the server health check.  Only the uptime of the server is reported.
+    by the server health check.  Only the vitals are reported.
+    
+    It helps us see if disk space is going nuts or if we aren't recording
+    right now.
     
     This allows us to check if a restart happened between invocations.
     """
@@ -286,7 +289,8 @@ def server_manager(config):
       'uptime': TS.uptime(),
       'last_recorded': float(DB.get('last_recorded', use_cache=False)),
       'now': time.time(),
-      'version': __version__
+      'version': __version__,
+      'disk': cloud.size('.') / (1024.0 ** 3)
     }), 200
 
 
