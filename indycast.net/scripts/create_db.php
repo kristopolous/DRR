@@ -17,7 +17,7 @@ foreach($schema as $table_name => $table_schema) {
 
   // This means we need to create the table
   if (count($existing_column_name_list) == 0) {
-    echo "Creating the $table_name table.";
+    echo "Creating the $table_name table.\n";
 
     $schema = implode (',', sql_kv($table_schema, '', ''));
     $db->exec("create table $table_name ( $schema )");
@@ -30,8 +30,8 @@ foreach($schema as $table_name => $table_schema) {
     $column_to_add_list = array_diff($our_column_name_list, $existing_column_name_list);
 
     if(count($column_to_add_list)) {
-      echo "Adding the following columns from $table_name:";
-      echo "  " . implode(', ', $column_to_add_list);
+      echo "Adding the following columns from $table_name:\n";
+      echo "  " . implode(', ', $column_to_add_list) . "\n\n";
 
       foreach($column_to_add_list as $column_to_add) {
         $column_to_add_schema = $table_schema[$column_to_add];
@@ -45,8 +45,8 @@ foreach($schema as $table_name => $table_schema) {
 
     // See if we need to remove any columns
     if (count($column_to_remove_list) > 0) {
-      echo "Removing the following columns from $table_name:";
-      echo "  " . implode(', ', $column_to_remove_list);
+      echo "Removing the following columns from $table_name:\n";
+      echo "  " . implode(', ', $column_to_remove_list) . "\n\n";
 
       $our_schema = implode(',', sql_kv($table_schema, '', ''));
       $our_columns = implode(',', $our_column_name_list);
