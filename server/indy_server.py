@@ -208,7 +208,7 @@ def server_manager(config):
       # This tells us that if it were to exist, it would be something
       # like this.
       request_info = audio.stream_info(file_name)
-      # print request_info
+      logging.info(request_info)
 
       # we can do something rather specific here ... 
       #
@@ -223,7 +223,8 @@ def server_manager(config):
           # This means that we've found the episode that we want
           # We will block on this.
           relative_start_minute = request_info['start_minute'] - first_slice['start_minute']
-          # print episode, request_info
+
+          logging.info(episode)
           audio.stitch_and_slice_process(file_list=episode, relative_start_minute=relative_start_minute, duration_minute=request_info['duration_sec'] / 60.0)
 
           # And break out of our loop ... now everything should exist.
