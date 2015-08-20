@@ -3,36 +3,45 @@
 
 include_once(__DIR__ . '/../common.php');
 
+function get_column_list($tbl_name) {
+  $res = $db->query('pragma table_info(' . $tbl_name . ')');
+
+  return array_map(function($row) { 
+    return $row['name'];
+  }, sql_all($res));
+}
+
 foreach($schema as $tbl_name => $tbl_schema) {
-  $existing_schema = $db->exec('pragma table_info(' . $tbl_name . ')');
-  existing_column_names = [str(row[1]) for row in existing_schema]
+  $existing_column_names = get_column_list($tbl_name);
 
-  $params = implode (',', sql_kv($tbl_schema, '', ''));
+  // This means we need to create the table
+  if (count($existing_column_names) == 0) {
+    $params = implode (',', sql_kv($tbl_schema, '', ''));
 
-  $db->exec('create table ' . $tbl_name . ' (' . $params . ')');
+    $db->exec('create table ' . $tbl_name . ' (' . $params . ')');
+  } else {
+    // Otherwise we may need to add columns to the table
+    $our_column_names = array_keys($tbl_schema);
+
+    $column_to_add_list = array_diff($our_column_names, $existing_column_names);
+
+    if(count($column_to_add_list)) {
+      foreach($column_to_add_list as $column_to_add) {
+        $column_to_add_schema = $tbl_schema[$column_to_add];
+        $db->exec('alter table ' . $table . ' add column ' . $column_to_add . ' ' . $column_to_add_schema);
+      }
+
+      // If we added columns then we need to revisit our pragma
+      $existing_column_names = get_column_list($tbl_name);
+    }
+  }
+
 }
 
 
-    our_column_names = [row[0] for row in schema]
 
-    # print table, existing_column_names, our_column_names
+/*
 
-    to_add = my_set(our_column_names).difference(my_set(existing_column_names))
-
-    # These are the things we should add ... this can be an empty set, that's fine.
-    for key in to_add:
-      # 
-      # sqlite doesn't support adding things into positional places (add column after X)
-      # they just get tacked on at the end ... which is fine - you'd have to rebuild 
-      # everything to achieve positional columns - that's not worth it - we just always 
-      # tack on at the end as a policy in our schema and we'll be fine.
-      #
-      # However, given all of that, we still need the schema
-      #
-      our_schema = schema[our_column_names.index(key)][1]
-      # print 'alter table %s add column %s %s' % (table, key, our_schema)
-      db['c'].execute('alter table %s add column %s %s' % (table, key, our_schema))
-      db['conn'].commit()
 
     to_remove = my_set(existing_column_names).difference(my_set(our_column_names))
 
@@ -53,3 +62,4 @@ foreach($schema as $tbl_name => $tbl_schema) {
         db['c'].execute(sql_line)
     }
 
+ */

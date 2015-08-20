@@ -15,7 +15,7 @@ $schema = [
     'callsign'    => 'TEXT',
 
     // an integer in megahertz * 100, such as 8990 or 9070 ... this matches the port usually.
-    'frequenty'   => 'INTEGER DEFAULT 0',
+    'frequency'   => 'INTEGER DEFAULT 0',
     'description' => 'TEXT',
     'base_url'    => 'TEXT',
     'last_seen'   => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
@@ -114,6 +114,13 @@ function prune($obj) {
     }
   } 
   return $ret;
+}
+
+function sql_all($sql_res) {
+  $res = [];
+  while( ($res[] = $sql_res->fetchArray(SQLITE3_ASSOC)) );
+  array_pop($res);
+  return $res;
 }
 
 function sql_escape_hash($obj) {
