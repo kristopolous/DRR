@@ -29,6 +29,8 @@ foreach($schema as $table_name => $tbl_schema) {
     $column_to_add_list = array_diff($our_column_name_list, $existing_column_name_list);
 
     if(count($column_to_add_list)) {
+      echo "Adding the following columns from $tbl_name:";
+      print_r($column_to_add_list);
 
       foreach($column_to_add_list as $column_to_add) {
         $column_to_add_schema = $tbl_schema[$column_to_add];
@@ -42,6 +44,9 @@ foreach($schema as $table_name => $tbl_schema) {
 
     // See if we need to remove any columns
     if (count($column_to_remove_list) > 0) {
+      echo "Removing the following columns from $tbl_name:";
+      print_r($column_to_remove_list);
+
       $our_schema = implode(',', sql_kv($tbl_schema, '', ''));
       $our_columns = implode(',', $our_column_name_list);
 
