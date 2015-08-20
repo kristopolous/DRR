@@ -31,7 +31,8 @@ $schema = [
 
     'notes'       => 'TEXT',
     'disk'        => 'DOUBLE default 0',
-    'last_record' => 'DOUBLE default 0'
+    'last_record' => 'DOUBLE default 0',
+    'load'        => 'DOUBLE default 0'
   ],
 
   // The reminders table is to email someone
