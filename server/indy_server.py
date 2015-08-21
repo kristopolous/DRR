@@ -580,11 +580,6 @@ def stream_download(callsign, url, my_pid, file_name):
     if g_params['isFirst'] == True:
       g_params['isFirst'] = False
 
-      # If there's a reasonable size record the time that is now as the last
-      # recorded time.
-      if len(data) > 100:
-        DB.set('last_recorded', time.time())
-
       if len(data) < 800:
         if re.match('https?://', data):
           # If we are getting a redirect then we don't mind, we
@@ -612,6 +607,7 @@ def stream_download(callsign, url, my_pid, file_name):
         sys.exit(-1)
 
     nl['stream'].write(data)
+    DB.set('last_recorded', time.time())
 
     if not misc.manager_is_running():
       misc.shutdown()
