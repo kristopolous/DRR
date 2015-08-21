@@ -51,8 +51,9 @@ def find_misbehaving_servers(db, fail_list):
   if len(report):
     config = misc.mail_config()
     if config:
-      misc.send_email(config=config, who='info@indycast.net', subject="server issue", body='\n'.join(report))
-      print "Issues found. Sending email to info@indycast.net"
+      email_to_use = 'info@indycast.net'
+      misc.send_email(config=config, who=email_to_use, subject="server issue", body='\n'.join(report))
+      print "Issues found. Sending email to %s." % email_to_use
 
 
 CALLSIGN = 'callsign'
