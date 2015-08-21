@@ -229,20 +229,24 @@ def set(key, value):
 
   db = connect()
   
-  if value is None:
-    res = db['c'].execute('delete from kv where key = ?', (key, ))
-    
-  else:
-    # From http://stackoverflow.com/questions/418898/sqlite-upsert-not-insert-or-replace
-    res = db['c'].execute('''
-      INSERT OR REPLACE INTO kv (key, value, created_at) 
-        VALUES ( 
-          COALESCE((SELECT key FROM kv WHERE key = ?), ?),
-          ?,
-          current_timestamp 
-      )''', (key, key, value, ))
+  try:
+    if value is None:
+      res = db['c'].execute('delete from kv where key = ?', (key, ))
+      
+    else:
+      # From http://stackoverflow.com/questions/418898/sqlite-upsert-not-insert-or-replace
+      res = db['c'].execute('''
+        INSERT OR REPLACE INTO kv (key, value, created_at) 
+          VALUES ( 
+            COALESCE((SELECT key FROM kv WHERE key = ?), ?),
+            ?,
+            current_timestamp 
+        )''', (key, key, value, ))
 
-  db['conn'].commit()
+    db['conn'].commit()
+
+  except:
+    logging.warn("Couldn't set %s to %s" % (key, value))
 
   g_params[key] = value
 
