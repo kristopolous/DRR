@@ -23,20 +23,33 @@ import urllib2
 import sqlite3
 import time
 import random
+import lib.db as DB
 from glob import glob
 
 fail_list = []
 
+def find_misbehaving_servers(db):
+  max_values = {
+    'disk': '2.0',
+    'load': '0.7',
+    'last_record': '1000'
+  }
+  report = [json.dumps(max_values)]
+
+  misbehaving = db['c'].execute('select callsign, disk, load, last_record from stations where active = 1 and (disk > ? or load > ?)', (max_values['disk'], max_values['load'])).fetchall()
+
+  for row in misbehaving:
+    report.append("%s: disk:%s load:%s last:%s" % row)
+
+  print report
+
+
 CALLSIGN = 'callsign'
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
-try:
-  conn = sqlite3.connect('../db/main.db')
-  db = {'conn': conn, 'c': conn.cursor()}
-  # this trick robbed from http://stackoverflow.com/questions/702834/whats-the-common-practice-for-enums-in-python
 
-except:
-  db = False
+db = DB.connect(db_file='../db/main.db')
 
+print os.getcwd()
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-q", "--query", default=None, help="query to send to the servers (site-map gives all end points)")
@@ -205,9 +218,10 @@ for station in all_stations:
 
 if args.query == 'heartbeat' and db:
   db['conn'].commit()
+  find_misbehaving_servers(db)
 
 if args.key and station_count > 1:
   sys.stdout.write(']')
 
-else:
+elif len(fail_list):
   print "Failure", fail_list
