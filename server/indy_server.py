@@ -607,7 +607,6 @@ def stream_download(callsign, url, my_pid, file_name):
         sys.exit(-1)
 
     nl['stream'].write(data)
-    DB.set('last_recorded', time.time())
 
     if not misc.manager_is_running():
       misc.shutdown()
@@ -741,7 +740,7 @@ def stream_manager():
         flag = True
 
         if value[1] > 100 and value[0] - last_recorded > 10:
-          DB.set('last_recorded', value[0])
+          DB.set('last_recorded', time.time())
 
         if not has_bitrate: 
 
