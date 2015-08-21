@@ -4,6 +4,8 @@ import ConfigParser
 import argparse
 import os
 import time
+import requests
+import re
 import logging
 import sys
 import socket

@@ -1,7 +1,6 @@
 #!/usr/bin/python -O
 import re
 import os
-import requests
 import argparse
 import ConfigParser
 import lib.misc as misc
