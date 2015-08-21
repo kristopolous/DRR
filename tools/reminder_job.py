@@ -9,23 +9,7 @@ import lib.db as DB
 import time
 import sys
 
-# Taken from https://bradgignac.com/2014/05/12/sending-email-with-python-and-the-mailgun-api.html
-def send_email(config, who, subject, body):
-  key = config['base_key']
-  request_url = "%s/%s" % (config['base_url'].strip('/'), 'messages')
-
-  request = requests.post(request_url, auth=('api', key), data={
-    'from': 'Indycast Reminders <reminders@indycast.net>',
-    'to': who,
-    'subject': subject,
-    'text': re.sub('<[^<]+?>', '', body),
-    'html': body
-  })
-
-  return request
-
-
-def find_requests(config):
+def find_requests_and_send_mail(config):
   db = DB.connect('../db/main.db')
   now = time.time()
   what_we_be_done_with = db['c'].execute('select * from reminders where end_time < %d' % now).fetchall()
@@ -34,11 +18,12 @@ def find_requests(config):
     row['link'] = "http://indycast.net/%s/slices/%s-%s_%d.mp3" % ( row['station'], row['station'], time.strftime("%Y%m%d%H%M", time.gmtime(row['start_time'] - row['offset'] * 60)), (row['end_time'] - row['start_time']) / 60)
 
     email = do_template(template_file='email_reminder_template.txt', settings=row)
-    res = send_email(config=config, who='kristopolous@yahoo.com', subject=email['subject'], body=email['body'])
+    res = misc.send_email(config=config, who='kristopolous@yahoo.com', subject=email['subject'], body=email['body'])
     db['c'].execute('delete from reminders where id = %d' % row['id'])
     db['conn'].commit()
 
   return None
+
 
 def do_template(template_file, settings):
 
@@ -66,25 +51,6 @@ def do_template(template_file, settings):
     } 
 
 
-def setup():
-  cfg = os.environ.get('CLOUD_CFG')
-
-  os.chdir(os.path.dirname(os.path.realpath(__file__)))
-
-  parser = argparse.ArgumentParser()
-  parser.add_argument("-c", "--config", default=cfg, help="cloud credential file to use")
-  args = parser.parse_args()
-
-  if args.config is None:
-    print "Define the cloud configuration location with the CLOUD_CFG environment variable or using the -c option"
-    sys.exit(-1)
-
-  cloud_config = ConfigParser.ConfigParser()
-  cloud_config.read(args.config)
-
-  return misc.config_section_map('Mailgun', cloud_config)
-
-config = setup()
-
-find_requests(config)
+config = misc.mail_config()
+find_requests_and_send_mail(config)
 
