@@ -140,7 +140,7 @@ def schema(table):
   return None
 
 
-def connect(db_file='config.db'):
+def connect(db_file=None):
   """
   A "singleton pattern" or some other fancy $10-world style of maintaining 
   the database connection throughout the execution of the script.
@@ -148,6 +148,9 @@ def connect(db_file='config.db'):
   Returns the database instance.
   """
   global g_db
+
+  if not db_file:
+    db_file = 'config.db'
 
   #
   # We need to have one instance per thread, as this is what
