@@ -310,7 +310,7 @@ def get_file_for_ts(target_time, bias=None, exclude_path=None):
       best_after_time = difference
       best_after_info = info_candidate
 
-  print target_time, "\n", best_before_time, best_before_info, "\n", best_after_time, best_after_info
+  # print target_time, "\n", best_before_time, best_before_info, "\n", best_after_time, best_after_info
   if bias == -1:
     # Make sure that our candidate has our time within it
     # print best_before_info['start_date'], timedelta(seconds=best_before_info['duration_sec']) , target_time
