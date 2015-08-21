@@ -330,8 +330,8 @@ include_once('common.php');
         ev(current_half_hour);
       } else if (what == '60') {
         ev(current_hour);
-      } else if (what == 'custom') {
-        ev({start_time: '', end_time: ''});
+      } else if (what == '-30') {
+        ev(last_half_hour);
       }
     });
 
