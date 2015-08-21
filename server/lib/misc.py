@@ -126,12 +126,12 @@ def mail_config():
 
 
 # Taken from https://bradgignac.com/2014/05/12/sending-email-with-python-and-the-mailgun-api.html
-def send_email(config, who, subject, body):
+def send_email(config, who, subject, body, sender='Indycast Reminders <reminders@indycast.net>'):
   key = config['base_key']
   request_url = "%s/%s" % (config['base_url'].strip('/'), 'messages')
 
   request = requests.post(request_url, auth=('api', key), data={
-    'from': 'Indycast Reminders <reminders@indycast.net>',
+    'from': sender,
     'to': who,
     'subject': subject,
     'text': re.sub('<[^<]+?>', '', body),
