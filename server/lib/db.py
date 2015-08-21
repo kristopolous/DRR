@@ -90,12 +90,12 @@ def upgrade():
 
       db['conn'].commit()
 
-def map(row_list, table):
+def map(row_list, table, db=None):
   """ 
   Using the schema of a table, map the row_list to a list of dicts.
   """
   mapped = []
-  my_schema = schema(table)
+  my_schema = schema(table, db)
 
   if not row_list:
     return row_list
@@ -130,9 +130,11 @@ def all(table, field_list='*', sort_by='id'):
     return [record for record in query.fetchall()]
 
 
-def schema(table):
+def schema(table, db=None):
   """ Returns the schema for a given table. """
-  db = connect()
+  if not db:
+    db = connect()
+
   existing_schema = db['c'].execute('pragma table_info(%s)' % table).fetchall()
   if existing_schema:
     return [str(row[1]) for row in existing_schema]
