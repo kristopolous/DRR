@@ -1,6 +1,7 @@
 #!/usr/bin/python -O
 import setproctitle as SP
 import ConfigParser
+import argparse
 import os
 import time
 import logging
@@ -119,7 +120,7 @@ def mail_config():
   cloud_config = ConfigParser.ConfigParser()
   cloud_config.read(args.config)
 
-  return misc.config_section_map('Mailgun', cloud_config)
+  return config_section_map('Mailgun', cloud_config)
 
 
 # Taken from https://bradgignac.com/2014/05/12/sending-email-with-python-and-the-mailgun-api.html
