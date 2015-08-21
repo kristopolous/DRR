@@ -712,6 +712,7 @@ def stream_manager():
     process.start()
     return [file_name, process]
 
+
   # see https://github.com/kristopolous/DRR/issues/91:
   # Randomize prune to offload disk peaks
   prune_duration = misc.config['pruneevery'] + (1 / 8.0 - random.random() / 4.0)
