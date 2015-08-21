@@ -103,6 +103,41 @@ def base_stats():
     'disk': cloud.size('.') / (1024.0 ** 3)
   }
 
+def mail_config():
+  cfg = os.environ.get('CLOUD_CFG')
+
+  os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
+  parser = argparse.ArgumentParser()
+  parser.add_argument("-c", "--config", default=cfg, help="cloud credential file to use")
+  args = parser.parse_args()
+
+  if args.config is None:
+    print "Define the cloud configuration location with the CLOUD_CFG environment variable or using the -c option"
+    sys.exit(-1)
+
+  cloud_config = ConfigParser.ConfigParser()
+  cloud_config.read(args.config)
+
+  return misc.config_section_map('Mailgun', cloud_config)
+
+
+# Taken from https://bradgignac.com/2014/05/12/sending-email-with-python-and-the-mailgun-api.html
+def send_email(config, who, subject, body):
+  key = config['base_key']
+  request_url = "%s/%s" % (config['base_url'].strip('/'), 'messages')
+
+  request = requests.post(request_url, auth=('api', key), data={
+    'from': 'Indycast Reminders <reminders@indycast.net>',
+    'to': who,
+    'subject': subject,
+    'text': re.sub('<[^<]+?>', '', body),
+    'html': body
+  })
+
+  return request
+
+
 def am_i_official():
   """ 
   Takes the callsign and port and queries the server for its per-instance uuid
