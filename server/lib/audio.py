@@ -16,6 +16,8 @@ from datetime import datetime, timedelta, date
 
 # Most common frame-length ... in practice, I haven't 
 # seen other values in the real world.
+#
+# TODO: This implicitly opens a database instance ... not a good idea
 FRAME_LENGTH = (1152.0 / DB.get('samp', default=44100))
 
 FORMAT_MP3 = 'mp3'
