@@ -183,6 +183,14 @@ def server_manager(config):
     return "Pruning started"
 
 
+  @app.route('/slices/<time>/<name>')
+  def send_named_stream(time, name):
+    """
+    Similar to the /slices/path endpoint, this end point sends a stream that is at time <time> with
+    name <name>.
+    """
+    return send_stream(time)
+
   @app.route('/slices/<path:path>')
   def send_stream(path):
     """
@@ -200,6 +208,13 @@ def server_manager(config):
     it starts.
     """
     base_dir = "%s%s/" % (config['storage'], misc.DIR_SLICES)
+
+    if not path.startswith(config['callsign']):
+      path = "%s-%s" % (config['callsign'], path)
+
+    if not path.endswith('.mp3'):
+      path = "%s.mp3" % path
+
     file_name = base_dir + path
 
     # If the file doesn't exist, then we need to slice it and create it based on our query.
