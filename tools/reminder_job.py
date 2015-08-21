@@ -17,7 +17,9 @@ def find_requests_and_send_mail(config):
 
   for row in DB.map(what_we_be_done_with, 'reminders'):
     row['link'] = "http://indycast.net/%s/slices/%s_%d" % ( row['station'], time.strftime("%Y%m%d%H%M", time.gmtime(row['start_time'] - row['offset'] * 60)), (row['end_time'] - row['start_time']) / 60)
-    row['link'] += '/%s_on_%s.mp3' % (re.sub(' ', '_', row['notes']), row['station'])
+
+    if len(row['notes']):
+      row['link'] += '/%s_on_%s.mp3' % (re.sub('[^\w]', '_', row['notes']).strip('_'), row['station'])
 
     email = do_template(template_file='email_reminder_template.txt', settings=row)
     res = misc.send_email(config=config, who=row['email'], subject=email['subject'], body=email['body'])
