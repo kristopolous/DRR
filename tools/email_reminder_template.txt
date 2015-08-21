@@ -1,7 +1,7 @@
-[indycast] {{ notes }} is ready!
+[indycast] {{ notes|Your show }} is ready!
 <p>Hi,</p>
 
-<p>You requested to be notified when a broadcast that was {{ human_time }} on {{ station }} with the notes "{{ notes }}" was available.</p>
+<p>You requested to be notified when a broadcast that was {{ human_time }} on {{ station }} with the notes "{{ notes|<em><font color='grey'>(no notes provided)</font></em> }}" was available.</p>
 
 <p>That time is now.  Here is a link to listen.  Thanks!</p>
 

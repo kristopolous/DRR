@@ -18,7 +18,9 @@ def find_requests_and_send_mail(config):
     row['link'] = "http://indycast.net/%s/slices/%s_%d" % ( row['station'], time.strftime("%Y%m%d%H%M", time.gmtime(row['start_time'] - row['offset'] * 60)), (row['end_time'] - row['start_time']) / 60)
 
     if len(row['notes']):
-      row['link'] += '/%s_on_%s.mp3' % (re.sub('[^\w]', '_', row['notes']).strip('_'), row['station'])
+      row['link'] += '/%s_on_%s' % (re.sub('[^\w]', '_', row['notes']).strip('_'), row['station'])
+
+    row['link'] += '.mp3'
 
     email = do_template(template_file='email_reminder_template.txt', settings=row)
     res = misc.send_email(config=config, who=row['email'], subject=email['subject'], body=email['body'])
@@ -31,9 +33,20 @@ def find_requests_and_send_mail(config):
 def do_template(template_file, settings):
 
   def repl(match):
-    token = match.group(1).strip()
+    alt = None
+    expr = match.group(1).strip()
+    tokenList = expr.split('|')
+    token = tokenList[0]
+
+    if len(tokenList) > 1:
+      alt = tokenList[1]
+
     if token in settings:
-      return settings[token]
+      if settings[token]:
+        return settings[token]
+
+      elif alt:
+        return alt
 
     return 'NO VARIABLE: %s' % token
 
