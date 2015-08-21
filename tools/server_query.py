@@ -28,20 +28,30 @@ from glob import glob
 
 fail_list = []
 
-def find_misbehaving_servers(db):
+def find_misbehaving_servers(db, fail_list):
   max_values = {
     'disk': '2.0',
     'load': '0.7',
-    'last_record': '1000'
+    'last_record': '480'
   }
-  report = [json.dumps(max_values)]
+
+  report = []
+
+  if len(fail_list):
+    report.append("Failure: %s" % ' '.join(fail_list))
 
   misbehaving = db['c'].execute('select callsign, disk, load, last_record from stations where active = 1 and (disk > ? or load > ?)', (max_values['disk'], max_values['load'])).fetchall()
 
-  for row in misbehaving:
-    report.append("%s: disk:%s load:%s last:%s" % row)
+  if len(misbehaving):
+    report.append("Thresholds: %s" % json.dumps(max_values, indent=2))
 
-  print report
+  for row in misbehaving:
+    report.append("  %s: disk:%s load:%s last:%s" % row)
+ 
+  if len(report):
+    config = misc.mail_config()
+    if config:
+      misc.send_email(config=config, who='info@indycast.net', subject="server issue", body='\n'.join(report))
 
 
 CALLSIGN = 'callsign'
@@ -216,7 +226,7 @@ for station in all_stations:
 
 if args.query == 'heartbeat' and db:
   db['conn'].commit()
-  find_misbehaving_servers(db)
+  find_misbehaving_servers(db, fail_list)
 
 if args.key and station_count > 1:
   sys.stdout.write(']')
