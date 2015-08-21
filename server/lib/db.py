@@ -160,7 +160,11 @@ def connect(db_file='config.db'):
   if thread_id not in g_db:
     g_db[thread_id] = {}
 
-  instance = g_db[thread_id]
+  instance_all_db = g_db[thread_id]
+  if db_file not in instance_all_db:
+    instance_all_db[db_file] = {}
+
+  instance = instance_all_db[db_file]
 
   if 'conn' not in instance:
 
@@ -168,14 +172,18 @@ def connect(db_file='config.db'):
       print "Info: Creating db file %s" % db_file
 
     conn = sqlite3.connect(db_file)
-    instance['conn'] = conn
-    instance['c'] = conn.cursor()
+    instance.update({
+      'conn': conn,
+      'c': conn.cursor()
+    })
 
-    for table, schema in SCHEMA.items():
-      dfn = ','.join(["%s %s" % (key, klass) for key, klass in schema])
-      instance['c'].execute("CREATE TABLE IF NOT EXISTS %s(%s)" % (table, dfn))
+    if db_file == 'config.db': 
 
-    instance['conn'].commit()
+      for table, schema in SCHEMA.items():
+        dfn = ','.join(["%s %s" % (key, klass) for key, klass in schema])
+        instance['c'].execute("CREATE TABLE IF NOT EXISTS %s(%s)" % (table, dfn))
+
+      instance['conn'].commit()
 
   return instance
 
