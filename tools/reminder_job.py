@@ -62,8 +62,8 @@ def do_template(template_file, settings):
     body = '\n'.join(template_rows[1:])
 
     return {
-      'subject': re.sub('{{([\s\w]*)}}', repl, subject_line),
-      'body': re.sub('{{([\s\w]*)}}', repl, body)
+      'subject': re.sub('{{([^}]*)}}', repl, subject_line),
+      'body': re.sub('{{([^}]*)}}', repl, body)
     } 
 
 
