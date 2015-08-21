@@ -700,7 +700,6 @@ def stream_manager():
   # see https://github.com/kristopolous/DRR/issues/91:
   # Randomize prune to offload disk peaks
   prune_duration = misc.config['pruneevery'] + (1 / 8.0 - random.random() / 4.0)
-  last_recorded = 0
 
   while True:
     #
@@ -717,6 +716,7 @@ def stream_manager():
 
     TS.get_offset()
 
+    lr_set = False
     while not misc.queue.empty():
       what, value = misc.queue.get(False)
 
@@ -739,7 +739,8 @@ def stream_manager():
       elif what == 'heartbeat':
         flag = True
 
-        if value[1] > 100 and value[0] - last_recorded > 10:
+        if not lr_set and value[1] > 100:
+          lr_set = True
           DB.set('last_recorded', time.time())
 
         if not has_bitrate: 
