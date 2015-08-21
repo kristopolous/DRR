@@ -55,6 +55,7 @@ def find_misbehaving_servers(db, fail_list):
       email_to_use = 'kri%s@%soo.com' % ("stopolous", "yah")
 
       misc.send_email(config=config, who=email_to_use, subject="server issue", body='<br>'.join(report), sender='Indycast Admin <info@indycast.net>')
+      print '\n'.join(report)
       print "Issues found. Sending email to %s." % email_to_use
 
 
