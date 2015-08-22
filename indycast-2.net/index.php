@@ -83,18 +83,8 @@ include_once('../indycast.net/common.php');
                 <div class="row">
                     <div class="col-lg-12">
                         <h1 class="page-header">
-                          <div class="btn-toolbar" role="toolbar" aria-label="...">
-                            <div class="btn-group" role="group" aria-label="...">...</div>
-                            <div class="btn-group" role="group" aria-label="...">...</div>
-                            <div class="btn-group" role="group" aria-label="...">...</div>
-                          </div>
-                            Dashboard <small>Statistics Overview</small>
+                            A DVR for Radio <small>easy, free, open source.</small>
                         </h1>
-                        <ol class="breadcrumb">
-                            <li class="active">
-                                <i class="fa fa-dashboard"></i> Dashboard
-                            </li>
-                        </ol>
                     </div>
                 </div>
                 <!-- /.row -->
@@ -202,24 +192,10 @@ include_once('../indycast.net/common.php');
                 <!-- /.row -->
 
                 <div class="row">
-                    <div class="col-lg-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> Area Chart</h3>
-                            </div>
-                            <div class="panel-body">
-                                <div id="morris-area-chart"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- /.row -->
-
-                <div class="row">
                     <div class="col-lg-4">
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <h3 class="panel-title"><i class="fa fa-clock-o fa-fw"></i> Station List</h3>
+                                <h3 class="panel-title"><i class="fa fa-clock-o fa-fw"></i> Pick a Station</h3>
                             </div>
                             <div class="panel-body">
                                 <div class="list-group"><?
