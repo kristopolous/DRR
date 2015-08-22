@@ -696,7 +696,7 @@ def list_slice_stream(start_info, start_sec):
     stream_handle = cloud.get(current_info['name'])
     stream_handle.seek(start_byte)
     sig, offset = signature(stream_handle)
-    print "-- opening", current_info['name'], current_info['size'], stream_handle.tell(), start_byte
+    logging.debug("-- opening %s %d %d %d" % (current_info['name'], current_info['size'], stream_handle.tell(), start_byte) )
 
     # This helps us determine when we are at EOF ... which
     # we basically define as a number of seconds without any
@@ -736,7 +736,7 @@ def list_slice_stream(start_info, start_sec):
         sig, offset = signature(stream_handle)
 
       
-    print "-- closing", current_info['name'], current_info['size'], stream_handle.tell(), block_count, (stream_handle.tell() - start_byte) / (128000 / 8) / 60.0
+    logging.debug("-- closing %s %d %d %d %d" % (current_info['name'], current_info['size'], stream_handle.tell(), block_count, (stream_handle.tell() - start_byte) / (128000 / 8) / 60.0))
     pos = stream_handle.tell() 
     stream_handle.close()
 
