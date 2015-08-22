@@ -48,7 +48,7 @@ button { padding: 0}
 <form method="post">
   <?php
     foreach($schema['stations'] as $key => $value) {
-      if($value == 'TEXT' || $key == 'active') {
+      if($value == 'TEXT' || array_search($key, ['active', 'lat', 'long']) !== false) {
         echo "<div><label for='$key'>$key</label>";
         if($key == 'active') {
           echo '<input type="radio" name="active" value="1" ' . ($station[$key] == '1' ? 'checked' : '') . '>yes';

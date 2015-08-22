@@ -4,10 +4,12 @@
 <title>admin | indycast</title>
 <link href='http://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'>
 <style>
-  body { margin: 2em }
+  body { margin: 1em 0.5em }
   * { font-family: 'Lora', serif; }
   form { display: inline-block; float: right;margin:0 }
   table { background: black;border-spacing: 1px;margin:1em 0}
+  tt { font-family: monospace }
+  th { font-size: 0.80em; font-weight: normal }
   td,th { padding: 0.25em 0.5em;border-spacing: 1px;background:white}
 </style>
 </head><body>[ <a href="/">Home</a> ] 
@@ -42,6 +44,19 @@ $res = $db->query('select * from stations');
 $isFirst = true;
 
 while($row = prune($res)) {
+  foreach(['last_seen', 'first_seen'] as $key) {
+    $row[$key] = array_shift(explode(' ', $row[$key]));
+  }
+  foreach(['latency', 'disk', 'last_record'] as $key) {
+    $row[$key] = '<tt>' . number_format($row[$key], 4) . '</tt>';
+  }
+
+  foreach(['description', 'notes'] as $key) {
+    if(strlen($row[$key]) > 0) {
+      $row[$key] = '<a title="' . $row[$key] . '">...</a>';
+    }
+  }
+
   if($isFirst) {
     echo '<thead><tr>';
     echo '<th>' . implode('</th><th>', array_keys($row)) . '</th>';
