@@ -495,7 +495,7 @@ def mp3_signature(file_name, blockcount=-1):
 
     frame_start = file_handle.tell()
     header = file_handle.read(2)
-    if header:
+    if header and len(header) == 2:
 
       b1 = ord(header[1])
 
