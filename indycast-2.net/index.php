@@ -90,16 +90,6 @@ include_once('../indycast.net/common.php');
                 <!-- /.row -->
 
                 <div class="row">
-                    <div class="col-lg-12">
-                        <div class="alert alert-info alert-dismissable">
-                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                            <i class="fa fa-info-circle"></i>  <strong>Like SB Admin?</strong> Try out <a href="http://startbootstrap.com/template-overviews/sb-admin-2" class="alert-link">SB Admin 2</a> for additional features!
-                        </div>
-                    </div>
-                </div>
-                <!-- /.row -->
-
-                <div class="row">
                     <div class="col-lg-3 col-md-6">
                         <div class="panel panel-primary">
                             <div class="panel-heading">
@@ -212,100 +202,60 @@ include_once('../indycast.net/common.php');
                     <div class="col-lg-4">
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <h3 class="panel-title"><i class="fa fa-money fa-fw"></i> Transactions Panel</h3>
+                                <h3 class="panel-title"><i class="fa fa-money fa-fw"></i> Time to record</h3>
                             </div>
                             <div class="panel-body">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-hover table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Order #</th>
-                                                <th>Order Date</th>
-                                                <th>Order Time</th>
-                                                <th>Amount (USD)</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>3326</td>
-                                                <td>10/21/2013</td>
-                                                <td>3:29 PM</td>
-                                                <td>$321.33</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3325</td>
-                                                <td>10/21/2013</td>
-                                                <td>3:20 PM</td>
-                                                <td>$234.34</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3324</td>
-                                                <td>10/21/2013</td>
-                                                <td>3:03 PM</td>
-                                                <td>$724.17</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3323</td>
-                                                <td>10/21/2013</td>
-                                                <td>3:00 PM</td>
-                                                <td>$23.71</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3322</td>
-                                                <td>10/21/2013</td>
-                                                <td>2:49 PM</td>
-                                                <td>$8345.23</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3321</td>
-                                                <td>10/21/2013</td>
-                                                <td>2:23 PM</td>
-                                                <td>$245.12</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3320</td>
-                                                <td>10/21/2013</td>
-                                                <td>2:15 PM</td>
-                                                <td>$5663.54</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3319</td>
-                                                <td>10/21/2013</td>
-                                                <td>2:13 PM</td>
-                                                <td>$943.45</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                              <div class="content" id='day-picker'>
+
+                                <label for="day">day of week to record on</label>
+                                <ul class="week-group" id="day">
+                                  <li><a class="button">sun</a></li>
+                                  <li><a class="button">mon</a></li>
+                                  <li><a class="button">tue</a></li>
+                                  <li><a class="button">wed</a></li>
+                                  <li><a class="button">thu</a></li>
+                                  <li><a class="button">fri</a></li>
+                                  <li><a class="button">sat</a></li>
+                                </ul>
+                                <div id='time'>
+                                  <label for="start">Starting at</label>
+                                  <div id='time-controls'>
+                                    <input class="text" size=4 type="text" name="start" id="start" value="" placeholder="ex: 3:30 PM" /><ul class="week-group group inline" id="ampm">
+                                      <li><a class="button">am</a></li>
+                                      <li><a class="button">pm</a></li>
+                                    </ul>
+                                  </div>
+
                                 </div>
-                                <div class="text-right">
-                                    <a href="#">View All Transactions <i class="fa fa-arrow-circle-right"></i></a>
-                                </div>
-                            </div>
+                                <label for="duration">For how long</label>
+                                <ul class="week-group group" id="duration">
+                                  <li><a data="30" class="button">30 min</a></li>
+                                  <li><a data="1hr" class="button">1 hr</a></li>
+                                  <li><a data="1hr30" class="button">1&frac12; hrs</a></li>
+                                  <li><a data="2hr" class="button">2 hrs</a></li>
+                                </ul>
+                              </div>
+                           </div>
+                    <div class="content">
+                      <h3>Give it a name</h3>
+                      <input class="text" type="text" name="name" id="name" value="" placeholder="ex. Alien Air Music" />
+                    </div>
+
                         </div>
                     </div>
                 </div>
-                <!-- /.row -->
 
             </div>
-            <!-- /.container-fluid -->
 
         </div>
-        <!-- /#page-wrapper -->
 
     </div>
     <!-- /#wrapper -->
 
     <!-- jQuery -->
-    <script src="js/jquery.js"></script>
+    <script src="/js/jquery.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
-    <script src="js/bootstrap.min.js"></script>
-
-    <!-- Morris Charts JavaScript -->
-    <script src="js/plugins/morris/raphael.min.js"></script>
-    <script src="js/plugins/morris/morris.min.js"></script>
-    <script src="js/plugins/morris/morris-data.js"></script>
-
+    <script src="/js/bootstrap.min.js"></script>
 </body>
-
 </html>
