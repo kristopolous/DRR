@@ -207,33 +207,36 @@ include_once('../indycast.net/common.php');
                             <div class="panel-body">
                               <div class="content" id='day-picker'>
 
-                                <label for="day">day of week to record on</label>
-                                <ul class="week-group" id="day">
-                                  <li><a class="button">sun</a></li>
-                                  <li><a class="button">mon</a></li>
-                                  <li><a class="button">tue</a></li>
-                                  <li><a class="button">wed</a></li>
-                                  <li><a class="button">thu</a></li>
-                                  <li><a class="button">fri</a></li>
-                                  <li><a class="button">sat</a></li>
-                                </ul>
+                                <label for="day">Day of week to record on</label>
+
+                                <div class="btn-group week-group" id="day" role="group">
+                                  <button type="button" class="btn btn-default">sun</button>
+                                  <button type="button" class="btn btn-default">mon</button>
+                                  <button type="button" class="btn btn-default">tue</button>
+                                  <button type="button" class="btn btn-default">wed</button>
+                                  <button type="button" class="btn btn-default">thu</button>
+                                  <button type="button" class="btn btn-default">fri</button>
+                                  <button type="button" class="btn btn-default">sat</button>
+                                </div>
+
                                 <div id='time'>
                                   <label for="start">Starting at</label>
                                   <div id='time-controls'>
-                                    <input class="text" size=4 type="text" name="start" id="start" value="" placeholder="ex: 3:30 PM" /><ul class="week-group group inline" id="ampm">
-                                      <li><a class="button">am</a></li>
-                                      <li><a class="button">pm</a></li>
-                                    </ul>
+                                    <input class="text" size=4 type="text" name="start" id="start" value="" placeholder="ex: 3:30 PM" />
+                                    <div class="btn-group week-group inline" id="ampm" role="group">
+                                      <button type="button" class="btn btn-default">am</button>
+                                      <button type="button" class="btn btn-default">pm</button>
+                                    </div>
                                   </div>
 
                                 </div>
                                 <label for="duration">For how long</label>
-                                <ul class="week-group group" id="duration">
-                                  <li><a data="30" class="button">30 min</a></li>
-                                  <li><a data="1hr" class="button">1 hr</a></li>
-                                  <li><a data="1hr30" class="button">1&frac12; hrs</a></li>
-                                  <li><a data="2hr" class="button">2 hrs</a></li>
-                                </ul>
+                                <div class="week-group btn-group" id="duration">
+                                  <button data="30" type="button" class="btn btn-default">30</button>
+                                  <button data="1hr" type="button" class="btn btn-default">1hr</button>
+                                  <button data="1hr30" type="button" class="btn btn-default">1&frac12; hrs</button>
+                                  <button data="2hr" type="button" class="btn btn-default">2hr</button>
+                                </div>
                               </div>
                            </div>
                     <div class="content">
