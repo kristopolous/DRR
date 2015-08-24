@@ -3,6 +3,7 @@
 # This is where the mp3 routines get testbedded before being integrated into the server
 #
 import binascii
+import pdb
 import os
 import sys
 import struct
@@ -95,7 +96,7 @@ def mp3_info(byte, b1):
   pad_bit = (byte & 0x3) >> 1
 
   if not bit_rate or not samp_rate: return failCase
-  print "%x" % byte, samp_rate, bit_rate, pad_bit, protection_bit, (144.0 * (bit_rate * 1000) / samp_rate) + pad_bit
+  #print "%x" % byte, samp_rate, bit_rate, pad_bit, protection_bit, (144.0 * (bit_rate * 1000) / samp_rate) + pad_bit
 
   # from http://id3.org/mp3Frame
   frame_size = (144000 * bit_rate / samp_rate) + pad_bit
@@ -111,6 +112,7 @@ def mp3_sig(fname, blockcount = -1):
   frame_size = None
   assumed_set = None
   attempt_set = None
+  last_tell = None
   go_back = -1
 
   file_handle = open(fname, 'rb')
@@ -131,6 +133,9 @@ def mp3_sig(fname, blockcount = -1):
         file_handle.seek(go_back, 1)
 
     frame_start = file_handle.tell()
+    if frame_start == last_tell:
+      file_handle.seek(last_tell + 1, 1)
+
     header = file_handle.read(2)
     if header:
 
@@ -148,6 +153,9 @@ def mp3_sig(fname, blockcount = -1):
           attempt_set = [samp_rate, bit_rate, pad_bit]
 
         frame_size, samp_rate, bit_rate, pad_bit = mp3_info(b, b1)
+        #print file_handle.tell(), frame_size, samp_rate, bit_rate
+
+        last_tell = file_handle.tell()
 
         if not frame_size:
           file_handle.seek(go_back, 1)
@@ -158,7 +166,7 @@ def mp3_sig(fname, blockcount = -1):
 
         if not assumed_set and attempt_set:
           assumed_set = attempt_set
-          print assumed_set
+          #print assumed_set
           attempt_set = False
 
         # This is another indicator that we could be screwing up ... 
@@ -172,7 +180,7 @@ def mp3_sig(fname, blockcount = -1):
 
         # Rest of the header
         throw_away = file_handle.read(1)
-        print samp_rate, bit_rate, hex(ord(throw_away))
+        #print samp_rate, bit_rate, hex(ord(throw_away))
 
         # Get the signature
         #print "%s %d" % (hex(frame_start), rsize)
