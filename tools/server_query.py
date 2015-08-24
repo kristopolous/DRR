@@ -180,7 +180,7 @@ for station in all_stations:
       result_map['url'] = url
       result_map['latency'] = stop - start
 
-      data = json.dumps(result_map)
+      data = json.dumps(result_map, indent=2)
 
       if station_ix < station_count:
         data += ','
