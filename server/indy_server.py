@@ -75,7 +75,7 @@ def server_manager(config):
     return response
 
 
-  def send_file_partial(path, requested_path):
+  def send_file_partial(path, requested_path, file_name=None):
     """ 
     Wrapper around send_file which handles HTTP 206 Partial Content
     (byte ranges)
@@ -87,7 +87,17 @@ def server_manager(config):
 
     range_header = request.headers.get('Range', None)
     if not range_header: 
-      return flask.send_file(path)
+      with open(path, 'rb') as f:
+        data = f.read()
+
+      rv = Response( data, 206, mimetype=audio.our_mime(), direct_passthrough=True )
+      disposition = 'attachment;'
+
+      if file_name:
+        disposition += ' file_name="%s"' % file_name
+
+      rv.headers.add('Content-Disposition', disposition)
+      return rv
     
     size = os.path.getsize(path)    
     byte1, byte2 = 0, None
@@ -111,6 +121,12 @@ def server_manager(config):
       data = f.read(length + 1)
 
     rv = Response( data, 206, mimetype=audio.our_mime(), direct_passthrough=True )
+    disposition = 'attachment;'
+
+    if file_name:
+      disposition += ' file_name="%s"' % file_name
+
+    rv.headers.add('Content-Disposition', disposition)
     rv.headers.add('Content-Range', 'bytes {0}-{1}/{2}'.format(byte1, byte1 + length, size))
 
     return rv
@@ -189,10 +205,10 @@ def server_manager(config):
     Similar to the /slices/path endpoint, this end point sends a stream that is at time <time> with
     name <name>.
     """
-    return send_stream(time)
+    return send_stream(time, file_name=name)
 
   @app.route('/slices/<path:path>')
-  def send_stream(path):
+  def send_stream(path, download_name=None):
     """
     Downloads a stream from the server. The path is callsign-date_duration.mp3
 
@@ -246,7 +262,7 @@ def server_manager(config):
           # And break out of our loop ... now everything should exist.
           break
 
-    return send_file_partial("%s/%s" % (base_dir, path), requested_path=path)
+    return send_file_partial("%s/%s" % (base_dir, path), requested_path=path, file_name=download_name)
 
 
   @app.route('/restart')
