@@ -205,7 +205,7 @@ def server_manager(config):
     Similar to the /slices/path endpoint, this end point sends a stream that is at time <time> with
     name <name>.
     """
-    return send_stream(time, file_name=name)
+    return send_stream(time, download_name=name)
 
   @app.route('/slices/<path:path>')
   def send_stream(path, download_name=None):
