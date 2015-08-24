@@ -455,6 +455,12 @@ See how this is similar to the podcast link of
 Simply by omitting the christening of the show and stopping after the duration, the server figures you just want the most recent 
 episode and gives it to you.  How nice for Bob.
 
+#### Predictive easy-to-use naming convention
+It Alice wanted to skip all of this and wanted to listen to say, 1 hour (60 minutes) of radio from August 9th, 2015 (2015-08-09) , at 8:30pm (20:30), and download it as "Darkwaves.mp3" she could do this:
+
+    http://indycast.net/kpcc/slices/201508092030_60/Darkwaves.mp3
+
+The format here is YYYYMMDDHHMM_Duration/(your name)
 
 ## Fast and small
 

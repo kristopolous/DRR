@@ -581,6 +581,10 @@ $ curl -s kxlu.indycast.net:8890/sun/7pm/1hr/show.m3u | grep -v \# | xargs mplay
 <p>See how this is similar to the podcast link of</p>
 <pre><code>http://indycast.net/kpcc/mon/2am/2hr/Darkwaves.xml</code></pre>
 <p>Simply by omitting the christening of the show and stopping after the duration, the server figures you just want the most recent episode and gives it to you. How nice for Bob.</p>
+<h4 id="predictive-easy-to-use-naming-convention">Predictive easy-to-use naming convention</h4>
+<p>It Alice wanted to skip all of this and wanted to listen to say, 1 hour (60 minutes) of radio from August 9th, 2015 (2015-08-09) , at 8:30pm (20:30), and download it as &quot;Darkwaves.mp3&quot; she could do this:</p>
+<pre><code>http://indycast.net/kpcc/slices/201508092030_60/Darkwaves.mp3</code></pre>
+<p>The format here is YYYYMMDDHHMM_Duration/(your name)</p>
 <h2 id="fast-and-small">Fast and small</h2>
 <h3 id="disk-space-efficient">Disk space efficient</h3>
 <p>VPSs generally don't give that much disk space and archiving audio would normally take a lot of it.</p>
