@@ -202,7 +202,7 @@ include_once('../indycast.net/common.php');
                     <div class="col-lg-4">
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <h3 class="panel-title"><i class="fa fa-money fa-fw"></i> Time to record</h3>
+                                <h3 class="panel-title"><i class="fa fa-money fa-fw"></i> Time to Record</h3>
                             </div>
                             <div class="panel-body">
                               <div class="content" id='day-picker'>
@@ -222,13 +222,14 @@ include_once('../indycast.net/common.php');
                                 <div id='time'>
                                   <label for="start">Starting at</label>
                                   <div id='time-controls'>
-                                    <input class="text" size=4 type="text" name="start" id="start" value="" placeholder="ex: 3:30 PM" />
-                                    <div class="btn-group week-group inline" id="ampm" role="group">
-                                      <button type="button" class="btn btn-default">am</button>
-                                      <button type="button" class="btn btn-default">pm</button>
+                                    <div class="input-group input-group-lg inline">
+                                      <input class="text form-control" size="4" type="text" name="start" id="start" value="" placeholder="ex: 3:30 PM" />
+                                      <div class="btn-group week-group inline" id="ampm" role="group">
+                                        <button type="button" class="btn btn-default">am</button>
+                                        <button type="button" class="btn btn-default">pm</button>
+                                      </div>
                                     </div>
                                   </div>
-
                                 </div>
                                 <label for="duration">For how long</label>
                                 <div class="week-group btn-group" id="duration">
@@ -238,12 +239,11 @@ include_once('../indycast.net/common.php');
                                   <button data="2hr" type="button" class="btn btn-default">2hr</button>
                                 </div>
                               </div>
+                              <div class="content">
+                                <h3>Give it a name</h3>
+                                <input class="text" type="text" name="name" id="name" value="" placeholder="ex. Alien Air Music" />
+                              </div>
                            </div>
-                    <div class="content">
-                      <h3>Give it a name</h3>
-                      <input class="text" type="text" name="name" id="name" value="" placeholder="ex. Alien Air Music" />
-                    </div>
-
                         </div>
                     </div>
                 </div>
