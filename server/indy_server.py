@@ -90,7 +90,7 @@ def server_manager(config):
       with open(path, 'rb') as f:
         data = f.read()
 
-      rv = Response( data, 206, mimetype=audio.our_mime(), direct_passthrough=True )
+      rv = Response( data, 200, mimetype=audio.our_mime(), direct_passthrough=True )
       disposition = 'attachment;'
 
       if file_name:
