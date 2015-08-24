@@ -219,6 +219,8 @@ def server_manager(config):
 
     # If the file doesn't exist, then we need to slice it and create it based on our query.
     if not os.path.isfile(file_name):
+      cloud.register_stream_list()
+
       # This tells us that if it were to exist, it would be something
       # like this.
       request_info = audio.stream_info(file_name)
