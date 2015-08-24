@@ -41,7 +41,7 @@ def generate_feed(file_type, **kwargs):
 
 def generate_m3u(showname, feed_list, duration_min, weekday_list, start, duration_string):
   payload = ['#EXTM3U']
-  base_url = 'http://%s.indycast.net:%d/' % (misc.config['callsign'], misc.config['port'])
+  base_url = 'http://indycast.net/%s/' % (misc.config['callsign'], )
 
   for feed in reversed(feed_list):
     link = "%s%s" % (base_url, feed['name'])
@@ -53,7 +53,7 @@ def generate_m3u(showname, feed_list, duration_min, weekday_list, start, duratio
 
 def generate_pls(showname, feed_list, duration_min, weekday_list, start, duration_string):
   payload = ["[playlist]", "NumberOfEntries=%d" % len(feed_list)]
-  base_url = 'http://%s.indycast.net:%d/' % (misc.config['callsign'], misc.config['port'])
+  base_url = 'http://indycast.net/%s/' % (misc.config['callsign'], )
 
   stream_number = 1
   # Show the most recent feeds first
@@ -90,7 +90,7 @@ def generate_xml(showname, feed_list, duration_min, weekday_list, start, duratio
     # an oxford comma, how cute.
     week_string = "%s and %s" % (', '.join(day_list[:-1]), day_list[-1])
 
-  base_url = 'http://%s.indycast.net:%d/' % (misc.config['callsign'], misc.config['port'])
+  base_url = 'http://indycast.net/%s/' % (misc.config['callsign'], )
   callsign = misc.config['callsign']
 
   nsmap = {

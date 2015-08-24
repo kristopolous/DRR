@@ -472,6 +472,7 @@ def mp3_signature(file_name, blockcount=-1):
   frame_size = None
   assumed_set = None
   attempt_set = None
+  last_tell = None
   go_back = -1
 
   if isinstance(file_name, basestring):
@@ -494,6 +495,9 @@ def mp3_signature(file_name, blockcount=-1):
         file_handle.seek(go_back, 1)
 
     frame_start = file_handle.tell()
+    if frame_start == last_tell:
+      file_handle.seek(last_tell + 1, 1)
+
     header = file_handle.read(2)
     if header and len(header) == 2:
 
@@ -511,6 +515,8 @@ def mp3_signature(file_name, blockcount=-1):
           attempt_set = [samp_rate, bit_rate, pad_bit]
 
         frame_size, samp_rate, bit_rate, pad_bit = mp3_info(b, b1)
+
+        last_tell = file_handle.tell()
 
         if not frame_size:
           file_handle.seek(go_back, 1)
