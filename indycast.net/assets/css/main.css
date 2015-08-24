@@ -573,7 +573,7 @@ input[type="submit"].fit,
   background-repeat: repeat-x,				repeat,			no-repeat;
   background-size: 3200px 460px,			auto,			cover;
   color: rgba(255, 255, 255, 0.8);
-  padding: 10em 0 20em 0;
+  padding: 6em 0 10em 0;
   position: relative;
   text-align: center;
 }
