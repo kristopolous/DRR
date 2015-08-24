@@ -198,7 +198,8 @@ def find_streams(start_list, duration_min):
 
   entry_list = DB.map(db['c'].execute(full_query).fetchall(), 'streams')
 
-  logging.info(full_query, entry_list)
+  logging.info(full_query)
+  logging.info(entry_list)
   # print full_query, len(entry_list)
   # We want to make sure that we break down the stream_list into days.  We can't JUST look at the week
   # number since we permit feed requests for shows which may have multiple days.  Since this is leaky
