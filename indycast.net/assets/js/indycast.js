@@ -20,7 +20,16 @@ ev('ampm', function(val){
 });
 
 ev('', function(map) {
-  var start_time;
+  var start_time = "Pick the start time", 
+      todo = [],
+      phrase = "Pick the ",
+      url = '',
+      single = '',
+      parts = [],
+      station = "Choose the station", 
+      name = '',
+      is_ready = false,
+      fullday = "Pick the days";
 
   for(var key in map) {
     $("#" + key + " a").removeClass("selected");
@@ -37,54 +46,79 @@ ev('', function(map) {
   }
 
   if(map.station && map.ampm && map.day && map.day.length && map.start && map.duration) {
-    if (!map.name) {
-      map.name = 'stream';
-    }
+    is_ready = true;
+    phrase = false;
 
-    map.station = map.station.toLowerCase();
+    $("#podcast-url").removeClass('disabled');
+    map.name = map.name || 'stream';
+    name = map.name;
+  } else {
+    $("#podcast-url").addClass('disabled');
+    name = "You're almost done";
+  }
 
-    // #27: dump the spaces, make it lower case and avoid a double am/pm
+  if(map.station) {
+    station = map.station.toLowerCase();
+  } else {
+    todo.push('station');
+  }
+
+  // #27: dump the spaces, make it lower case and avoid a double am/pm
+  if(map.start) {
     start_time = map.start.replace(/\s+/,'').toLowerCase().replace(/[ap]m/, '') + map.ampm;
+  } else {
+    todo.push('start time');
+  }
 
+  if(!map.duration) {
+    todo.push('duration');
+  }
+
+  if (is_ready) {
     url = 'http://' + [
       'indycast.net',
-      map.station,
+      station,
       map.day.join(',') + " ",
       start_time,
       map.duration,
       encodeURI(map.name).replace(/%20/g,'_')
     ].join('/') + ".xml";
 
-    var parts = url.split(' '), 
-      single = url.replace(/\s/,''), 
-      fullday;
-      _map = _.map(map.day, function(what) { return fullName[what] });
+    parts = url.split(' ');
+  } 
 
+
+  if(map.day && map.day.length) {
+    var _map = _.map(map.day, function(what) { return fullName[what] });
     if(map.day.length == 1) {
       fullday = _map[0];
     } else {
       fullday = _map.slice(0, -1).join(', ') + ' and ' + _.last(_map);
     }
-
-    $("#podcast-url").attr({'href': single }).html(
-      tpl.podcast({
-        name: (map.name || ''),
-        day: fullday,
-        time: start_time,
-        station: map.station.toUpperCase(),
-        single: single,
-        parts: parts
-      })
-    );
-
-    $("#podcast-notdone").hide();
-    $("#podcast-done").show();
   } else {
-    $("#podcast-url").html("Please select options above");
-    $("#podcast-notdone").show();
-    $("#podcast-done").hide();
+    todo.push("day of week");
   }
 
+  if(todo.length) {
+    console.log(todo);
+    if(todo.length > 1) {
+      phrase += todo.slice(0, -1).join(', ') + ' and ' + todo.slice(-1)[0];
+    } else {
+      phrase += todo[0];
+    }
+  }
+
+  $("#podcast-url").attr({'href': single }).html(
+    tpl.podcast({
+      name: name,
+      day: fullday,
+      time: start_time,
+      station: station,
+      single: single,
+      phrase: phrase,
+      parts: parts
+    })
+  );
 });
 
 ev.test('start', function(v, cb, meta) {

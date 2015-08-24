@@ -26,15 +26,6 @@ include_once('common.php');
     #podcast-url { line-height: 0 }
     #podcast-url-container { text-align: center;background: white }
     .big-button h3 { font-size: 1.3em }
-    .big-button.disabled { 
-      color: grey;
-      border-color: silver;
-      cursor: default;
-      background: silver }
-    .big-button.disabled:hover {
-      background: silver;
-      box-shadow: 0 0;
-    }
     #podcast-url-container { height: 40px }
     #text-container { text-align: left }
     #text-container *  {display: block}

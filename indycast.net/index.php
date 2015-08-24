@@ -139,12 +139,8 @@ if(isset($_GET['callsign'])) {
       </div>
       <footer class="major container">
         <div id="podcast-done">
-          <h3>Your podcast link</h3>
-          <a id="podcast-url" class='big-button'></a>
-        </div>
-        <div id="podcast-notdone">
-          <h3>The podcast will appear here</h3>
-          <p>Please select desired day<?= $callsign ? '' : ', station, ' ?> and time above.</p>
+          <h3>My free subscription</h3>
+          <a id="podcast-url" class='big-button disabled'></a>
         </div>
       </footer>
 
@@ -202,7 +198,7 @@ if(isset($_GET['callsign'])) {
         </div>
         <div id='rss-header'>
           <h3 id='rss-title'><%= name %></h3>
-          <span id='rss-time'><%= day %> at <%= time %> on <%= station %></span>
+          <span id='rss-time'><% if (phrase) { %><%= phrase %><% } else { %><%= day %> at <%= time %> on <%= station %><% } %></span>
         </div>
       </span>
       <span id='podcast-link'>

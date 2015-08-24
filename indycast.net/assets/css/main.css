@@ -908,10 +908,6 @@ input[type="submit"].fit,
     overflow: hidden;
   }
 }
-
-#podcast-done {
-  display: none;
-}
 form#donate {
   text-align:center;
   margin-top: 0;
@@ -919,6 +915,16 @@ form#donate {
 .big-button {
   text-transform: none;
   white-space: normal;
+}
+.big-button.disabled { 
+  color: grey;
+  border-color: silver;
+  cursor: default;
+  background: silver 
+}
+.big-button.disabled:hover {
+  background: silver;
+  box-shadow: 0 0;
 }
 #description a {
   color: #4EB880;
