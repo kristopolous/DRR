@@ -192,14 +192,14 @@ def find_streams(start_list, duration_min):
   condition_query = "((%s))" % ') or ('.join(condition_list)
 
   # see https://github.com/kristopolous/DRR/issues/50 - nah this shit is buggy
-  condition_query += " and start_unix < datetime(%d, 'unixepoch', 'localtime')" % (TS.sec_now() - misc.config['cascadetime'])
+  condition_query += " and start_unix < datetime(%d, 'unixepoch', 'localtime')" % (TS.sec_now() - misc.config['cascadetime'] + 3)
 
   full_query = "select * from streams where %s order by week_number * 10080 + start_minute asc" % condition_query
 
   entry_list = DB.map(db['c'].execute(full_query).fetchall(), 'streams')
 
-  logging.info(full_query)
-  logging.info(entry_list)
+  #logging.info(full_query)
+  #logging.info(entry_list)
   # print full_query, len(entry_list)
   # We want to make sure that we break down the stream_list into days.  We can't JUST look at the week
   # number since we permit feed requests for shows which may have multiple days.  Since this is leaky
