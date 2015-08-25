@@ -48,6 +48,7 @@ import ts as TS
 import db as DB
 import cloud
 from multiprocessing import Process, Queue, Lock
+from flask import request
 
 #
 # The process delay is used throughout to measure things like the delay in
@@ -171,12 +172,32 @@ def public_config():
   return {k: v for k, v in config.items() if k != '_private'}
 
 def shutdown_handler(signal=15, frame=None):
+  """ shutdown_handler is hit on the keyboard interrupt """
   shutdown()
 
 def shutdown(do_restart=False):
-  """ Shutdown is hit on the keyboard interrupt """
-  global queue, start_time, config
+  """ All shutdown should be instantiated from the manager thread """
+  title = SP.getproctitle()
 
+  # Make sure that all shutdown happens from the manager
+  # thread
+  if title != '%s-manager' % config['callsign']:
+    if do_restart:
+      queue.put(('restart', True))
+
+    else:
+      queue.put(('shutdown', True))
+
+    return None
+
+
+  # First we stop receiving web requests
+  func = request.environ.get('werkzeug.server.shutdown')
+
+  if func is None:
+    raise RuntimeError('Not running with the Werkzeug Server')
+
+  func()
   # Try to manually shutdown the webserver
   if os.path.isfile(PIDFILE_WEBSERVER):
     with open(PIDFILE_WEBSERVER, 'r') as f:
@@ -194,7 +215,6 @@ def shutdown(do_restart=False):
     except:
       pass
 
-  title = SP.getproctitle()
 
   print "[%s:%d] Shutting down" % (title, os.getpid())
 
