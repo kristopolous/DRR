@@ -337,7 +337,6 @@ def server_manager(config):
       'kv': DB.all('kv'),
       'uptime': TS.uptime(),
       'free': os.popen("df -h / | tail -1").read().strip(),
-      'plist': os.popen("ps auxf | grep %s" % misc.config['callsign']).read().strip().split('\n'),
       # Reporting the list as fractional GB is more useful.
       'streams': DB.all('streams', sort_by='start_unix'),
       'config': misc.public_config()
