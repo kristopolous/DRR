@@ -209,7 +209,7 @@ for station in all_stations:
           str(document['disk']), 
           str(document['delta']), 
           str(stop - start), 
-          str(document['load'][0]), 
+          str(document['load'][1]), 
           str(station[CALLSIGN]) 
         )
       )
