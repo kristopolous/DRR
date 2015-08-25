@@ -56,6 +56,9 @@ def server_manager(config):
   """ Main flask process that manages the end points. """
   app = Flask(__name__)
 
+  def webserver_shutdown(signal=15, frame=None):
+    request.environ.get('werkzeug.server.shutdown')()
+
   # from http://blog.asgaard.co.uk/2012/08/03/http-206-partial-content-for-flask-python
   @app.after_request
   def after_request(response):
@@ -281,8 +284,7 @@ def server_manager(config):
       os.system('pip install --user -r requirements.txt') 
 
       # from http://blog.petrzemek.net/2014/03/23/restarting-a-python-script-within-itself/
-      shutdown_server()
-      misc.queue.put(('restart', True))
+      misc.shutdown(do_restart=True)
       return "Upgrading from %s to %s" % (misc.__version__, newversion)
 
     os.chdir(cwd)
@@ -531,6 +533,9 @@ def server_manager(config):
     with open(misc.PIDFILE_WEBSERVER, 'w+') as f:
       f.write(str(pid))
 
+    logging.info("BEFORE")
+    signal.signal(signal.SIGHUP, webserver_shutdown)
+    logging.info("AFTER")
     """
     When we do an upgrade or a restart, there's a race condition of getting to start this server
     before the previous one has cleaned up all the socket work.  So if the time is under our
@@ -694,6 +699,9 @@ def stream_manager():
 
   file_name = None
 
+  signal.signal(signal.SIGINT, misc.shutdown_handler)
+  signal.signal(signal.SIGHUP, misc.do_nothing)
+
   # A wrapper function to start a donwnload process
   def download_start(file_name):
     """ Starts a process that manages the downloading of a stream. """
@@ -749,7 +757,7 @@ def stream_manager():
         b_shutdown = True
 
       elif what == 'restart':
-        os.chdir(os.path.dirname(os.path.realpath(__file__)))
+        os.chdir(misc.PID_PATH)
         subprocess.Popen(sys.argv)
 
       elif what == 'heartbeat':
@@ -1040,9 +1048,6 @@ def read_config(config):
   # This is how we discover if we are the official server or not.
   # Look at the /uuid endpoint to see how this magic works.
   misc.config['uuid'] = str(uuid.uuid4())
-
-  signal.signal(signal.SIGINT, misc.shutdown_handler)
-  signal.signal(signal.SIGHUP, misc.do_nothing)
 
 
 if __name__ == "__main__":

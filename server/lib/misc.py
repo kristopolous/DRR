@@ -195,39 +195,26 @@ def shutdown(do_restart=False):
 
 
   # First we stop receiving web requests
-  func = request.environ.get('werkzeug.server.shutdown')
-
-  if func is None:
-    print "It's none ..."
-    # Try to manually shutdown the webserver
-
-    if os.path.isfile(PIDFILE_WEBSERVER):
-      with open(PIDFILE_WEBSERVER, 'r') as f:
-        webserver = f.readline()
-
-        try:  
-          os.kill(int(webserver), signal)
-
-        except:
-          pass
+  if os.path.isfile(PIDFILE_WEBSERVER):
+    with open(PIDFILE_WEBSERVER, 'r') as f:
+      webserver = f.readline()
 
       try:  
-        os.unlink(PIDFILE_WEBSERVER)
+        os.kill(int(webserver), SIGHUP)
 
       except:
         pass
 
-  else:
-    print "It's fine"
-    func()
+    try:  
+      os.unlink(PIDFILE_WEBSERVER)
 
+    except:
+      pass
 
-
-  print "[%s:%d] Shutting down" % (title, os.getpid())
 
   DB.shutdown()
 
-  logging.info("[%s:%d] Shutting down through signal %d" % (title, os.getpid(), signal))
+  logging.info("[%s:%d] Shutting down" % (title, os.getpid()))
 
   if title == ('%s-manager' % config['callsign']):
     global pid
