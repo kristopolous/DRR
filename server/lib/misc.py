@@ -103,7 +103,7 @@ def base_stats():
     'now': time.time(),
     'version': __version__,
     'load': [float(unit) for unit in os.popen("uptime | awk -F : ' { print $NF } '").read().split(', ')],
-    'plist': os.popen("ps auxf | grep %s" % misc.config['callsign']).read().strip().split('\n'),
+    'plist': os.popen("ps auxf | grep %s" % config['callsign']).read().strip().split('\n'),
     'disk': cloud.size('.') / (1024.0 ** 3)
   }
 
