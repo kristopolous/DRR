@@ -49,15 +49,13 @@ def find_misbehaving_servers(db, fail_list):
   for row in misbehaving:
     report.append("  %s: disk:%s load:%s last:%s" % row)
  
-  if len(report):
-    config = misc.mail_config()
-    if config:
-      # Don't want any scripts to read this and harvest my email.
-      email_to_use = 'kri%s@%soo.com' % ("stopolous", "yah")
+  if len(report) and mail_config:
+    # Don't want any scripts to read this and harvest my email.
+    email_to_use = 'kri%s@%soo.com' % ("stopolous", "yah")
 
-      misc.send_email(config=config, who=email_to_use, subject="server issue", body='<br>'.join(report), sender='Indycast Admin <info@indycast.net>')
-      print '\n'.join(report)
-      print "Issues found. Sending email to %s." % email_to_use
+    misc.send_email(config=mail_config, who=email_to_use, subject="server issue", body='<br>'.join(report), sender='Indycast Admin <info@indycast.net>')
+    print '\n'.join(report)
+    print "Issues found. Sending email to %s." % email_to_use
 
 
 CALLSIGN = 'callsign'
@@ -71,6 +69,7 @@ parser.add_argument("-s", "--station", default="all", help="station to query (de
 parser.add_argument('-l', '--list', action='store_true', help='show stations')
 parser.add_argument('-k', '--key', default=None, help='Get a specific key in a json formatted result')
 parser.add_argument('-n', '--notrandom', action='store_true', help='do not reandomize order')
+mail_config = misc.mail_config(parser)
 args = parser.parse_args()
 
 config_list = []
@@ -94,7 +93,7 @@ else:
   station_list = args.station.split(',')
 
   for config in config_list:
-    if config['station'] in station_list:
+    if config['callsign'] in station_list:
       all_stations.append(config)
 
 if args.list:
