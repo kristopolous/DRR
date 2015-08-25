@@ -70,8 +70,10 @@ PROCESS_DELAY = 4
 # likes to become a zombie ... braaaainnns!) so we have to take
 # care of it separately and specially - like a little retard.
 #
-PIDFILE_MANAGER = 'pid-manager'
-PIDFILE_WEBSERVER = 'pid-webserver'
+
+PID_PATH = os.path.dirname(os.path.realpath(__file__))
+PIDFILE_MANAGER = '%s/%s' % (PID_PATH, 'pid-manager')
+PIDFILE_WEBSERVER = '%s/%s' % (PID_PATH, 'pid-webserver')
 
 DIR_BACKUPS = 'backups'
 DIR_STREAMS = 'streams'
@@ -178,6 +180,7 @@ def shutdown_handler(signal=15, frame=None):
 def shutdown(do_restart=False):
   """ All shutdown should be instantiated from the manager thread """
   title = SP.getproctitle()
+  print "((%s))" % title
 
   # Make sure that all shutdown happens from the manager
   # thread
@@ -195,25 +198,29 @@ def shutdown(do_restart=False):
   func = request.environ.get('werkzeug.server.shutdown')
 
   if func is None:
-    raise RuntimeError('Not running with the Werkzeug Server')
+    print "It's none ..."
+    # Try to manually shutdown the webserver
 
-  func()
-  # Try to manually shutdown the webserver
-  if os.path.isfile(PIDFILE_WEBSERVER):
-    with open(PIDFILE_WEBSERVER, 'r') as f:
-      webserver = f.readline()
+    if os.path.isfile(PIDFILE_WEBSERVER):
+      with open(PIDFILE_WEBSERVER, 'r') as f:
+        webserver = f.readline()
+
+        try:  
+          os.kill(int(webserver), signal)
+
+        except:
+          pass
 
       try:  
-        os.kill(int(webserver), signal)
+        os.unlink(PIDFILE_WEBSERVER)
 
       except:
         pass
 
-    try:  
-      os.unlink(PIDFILE_WEBSERVER)
+  else:
+    print "It's fine"
+    func()
 
-    except:
-      pass
 
 
   print "[%s:%d] Shutting down" % (title, os.getpid())

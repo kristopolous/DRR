@@ -56,16 +56,6 @@ def server_manager(config):
   """ Main flask process that manages the end points. """
   app = Flask(__name__)
 
-  # from http://flask.pocoo.org/snippets/67/
-  def shutdown_server():
-    func = request.environ.get('werkzeug.server.shutdown')
-
-    if func is None:
-      raise RuntimeError('Not running with the Werkzeug Server')
-
-    func()
-
-
   # from http://blog.asgaard.co.uk/2012/08/03/http-206-partial-content-for-flask-python
   @app.after_request
   def after_request(response):
@@ -269,14 +259,8 @@ def server_manager(config):
     """ 
     Restarts an instance. This does so in a gapless non-overlapping way.
     """
-    cwd = os.getcwd()
-    os.chdir(os.path.dirname(os.path.realpath(__file__)))
-
-    shutdown_server()
-    misc.queue.put(('restart', True))
+    misc.shutdown(do_restart=True)
     return "restarting..."
-
-    os.chdir(cwd)
 
 
   @app.route('/upgrade')
