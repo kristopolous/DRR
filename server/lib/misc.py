@@ -170,7 +170,10 @@ def public_config():
   global config 
   return {k: v for k, v in config.items() if k != '_private'}
 
-def shutdown(signal=15, frame=None):
+def shutdown_handler(signal=15, frame=None):
+  shutdown()
+
+def shutdown(do_restart=False):
   """ Shutdown is hit on the keyboard interrupt """
   global queue, start_time, config
 

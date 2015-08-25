@@ -36,7 +36,6 @@ socket.getaddrinfo = getAddrInfoWrapper
 import urllib2
 import urllib
 
-
 from logging.handlers import RotatingFileHandler
 from datetime import datetime, timedelta, date
 from dateutil import parser as dt_parser
@@ -762,7 +761,7 @@ def stream_manager():
         # old process and start a new one
 
       elif what == 'shutdown':
-        print "-- shutdown requested"
+        logging.info("-- shutdown requested")
         b_shutdown = True
 
       elif what == 'restart':
@@ -1058,7 +1057,7 @@ def read_config(config):
   # Look at the /uuid endpoint to see how this magic works.
   misc.config['uuid'] = str(uuid.uuid4())
 
-  signal.signal(signal.SIGINT, misc.shutdown)
+  signal.signal(signal.SIGINT, misc.shutdown_handler)
   signal.signal(signal.SIGHUP, misc.do_nothing)
 
 
