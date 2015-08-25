@@ -67,7 +67,7 @@ db = DB.connect(db_file='../db/main.db')
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-q", "--query", default=None, help="query to send to the servers (site-map gives all end points)")
-parser.add_argument("-c", "--callsign", default="all", help="station to query (default all)")
+parser.add_argument("-s", "--station", default="all", help="station to query (default all)")
 parser.add_argument('-l', '--list', action='store_true', help='show stations')
 parser.add_argument('-k', '--key', default=None, help='Get a specific key in a json formatted result')
 parser.add_argument('-n', '--notrandom', action='store_true', help='do not reandomize order')
@@ -86,15 +86,15 @@ for station_config in glob('../server/configs/*txt'):
   config_list.append(config)
 
 # retrieve a list of the active stations
-if args.callsign == 'all':
+if args.station == 'all':
   all_stations = config_list
 
 else:
   all_stations = []
-  callsign_list = args.callsign.split(',')
+  station_list = args.station.split(',')
 
   for config in config_list:
-    if config['callsign'] in callsign_list:
+    if config['station'] in station_list:
       all_stations.append(config)
 
 if args.list:
