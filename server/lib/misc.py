@@ -103,22 +103,18 @@ def base_stats():
     'now': time.time(),
     'version': __version__,
     'load': [float(unit) for unit in os.popen("uptime | awk -F : ' { print $NF } '").read().split(', ')],
-    'plist': os.popen("ps auxf | grep [%s]%s" % (config['callsign'][0], config['callsign'][1:])).read().strip().split('\n'),
+    'plist': [ line.strip() for line in os.popen("ps auxf | grep [%s]%s" % (config['callsign'][0], config['callsign'][1:])).read().strip().split('\n') ],
     'disk': cloud.size('.') / (1024.0 ** 3)
   }
 
-def mail_config():
+def mail_config(parser):
   cfg = os.environ.get('CLOUD_CFG')
 
-  os.chdir(os.path.dirname(os.path.realpath(__file__)))
-
-  parser = argparse.ArgumentParser()
   parser.add_argument("-c", "--config", default=cfg, help="cloud credential file to use")
   args = parser.parse_args()
 
   if args.config is None:
     print "Define the cloud configuration location with the CLOUD_CFG environment variable or using the -c option"
-    sys.exit(-1)
 
   cloud_config = ConfigParser.ConfigParser()
   cloud_config.read(args.config)
