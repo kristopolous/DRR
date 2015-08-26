@@ -9,6 +9,7 @@ import re
 import logging
 import sys
 import socket
+import signal
 __version__ = os.popen("git describe").read().strip()
 
 #
@@ -71,10 +72,6 @@ PROCESS_DELAY = 4
 # care of it separately and specially - like a little retard.
 #
 
-PID_PATH = os.path.dirname(os.path.realpath(__file__))
-PIDFILE_MANAGER = '%s/%s' % (PID_PATH, 'pid-manager')
-PIDFILE_WEBSERVER = '%s/%s' % (PID_PATH, 'pid-webserver')
-
 DIR_BACKUPS = 'backups'
 DIR_STREAMS = 'streams'
 DIR_SLICES = 'slices'
@@ -86,7 +83,7 @@ queue = Queue()
 
 start_time = None
 config = {}
-pid = {}
+pid_map = {}
 lockMap = {'prune': Lock()}
 last_official_query = None
 
@@ -194,31 +191,15 @@ def shutdown(do_restart=False):
     return None
 
 
-  # First we stop receiving web requests
-  if os.path.isfile(PIDFILE_WEBSERVER):
-    with open(PIDFILE_WEBSERVER, 'r') as f:
-      webserver = f.readline()
-
-      try:  
-        os.kill(int(webserver), SIGHUP)
-
-      except:
-        pass
-
-    try:  
-      os.unlink(PIDFILE_WEBSERVER)
-
-    except:
-      pass
-
+  if 'webserver' in pid_map:
+    os.kill(pid_map['webserver'].pid, signal.SIGUSR1)
 
   DB.shutdown()
 
   logging.info("[%s:%d] Shutting down" % (title, os.getpid()))
 
   if title == ('%s-manager' % config['callsign']):
-    global pid
-    for key, value in pid.items():
+    for key, value in pid_map.items():
       try:
         value.terminate()
       except:

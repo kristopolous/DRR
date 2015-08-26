@@ -361,19 +361,10 @@ def get_next(info_query):
 def prune(reindex=False):
   """ Gets rid of files older than archivedays - cloud stores things if relevant. """
 
-  #print "Prune starting"
-  # If we are the first process then we need to make sure that the webserver is up before
-  # we do this to check to see if we are official
-  time.sleep(3)
-
-  # We want to run the am_i_official so that the thread that keeps forking the prune
-  # process bequeths a cached version of whether it is official or not.
-  misc.am_i_official()
-
   # Now when the child calls it it won't hit the network for every prune.
-  pid = Process(target=prune_process, args=(misc.lockMap, reindex,))
-  pid.start()
-  return pid
+  process = Process(target=prune_process, args=(misc.lockMap, reindex,))
+  process.start()
+  return process
 
 
 def prune_process(lockMap, reindex=False):
@@ -386,7 +377,14 @@ def prune_process(lockMap, reindex=False):
     logging.warn("Tried to run another prune whilst one is running. Aborting")
     return True
 
+  # If we are the first process then we need to make sure that the webserver is up before
+  # we do this to check to see if we are official
+  time.sleep(2)
+
   pid = misc.change_proc_name("%s-cleanup" % misc.config['callsign'])
+
+  # We want to run the am_i_official here since it could block on a DNS lookup
+  misc.am_i_official()
 
   register_stream_list(reindex)
   db = DB.connect()

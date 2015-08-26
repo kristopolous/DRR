@@ -530,11 +530,9 @@ def server_manager(config):
 
   if __name__ == '__main__':
     pid = misc.change_proc_name("%s-webserver" % config['callsign'])
-    with open(misc.PIDFILE_WEBSERVER, 'w+') as f:
-      f.write(str(pid))
 
     logging.info("BEFORE")
-    signal.signal(signal.SIGHUP, webserver_shutdown)
+    signal.signal(signal.SIGUSR1, webserver_shutdown)
     logging.info("AFTER")
     """
     When we do an upgrade or a restart, there's a race condition of getting to start this server
@@ -694,13 +692,11 @@ def stream_manager():
   process = None
   process_next = None
 
-  server_pid = Process(target=server_manager, args=(misc.config,))
-  server_pid.start()
+  # The manager will be the one that starts this.
+  misc.pid_map['webserver'] = Process(target=server_manager, args=(misc.config,))
+  misc.pid_map['webserver'].start()
 
   file_name = None
-
-  signal.signal(signal.SIGINT, misc.shutdown_handler)
-  signal.signal(signal.SIGHUP, misc.do_nothing)
 
   # A wrapper function to start a donwnload process
   def download_start(file_name):
@@ -735,7 +731,7 @@ def stream_manager():
     if last_prune < (TS.unixtime('prune') - TS.ONE_DAY_SECOND * prune_duration):
       prune_duration = misc.config['pruneevery'] + (1 / 8.0 - random.random() / 4.0)
       # We just assume it can do its business in under a day
-      misc.pid['prune'] = cloud.prune()
+      misc.pid_map['prune'] = cloud.prune()
       last_prune = TS.unixtime('prune')
 
     TS.get_offset()
@@ -753,11 +749,12 @@ def stream_manager():
         # old process and start a new one
 
       elif what == 'shutdown':
+        print "Shutting down"
         logging.info("-- shutdown requested")
         b_shutdown = True
 
       elif what == 'restart':
-        os.chdir(misc.PID_PATH)
+        os.chdir(misc.PROCESS_PATH)
         subprocess.Popen(sys.argv)
 
       elif what == 'heartbeat':
@@ -892,6 +889,7 @@ def read_config(config):
   Config = ConfigParser.ConfigParser()
   Config.read(config)
   misc.config = misc.config_section_map('Main', Config)
+  misc.PROCESS_PATH = os.path.dirname(os.path.realpath(__file__))
   
   defaults = {
     # The log level to be put into the indycast.log file.
@@ -1012,6 +1010,7 @@ def read_config(config):
   else:
     logging.warning("Can't find %s. Using current directory." % misc.config['storage'])
 
+  misc.PIDFILE_MANAGER = '%s/%s' % (os.getcwd(), 'pid-manager')
   # If there is an existing pid-manager, that means that 
   # there is probably another version running.
   if os.path.isfile(misc.PIDFILE_MANAGER):
@@ -1048,6 +1047,9 @@ def read_config(config):
   # This is how we discover if we are the official server or not.
   # Look at the /uuid endpoint to see how this magic works.
   misc.config['uuid'] = str(uuid.uuid4())
+
+  signal.signal(signal.SIGINT, misc.shutdown_handler)
+  signal.signal(signal.SIGHUP, misc.do_nothing)
 
 
 if __name__ == "__main__":
