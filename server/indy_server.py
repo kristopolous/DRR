@@ -1079,6 +1079,7 @@ def read_config(config):
 
 if __name__ == "__main__":
   # From http://stackoverflow.com/questions/25504149/why-does-running-the-flask-dev-server-run-itself-twice
+
   if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
     server_manager(misc.config)
 
@@ -1090,7 +1091,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--config", default="./indy_config.txt", help="Configuration file (default ./indy_config.txt)")
     parser.add_argument('--version', action='version', version='indycast %s :: Aug 2015' % misc.__version__)
+    parser.add_argument("--daemon", action='store_true',  help="run as daemon")
     args = parser.parse_args()
+    if args.daemon:
+      subprocess.Popen( filter(lambda x: x != '--daemon', sys.argv) )
+      sys.exit(0)
+
     read_config(args.config)      
 
     pid = misc.change_proc_name("%s-manager" % misc.config['callsign'])
