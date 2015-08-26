@@ -45,8 +45,8 @@ include_once('../indycast.net/common.php');
           <li><a href="charts.html"><i class="fa fa-fw fa-pencil-square-o"></i> Email Me Radio</a></li>
           <li><a href="tables.html"><i class="fa fa-fw fa-clock-o"></i> Listen Live</a></li>
           <li><a href="forms.html"><i class="fa fa-fw fa-book"></i> Our Story</a></li>
-          <li><a href="bootstrap-elements.html"><i class="fa fa-fw fa-heart"></i> Support Us</a></li>
-          <li><a href="bootstrap-grid.html"><i class="fa fa-fw fa-code"></i> Source Code</a></li>
+          <li><a href="https://github.com/kristopolous/DRR/wiki/Donating-Money"><i class="fa fa-fw fa-heart"></i> Support Us</a></li>
+          <li><a href="https://github.com/kristopolous/DRR"><i class="fa fa-fw fa-code"></i> Source Code</a></li>
         </ul>
       </div>
     </nav>
@@ -126,7 +126,9 @@ include_once('../indycast.net/common.php');
 
                 <div class="form-group content">
                   <label for='name'>Give it a name</label>
-                  <input class="text form-control" type="text" name="name" id="name" value="" placeholder="ex. Alien Air Music" />
+                  <div class="input-group input-group-lg">
+                    <input class="text form-control" type="text" name="name" id="name" value="" placeholder="ex. Alien Air Music" />
+                  </div>
                 </div>
              </div>
             </div>

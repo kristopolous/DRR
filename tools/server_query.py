@@ -30,7 +30,7 @@ fail_list = []
 
 def find_misbehaving_servers(db, fail_list):
   max_values = {
-    'disk': '3.0',
+    'disk': '3.5',
     'load': '0.7',
     'last_record': '480',
     'plist': [ 4, 6 ]
