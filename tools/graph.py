@@ -97,7 +97,7 @@ def ts_row(parts):
       if hr > 9:
         flag = True
 
-  sys.stdout.write("+\n")
+  sys.stdout.write("-+\n")
 
 minutes_per_day = 60 * 24
 width, height = getTerminalSize()
@@ -173,8 +173,8 @@ for day in sorted(region_map.keys()):
 
     last_hr = hr
 
-  # Round off the row aesthetically
-  sys.stdout.write("|\n")
+  # print the number of entries for this day.  This can hint at some error
+  sys.stdout.write(" %d\n" % len(region))
 
 # End with another referential header row and the total coverage
 ts_row(parts)
