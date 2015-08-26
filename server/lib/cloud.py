@@ -67,10 +67,10 @@ def unlink(path, config=False):
 
   try:
     blob_service.delete_blob(container, fname)
-    logging.debug("[prune-cloud] Deleted %s" % fname)
+    logging.debug("Prune[cloud]: Deleted %s" % fname)
 
   except:
-    logging.warn("[prune-cloud] Failed to delete %s" % fname)
+    logging.warn("Prune[cloud]: Failed to delete %s" % fname)
 
   return None
 
@@ -454,7 +454,6 @@ def prune_process(lockMap, reindex=False):
   # cloud thingie associated with it.
   db = DB.connect()
 
-  logging.info("HERE")
   unlink_list = db['c'].execute('select name, id from streams where end_unix < date("now", "-%d seconds") or end_minute - start_minute < 0.05' % archive_duration).fetchall()
 
   for file_name_tuple in unlink_list:
