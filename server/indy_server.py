@@ -47,7 +47,6 @@ import subprocess
 from multiprocessing import Process, Queue
 
 g_download_pid = 0
-g_params = {}
 
 ##
 ## Storage and file related
@@ -57,6 +56,8 @@ def server_manager(config):
   app = Flask(__name__)
 
   def webserver_shutdown(signal=15, frame=None):
+    title = SP.getproctitle()
+    logging.info("[%s:%d] Shutting down" % (title, os.getpid()))
     request.environ.get('werkzeug.server.shutdown')()
 
   # from http://blog.asgaard.co.uk/2012/08/03/http-206-partial-content-for-flask-python
@@ -581,20 +582,26 @@ def stream_download(callsign, url, my_pid, file_name):
   Curl interfacing which downloads the stream to disk. 
   Follows redirects and parses out basic m3u.
   """
-  global g_params
+  pid = misc.change_proc_name("%s-download" % callsign)
 
-  misc.change_proc_name("%s-download" % callsign)
-
-  nl = {'stream': None}
+  nl = {'stream': None, 'curl_handle': None}
 
   def dl_stop(signal, frame):
     sys.exit(0)
 
   def cback(data): 
-    global g_params
 
-    if g_params['isFirst'] == True:
-      g_params['isFirst'] = False
+    if not misc.params['shutdown_time']:
+      if not misc.download_ipc.empty():
+        what, value = misc.download_ipc.get(False)
+        if what == 'shutdown_time':
+          misc.params['shutdown_time'] = value
+
+    elif TS.unixtime('dl') > misc.params['shutdown_time']:
+      sys.exit(0)
+
+    if misc.params['isFirst'] == True:
+      misc.params['isFirst'] = False
 
       if len(data) < 800:
         if re.match('https?://', data):
@@ -628,14 +635,18 @@ def stream_download(callsign, url, my_pid, file_name):
       misc.shutdown()
 
   # signal.signal(signal.SIGTERM, dl_stop)
-  g_params['isFirst'] = True
+  misc.params['isFirst'] = True
   curl_handle = pycurl.Curl()
   curl_handle.setopt(curl_handle.URL, url)
   curl_handle.setopt(pycurl.WRITEFUNCTION, cback)
   curl_handle.setopt(pycurl.FOLLOWLOCATION, True)
+  nl['curl_handle'] = curl_handle
 
   try:
     curl_handle.perform()
+
+  except TypeError as exc:
+    logging.info("Properly shutting down.")
 
   except Exception as exc:
     logging.warning("Couldn't resolve or connect to %s." % url)
@@ -649,6 +660,15 @@ def stream_download(callsign, url, my_pid, file_name):
     info = audio.stream_info(file_name)
 
     DB.register_stream(info)
+
+
+def my_process_shutdown(process):
+  """ A small function to simplify the logic below. """
+  if process and process.is_alive():
+    logging.info("[%s:%d] Shutting down" % ('download', process.pid))
+    process.terminate()
+
+  return None
 
 
 def stream_manager():
@@ -685,6 +705,8 @@ def stream_manager():
   change_state = None
   SHUTDOWN = 1
   RESTART = 2
+  shutdown_time = None
+  misc.download_ipc = Queue()
 
   should_record = mode_full
 
@@ -740,6 +762,7 @@ def stream_manager():
 
     lr_set = False
     while not misc.queue.empty():
+      flag = True
       what, value = misc.queue.get(False)
 
       # The curl proces discovered a new stream to be
@@ -751,7 +774,6 @@ def stream_manager():
         # old process and start a new one
 
       elif what == 'shutdown':
-        logging.info("-- shutdown requested")
         change_state = SHUTDOWN
 
       elif what == 'restart':
@@ -759,9 +781,17 @@ def stream_manager():
         subprocess.Popen(sys.argv)
         change_state = RESTART
 
-      elif what == 'heartbeat':
-        flag = True
+        # Try to record for another restart_overlap seconds - make sure that
+        # we don't perpetually put this in the future due to some bug.
+        if not shutdown_time:
+          shutdown_time = TS.unixtime('dl') + misc.config['restart_overlap']
+          logging.info("Restart requested ... shutting down downloader at %s" % TS.ts_to_name(shutdown_time, with_seconds=True))
 
+          # This makes it a restricted soft shutdown
+          misc.shutdown_real(do_restart=True)
+          misc.download_ipc.put(('shutdown_time', shutdown_time))
+
+      elif what == 'heartbeat':
         if not lr_set and value[1] > 100:
           lr_set = True
           DB.set('last_recorded', time.time())
@@ -804,27 +834,27 @@ def stream_manager():
               bitrate = int( round (est / 1000) * 8 )
               DB.set('bitrate', bitrate)
 
-      else:
-        flag = True
-    
     # Check for our management process
     if not misc.manager_is_running():
       logging.info("Manager isn't running");
       change_state = SHUTDOWN
 
-    #
     # If we are not in full mode, then we should check whether we should be 
     # recording right now according to our intents.
-    #
     if not mode_full:
       should_record = stream_should_be_recording()
 
-    if should_record:
-      # Didn't respond in cycle_time seconds so we respawn
+    # The only way for the bool to be toggled off is if we are not in full-mode ... 
+    # we get here if we should NOT be recording.  So we make sure we aren't.
+    if not should_record or change_state == SHUTDOWN or (change_state == RESTART and TS.unixtime('dl') > shutdown_time):
+      process = my_process_shutdown(process)
+      process_next = my_process_shutdown(process_next)
+      misc.shutdown_real()
+
+    elif should_record:
+      # Didn't respond in cycle_time seconds so kill it
       if not flag:
-        if process and process.is_alive():
-          process.terminate()
-        process = False
+        process = my_process_shutdown(process)
 
       if not process and not change_state:
         file_name, process = download_start(file_name)
@@ -845,26 +875,13 @@ def stream_manager():
         misc.shutdown_real()
 
     #
-    # The only way for the bool to be toggled off is if we are not in full-mode ... 
-    # we get here if we should NOT be recording.  So we make sure we aren't.
-    #  
-    else:
-      if process and process.is_alive():
-        process.terminate()
-
-      if process_next and process_next.is_alive():
-        process_next.terminate()
-
-      process_next = process = None
-
-    #
     # This needs to be on the outside loop in case we are doing a cascade
     # outside of a full mode. In this case, we will need to shut things down
     #
     # If we are past the cascade_time and we have a process_next, then
     # we should shutdown our previous process and move the pointers around.
     #
-    if TS.unixtime('dl') - last_success > cascade_time and process:
+    if not change_state and TS.unixtime('dl') - last_success > cascade_time and process:
       logging.info("Stopping cascaded downloader")
       process.terminate()
 
@@ -912,6 +929,10 @@ def read_config(config):
 
     # The (day) time to expire an intent to record
     'expireafter': 45,
+
+    # The time to prolong a download to make sure that 
+    # a restart or upgrade is seamless, in seconds.
+    'restart_overlap': 15,
 
     # The TCP port to run the server on
     'port': 5000,
@@ -1020,7 +1041,8 @@ def read_config(config):
       oldserver = f.readline()
 
       try:  
-        os.kill(int(oldserver), 15)
+        logging.info("Replacing our old image")
+        os.kill(int(oldserver), signal.SIGUSR1)
         # We give it a few seconds to shut everything down
         # before trying to proceed
         time.sleep(misc.PROCESS_DELAY / 2)
@@ -1051,6 +1073,7 @@ def read_config(config):
   misc.config['uuid'] = str(uuid.uuid4())
 
   signal.signal(signal.SIGINT, misc.shutdown_handler)
+  signal.signal(signal.SIGUSR1, misc.shutdown_handler)
   signal.signal(signal.SIGHUP, misc.do_nothing)
 
 
