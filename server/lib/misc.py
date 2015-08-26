@@ -81,6 +81,7 @@ IS_TEST = True
 manager_pid = 0
 queue = Queue()
 
+params = {'shutdown_time': None}
 start_time = None
 config = {}
 pid_map = {}
@@ -170,38 +171,40 @@ def public_config():
   global config 
   return {k: v for k, v in config.items() if k != '_private'}
 
-def shutdown_handler(signal=15, frame=None):
+def shutdown_handler(signal=signal.SIGINT, frame=None):
   """ shutdown_handler is hit on the keyboard interrupt """
   shutdown()
 
-
 def shutdown_real(do_restart=False):
+  """ 
+  During a restart shutdown we just kill the webserver.
+  The other processes will die off later.
+  """
+
   if 'webserver' in pid_map:
     os.kill(pid_map['webserver'].pid, signal.SIGUSR1)
 
-  DB.shutdown()
+  if not do_restart:
+    for key, value in pid_map.items():
+      try:
+        value.terminate()
+      except:
+        pass
 
-  logging.info("[%s:%d] Shutting down" % (title, os.getpid()))
+    title = SP.getproctitle()
+    logging.info("[%s:%d] Shutting down" % (title, os.getpid()))
+    DB.shutdown()
 
-  for key, value in pid_map.items():
-    try:
-      value.terminate()
-    except:
-      pass
+    logging.info("Uptime: %ds", TS.uptime())
 
-  logging.info("Uptime: %ds", TS.uptime())
+    if os.path.isfile(PIDFILE_MANAGER):
+      os.unlink(PIDFILE_MANAGER)
 
-  if os.path.isfile(PIDFILE_MANAGER):
-    os.unlink(PIDFILE_MANAGER)
-
-  sys.exit(0)
+    sys.exit(0)
 
 
 def shutdown(do_restart=False):
   """ All shutdown should be instantiated from the manager thread """
-  title = SP.getproctitle()
-  print "((%s))" % title
-
   # Make sure that all shutdown happens from the manager
   # thread
   #
