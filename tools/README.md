@@ -17,6 +17,7 @@ The current files:
  * [pd] graph.py - Shows a visual representation of a stations' recording coverage (look at the top of the code for more details).
  * [p] indycast.pub - The public key you should add to your server in the authorized_keys files if you want to be part of the federation.
  * [p] request_job.py - This perennial script is the back-end technology that checks the reminder table and sends off emails.
+ * [pdt] restart_through_ssh.sh - Restarts a server through ssh if the `/restart` directive fails.
  * [pdt] server_query.py - Queries the server(s) for information (see below)
 
 The tools ending in .py all have documentation using python's argparser which can be invoked by running them with a `-h` option.  All tools are internally documented in their code - along with providing descriptions of what they do and how to use them at the top of the file.
