@@ -302,12 +302,12 @@ These endpoints can be conveniently queried in bulk using a server query tool, l
 
 It can query any endpoint on any number of stations and parse JSON if desired.  For instance, if you wanted to see how much disk space kpcc is using you can do the following:
 
-    $ tools/server_query.py -k disk -c kpcc
+    $ tools/server_query.py -k disk -s kpcc
     {"url": "kpcc.indycast.net:8930", "latency": 2.824465036392212, "disk": 2000112}
 
 Or, if you wanted to find out the uptime and disk space of kpcc and kxlu:
 
-    $ tools/server_query.py -k disk,uptime -c kpcc,kxlu
+    $ tools/server_query.py -k disk,uptime -s kpcc,kxlu
     [
     {"url": "kxlu.indycast.net:8890", "latency": 3.542130947113037, "uptime": 5235, "disk": 2283312},
     {"url": "kpcc.indycast.net:8930", "latency": 2.451361894607544, "uptime": 5250, "disk": 2000112}
@@ -319,7 +319,7 @@ The server query presents the output as valid JSON to do with it whatever you pl
 
 If you'd like to find out what the station coverage is, there's a graph-drawing tool that tells you.
 
-    $ tools/server_query.py -q stats -c kpcc | tools/graph.py 
+    $ tools/server_query.py -q stats -s kpcc | tools/graph.py 
 
              +-0---1---2---3---4---5---6---7---8---9---10--11--12--13--14--15--16--17--18--19--20--21--22--23--+
     2015-07-06 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . |

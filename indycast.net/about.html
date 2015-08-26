@@ -483,10 +483,10 @@ $ uptime
 <h5 id="bulk-queries-with-json-output">Bulk Queries with JSON output</h5>
 <p>These endpoints can be conveniently queried in bulk using a server query tool, located in <code>tools/server_query.py</code>.</p>
 <p>It can query any endpoint on any number of stations and parse JSON if desired. For instance, if you wanted to see how much disk space kpcc is using you can do the following:</p>
-<pre><code>$ tools/server_query.py -k disk -c kpcc
+<pre><code>$ tools/server_query.py -k disk -s kpcc
 {&quot;url&quot;: &quot;kpcc.indycast.net:8930&quot;, &quot;latency&quot;: 2.824465036392212, &quot;disk&quot;: 2000112}</code></pre>
 <p>Or, if you wanted to find out the uptime and disk space of kpcc and kxlu:</p>
-<pre><code>$ tools/server_query.py -k disk,uptime -c kpcc,kxlu
+<pre><code>$ tools/server_query.py -k disk,uptime -s kpcc,kxlu
 [
 {&quot;url&quot;: &quot;kxlu.indycast.net:8890&quot;, &quot;latency&quot;: 3.542130947113037, &quot;uptime&quot;: 5235, &quot;disk&quot;: 2283312},
 {&quot;url&quot;: &quot;kpcc.indycast.net:8930&quot;, &quot;latency&quot;: 2.451361894607544, &quot;uptime&quot;: 5250, &quot;disk&quot;: 2000112}
@@ -494,7 +494,7 @@ $ uptime
 <p>The server query presents the output as valid JSON to do with it whatever you please. No more &quot;easy things hard and everything else impossible&quot;.</p>
 <h5 id="graphical-comprehension">Graphical comprehension</h5>
 <p>If you'd like to find out what the station coverage is, there's a graph-drawing tool that tells you.</p>
-<pre><code>$ tools/server_query.py -q stats -c kpcc | tools/graph.py 
+<pre><code>$ tools/server_query.py -q stats -s kpcc | tools/graph.py 
 
          +-0---1---2---3---4---5---6---7---8---9---10--11--12--13--14--15--16--17--18--19--20--21--22--23--+
 2015-07-06 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . |
