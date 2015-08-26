@@ -85,12 +85,12 @@ def duration_parse(duration_string):
 
 
 def name_to_unix(name):
-  if isinstance(name, (int, long)):
-    name = str(name)
+  if isinstance(name, (int, long, float)):
+    name = str(int(round(name)))
 
   return int(time.mktime(time.strptime(name, "%Y%m%d%H%M")))
 
-def ts_to_name(ts=None):
+def ts_to_name(ts=None, with_seconds=False):
   """
   This goes from a datetime to a name. Since python has so many different confusing
   time types, we have to be a bit clever about this to keep our code sane. Also we shouldn't
@@ -98,8 +98,14 @@ def ts_to_name(ts=None):
   """
   if not ts: ts = now()
 
+  if isinstance(ts, (int, long, float)):
+    ts = datetime.fromtimestamp(ts).timetuple()
+
   if type(ts) is datetime:
     ts = ts.timetuple()
+
+  if with_seconds:
+    return time.strftime("%Y%m%d%H%M_%S", ts)
 
   return time.strftime("%Y%m%d%H%M", ts)
 
