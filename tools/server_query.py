@@ -63,6 +63,7 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 try:
   db = DB.connect(db_file='../db/main.db')
+
 except:
   db = None
 
@@ -74,6 +75,9 @@ parser.add_argument('-k', '--key', default=None, help='Get a specific key in a j
 parser.add_argument('-n', '--notrandom', action='store_true', help='do not reandomize order')
 mail_config = misc.mail_config(parser)
 args = parser.parse_args()
+
+if args.config and not os.path.exists(args.config) and args.station == 'all':
+  args.station = args.config
 
 config_list = []
 
