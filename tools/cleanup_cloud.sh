@@ -108,7 +108,7 @@ for station in $station_list; do
   # We are going to make sure and confirm that there's nothing we are screwing up
   # before moving forward.
   echo -n " Checking..."
-  ./server_query.py -c $station -q stats > ${TMP_BASE}stats
+  ./server_query.py -s $station -q stats > ${TMP_BASE}stats
   if [ $? -ne "0" ]; then
     echo "The script exited unexpectedly. Bailing"
     exit 1

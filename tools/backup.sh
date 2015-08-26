@@ -7,7 +7,11 @@
 # This is useful for scripting this in larger infrastructures
 #
 
-scripted=$#
+if [ $# -eq 0 ]; then
+  station_list=`./server_query.py -l `
+else
+  station_list=$*
+fi
 
 # Make a base file name
 fname_base=`date +"%Y%m%d-%H%M"`
@@ -16,16 +20,9 @@ fname_base=`date +"%Y%m%d-%H%M"`
 backup_dir=~/backups/indycast/$fname_base
 [ -e $backup_dir ] || mkdir -p $backup_dir
 
-# First we list all of the stations
-station_list=${1:-`./server_query.py -l | shuf`}
-for station in `$station_list; do
+for station in $station_list; do
 
-  [ $scripted ] || echo -n "Backing up $station ... "
-
-  ./server_query.py -q db -c $station > $backup_dir/$station.gz
-
-  [ $scripted ] || echo `du -b $backup_dir/$station.gz | awk ' { print $1 } '`
-
+  ./server_query.py -q db -s $station > $backup_dir/$station.gz
 done
 
-[ $scripted ] && echo $backup_dir || du -k $backup_dir
+echo $backup_dir 
