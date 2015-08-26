@@ -261,7 +261,12 @@ def config_section_map(section, Config):
   Returns that dictionary.
   """
   dict1 = {}
-  options = Config.options(section)
+
+  try:
+    options = Config.options(section)
+
+  except ConfigParser.NoSectionError as exc:
+    return None
 
   for option in options:
     try:
