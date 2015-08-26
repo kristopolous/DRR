@@ -174,23 +174,8 @@ def shutdown_handler(signal=15, frame=None):
   """ shutdown_handler is hit on the keyboard interrupt """
   shutdown()
 
-def shutdown(do_restart=False):
-  """ All shutdown should be instantiated from the manager thread """
-  title = SP.getproctitle()
-  print "((%s))" % title
 
-  # Make sure that all shutdown happens from the manager
-  # thread
-  if title != '%s-manager' % config['callsign']:
-    if do_restart:
-      queue.put(('restart', True))
-
-    else:
-      queue.put(('shutdown', True))
-
-    return None
-
-
+def shutdown_real(do_restart=False):
   if 'webserver' in pid_map:
     os.kill(pid_map['webserver'].pid, signal.SIGUSR1)
 
@@ -198,20 +183,37 @@ def shutdown(do_restart=False):
 
   logging.info("[%s:%d] Shutting down" % (title, os.getpid()))
 
-  if title == ('%s-manager' % config['callsign']):
-    for key, value in pid_map.items():
-      try:
-        value.terminate()
-      except:
-        pass
+  for key, value in pid_map.items():
+    try:
+      value.terminate()
+    except:
+      pass
 
-    logging.info("Uptime: %ds", TS.uptime())
+  logging.info("Uptime: %ds", TS.uptime())
 
-  elif title != ('%s-webserver' % config['callsign']) and os.path.isfile(PIDFILE_MANAGER):
+  if os.path.isfile(PIDFILE_MANAGER):
     os.unlink(PIDFILE_MANAGER)
 
-  queue.put(('shutdown', True))
   sys.exit(0)
+
+
+def shutdown(do_restart=False):
+  """ All shutdown should be instantiated from the manager thread """
+  title = SP.getproctitle()
+  print "((%s))" % title
+
+  # Make sure that all shutdown happens from the manager
+  # thread
+  #
+  # All we do it put it in our queue ... and then trust the that
+  # queue will call the real shutdown
+  if do_restart:
+    queue.put(('restart', True))
+
+  else:
+    queue.put(('shutdown', True))
+
+  return None
 
 
 def manager_is_running(pid=None):

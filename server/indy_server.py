@@ -531,9 +531,7 @@ def server_manager(config):
   if __name__ == '__main__':
     pid = misc.change_proc_name("%s-webserver" % config['callsign'])
 
-    logging.info("BEFORE")
     signal.signal(signal.SIGUSR1, webserver_shutdown)
-    logging.info("AFTER")
     """
     When we do an upgrade or a restart, there's a race condition of getting to start this server
     before the previous one has cleaned up all the socket work.  So if the time is under our
@@ -683,7 +681,11 @@ def stream_manager():
   last_success = 0
 
   mode_full = (misc.config['mode'].lower() == 'full')
-  b_shutdown = False
+
+  change_state = None
+  SHUTDOWN = 1
+  RESTART = 2
+
   should_record = mode_full
 
   # Number of seconds to be cycling
@@ -749,13 +751,13 @@ def stream_manager():
         # old process and start a new one
 
       elif what == 'shutdown':
-        print "Shutting down"
         logging.info("-- shutdown requested")
-        b_shutdown = True
+        change_state = SHUTDOWN
 
       elif what == 'restart':
         os.chdir(misc.PROCESS_PATH)
         subprocess.Popen(sys.argv)
+        change_state = RESTART
 
       elif what == 'heartbeat':
         flag = True
@@ -808,7 +810,7 @@ def stream_manager():
     # Check for our management process
     if not misc.manager_is_running():
       logging.info("Manager isn't running");
-      b_shutdown = True
+      change_state = SHUTDOWN
 
     #
     # If we are not in full mode, then we should check whether we should be 
@@ -824,7 +826,7 @@ def stream_manager():
           process.terminate()
         process = False
 
-      if not process and not b_shutdown:
+      if not process and not change_state:
         file_name, process = download_start(file_name)
         last_success = TS.unixtime('dl')
 
@@ -840,7 +842,7 @@ def stream_manager():
       
       # If there is still no process then we should definitely bail.
       if not process:
-        return False
+        misc.shutdown_real()
 
     #
     # The only way for the bool to be toggled off is if we are not in full-mode ... 
