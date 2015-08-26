@@ -101,7 +101,6 @@ def put(path):
 
 def register_stream_list(reindex=False):
   """ Find the local streams and make sure they are all registered in the sqlite3 database. """
-
   #
   # Get the existing streams as a set
   #
@@ -144,8 +143,8 @@ def register_stream_list(reindex=False):
     DB.register_stream(info)
 
     if not misc.manager_is_running():
-      print "Manager is gone, shutting down"
-      misc.shutdown()
+      logging.info("Manager is gone, shutting down")
+      raise Exception()
 
 
 def find_streams(start_list, duration_min):
@@ -386,7 +385,12 @@ def prune_process(lockMap, reindex=False):
   # We want to run the am_i_official here since it could block on a DNS lookup
   misc.am_i_official()
 
-  register_stream_list(reindex)
+  try:
+    register_stream_list(reindex)
+
+  except:
+    return None
+
   db = DB.connect()
 
   archive_duration = misc.config['archivedays'] * TS.ONE_DAY_SECOND
@@ -409,7 +413,7 @@ def prune_process(lockMap, reindex=False):
     # other instances of itself.
     #
     if not misc.manager_is_running():
-      misc.shutdown()
+      return None
 
     ctime = os.path.getctime(file_name)
 

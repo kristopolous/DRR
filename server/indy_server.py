@@ -927,7 +927,7 @@ def read_config(config):
     'cascadetime': 60 * 15,
 
     # Cloud credentials (ec2, azure etc)
-    'cloud': False,
+    'cloud': None,
 
     #
     # When to get things off local disk and store to the cloud
