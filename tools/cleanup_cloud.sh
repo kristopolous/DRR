@@ -40,7 +40,7 @@ if [ -z "$DOWNLOAD" ]; then
 
 else
   echo "Running backup on all hosts to get database list..."
-  backup_dir=`./backup.sh 1`
+  backup_dir=`./backup.sh $station_list`
 fi
 
 
