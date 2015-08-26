@@ -61,7 +61,10 @@ def find_misbehaving_servers(db, fail_list):
 CALLSIGN = 'callsign'
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
-db = DB.connect(db_file='../db/main.db')
+try:
+  db = DB.connect(db_file='../db/main.db')
+except:
+  db = None
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-q", "--query", default=None, help="query to send to the servers (site-map gives all end points)")

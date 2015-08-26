@@ -116,6 +116,7 @@ def mail_config(parser):
 
   if args.config is None:
     print "Define the cloud configuration location with the CLOUD_CFG environment variable or using the -c option"
+    return None
 
   cloud_config = ConfigParser.ConfigParser()
   cloud_config.read(args.config)
