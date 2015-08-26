@@ -454,12 +454,14 @@ def prune_process(lockMap, reindex=False):
   # cloud thingie associated with it.
   db = DB.connect()
 
+  logging.info("HERE")
   unlink_list = db['c'].execute('select name, id from streams where end_unix < date("now", "-%d seconds") or end_minute - start_minute < 0.05' % archive_duration).fetchall()
 
   for file_name_tuple in unlink_list:
     file_name = str(file_name_tuple[0])
     id = file_name_tuple[1]
 
+    logging.debug("Prune[remove]: %s" % file_name)
     # If there's a cloud account at all then we need to unlink the 
     # equivalent mp3 file
     if cloud_cutoff:
