@@ -166,6 +166,7 @@ include_once('../indycast.net/common.php');
       </div>
     </div>
   </div>
+  <script src="/js/evda.min.js"></script>
   <script src="/js/jquery.js"></script>
   <script src="/js/bootstrap.min.js"></script>
 </body>
