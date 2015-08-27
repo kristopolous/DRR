@@ -10,5 +10,6 @@
 #   * The server code is in DRR/server
 #   
 station=$1
+length=${2:-20}
 
-ssh $station.indycast.net "cd radio/$station;tail -f indycast.log"
+ssh $station.indycast.net "cd radio/$station;tail -n $length -f indycast.log"
