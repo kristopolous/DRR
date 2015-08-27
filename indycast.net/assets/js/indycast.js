@@ -84,9 +84,9 @@ ev('', function(map) {
       encodeURI(map.name).replace(/%20/g,'_')
     ].join('/') + ".xml";
 
+    single = url.replace(' ', '');
     parts = url.split(' ');
   } 
-
 
   if(map.day && map.day.length) {
     var _map = _.map(map.day, function(what) { return fullName[what] });
@@ -100,7 +100,6 @@ ev('', function(map) {
   }
 
   if(todo.length) {
-    console.log(todo);
     if(todo.length > 1) {
       phrase += todo.slice(0, -1).join(', ') + ' and ' + todo.slice(-1)[0];
     } else {
