@@ -6,6 +6,7 @@ import time
 import json
 import misc 
 from datetime import datetime, timedelta, date
+from dateutil import parser as dt_parser
 
 import socket
 
@@ -134,54 +135,12 @@ def to_utc(day_str, hour):
 
   try:
     day_number = ['mon','tue','wed','thu','fri','sat','sun'].index(day_str.lower())
+    dt_struct = dt_parser.parse(hour)
 
-  except Exception as exc:
+  except:
     return None
 
-  local = day_number * (60 * 24)
-
-  time_re_solo = re.compile('^(\d{1,2})([ap]m|)$', re.I)
-  time_re_min = re.compile('^(\d{1,2}):(\d{2})([ap]m|)', re.I)
-  time_re_sec = re.compile('^(\d{1,2}):(\d{2}):(\d{2})([ap]m|)', re.I)
-
-  my_time = time_re_solo.match(hour)
-  if my_time:
-    hr = int(my_time.groups()[0])
-    local += hr * 60
-
-  else:
-    my_time = time_re_min.match(hour)
-
-    if my_time:
-      hr = int(my_time.groups()[0])
-      local += hr * 60
-      local += int(my_time.groups()[1])
-
-    else:
-      my_time = time_re_sec.match(hour)
-
-      if my_time:
-        hr = int(my_time.groups()[0])
-        local += hr * 60
-        local += int(my_time.groups()[1])
-        # store seconds as fractional monutes
-        local += float(my_time.groups()[2] / 60)
-
-  if not my_time:
-    return None
-
-  # time is tricky if the hr is 12
-  ampm = my_time.groups()[-1]
-  if hr == 12:
-    # 12AM is actually 1 hour BEFORE 1AM
-    if ampm == 'am': local -= (12 * 60)
-
-    # If it's 12PM then we don't need to do
-    # the math below.
-  elif my_time.groups()[-1] == 'pm':
-    local += (12 * 60)
-
-  return local
+  return (day_number * 24 + dt_struct.hour) * 60 + dt_struct.minute + dt_struct.second / 60.0 
 
 
 def get_offset(force=False):
