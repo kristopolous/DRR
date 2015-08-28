@@ -134,7 +134,7 @@ def to_utc(day_str, hour):
     return int(hour[:-3])
 
   try:
-    day_number = ['mon','tue','wed','thu','fri','sat','sun'].index(day_str.lower())
+    day_number = ['mon','tue','wed','thu','fri','sat','sun'].index(day_str[0:3].lower())
     dt_struct = dt_parser.parse(hour)
 
   except:
