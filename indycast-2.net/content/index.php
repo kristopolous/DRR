@@ -82,6 +82,7 @@ include_once('../indycast.net/common.php');
         <div id="podcast-done">
           <h3>My free subscription</h3>
           <a id="podcast-url" class='big-button disabled'></a>
+          <h3>hi</h3>
         </div>
       </footer>
 
