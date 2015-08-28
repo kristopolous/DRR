@@ -1,7 +1,6 @@
   <style>
   body { 
     background: url('images/crossword.png'); }
-  * { font-family: 'Lora', serif; }
   p {
     margin-left: 10px;
     max-width: 700px;
