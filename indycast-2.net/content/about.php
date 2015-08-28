@@ -4,6 +4,7 @@
     .side-nav { top: 0 }
   } 
   body { 
+    margin-top: 0;
     background: url('images/crossword.png'); }
   p {
     margin-left: 10px;
