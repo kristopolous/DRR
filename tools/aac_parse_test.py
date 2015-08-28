@@ -32,18 +32,18 @@ def flv_skip(file_handle):
 
 # using http://wiki.multimedia.cx/index.php?title=ADTS
 def aac_decode(fname, c=0):
-  f = open(fname, 'rb')
+  file_handle = open(fname, 'rb')
 
   # This tries to find the first readable SOF bytes
   while True:
-    b0 = f.read(1)
+    b0 = file_handle.read(1)
     # oh great, fucking FLV
-    if b0 == 'F' and f.read(2) == 'LV':
+    if b0 == 'F' and file_handle.read(2) == 'LV':
       if flv_skip(f): break
 
     if ord(b0) == 0xff:
-      if ord(f.read(1)) & 0xf6 == 0xf0:
-        f.seek(f.tell() - 2)
+      if ord(file_handle.read(1)) & 0xf6 == 0xf0:
+        file_handle.seek(file_handle.tell() - 2)
         break
     
   frame_number = 0
@@ -55,9 +55,9 @@ def aac_decode(fname, c=0):
   start_byte = []
 
   while True:
-    frame_start = f.tell()
+    frame_start = file_handle.tell()
 
-    block = f.read(header_size)
+    block = file_handle.read(header_size)
 
     if not block or len(block) < header_size:
       break
@@ -105,26 +105,26 @@ def aac_decode(fname, c=0):
     frame_length = (b3 & 3) << 11 | b4 << 3 | b5 >> 5
     # frame_count = (b6 & 3) + 1
 
-    f.read(ignore_size)
-    sig_data = f.read(sig_size)
+    file_handle.read(ignore_size)
+    sig_data = file_handle.read(sig_size)
     #print binascii.b2a_hex(sig_data), c, frame_number, fname
     frame_sig.append(sig_data)
     start_byte.append(frame_start)
 
     frame_number += 1 
-    f.read(frame_length - header_size - sig_size - ignore_size)
+    file_handle.read(frame_length - header_size - sig_size - ignore_size)
  
-  f.close()
+  file_handle.close()
   return [frame_sig, start_byte]
 
-aac_decode(sys.argv[1])
+print len(aac_decode(sys.argv[1])[0])
 sys.exit(0)
 
+"""
 for fname in glob('wzrd*mp3') + glob('/home/chris/radio/kxlu/streams/*mp3'):
   if os.path.getsize(fname) > 0:
      print fname, AH.audio_type(fname)
 
-"""
 AH.audio_stitch(sorted(glob('wzrd*mp3'))[:4], cb_sig=aac_decode)
 c = 0
 for fname in sorted(glob('wzrd*mp3'))[:25]:
