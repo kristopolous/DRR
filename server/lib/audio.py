@@ -421,7 +421,7 @@ def aac_signature(file_name, blockcount=-1):
     if b0 != 0xff or (b1 & 0xf6 != 0xf0): 
       if not is_stream:
 
-        if frame_number == 1:
+        if frame_number < 2:
           logging.warn("[aac] %s:%d False start" % (file_name, file_handle.tell()))
           file_handle.seek(frame_start + 1)
 
