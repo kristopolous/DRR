@@ -1,0 +1,5 @@
+Options +FollowSymLinks
+RewriteEngine on
+
+RewriteCond %{REQUEST_FILENAME} !-f 
+RewriteRule ^(.+)$      show_page.php?page=$1 [L]
