@@ -83,10 +83,10 @@ if(isset($_GET['callsign'])) {
 
       <div class="collapse navbar-collapse navbar-ex1-collapse">
         <ul class="nav navbar-nav side-nav">
-          <li <?= $page != 'index' ?: 'class="active"' ?>><a href="/"><i class="fa fa-fw fa-calendar"></i> Free Podcasts</a></li>
-          <li <?= $page != 'reminder' ?: 'class="active"' ?>><a href="/reminder"><i class="fa fa-fw fa-pencil-square-o"></i> Email Me Radio</a></li>
-          <li <?= $page != 'live' ?: 'class="active"' ?>><a href="/live"><i class="fa fa-fw fa-clock-o"></i> Listen Live</a></li>
-          <li <?= $page != 'about' ?: 'class="active"' ?>><a href="/about"><i class="fa fa-fw fa-book"></i> Our Story</a></li>
+          <li <?= $page == 'index' ? 'class="active"':'' ?>><a href="/"><i class="fa fa-fw fa-calendar"></i> Free Podcasts</a></li>
+          <li <?= $page == 'reminder' ? 'class="active"':'' ?>><a href="/reminder"><i class="fa fa-fw fa-pencil-square-o"></i> Email Me Radio</a></li>
+          <li <?= $page == 'live' ? 'class="active"':'' ?>><a href="/live"><i class="fa fa-fw fa-clock-o"></i> Listen Live</a></li>
+          <li <?= $page == 'about' ? 'class="active"':'' ?>><a href="/about"><i class="fa fa-fw fa-book"></i> Our Story</a></li>
           <li><a href="https://github.com/kristopolous/DRR/wiki/Donating-Money"><i class="fa fa-fw fa-heart"></i> Support Us</a></li>
           <li><a href="https://github.com/kristopolous/DRR"><i class="fa fa-fw fa-code"></i> Source Code</a></li>
         </ul>

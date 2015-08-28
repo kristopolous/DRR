@@ -1,7 +1,7 @@
 @import url("font-awesome.min.css");
 @import url("http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,400italic,600,600italic,700,700italic");
 
-html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, pre, a, code, em, img, q, s, small, strong, sub, sup, tt, u, i, center, ol, ul, li, form, label, caption, tr, th, td, article, aside, embed, footer, header, section {
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, pre, a, code, em, img, q, s, small, strong, tt, u, i, center, ol, ul, li, form, label, caption, tr, th, td, article, aside, embed, footer, header, section {
   margin: 0;
   padding: 0;
   border: 0;
@@ -16,7 +16,6 @@ form {
   margin: 0;
   line-height: 1;
 }
-body { line-height: 1; }
 ol, ul {
   list-style: none;
 }
@@ -32,7 +31,6 @@ body {
   margin-left: auto;
   margin-right: auto;
 }
-
 .container.\31 25\25 {
   width: 100%;
   max-width: 63.75em;
@@ -121,7 +119,11 @@ body {
   .container { width: 100% !important; }
 }
 html, body { height: 100%; }
-body { background: white; }
+body { 
+ line-height: 1; 
+  background: white; 
+  color: #1D1D1D; 
+}
 body.is-loading * {
   -moz-transition: none !important;
   -webkit-transition: none !important;
@@ -157,8 +159,8 @@ body, input, select {
   font-size: 120%;
   background: rgba(20,20,30,0.9);
 }
-#reminder em{  color: #317C54; }
-a {
+#reminder em { color: #317C54; }
+.page-content a {
   border-bottom: dotted 1px;
   color: #317C54;
   text-decoration: none;
@@ -169,7 +171,6 @@ em, i {
 p, .page-content ul, ol {
   margin: 0 0 2em 0;
 }
-body { color: #1D1D1D; }
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   letter-spacing: 0.125em;
