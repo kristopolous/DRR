@@ -77,14 +77,13 @@ include_once('../indycast.net/common.php');
             <input class="text" type="text" name="name" id="name" value="" placeholder="ex. Alien Air Music" />
           </div>
         </section>
-      </div>
       <footer class="major container">
         <div id="podcast-done">
           <h3>My free subscription</h3>
           <a id="podcast-url" class='big-button disabled'></a>
-          <h3>hi</h3>
         </div>
       </footer>
+      </div>
 
     </div>
 
