@@ -50,7 +50,7 @@ ev('', function(map) {
     phrase = false;
 
     $("#podcast-url").removeClass('disabled');
-    map.name = map.name || 'stream';
+    map.name = map.name || 'Unnamed Show';
     name = map.name;
   } else {
     $("#podcast-url").addClass('disabled');
