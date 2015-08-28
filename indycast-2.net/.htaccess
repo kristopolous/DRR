@@ -1,5 +1,5 @@
 Options +FollowSymLinks
 RewriteEngine on
 
-RewriteCond %{HTTP_USER_AGENT} "something"
+RewriteCond %{DOCUMENT_ROOT}content%{REQUEST_URI}\.php -f
 RewriteRule ^(.+)$      /show_page.php?page=$1 [L]
