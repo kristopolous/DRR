@@ -22,7 +22,7 @@
   }
   #header {
     margin-left: 95px;
-    height: 90px;
+    min-height: 90px;
   }
   #header h1 {
     padding-top: 5px;
@@ -52,6 +52,9 @@
     border-bottom: 1px solid rgba(0,34,68,0.2);
   }
   
+  #header h3 {
+    line-height: 1.1em;
+  }
   h2 ~ p, h2 ~ iframe, { margin-left: 20px; }
   h3 ~ table, h3 ~ iframe, h3 ~ p, h3 ~ ul, h3 ~ ol, h3 ~ pre { margin-left: 40px; }
   
@@ -174,7 +177,7 @@
     h3 ~ table, h3 ~ p, h3 ~ ul, h3 ~ ol, h3 ~ pre, h5 { margin-left: 12px; }
     ul ul { margin-left: 0px;  padding-left: 1em }
     ul ul li {padding-left: 0px }
-    #logo, #header { height: 120px; }
+    #logo, #header { min-height: 120px; }
   }
   </style>
 <div id="title">

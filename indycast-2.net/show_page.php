@@ -71,7 +71,7 @@ if(isset($_GET['callsign'])) {
 <body>
   <div id="wrapper">
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="navbar-header">
+      <div class="navbar-header hidden-lg">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
           <span class="sr-only">Toggle navigation</span>
           <span class="icon-bar"></span>
@@ -93,14 +93,12 @@ if(isset($_GET['callsign'])) {
       </div>
     </nav>
 
-    <div id="page-wrapper">
-      <div class="container-fluid">
+    <div class="container-fluid page-content">
 <? 
 if(file_exists("content/$page.php")) {
   include("content/$page.php");
 }
 ?>
-      </div>
     </div>
   </div>
   <script src="/js/evda.min.js"></script>
