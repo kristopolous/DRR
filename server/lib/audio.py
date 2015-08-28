@@ -349,7 +349,6 @@ def aac_signature(file_name, blockcount=-1):
     try:
       if ord(file_handle.read(1)) == 0xff:
         b1 = ord(file_handle.read(1))
-        print "%X%X" % (b1, b1 & 0xf6)
         if b1 & 0xf6 == 0xf0:
           file_handle.seek(file_handle.tell() - 2)
           break
@@ -409,7 +408,7 @@ def aac_signature(file_name, blockcount=-1):
     # A and C (yes this is 0xf SIX and 0xf ZERO)
     if b0 != 0xff or (b1 & 0xf6 != 0xf0): 
       if not is_stream:
-        logging.warn('[aac] %s Broken at frame#%d' % (file_name, frame_number))
+        logging.warn('[aac] %s:%d Broken at frame#%d' % (file_name, file_handle.tell(), frame_number))
 
         # We second guess our format decision
         if frame_number == 1:
