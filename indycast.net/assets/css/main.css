@@ -119,6 +119,7 @@ body {
   .container.\32 5\25 { width: 25%; }
   .container { width: 100% !important; }
 }
+.container-fluid {padding: 0}
 html, body { height: 100%; }
 body { background: white; }
 body.is-loading * {
@@ -632,7 +633,7 @@ input[type="submit"].fit,
     add additional top padding (to move our content out of its way)
     and a negative margin (to move everything up a bit).
   */
-  margin-top: -260px;
+  margin-top: -120px;
   padding: calc(460px + 6em) 0 10em 0;
   position: relative;
   text-align: center;
@@ -1147,6 +1148,7 @@ small {
   #day-picker label { text-align: center; }
   #station { height: auto }
   .page-content { margin-top: 40px }
+  .feature .image { display: none }
 }
 .button.selected {
   color: #544d55;
