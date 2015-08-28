@@ -21,6 +21,7 @@ if($station) {
     $data = curl_exec($ch);
     $info = curl_getinfo($ch);
     header('Content-Type: ' . $info['content_type']);
+    header('X-Forwarded-URL: ' . $url);
 
     echo $data;
 
