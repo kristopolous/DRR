@@ -330,6 +330,30 @@ def signature(fname, blockcount=-1):
   return sig, block
 
 
+def aac_find_frame(file_handle, file_name):
+  # This tries to find the first readable SOF bytes
+  while True:
+    try:
+      b0 = file_handle.read(1)
+      """
+      # oh great, fucking FLV
+      if b0 == 'F' and file_handle.read(2) == 'LV':
+        if flv_skip(f): break
+      """
+
+      if ord(b0) == 0xff:
+        if ord(file_handle.read(1)) & 0xf6 == 0xf0:
+          file_handle.seek(file_handle.tell() - 2)
+          break
+        else:
+          file_handle.seek(-1, 1)
+
+      return True
+
+    except:
+      logging.warn("Could not find header. searched %d bytes in %s" % (file_handle.tell(), file_name))
+      return False
+
 # using http://wiki.multimedia.cx/index.php?title=ADTS
 def aac_signature(file_name, blockcount=-1):
   is_stream = False
@@ -344,20 +368,8 @@ def aac_signature(file_name, blockcount=-1):
     file_handle = file_name
     start_pos = file_handle.tell()
 
-  # This tries to find the first readable SOF bytes
-  while True:
-    try:
-      if ord(file_handle.read(1)) == 0xff:
-        b1 = ord(file_handle.read(1))
-        if b1 & 0xf6 == 0xf0:
-          file_handle.seek(file_handle.tell() - 2)
-          break
-        else:
-          file_handle.seek(-1, 1)
-
-    except:
-      logging.warn("Could not find header. searched %d bytes in %s" % (file_handle.tell(), file_name))
-      return None, None
+  if not aac_find_frame(file_handle, file_name): 
+    return None, None
     
   frame_number = 0
   header_size = 7
@@ -408,12 +420,22 @@ def aac_signature(file_name, blockcount=-1):
     # A and C (yes this is 0xf SIX and 0xf ZERO)
     if b0 != 0xff or (b1 & 0xf6 != 0xf0): 
       if not is_stream:
-        logging.warn('[aac] %s:%d Broken at frame#%d' % (file_name, file_handle.tell(), frame_number))
 
-        # We second guess our format decision
         if frame_number == 1:
+          logging.warn("[aac] %s:%d False start" % (file_name, file_handle.tell()))
+          file_handle.seek(frame_start + 1)
+
+          # We second guess our format decision
           DB.set('format', None)
           DB.flush_cache()
+
+          if not aac_find_frame(file_handle, file_name): 
+            return None, None
+
+          continue
+
+        else:
+          logging.warn('[aac] %s:%d Broken at frame#%d' % (file_name, file_handle.tell(), frame_number))
 
       break
 
