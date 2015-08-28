@@ -1,8 +1,28 @@
 <?
 include_once('../indycast.net/common.php');
 $page = $_GET['page'];
+$ua = strtolower($_SERVER['HTTP_USER_AGENT']);
+$device = 'device';
 if(empty($page)) {
   $page = 'index';
+}
+if(strpos($ua, 'mobile') !== False) {
+  $device = 'smartphone';
+}
+if(strpos($ua, 'android') !== False) {
+  $device = 'Android smartphone';
+}
+if(strpos($ua, 'iOS') !== False or strpos($ua, 'iPhone') != False) {
+  $device = 'Apple device';
+}
+if(strpos($ua, 'windows') !== False) {
+  $device = 'Windows machine';
+}
+
+if(isset($_GET['callsign'])) {
+  $callsign = $_GET['callsign'];
+} else {
+  $callsign = '';
 }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -58,7 +78,7 @@ if(empty($page)) {
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="index.html">Indycast - record the radio that doesn't get podcasted</a>
+        <a class="navbar-brand" href="index.html">Indycast</a>
       </div>
 
       <div class="collapse navbar-collapse navbar-ex1-collapse">
