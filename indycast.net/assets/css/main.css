@@ -16,8 +16,7 @@ form {
   margin: 0;
   line-height: 1;
 }
-body { 
-line-height: 1; }
+body { line-height: 1; }
 ol, ul {
   list-style: none;
 }
@@ -167,7 +166,7 @@ a {
 em, i {
   font-style: italic;
 }
-p, ul, ol {
+p, .page-content ul, ol {
   margin: 0 0 2em 0;
 }
 body { color: #1D1D1D; }
@@ -1134,6 +1133,10 @@ small {
   #station {
     overflow-y: scroll;
   }
+}
+@media screen and (min-width: 768px) {
+  .navbar { top: -50px }
+  .side-nav { top: 0 }
 } 
 @media screen and (max-width: 768px) {
   #day-picker label { text-align: center; }

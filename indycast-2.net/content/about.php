@@ -1,4 +1,8 @@
   <style>
+@media screen and (min-width: 768px) {
+  .navbar { top: -50px }
+  .side-nav { top: 0 }
+} 
   body { 
     background: url('images/crossword.png'); }
   p {
