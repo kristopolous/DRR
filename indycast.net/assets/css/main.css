@@ -16,7 +16,8 @@ form {
   margin: 0;
   line-height: 1;
 }
-body { line-height: 1; }
+body { 
+line-height: 1; }
 ol, ul {
   list-style: none;
 }
@@ -1137,6 +1138,7 @@ small {
 @media screen and (max-width: 768px) {
   #day-picker label { text-align: center; }
   #station { height: auto }
+  .page-content { margin-top: 40px }
 }
 .button.selected {
   color: #544d55;
