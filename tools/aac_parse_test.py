@@ -30,21 +30,28 @@ def flv_skip(file_handle):
   print body_length
   
 
-# using http://wiki.multimedia.cx/index.php?title=ADTS
-def aac_decode(fname, c=0):
-  file_handle = open(fname, 'rb')
-
+def aac_find_frame(file_handle):
   # This tries to find the first readable SOF bytes
   while True:
     b0 = file_handle.read(1)
+    """
     # oh great, fucking FLV
     if b0 == 'F' and file_handle.read(2) == 'LV':
       if flv_skip(f): break
+    """
 
     if ord(b0) == 0xff:
       if ord(file_handle.read(1)) & 0xf6 == 0xf0:
         file_handle.seek(file_handle.tell() - 2)
         break
+      else:
+        file_handle.seek(-1, 1)
+
+# using http://wiki.multimedia.cx/index.php?title=ADTS
+def aac_decode(fname, c=0):
+  file_handle = open(fname, 'rb')
+
+  aac_find_frame(file_handle)
     
   frame_number = 0
   header_size = 7
@@ -91,8 +98,15 @@ def aac_decode(fname, c=0):
 
     # A and C (yes this is 0xf SIX and 0xf ZERO)
     if b0 != 0xff or (b1 & 0xf6 != 0xf0): 
-      print "Broken at frame#%d" % frame_number
-      break
+      if frame_number == 1:
+        print "False start at byte %d" % file_handle.tell()
+        file_handle.seek(frame_start + 1)
+        aac_find_frame(file_handle)
+        continue
+
+      else:
+        print "Broken at frame#%d" % frame_number
+        break
 
     #
     # For all intents and purposes this doesn't seem to be a real
