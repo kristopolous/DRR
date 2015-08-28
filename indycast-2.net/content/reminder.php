@@ -101,7 +101,7 @@ include_once('../indycast.net/common.php');
                     <i class="fa fa-envelope"></i>
                   </div>
                   <div id='rss-header'>
-                    <h3 id='rss-title'>Email me a reminder</h3>
+                    <h3 id='rss-title'>Email me the MP3</h3>
                   </div>
                 </span>
               </a>
