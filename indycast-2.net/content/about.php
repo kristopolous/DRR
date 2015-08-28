@@ -4,7 +4,6 @@
     .side-nav { top: 0 }
   } 
   body { 
-    margin-top: 0;
     background: url('images/crossword.png'); }
   p {
     margin-left: 10px;
@@ -46,7 +45,7 @@
   }
   h1,h2,h3,h4,h5,h6 {
     color: #002244;
-    line-height: 1.5em;
+    line-height: 1.3em;
   }
   h2 { margin-left: 10px; }
   h3 { margin-left: 20px; margin-top: 30px; }
@@ -154,9 +153,12 @@
     vertical-align: text-bottom;
   }
   
+  body { 
+      margin-top: 0
+  }
   @media screen and (max-width: 1280px) {
     blockquote { font-size: 0.90em }
-    body{ background: white }
+    body{ background: white;margin-top: 40px; }
     iframe {
       width: 95%;
       max-width: 420px;
