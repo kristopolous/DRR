@@ -9,7 +9,12 @@
 #   * Public keys will work
 #   * The server code is in DRR/server
 #   
-station=$1
-length=${2:-20}
+if [ $# -eq 2 ]; then
+  length=$1
+  station=$2
+else
+  length=20
+  station=$2
+fi
 
 ssh $station.indycast.net "cd radio/$station;tail -n $length -f indycast.log"
