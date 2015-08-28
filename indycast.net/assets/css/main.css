@@ -164,10 +164,14 @@ font-size: 14px;
 #reminder em { color: #317C54; }
 .page-content a {
   color: #317C54;
-  text-decoration: none;
+  text-decoration: underline;
 }
 .page-content li a {
   color: #f4f4f4;
+  text-decoration: none;
+}
+#podcast-url {
+  text-decoration: none;
 }
 em, i {
   font-style: italic;

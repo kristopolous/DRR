@@ -14,7 +14,7 @@ include_once('../indycast.net/common.php');
 -->
     <div id="header">
       <h1>Indycast DVR</h1>
-      <p>A free <a href="/about.html">technology</a> to record the <?= $callsign ? strtoupper($callsign) : "radio that doesn't get podcasted" ?>
+      <p>A free <a href="/about">technology</a> to record the <?= $callsign ? strtoupper($callsign) : "radio that doesn't get podcasted" ?>
       <?php if ($callsign) { ?><br/><small>(<a href="/">and more</a>)</small><?php } ?></p>
       <small>Works on your <?= $device ?>. No signup or app needed.</small>
     </div>
