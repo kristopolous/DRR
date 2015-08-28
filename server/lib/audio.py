@@ -344,11 +344,9 @@ def aac_find_frame(file_handle, file_name):
       if ord(b0) == 0xff:
         if ord(file_handle.read(1)) & 0xf6 == 0xf0:
           file_handle.seek(file_handle.tell() - 2)
-          break
+          return True
         else:
           file_handle.seek(-1, 1)
-
-      return True
 
     except:
       logging.warn("Could not find header. searched %d bytes in %s" % (file_handle.tell(), file_name))
@@ -426,8 +424,8 @@ def aac_signature(file_name, blockcount=-1):
           file_handle.seek(frame_start + 1)
 
           # We second guess our format decision
-          DB.set('format', None)
-          DB.flush_cache()
+          #DB.set('format', None)
+          #DB.flush_cache()
 
           if not aac_find_frame(file_handle, file_name): 
             return None, None
