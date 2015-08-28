@@ -1,6 +1,7 @@
 <?
 include_once('../indycast.net/common.php');
 ?>
+<title>Indycast - A technology to record the radio that doesn't get podcasted</title>
 <div class="row">
   <div class="col-lg-12">
     <h1 class="page-header">
