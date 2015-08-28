@@ -490,7 +490,7 @@ def server_manager(config):
 
     start_time_list = [TS.to_utc(day, start) for day in weekday_list]
     
-    if type(start_time_list[0]) is not int:
+    if not isinstance(start_time_list[0], (int, long, float)):
       return server.do_error('weekday and start times are not set correctly')
 
     # If we are here then it looks like our input is probably good.
