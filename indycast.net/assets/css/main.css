@@ -778,7 +778,7 @@ input[type="submit"].fit,
   #footer {
     background-image: url("images/bottom-1600.svg");
     background-size: 1600px 230px;
-    margin-top: -100px;
+    margin-top: -80px;
     padding: calc(230px + 4em) 0 6em 0;
   }
 
@@ -897,7 +897,7 @@ input[type="submit"].fit,
     padding-right: 1em;
   }
   #footer {
-    margin-top: -100px;
+    margin-top: -80px;
     padding-left: 1em;
     padding-right: 1em;
   }
