@@ -16,6 +16,7 @@ form {
   margin: 0;
   line-height: 1;
 }
+body { line-height: 1; }
 ol, ul {
   list-style: none;
 }
@@ -119,11 +120,7 @@ body {
   .container { width: 100% !important; }
 }
 html, body { height: 100%; }
-body { 
- line-height: 1; 
-  background: white; 
-  color: #1D1D1D; 
-}
+body { background: white; }
 body.is-loading * {
   -moz-transition: none !important;
   -webkit-transition: none !important;
@@ -145,6 +142,10 @@ body, input, select {
   background: rgba(40,40,50,0.9);
   color: #eef;
 }
+.nav {
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+font-size: 14px;
+}
 #reminder {
   padding: 0.5em;
   display: block;
@@ -161,9 +162,11 @@ body, input, select {
 }
 #reminder em { color: #317C54; }
 .page-content a {
-  border-bottom: dotted 1px;
   color: #317C54;
   text-decoration: none;
+}
+.page-content li a {
+  color: #f4f4f4;
 }
 em, i {
   font-style: italic;
@@ -171,6 +174,7 @@ em, i {
 p, .page-content ul, ol {
   margin: 0 0 2em 0;
 }
+body { color: #1D1D1D; }
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   letter-spacing: 0.125em;
@@ -781,7 +785,7 @@ input[type="submit"].fit,
 }
 
 @media screen and (max-width: 980px) {
-  body, input, select {
+  .page-content, input, select {
     font-size: 12pt;
   }
 }
