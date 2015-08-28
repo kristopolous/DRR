@@ -3,6 +3,7 @@ include_once('../indycast.net/common.php');
 ?>
   <meta name="description" content="Sending you audio for later enjoyment" />
   <meta property="og:site_name" content="Indycast" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
   <link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'>
   <style>
