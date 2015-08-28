@@ -1,6 +1,9 @@
 <?
 include_once('../indycast.net/common.php');
 $page = $_GET['page'];
+if(empty($page)) {
+  $page = 'index';
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
@@ -61,7 +64,7 @@ $page = $_GET['page'];
 
       <div class="collapse navbar-collapse navbar-ex1-collapse">
         <ul class="nav navbar-nav side-nav">
-          <li <?= $page != '/' ?: 'class="active"' ?>><a href="/"><i class="fa fa-fw fa-calendar"></i> Free Podcasts</a></li>
+          <li <?= $page != 'index' ?: 'class="active"' ?>><a href="/"><i class="fa fa-fw fa-calendar"></i> Free Podcasts</a></li>
           <li <?= $page != 'reminder' ?: 'class="active"' ?>><a href="/reminder"><i class="fa fa-fw fa-pencil-square-o"></i> Email Me Radio</a></li>
           <li <?= $page != 'live' ?: 'class="active"' ?>><a href="/live"><i class="fa fa-fw fa-clock-o"></i> Listen Live</a></li>
           <li <?= $page != 'about' ?: 'class="active"' ?>><a href="/about"><i class="fa fa-fw fa-book"></i> Our Story</a></li>
@@ -73,7 +76,11 @@ $page = $_GET['page'];
 
     <div id="page-wrapper">
       <div class="container-fluid">
-
+<? 
+if(file_exists("content/$page.php")) {
+  include("content/$page.php");
+}
+?>
       </div>
     </div>
   </div>
