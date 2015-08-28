@@ -3,7 +3,7 @@ import misc
 import cloud
 import math
 import lxml.etree as ET
-from flask import Response
+from flask import Response, jsonify
 
 import socket
 
