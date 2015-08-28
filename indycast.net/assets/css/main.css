@@ -1001,7 +1001,7 @@ form#donate {
 }
 #rss-time { 
   display: block; 
-  color: white;
+  color: rgba(255,255,255,0.8);
   width: 15em;
 }
 .big-button img {
