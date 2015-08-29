@@ -146,7 +146,7 @@ def mp3_sig(file_name, blockcount = -1):
           attempt_set = [samp_rate, bit_rate, pad_bit]
 
         frame_size, samp_rate, bit_rate, pad_bit = mp3_info(b, b1)
-        #print file_handle.tell(), frame_size, samp_rate, bit_rate
+        print file_name, file_handle.tell(), frame_size, samp_rate, bit_rate, assumed_set
 
         last_tell = file_handle.tell()
 
@@ -187,7 +187,7 @@ def mp3_sig(file_name, blockcount = -1):
         sig = file_handle.read(rsize)
         frame_sig.append(sig)
         start_byte.append(frame_start)
-        # print 'start %x' % frame_start
+        print 'start %x' % frame_start
 
         # Move forward the frame file_handle.read size + 4 byte header
         throw_away = file_handle.read(frame_size - (rsize + 4))
@@ -290,12 +290,12 @@ def audio_serialize(file_list, out_path='/tmp/serialize.mp3'):
   return True
 
 
-def audio_type(fname):
+def audio_type(file_name):
   """ 
-  Determines the audio type of an fname and returns where the start of
+  Determines the audio type of an file_name and returns where the start of
   the audio block is.
   """
-  f = open(fname, 'rb')
+  f = open(file_name, 'rb')
 
   # mp3 blocks appear to be \xff\xfb | \x49\x44 | \x54\x41
   # aac is \xff(\xf6 == \xf0) ... 
@@ -338,17 +338,17 @@ def audio_type(fname):
 
   return None, None
 
-def audio_slice(fname, start, end):
+def audio_slice(file_name, start, end):
   # Most common frame-length ... in practice, I haven't 
   # seen other values in the real world
   frame_length = (1152.0 / 44100)
-  crc32, offset = mp3_sig(fname)
+  crc32, offset = mp3_sig(file_name)
 
   frame_start = int(math.floor(start / frame_length))
   frame_end = int(math.ceil(end / frame_length))
 
   out = open('/tmp/attempt.mp3', 'wb+')
-  f = open(fname, 'rb')
+  f = open(file_name, 'rb')
 
   f.seek(offset[frame_start])
   out.write(f.read(offset[frame_end] - offset[frame_start]))
@@ -406,7 +406,7 @@ def audio_stitch(file_list, cb_sig=mp3_sig):
     audio_serialize(args)
     return True
 
-def audiotag(source, length_sec, out):
+def audio_tag(source, length_sec, out):
   length_ms = length_sec * 1000
   # Make sure our size to inject is 8 bytes long
   tlen_payload = ("%s%s" % ('\x00' * 8, str(length_ms)))[-9:]
@@ -422,13 +422,13 @@ def audiotag(source, length_sec, out):
       out.write(infile.read())
 
 if __name__ == "__main__":
-  for fname in sys.argv[1:]:
-    sig, block = mp3_sig(fname)
+  for file_name in sys.argv[1:]:
+    sig, block = mp3_sig(file_name)
     print len(block)
 
   sys.exit(0)
 
-  audiotag('/home/chris/radio/kpcc/streams/kpcc-1437707563.mp3', 2 * 60 * 60, '/tmp/audio')
+  audio_tag('/home/chris/radio/kpcc/streams/kpcc-1437707563.mp3', 2 * 60 * 60, '/tmp/audio')
 
 
   for f in fail_list.split(' '):
