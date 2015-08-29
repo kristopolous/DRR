@@ -52,7 +52,7 @@ include_once('../indycast.net/common.php');
               <li><a class="button">sat</a></li>
             </ul>
             <div id='time'>
-              <label for="start">Starting at</label>
+              <label for="start">Start time</label>
               <div id='time-controls'>
                 <input class="text" size=4 type="text" name="start" id="start" value="" placeholder="ex: 3:30 PM" /><ul class="week-group group inline" id="ampm">
                   <li><a class="button">am</a></li>
@@ -61,7 +61,7 @@ include_once('../indycast.net/common.php');
               </div>
 
             </div>
-            <label for="duration">For how long</label>
+            <label for="duration">duration</label>
             <ul class="week-group group" id="duration">
               <li><a data="30" class="button">30 min</a></li>
               <li><a data="1hr" class="button">1 hr</a></li>
