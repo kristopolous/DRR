@@ -41,7 +41,7 @@ include_once('../indycast.net/common.php');
           <a href="#" class="image icon fa-clock-o"><img src="/images/pic02.jpg" alt="" /></a>
           <div class="content" id='day-picker'>
 
-            <label for="day">day of week to record on</label>
+            <label for="day">day(s) of week</label>
             <ul class="week-group" id="day">
               <li><a class="button">sun</a></li>
               <li><a class="button">mon</a></li>
