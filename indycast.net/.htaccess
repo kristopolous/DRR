@@ -1,6 +1,9 @@
 Options +FollowSymLinks
 RewriteEngine on
 
+RewriteCond %{DOCUMENT_ROOT}content%{REQUEST_URI}\.php -f
+RewriteRule ^(.+)$      /show_page.php?page=$1 [L]
+
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^api/(.+)$  the-api.php?func=$1 [L]
 
