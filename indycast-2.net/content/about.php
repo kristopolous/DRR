@@ -1,192 +1,192 @@
-  <style>
-  @media screen and (min-width: 768px) {
-    .navbar { top: -50px }
-    .side-nav { top: 0 }
-  } 
-  body { 
-    background: url('images/crossword.png'); }
-  p {
-    margin-left: 10px;
-    max-width: 700px;
-    line-height: 1.4em;
-  }
+<style>
+@media screen and (min-width: 768px) {
+  .navbar { top: -50px }
+  .side-nav { top: 0 }
+} 
+body { 
+  background: url('images/crossword.png'); }
+p {
+  margin-left: 10px;
+  max-width: 700px;
+  line-height: 1.4em;
+}
+iframe {
+  width: 420px;
+  height: 315px;
+}
+em {
+ font-family: 'Slabo 27px', serif;
+ font-size: 1.05em;
+}
+#logo {
+  float: left;
+  margin-left: 10px;
+  width: 70px;
+  height: 90px;
+}
+#header {
+  margin-left: 95px;
+  min-height: 90px;
+}
+#header h1 {
+  padding-top: 5px;
+}
+#title { 
+  margin-top: 20px;
+}
+#logo-block { margin-left: 30px; }
+img {
+  border: 1px solid rgba(128,128,128,0.5);
+  margin: 2px;
+  padding: 2px;
+}
+#header * { 
+  margin: 0;
+}
+h1,h2,h3,h4,h5,h6 {
+  color: #002244;
+  line-height: 1.3em;
+}
+h2 { margin-left: 10px; }
+h3 { margin-left: 20px; margin-top: 30px; }
+h5,h4 { margin-left: 40px; margin-top: 30px; }
+h5 { 
+  padding-bottom: 0.75em;
+  max-width: 740px;
+  border-bottom: 1px solid rgba(0,34,68,0.2);
+}
+
+#header h3 {
+  line-height: 1.1em;
+}
+h2 ~ p, h2 ~ iframe, { margin-left: 20px; }
+h3 ~ table, h3 ~ iframe, h3 ~ p, h3 ~ ul, h3 ~ ol, h3 ~ pre { margin-left: 40px; }
+
+th, td {
+  padding-right: 12px;
+}
+li {
+  line-height: 1.3em
+}
+code, pre{
+  font-family: 'Inconsolata', monospace;
+}
+pre {
+  display: inline-block;
+  line-height: 1.25em;
+  width: auto;
+  background: #f8fafd;
+  box-shadow: 0 0 2px 0px #ddd inset;
+  padding: 0.5em 12px;
+  border-radius: 5px;
+  margin: 0 1em;
+  max-height: 32em;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+code {
+  text-shadow: 0px 0px 1px #aaa;
+}
+pre > code {
+  font-size: 0.9em;
+  color: #131;
+  text-shadow: 0 0;
+}
+blockquote small {
+  margin-top: 0.25em;
+  display: block;
+  color: #667;
+  line-height: 1.2em;
+  font-size: 0.7em;
+}
+blockquote {
+  border-top: 4px solid #eef;
+  border-bottom: 4px solid #eef;
+  font-size: 1.25em;
+  color: #334;
+  width: 30%;
+  float: right;
+  padding: 0.5em 1em;
+  background: rgba(216,216,255, 0.1);
+  margin: 0.1em 0.2em 0.1em 0.4em;
+}
+blockquote p {
+  line-height: 1.15em;
+  margin: 0;
+}
+#radio-random { 
+  margin-left: 10px;
+  background: black;
+  border-radius: 4px;
+  padding: 0.5em;
+  display: inline-block;
+  color: white;
+  font-family: sans-serif; 
+}
+#radio-random h2 {
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+  display: inline-block;
+  font-size: 20px;
+  color: white;
+  font-family: sans-serif;
+}
+#radio-random audio {
+  display: block;
+  width: 100%;
+}
+#flash-widget {
+  height: 30px;
+}
+#radio-widget {
+  margin-top: 0.5em;
+  height: 30px;
+}
+#button-random {
+  background: black;
+  color: white;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  font-size: 14px;
+  margin-right: 0.5em;
+  vertical-align: text-bottom;
+}
+
+body { 
+    margin-top: 0
+}
+@media screen and (max-width: 1280px) {
+  blockquote { font-size: 0.90em }
+  body{ background: white;margin-top: 40px; }
   iframe {
-    width: 420px;
-    height: 315px;
+    width: 95%;
+    max-width: 420px;
   }
-  em {
-   font-family: 'Slabo 27px', serif;
-   font-size: 1.05em;
-  }
-  #logo {
-    float: left;
-    margin-left: 10px;
-    width: 70px;
-    height: 90px;
-  }
-  #header {
-    margin-left: 95px;
-    min-height: 90px;
-  }
-  #header h1 {
-    padding-top: 5px;
-  }
-  #title { 
-    margin-top: 20px;
-  }
-  #logo-block { margin-left: 30px; }
-  img {
-    border: 1px solid rgba(128,128,128,0.5);
-    margin: 2px;
-    padding: 2px;
-  }
-  #header * { 
-    margin: 0;
-  }
-  h1,h2,h3,h4,h5,h6 {
-    color: #002244;
-    line-height: 1.3em;
-  }
-  h2 { margin-left: 10px; }
-  h3 { margin-left: 20px; margin-top: 30px; }
-  h5,h4 { margin-left: 40px; margin-top: 30px; }
-  h5 { 
-    padding-bottom: 0.75em;
-    max-width: 740px;
-    border-bottom: 1px solid rgba(0,34,68,0.2);
-  }
-  
-  #header h3 {
-    line-height: 1.1em;
-  }
-  h2 ~ p, h2 ~ iframe, { margin-left: 20px; }
-  h3 ~ table, h3 ~ iframe, h3 ~ p, h3 ~ ul, h3 ~ ol, h3 ~ pre { margin-left: 40px; }
-  
-  th, td {
-    padding-right: 12px;
-  }
-  li {
-    line-height: 1.3em
-  }
-  code, pre{
-    font-family: 'Inconsolata', monospace;
-  }
-  pre {
-    display: inline-block;
-    line-height: 1.25em;
-    width: auto;
-    background: #f8fafd;
-    box-shadow: 0 0 2px 0px #ddd inset;
-    padding: 0.5em 12px;
-    border-radius: 5px;
-    margin: 0 1em;
-    max-height: 32em;
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-  code {
-    text-shadow: 0px 0px 1px #aaa;
-  }
-  pre > code {
-    font-size: 0.9em;
-    color: #131;
-    text-shadow: 0 0;
-  }
-  blockquote small {
-    margin-top: 0.25em;
-    display: block;
-    color: #667;
-    line-height: 1.2em;
-    font-size: 0.7em;
-  }
-  blockquote {
-    border-top: 4px solid #eef;
-    border-bottom: 4px solid #eef;
-    font-size: 1.25em;
-    color: #334;
-    width: 30%;
-    float: right;
-    padding: 0.5em 1em;
-    background: rgba(216,216,255, 0.1);
-    margin: 0.1em 0.2em 0.1em 0.4em;
-  }
-  blockquote p {
-    line-height: 1.15em;
-    margin: 0;
+  pre, code {
+    max-width: 85%;
+    overflow-x: auto;
+    font-size: 1em;
+    margin-right: 0;
   }
   #radio-random { 
-    margin-left: 10px;
-    background: black;
-    border-radius: 4px;
-    padding: 0.5em;
-    display: inline-block;
-    color: white;
-    font-family: sans-serif; 
+    margin-left: 6px;
   }
   #radio-random h2 {
-    margin: 0;
-    padding: 0;
-    font-weight: normal;
-    display: inline-block;
-    font-size: 20px;
-    color: white;
-    font-family: sans-serif;
+    font-size: 15px;
   }
-  #radio-random audio {
-    display: block;
-    width: 100%;
-  }
-  #flash-widget {
-    height: 30px;
-  }
-  #radio-widget {
-    margin-top: 0.5em;
-    height: 30px;
-  }
-  #button-random {
-    background: black;
-    color: white;
-    border: 1px solid #aaa;
-    border-radius: 3px;
-    font-size: 14px;
-    margin-right: 0.5em;
-    vertical-align: text-bottom;
-  }
+  li, p { line-height: 1.45em }
+  p, h2 { margin-left: 3px; }
+  h3 { margin-left: 6px; }
+  #logo-block, h4 { margin-left: 9px; }
   
-  body { 
-      margin-top: 0
-  }
-  @media screen and (max-width: 1280px) {
-    blockquote { font-size: 0.90em }
-    body{ background: white;margin-top: 40px; }
-    iframe {
-      width: 95%;
-      max-width: 420px;
-    }
-    pre, code {
-      max-width: 85%;
-      overflow-x: auto;
-      font-size: 1em;
-      margin-right: 0;
-    }
-    #radio-random { 
-      margin-left: 6px;
-    }
-    #radio-random h2 {
-      font-size: 15px;
-    }
-    li, p { line-height: 1.45em }
-    p, h2 { margin-left: 3px; }
-    h3 { margin-left: 6px; }
-    #logo-block, h4 { margin-left: 9px; }
-    
-    h2 ~ p, h2 ~ iframe { margin-left: 6px; }
-    h3 ~ table, h3 ~ p, h3 ~ ul, h3 ~ ol, h3 ~ pre, h5 { margin-left: 12px; }
-    ul ul { margin-left: 0px;  padding-left: 1em }
-    ul ul li {padding-left: 0px }
-    #logo, #header { min-height: 120px; }
-  }
-  </style>
+  h2 ~ p, h2 ~ iframe { margin-left: 6px; }
+  h3 ~ table, h3 ~ p, h3 ~ ul, h3 ~ ol, h3 ~ pre, h5 { margin-left: 12px; }
+  ul ul { margin-left: 0px;  padding-left: 1em }
+  ul ul li {padding-left: 0px }
+  #logo, #header { min-height: 120px; }
+}
+</style>
 <div id="title">
 <div id="logo">
 <a href="/"><img src=/images/square-indycast_70.png></a>

@@ -1,5 +1,5 @@
 <?
-include_once('../indycast.net/common.php');
+include_once('common.php');
 $page = $_GET['page'];
 $ua = strtolower($_SERVER['HTTP_USER_AGENT']);
 $device = 'device';
