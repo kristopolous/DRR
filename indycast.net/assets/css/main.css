@@ -862,12 +862,17 @@ input[type="submit"].fit,
   #footer:before {
     height: calc(184px + 2em);
   }
-
   #footer form {
     padding-bottom: 0;
   }
   #main {
     padding: 2em 0 2em 0;
+  }
+  #rss-img { font-size: 30px; width: 33px }
+  #rss-header { margin-left: 38px; }
+  .big-button h3 { font-size: 1.1em }
+  #rss-header { 
+    margin-top: 4px;
   }
 }
 
@@ -927,6 +932,7 @@ form#donate {
   text-transform: none;
   white-space: normal;
 }
+.big-button h3 { font-size: 1.3em }
 .big-button.disabled { 
   color: grey;
   border-color: silver;
@@ -985,24 +991,24 @@ form#donate {
   text-align: left;
 }
 /* from http://stackoverflow.com/questions/10698900/css-two-column-full-width */
-#rss-img {
+#rss-img { 
+  color: white;
   float: left;
-  width: 64px;
-  min-height: 64px;
+  height: auto; 
+  font-size: 40px; 
+  width: 48px; 
 }
 #rss-header {
   line-height: 1em;
   text-align: left;
   font-weight: normal;
-  margin-left: 64px;
-  min-height: 64px;
+  margin-left: 48px;
 }
 #rss-title {
   text-align: left;
 }
 #rss-time { 
   display: block; 
-  color: rgba(255,255,255,0.8);
   width: 15em;
 }
 .big-button img {

@@ -8,12 +8,9 @@ h1 { background: white }
 a { cursor: pointer }
 #duration { width: 100%; text-align: center }
 #duration li { width: 32% }
-#rss-img { height: auto; font-size: 40px; width: 48px; min-height: 0; }
-#rss-header { height: auto; margin-left: 54px; min-height: 0; margin-top: 3px}
 #podcast-done { display: block }
 #podcast-url { line-height: 0 }
 #podcast-url-container { text-align: center;background: white }
-.big-button h3 { font-size: 1.3em }
 #podcast-url-container { height: 40px }
 #text-container { text-align: left }
 #text-container *  {display: block}
@@ -38,9 +35,6 @@ a { cursor: pointer }
 label { font-size: 0.8em; line-height: 1.3em }
 
 @media screen and (max-width: 736px) {
-  #rss-img { font-size: 30px; width: 33px }
-  #rss-header { margin-left: 38px; }
-  .big-button h3 { font-size: 1.1em }
   .feature .content {
     padding: 2em 0.5em !important;
   }

@@ -110,7 +110,7 @@ ev('', function(map) {
     }
   }
 
-  $("#podcast-url").attr({'href': single }).html(
+  $("#todo").attr({'href': single }).html(
     tpl.podcast({
       name: name,
       day: fullday,

@@ -72,8 +72,15 @@
       <label for="name">Show's Name</label>
       <input class="text" type="text" name="name" id="name" value="" placeholder="ex. Alien Air Music" />
     <div id="podcast-done">
-      <label for='podcast-url' >Get My free subscription</label>
-      <a id="podcast-url" class='big-button disabled'></a>
+      <label for='podcast-url' id='todo'>Get My free subscription</label>
+      <a id="podcast-url" class='big-button disabled'>
+        <div id='rss-img'>
+          <i class="fa fa-rss"></i>
+        </div>
+        <div id='rss-header'>
+          <h3 id='rss-title'>My Free Subscription</h3>
+        </div>
+      </a>
     </div>
     </div>
   </section>
@@ -124,13 +131,8 @@
 </div>
 <script type='text/template' id='tpl-podcast'>
   <span id='rss-top'>
-    <div id='rss-img'>
-      <img src='/images/rss_64.png'>
-    </div>
-    <div id='rss-header'>
-      <h3 id='rss-title'><%= name %></h3>
-      <span id='rss-time'><% if (phrase) { %><%= phrase %><% } else { %><%= day %> at <%= time %> on <%= station %><% } %></span>
-    </div>
+    <h3><%= name %></h3>
+    <p><% if (phrase) { %><%= phrase %><% } else { %><%= day %> at <%= time %> on <%= station %><% } %></p>
   </span>
   <span id='podcast-link'>
     <%= parts.join(' <br> ') %>
