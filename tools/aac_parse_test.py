@@ -6,7 +6,7 @@ import binascii
 import os
 import sys
 import struct
-import audio_hopper as AH
+import mp3_parse_test as AH
 
 # using ospace.tistory.com/attachment/jk12.pdf
 def flv_skip(file_handle):
