@@ -9,13 +9,13 @@ Each tool is preceded with a bracket and some letters. The letters mean:
 The current files:
 
  * [t] aac_parse_test.py - My playground for trying to quickly navigate around aac files and accurately report things about them.
- * [t] audio_hopper.py - This is where most of the map and mp3 parsing testing happens.  
  * [p] backup.sh - Queries each station for a gzipped SQLite3 dump of their current database, putting them in a dated directory
  * [p] cleanup_cloud.sh - Cross-references the cloud and a station's database, removing files that aren't accounted for.
  * [p] cloud.py - A way to query the MS azure cloud storage that's being used. [It's routinely used to calculate the projects' budget](https://github.com/kristopolous/DRR/wiki/Current-Architecture)
  * [d] get_stream.sh - Gets a remote mp3 and puts it locally (requies ssh keys to be valid)
  * [pd] graph.py - Shows a visual representation of a stations' recording coverage (look at the top of the code for more details).
  * [pd] logcat.sh - SSHs into a station and does a `tail -f` on the log. Mostly for convenience.
+ * [t] mp3_parse_test.py - This is where most of the mp3 parsing testing happens - the sibling of `aac_parse_test.py`. 
  * [p] indycast.pub - The public key you should add to your server in the authorized_keys files if you want to be part of the federation.
  * [p] request_job.py - This perennial script is the back-end technology that checks the reminder table and sends off emails.
  * [pdt] restart_through_ssh.sh - Restarts a server through ssh if the `/restart` directive fails.
