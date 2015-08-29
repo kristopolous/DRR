@@ -248,6 +248,7 @@ def mp3_sig(file_name, blockcount = -1):
           # frame signature
           start_byte = []
           frame_sig = []
+          first_header_seen = False
 
           # Also our assumed set was probably wrong
           assumed_set = None

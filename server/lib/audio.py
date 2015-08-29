@@ -545,7 +545,8 @@ def mp3_signature(file_name, blockcount=-1):
 
         samp_guess(samp_rate)
 
-        if not assumed_set and attempt_set:
+        # We make sure that we get the same set of samp_rate, bit_rate, pad_bit twice
+        if not assumed_set and attempt_set == [samp_rate, bit_rate, pad_bit]:
           assumed_set = attempt_set
           attempt_set = False
 
@@ -615,6 +616,9 @@ def mp3_signature(file_name, blockcount=-1):
           start_byte = []
           frame_sig = []
           first_header_seen = False
+
+          # Also our assumed set was probably wrong
+          assumed_set = None
 
         else:
           break
