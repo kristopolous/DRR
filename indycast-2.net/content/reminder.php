@@ -1,6 +1,3 @@
-<?php 
-include_once('../common.php'); 
-?>
 <meta name="description" content="Sending you audio for later enjoyment" />
 <meta property="og:site_name" content="Indycast" />
 <link rel="stylesheet" href="/assets/css/main.css" />

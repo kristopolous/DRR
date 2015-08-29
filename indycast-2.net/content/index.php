@@ -1,6 +1,3 @@
-<?
-include_once('../common.php');
-?>
 <link rel="stylesheet" href="/assets/css/main.css" />
 <title>Indycast - A technology to record the radio that doesn't get podcasted</title>
 <!--
