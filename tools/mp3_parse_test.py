@@ -13,14 +13,6 @@ import marshal
 from glob import glob
 
 MAX_HEADER_ATTEMPTS = 102400
-def hash_test(file_list):
-  for name in file_list:
-    mp3_sig(name)
-
-def make_map(fname):
-  obj = mp3_sig(fname)
-  print len(obj[0])
-  marshal.dump(obj, open(fname + '.map', 'wb'))
 
 def mp3_info(byte, b1):
   failCase = [ False, False, False, False ]
@@ -443,8 +435,6 @@ if __name__ == "__main__":
         print "FAILURE: %s" % f
 
   sys.exit(0)
-  # success case
-  #make_map(sys.argv[1])
 
   #sys.exit(0)
   #isSuccess = audio_stitch(["/var/radio/kpcc-1435670337.mp3","/var/radio/kpcc-1435671243.mp3"])
