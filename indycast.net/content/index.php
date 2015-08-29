@@ -69,17 +69,14 @@
   <section class="feature left">
     <a href="#" class="image icon fa-mobile"><img src="/images/pic03.jpg" alt="" /></a>
     <div class="content">
-      <h3>Give it a name</h3>
+      <label for="name">Show's Name</label>
       <input class="text" type="text" name="name" id="name" value="" placeholder="ex. Alien Air Music" />
-    </div>
-  </section>
-  <footer class="major container">
     <div id="podcast-done">
-      <h3>My free subscription</h3>
+      <label for='podcast-url' >Get My free subscription</label>
       <a id="podcast-url" class='big-button disabled'></a>
     </div>
-  </footer>
-  </div>
+    </div>
+  </section>
 </div>
 
 <div id="footer">

@@ -22,7 +22,7 @@ ev('ampm', function(val){
 ev('', function(map) {
   var start_time = "Pick the start time", 
       todo = [],
-      phrase = "Pick the ",
+      phrase = "Choose the ",
       url = '',
       single = '',
       parts = [],
@@ -42,19 +42,22 @@ ev('', function(map) {
       $("#" + key + " a:contains(" + map[key] + ")").addClass("selected");
       $("#" + key + " a[data='" + map[key] + "']").addClass("selected");
     }
-
   }
 
-  if(map.station && map.ampm && map.day && map.day.length && map.start && map.duration) {
+  if(map.name && map.station && map.ampm && map.day && map.day.length && map.start && map.duration) {
     is_ready = true;
     phrase = false;
 
     $("#podcast-url").removeClass('disabled');
-    map.name = map.name || 'Unnamed Show';
-    name = map.name;
   } else {
     $("#podcast-url").addClass('disabled');
     name = "You're almost done";
+  }
+
+  if(map.name) {
+    name = map.name;
+  } else {
+    todo.push('name');
   }
 
   if(map.station) {
