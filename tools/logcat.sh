@@ -14,7 +14,7 @@ if [ $# -eq 2 ]; then
   station=$2
 else
   length=20
-  station=$2
+  station=$1
 fi
 
 ssh $station.indycast.net "cd radio/$station;tail -n $length -f indycast.log"
