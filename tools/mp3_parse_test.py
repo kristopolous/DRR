@@ -95,7 +95,8 @@ def mp3_info(byte, b1):
 
   return frame_size, samp_rate, bit_rate, pad_bit
 
-def mp3_sig(fname, blockcount = -1):
+def mp3_sig(file_name, blockcount = -1):
+  #pdb.set_trace()
   frame_sig = []
   start_byte = []
   chain = []
@@ -107,7 +108,7 @@ def mp3_sig(fname, blockcount = -1):
   last_tell = None
   go_back = -1
 
-  file_handle = open(fname, 'rb')
+  file_handle = open(file_name, 'rb')
 
   first_header_seen = False
   header_attempts = 0
@@ -156,13 +157,15 @@ def mp3_sig(fname, blockcount = -1):
           sys.stdout.write('#')
           continue
 
-        if not assumed_set and attempt_set:
+        # We make sure that we get the same set of samp_rate, bit_rate, pad_bit twice
+        if not assumed_set and attempt_set == [samp_rate, bit_rate, pad_bit]:
           assumed_set = attempt_set
-          print assumed_set
+          print 'assumed_set', assumed_set
           attempt_set = False
 
         # This is another indicator that we could be screwing up ... 
         elif assumed_set and samp_rate != assumed_set[0] and bit_rate != assumed_set[1]:
+          print "rates are off assumed set, going back"
           file_handle.seek(go_back, 1)
           continue
 
@@ -217,7 +220,7 @@ def mp3_sig(fname, blockcount = -1):
 
       elif header_attempts > MAX_HEADER_ATTEMPTS:
 
-        print "%d[%d/%d]%s:%s:%s %s %d" % (len(frame_sig), header_attempts, MAX_HEADER_ATTEMPTS, binascii.b2a_hex(header), binascii.b2a_hex(file_handle.read(5)), fname, hex(file_handle.tell()), len(start_byte) * (1152.0 / 44100) / 60)
+        print "%d[%d/%d]%s:%s:%s %s %d" % (len(frame_sig), header_attempts, MAX_HEADER_ATTEMPTS, binascii.b2a_hex(header), binascii.b2a_hex(file_handle.read(5)), file_name, hex(file_handle.tell()), len(start_byte) * (1152.0 / 44100) / 60)
 
         # This means that perhaps we didn't guess the start correct so we try this again
         if len(frame_sig) == 1 and header_attempts < MAX_HEADER_ATTEMPTS:
@@ -237,7 +240,8 @@ def mp3_sig(fname, blockcount = -1):
 
       elif first_header_seen:
         header_attempts += 1 
-        if header_attempts > 10 and len(frame_sig) == 1:
+        if len(frame_sig) == 1:
+          print "Resetting"
           file_handle.seek(start_byte[0] + 2)
 
           # discard what we thought was the first start byte and
@@ -245,8 +249,11 @@ def mp3_sig(fname, blockcount = -1):
           start_byte = []
           frame_sig = []
 
+          # Also our assumed set was probably wrong
+          assumed_set = None
+
         elif header_attempts > 2:
-          sys.stdout.write('%s !' % fname)
+          sys.stdout.write('%s !' % file_name)
           print binascii.b2a_hex(header), "%x %d" % (file_handle.tell(), len(frame_sig))
           
           file_handle.seek(go_back, 1)
