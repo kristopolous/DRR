@@ -48,9 +48,9 @@ ev('', function(map) {
     is_ready = true;
     phrase = false;
 
-    $("#podcast-url").removeClass('disabled');
+    $("#podcast-done").removeClass('disabled');
   } else {
-    $("#podcast-url").addClass('disabled');
+    $("#podcast-done").addClass('disabled');
     name = "You're almost done";
   }
 
@@ -112,7 +112,7 @@ ev('', function(map) {
     name = "Great Job! Now just hit the big green button.";
   }
 
-  $("#todo").attr({'href': single }).html(
+  $("#podcast-done").attr({'href': single }).html(
     tpl.podcast({
       name: name,
       day: fullday,

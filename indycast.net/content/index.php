@@ -71,7 +71,7 @@
     <div class="content">
       <label for="name">Show's Name</label>
       <input class="text" type="text" name="name" id="name" value="" placeholder="ex. Alien Air Music" />
-    <div id="podcast-done">
+    <div id="podcast-done" class="disabled">
       <label for='podcast-url' id='todo'>Get My free subscription</label>
       <a id="podcast-url" class='big-button disabled'>
         <div id='rss-img'>
@@ -132,11 +132,26 @@
 <script type='text/template' id='tpl-podcast'>
   <span id='rss-note'>
     <h3><%= name %></h3>
-    <p><% if (phrase) { %><%= phrase %><% } else { %><%= day %> at <%= time %> on <%= station %><% } %></p>
+    <% if (phrase) { %>
+      <p><%= phrase %></p>
+    <% } %>
   </span>
-  <span id='podcast-link'>
-    <%= parts.join(' <br> ') %>
-  </span>
+  <a id="podcast-url" class='big-button'>
+    <div id='rss-img'>
+      <i class="fa fa-rss"></i>
+    </div>
+    <div id='rss-header'>
+      <h3 id='rss-title'>Get Weekly MP3s</h3>
+    </div>
+  </a>
+  <% if (! phrase) { %>
+    <span id="rss-post">
+      <%= name %> on <%= day %> at <%= time %> on <%= station %>.
+      <span id='podcast-link'>
+        <%= parts.join(' <br> ') %>
+      </span>
+    </span>
+  <% } %>
 </script>
 
 <script src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js'></script>
