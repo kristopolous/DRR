@@ -78,7 +78,7 @@
           <i class="fa fa-rss"></i>
         </div>
         <div id='rss-header'>
-          <h3 id='rss-title'>My Free Subscription</h3>
+          <h3 id='rss-title'>Get Weekly MP3s</h3>
         </div>
       </a>
     </div>
