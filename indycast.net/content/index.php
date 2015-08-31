@@ -130,7 +130,7 @@
   </div>
 </div>
 <script type='text/template' id='tpl-podcast'>
-  <span id='rss-top'>
+  <span id='rss-note'>
     <h3><%= name %></h3>
     <p><% if (phrase) { %><%= phrase %><% } else { %><%= day %> at <%= time %> on <%= station %><% } %></p>
   </span>

@@ -108,6 +108,8 @@ ev('', function(map) {
     } else {
       phrase += todo[0];
     }
+  } else {
+    name = "Great Job! Now just hit the big green button.";
   }
 
   $("#todo").attr({'href': single }).html(

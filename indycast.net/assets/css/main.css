@@ -1155,8 +1155,10 @@ small {
 @media screen and (min-width: 768px) {
   .navbar { top: -50px }
   .side-nav { top: 0 }
-  #podcast-url {
-    margin-left: -50px;
+  #podcast-done {
+    margin-left: -20px;
+    margin-right: 20px;
+    text-align: center;
   }
 } 
 @media screen and (max-width: 768px) {
@@ -1168,4 +1170,17 @@ small {
 .button.selected {
   color: #544d55;
   background: #D0D3CE; 
+}
+#podcast-done {
+  padding: 0.5em;
+  margin-top: 1em;
+  padding-bottom:1em;
+  background: rgba(200,200,200,0.9);
+}
+#rss-note p {
+  font-weight: normal;
+  margin-bottom: 0.25em;
+  line-height: 1.3em;
+  font-size: 90%;
+  margin: 0 2em;
 }
