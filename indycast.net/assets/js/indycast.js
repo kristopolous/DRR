@@ -111,7 +111,8 @@ ev('', function(map) {
     }
     phrase += '.';
   } else {
-    name = "Great! Hit the green button.";
+    name = "Great! You're Done."
+    phrase = "Hit the green button.";
   }
 
   $("#podcast-done").attr({'href': single }).html(
@@ -119,6 +120,7 @@ ev('', function(map) {
       name: name,
       day: fullday,
       time: start_time,
+      is_ready: is_ready,
       showname: showname,
       station: station,
       single: single,

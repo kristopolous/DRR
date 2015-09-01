@@ -73,7 +73,7 @@
       <input class="text" type="text" name="name" id="name" value="" placeholder="ex. Alien Air Music" />
     <div id="podcast-done" class="disabled">
       <label for='podcast-url' id='todo'>Get My free subscription</label>
-      <a id="podcast-url" class='big-button disabled'>
+      <a href="<%=single%>" id="podcast-url" class='big-button disabled'>
         <div id='rss-img'>
           <i class="fa fa-rss"></i>
         </div>
@@ -145,9 +145,9 @@
         <h3 id='rss-title'>Get Weekly MP3s</h3>
       </div>
     </a>
-    <% if (! phrase) { %>
+    <% if (is_ready) { %>
       <span id="rss-post">
-        The button above is a free subscription to "<em><%= showname %></em>" which airs <%= day %> at <%= time %> on <%= station.toUpperCase() %>.
+         A free subscription to "<em><%= showname %></em>" which airs <%= day %> at <%= time %> on <%= station.toUpperCase() %>. No Ads. No strings attached.
       </span>
     <% } %>
   </div>

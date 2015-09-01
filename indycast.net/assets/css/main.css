@@ -998,15 +998,16 @@ form#donate {
   float: left;
   height: auto; 
   font-size: 40px; 
-  width: 48px; 
+  width: 40px; 
 }
 #rss-header {
   line-height: 1em;
   text-align: left;
   font-weight: normal;
-  margin-left: 48px;
+  margin-left: 40px;
 }
 #rss-title {
+  font-weight: bold;
   text-align: left;
 }
 #rss-time { 
@@ -1177,16 +1178,15 @@ small {
   padding: 0.5em;
   margin-top: 1em;
   padding-bottom:1em;
-  background: white;
+  background: #f0f0f0;
 }
 #podcast-done.disabled {
   background: rgba(200,200,200,0.9);
 }
 #rss-note {
-  display: inline-block;
+  display: block;
   text-align: left;
   margin: 0 1em;
-  width: 100%;
 }
 #rss-note h3 {
   line-height: 1.3em;
@@ -1203,8 +1203,10 @@ small {
   display: inline-block;
 }
 #rss-post {
+  color: #777;
   line-height: 1.3em;
   display: block;
   text-align: left;
-  margin: 0.5em;
+  font-size: 90%;
+  margin: 0.5em 1em;
 }
