@@ -27,6 +27,12 @@ a { cursor: pointer }
   width: 97%;
   border-radius: 5px;
 }
+#rss-img {
+  width: 48px;
+}
+#rss-header {
+  margin-left: 48px;
+}
 #duration a { line-height: 1.7em;padding: 0.5em 0}
 #custom-time input { width: 48%; background: white }
 #err, #thanks, #station, #station-preselect { display: none }
