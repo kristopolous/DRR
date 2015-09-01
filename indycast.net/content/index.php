@@ -71,17 +71,7 @@
     <div class="content">
       <label for="name">Show's Name</label>
       <input class="text" type="text" name="name" id="name" value="" placeholder="ex. Alien Air Music" />
-    <div id="podcast-done" class="disabled">
-      <label for='podcast-url' id='todo'>Get My free subscription</label>
-      <a href="<%=single%>" id="podcast-url" class='big-button disabled'>
-        <div id='rss-img'>
-          <i class="fa fa-rss"></i>
-        </div>
-        <div id='rss-header'>
-          <h3 id='rss-title'>Get Weekly MP3s</h3>
-        </div>
-      </a>
-    </div>
+    <div id="podcast-done" class="disabled"></div>
     </div>
   </section>
 </div>
@@ -137,7 +127,7 @@
         <p><%= phrase %></p>
       <% } %>
     </span>
-    <a id="podcast-url" class='big-button'>
+    <a href="<%=single%>" id="podcast-url" class='big-button'>
       <div id='rss-img'>
         <i class="fa fa-rss"></i>
       </div>
@@ -147,7 +137,7 @@
     </a>
     <% if (is_ready) { %>
       <span id="rss-post">
-         A free subscription to "<em><%= showname %></em>" which airs <%= day %> at <%= time %> on <%= station.toUpperCase() %>. No Ads. No strings attached.
+         A free subscription to "<em><%= showname %></em>" which airs <%= day %> at <%= time %> on <%= station.toUpperCase() %>. No Ads. No strings attached. 100% Free.
       </span>
     <% } %>
   </div>
