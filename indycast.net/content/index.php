@@ -11,9 +11,9 @@
 -->
 <div id="header">
   <h1>Indycast DVR</h1>
-  <p>A free <a href="/about">technology</a> to record the <?= $callsign ? strtoupper($callsign) : "radio that doesn't get podcasted" ?>
+  <p>A Free technology for sending yourself MP3s of <?= $callsign ? strtoupper($callsign) : "any radio show." ?>
   <?php if ($callsign) { ?><br/><small>(<a href="/">and more</a>)</small><?php } ?></p>
-  <small>Works on your <?= $device ?>. No signup or app needed.</small>
+  <small><b>Specify the show and start listening now.</b></small>
 </div>
 <div class="box alt container"><?
   if(!$callsign) { ?>
