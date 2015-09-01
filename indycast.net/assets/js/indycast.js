@@ -55,16 +55,25 @@ ev('', function(map) {
     name = "You're almost done";
   }
 
-  if(map.name) {
-    showname = map.name;
-  } else {
-    todo.push('name');
-  }
-
   if(map.station) {
     station = map.station.toLowerCase();
   } else {
     todo.push('station');
+  }
+
+  if(map.day && map.day.length) {
+    var _map = _.map(map.day, function(what) { return fullName[what] });
+    if(map.day.length == 1) {
+      fullday = _map[0];
+    } else {
+      fullday = _map.slice(0, -1).join(', ') + ' and ' + _.last(_map);
+    }
+  } else {
+    todo.push("day(s) of week");
+  }
+
+  if(!map.duration) {
+    todo.push('duration');
   }
 
   // #27: dump the spaces, make it lower case and avoid a double am/pm
@@ -74,9 +83,12 @@ ev('', function(map) {
     todo.push('start time');
   }
 
-  if(!map.duration) {
-    todo.push('duration');
+  if(map.name) {
+    showname = map.name;
+  } else {
+    todo.push('name');
   }
+
 
   if (is_ready) {
     url = 'http://' + [
@@ -92,17 +104,6 @@ ev('', function(map) {
     parts = url.split(' ');
   } 
 
-  if(map.day && map.day.length) {
-    var _map = _.map(map.day, function(what) { return fullName[what] });
-    if(map.day.length == 1) {
-      fullday = _map[0];
-    } else {
-      fullday = _map.slice(0, -1).join(', ') + ' and ' + _.last(_map);
-    }
-  } else {
-    todo.push("day of week");
-  }
-
   if(todo.length) {
     if(todo.length > 1) {
       phrase += todo.slice(0, -1).join(', ') + ' and ' + todo.slice(-1)[0];
@@ -111,7 +112,7 @@ ev('', function(map) {
     }
     phrase += '.';
   } else {
-    name = "Great! You're Done."
+    name = "You're Done."
     phrase = "Hit the green button.";
   }
 
