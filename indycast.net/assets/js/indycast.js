@@ -24,6 +24,7 @@ ev('', function(map) {
       todo = [],
       phrase = "Choose the ",
       url = '',
+      showname = '',
       single = '',
       parts = [],
       station = "Choose the station", 
@@ -55,7 +56,7 @@ ev('', function(map) {
   }
 
   if(map.name) {
-    name = map.name;
+    showname = map.name;
   } else {
     todo.push('name');
   }
@@ -108,8 +109,9 @@ ev('', function(map) {
     } else {
       phrase += todo[0];
     }
+    phrase += '.';
   } else {
-    name = "Great Job! Now just hit the big green button.";
+    name = "Great! Hit the green button.";
   }
 
   $("#podcast-done").attr({'href': single }).html(
@@ -117,12 +119,14 @@ ev('', function(map) {
       name: name,
       day: fullday,
       time: start_time,
+      showname: showname,
       station: station,
       single: single,
       phrase: phrase,
       parts: parts
     })
   );
+  $("#podcast-container").css({width: $("#podcast-url").width() + 30});
 });
 
 ev.test('start', function(v, cb, meta) {
@@ -150,6 +154,7 @@ function htmldo(what) {
 }
 
 $(function() {
+
   tpl.podcast = _.template($("#tpl-podcast").html());
   var reminder_visible = false;
 

@@ -130,28 +130,27 @@
   </div>
 </div>
 <script type='text/template' id='tpl-podcast'>
-  <span id='rss-note'>
-    <h3><%= name %></h3>
-    <% if (phrase) { %>
-      <p><%= phrase %></p>
-    <% } %>
-  </span>
-  <a id="podcast-url" class='big-button'>
-    <div id='rss-img'>
-      <i class="fa fa-rss"></i>
-    </div>
-    <div id='rss-header'>
-      <h3 id='rss-title'>Get Weekly MP3s</h3>
-    </div>
-  </a>
-  <% if (! phrase) { %>
-    <span id="rss-post">
-      <%= name %> on <%= day %> at <%= time %> on <%= station %>.
-      <span id='podcast-link'>
-        <%= parts.join(' <br> ') %>
-      </span>
+  <div id='podcast-container'>
+    <span id='rss-note'>
+      <h3><%= name %></h3>
+      <% if (phrase) { %>
+        <p><%= phrase %></p>
+      <% } %>
     </span>
-  <% } %>
+    <a id="podcast-url" class='big-button'>
+      <div id='rss-img'>
+        <i class="fa fa-rss"></i>
+      </div>
+      <div id='rss-header'>
+        <h3 id='rss-title'>Get Weekly MP3s</h3>
+      </div>
+    </a>
+    <% if (! phrase) { %>
+      <span id="rss-post">
+        The button above is a free subscription to "<em><%= showname %></em>" which airs <%= day %> at <%= time %> on <%= station.toUpperCase() %>.
+      </span>
+    <% } %>
+  </div>
 </script>
 
 <script src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js'></script>
