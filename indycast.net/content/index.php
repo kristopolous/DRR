@@ -11,7 +11,7 @@
 -->
 <div id="header">
   <h1>Indycast DVR</h1>
-  <p>A Free technology for sending yourself MP3s of <?= $callsign ? strtoupper($callsign) : "any radio show." ?>
+  <p>A free technology that sends you MP3s of <?= $callsign ? strtoupper($callsign) : "any radio show - at any time, right now." ?>
   <?php if ($callsign) { ?><br/><small>(<a href="/">and more</a>)</small><?php } ?></p>
   <small><b>Specify the show and start listening now.</b></small>
 </div>
