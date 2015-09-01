@@ -1,14 +1,5 @@
 <link rel="stylesheet" href="/assets/css/main.css" />
-<title>Indycast - A technology to record the radio that doesn't get podcasted</title>
-<!--
-  <header class="major container 75%">
-    <h2>
-    Subscribe to any broadcast
-    <br />
-    Just by knowing when it's on.
-    </h2>
-  </header>
--->
+<title>Indycast - A free technology that sends you MP3s of any radio show - at any time, right now.</title>
 <div id="header">
   <h1>Indycast DVR</h1>
   <p>A free technology that sends you MP3s of <?= $callsign ? strtoupper($callsign) : "any radio show - at any time, right now." ?>
