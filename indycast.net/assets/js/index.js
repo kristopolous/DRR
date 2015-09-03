@@ -198,6 +198,5 @@ $(function() {
   }
   
   ev.fire(['start', 'name']);
-
 });
 
