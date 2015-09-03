@@ -93,6 +93,7 @@ if(isset($_GET['callsign'])) {
     </nav>
 
     <div class="container-fluid page-content">
+  <script src="/assets/js/common.js"></script>
 <? 
 if(file_exists("content/$page.php")) {
   include("content/$page.php");
@@ -100,8 +101,8 @@ if(file_exists("content/$page.php")) {
 ?>
     </div>
   </div>
-  <script src="/js/evda.min.js"></script>
-  <script src="/js/jquery.js"></script>
-  <script src="/js/bootstrap.min.js"></script>
+  <script src="/assets/js/evda.min.js"></script>
+  <script src="/assets/js/jquery.js"></script>
+  <script src="/assets/js/bootstrap.min.js"></script>
 </body>
 </html>

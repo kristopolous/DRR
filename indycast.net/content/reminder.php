@@ -145,48 +145,6 @@ function ls(key, value) {
   return value;
 }
 
-//
-// This is a python inspired way of doing things.
-// change_map has datetime.timedelta syntax and operates
-// 
-//  as an override if it's an integer
-//  as an eval if it's a string (such as +1 or -1)
-//
-// Currently all we care about are 
-// hours and minutes.
-//
-// seconds and milliseconds are zeroed for us.
-//
-// It can be empty of course.
-//
-function date_diff(ts, change_map) {
-
-  change_map = change_map || {};
-
-  if( !('hours' in change_map) ) {
-    change_map['hours'] = ts.getHours();
-  } else if (change_map.hours.length) {
-    // oh noes! The spirit of Douglas Crockford has now cursed my family!
-    eval("change_map['hours'] = ts.getHours() " + change_map['hours']);
-  }
-
-  if( !('minutes' in change_map) ) {
-    change_map['minutes'] = ts.getMinutes();
-  } else if (change_map.minutes.length) {
-    eval("change_map['minutes'] = ts.getMinutes() " + change_map['minutes']);
-  }
-
-  return new Date(
-    ts.getFullYear(),
-    ts.getMonth(),
-    ts.getDate(),
-    change_map.hours,
-    change_map.minutes,
-    0,
-    0
-  );
-}
-  
 function easy_bind(list) {
   _.each(list, function(what) {
 
