@@ -7,18 +7,58 @@
 #now{ font-size: 4em }
 button { font-size: 2em }
 </style>
-Pause, Rewind, Fast Forward live radio.
-In the browser or using an external player.
+  <h1>Indycast TiVo<br/>
+Pause, Rewind, Fast Forward live radio.</h1>
+
+  <div class="box alt container">
+    <section class="feature left">
+      <div class="content">
+
+
+        <label for="station">What station?</label>
+        <div id="station-preselect"></div>
+        <ul class="radio-group group" id="station"><?php
+          foreach(active_stations() as $station) {
+            echo '<li><a desc="' . $station['description'] . '" class="button">' . ($station['callsign']) . '</a></li>';
+          }
+        ?></ul>
+      </div>
+      <div class="content">
+        <div id="text-container">
+
+          <label id='email-label' for="email">Your Email</label>
+          <div>
+            <input id='email-input' type='email' name='email'>
+          </div>
+
+          <label for="notes">Show Notes</label>
+          <div>
+            <input type='text' name='notes' placeholder="To help remember what this is">
+          </div>
+        </div>
+        <div id='podcast-url-container'>
+          <div id="thanks">Thanks, we'll notify you when the show is over and ready for download.</div>
+          <div id="err">Woops, unable to register this reminder. Please try again. If the problem persists, <a href=mailto:indycast@googlegroups.com>Email us</a> with details.</div>
+          <a class='big-button disabled'>
+            <span id='rss-top'>
+              <div id='rss-img'>
+                <i class="fa fa-envelope"></i>
+              </div>
+              <div id='rss-header'>
+                <h3 id='rss-title'>Email me the MP3</h3>
+              </div>
+            </span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
 <div id="main">
   <div class="box alt container">
 <div id=now></div>
         <label for="station">What station?</label>
         <div id="station-preselect"></div>
-            <ul class="radio-group group" id="station"><?php
-              foreach(active_stations() as $station) {
-                echo '<li><a desc="' . $station['description'] . '" class="button">' . ($station['callsign']) . '</a></li>';
-              }
-            ?></ul>
       <button>5min ago</button>
       <button>10min ago</button>
       <button>15min ago</button>
