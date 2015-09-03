@@ -1,16 +1,8 @@
-Listen to your station live or 
-
-Pick your station
-How many minutes ago do you want to start from?
-
-Pick a specific time
-
-You can listen to it using the player below or
-you can click here for an external player
-<?php
-include_once('common.php');
-?>
-<!doctype html5>
+<meta name="description" content="Sending you audio for later enjoyment" />
+<meta property="og:site_name" content="Indycast" />
+<link rel="stylesheet" href="/assets/css/main.css" />
+<link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'>
 <style>
 #now{ font-size: 4em }
 button { font-size: 2em }
@@ -31,7 +23,7 @@ In the browser or using an external player.
 <button>Starting at 12:00</button>
 <br>
 <audio src="http://kpcc.indycast.net:8930/live/5pm" preload="auto" controls></audio>
-<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+Listen in external player
 <script>
 
 function timeConvert(ts) {
