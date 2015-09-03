@@ -98,15 +98,23 @@ def base_stats():
   Reports base-level statistical information about the health of the server.
   This is used for the /stats and /heartbeat call.
   """
+  try:
+    # for some reason this can lead to a memory error
+    load = [float(unit) for unit in os.popen("uptime | awk -F : ' { print $NF } '").read().split(', ')]
+
+  except:
+    load = 0
+
   return {
     'uptime': TS.uptime(),
     'last_recorded': float(DB.get('last_recorded', use_cache=False) or 0),
     'now': time.time(),
     'version': __version__,
-    'load': [float(unit) for unit in os.popen("uptime | awk -F : ' { print $NF } '").read().split(', ')],
+    'load': load,
     'plist': [ line.strip() for line in os.popen("ps auxf | grep [%s]%s" % (config['callsign'][0], config['callsign'][1:])).read().strip().split('\n') ],
     'disk': cloud.size('.') / (1024.0 ** 3)
   }
+
 
 def mail_config(parser):
   cfg = os.environ.get('CLOUD_CFG')
