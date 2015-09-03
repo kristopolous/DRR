@@ -265,9 +265,6 @@ A Distributed <a href="https://github.com/kristopolous/DRR">Open Source</a> DVR 
 <h3 id="smooth-and-painless-administration">Smooth and painless administration</h3>
 <p>Unlike with other projects, a minimal configuration to get a server up and running can be done in <strong><a href="https://github.com/kristopolous/DRR/blob/master/server/configs/kxlu.txt">just 6 lines</a></strong>! There are <a href="https://github.com/kristopolous/DRR/tree/master/server/configs">16 example configurations</a> which are about 7 lines each. These are the ones that are used in production. No kidding.</p>
 <p>There's a bash script to install dependencies but again, <a href="https://github.com/kristopolous/DRR/blob/master/bootstrap.sh">it's 12 lines</a> ... so if it doesn't work on your system, just <code>cat bootstrap.sh</code> and install the stuff yourself. composer, gemfile, vundle, bower, something else? No! none of that - let's not re-invent things that are already easy.</p>
-<blockquote>
-<p>The record for upping a server from a fresh install is in <a href=images/record.png>23.87 seconds</a>.</p>
-</blockquote>
 <p>Don't you hate it when some blackbox frameworky magic doesn't work and you helplessly try to figure out what's the code and what's the framework ... No, none of that nonsense here.</p>
 <!--Take omnibus-gitlab for instance.  It requires runit, redis, chef, postgres, nginx, ruby, unicorn, sidekiq, rails, logrotate, installs over 100,000 files into the /opt directory, takes up 3GB of disk (before doing anything) and eats up about 800MB of memory.  Even after you "uninstall" it, it still leaves behind 1.1GB of files just for the memories.  
 

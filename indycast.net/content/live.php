@@ -1,6 +1,4 @@
 <link rel="stylesheet" href="/assets/css/main.css" />
-<link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
-<link href='http://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'>
 <style>
 #now{ font-size: 4em }
 </style>
@@ -28,6 +26,18 @@ Pause, Rewind, Fast Forward live radio.</h1>
           <button class='button'>Starting at 12:30</button>
           <button class='button'>Starting at 12:00</button>
           <br>
+          <div id="radio-random">
+            <button id="button-random" onclick="do_random()">↻</button>
+            <h2 id="url"></h2>
+            <div id='radio-widget'>
+              <div id='html5-widget'>
+              <audio id="radio-control" controls type='audio/mpeg'>
+              </div>
+              <div id="flash-widget">
+              </div>
+            </div>
+          </div>
+
           <audio src="http://kpcc.indycast.net:8930/live/5pm" preload="auto" controls></audio>
           Listen in external player
         </div>
