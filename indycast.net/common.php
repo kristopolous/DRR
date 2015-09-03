@@ -16,6 +16,7 @@ $schema = [
 
     'description' => 'TEXT',
     'base_url'    => 'TEXT',
+    'website'     => 'TEXT',
     'last_seen'   => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
     'first_seen'  => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
     'pings'       => 'INTEGER DEFAULT 0',
