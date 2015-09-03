@@ -67,6 +67,7 @@
   </section>
 </div>
 
+ <li><a data-toggle="modal" data-target="#dialog-choose">Log in</a></li>
 <div id="footer">
   <div class="container 75%">
     <header class="major last">
@@ -108,6 +109,28 @@
     <ul class="copyright">
       <li>This is an <a href="https://github.com/kristopolous/DRR">open source project</a>.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
     </ul>
+  </div>
+</div>
+<div id="dialog">
+  <div class="modal fade" id="dialog-choose">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">How would you like to get the audio?</h4>
+        </div>
+        <div class="modal-body">
+          <button type='button' class='btn btn-lg btn-default'><i class="fa fa-apple"></i> In iTunes</button>
+          <button type='button' class='btn btn-lg btn-default'><i class="fa fa-rss-square"></i>
+ In another podcaster</button>
+          <button type='button' class='btn btn-lg btn-default'><i class="fa fa-envelope"></i>
+ Emailed to me weekly</button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 <script type='text/template' id='tpl-podcast'>
