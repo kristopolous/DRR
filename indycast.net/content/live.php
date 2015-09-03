@@ -9,21 +9,27 @@ button { font-size: 2em }
 </style>
 Pause, Rewind, Fast Forward live radio.
 In the browser or using an external player.
+<div id="main">
+  <div class="box alt container">
 <div id=now></div>
+        <label for="station">What station?</label>
+        <div id="station-preselect"></div>
             <ul class="radio-group group" id="station"><?php
               foreach(active_stations() as $station) {
                 echo '<li><a desc="' . $station['description'] . '" class="button">' . ($station['callsign']) . '</a></li>';
               }
             ?></ul>
-<button>5min ago</button>
-<button>10min ago</button>
-<button>15min ago</button>
-<br>
-<button>Starting at 12:30</button>
-<button>Starting at 12:00</button>
-<br>
-<audio src="http://kpcc.indycast.net:8930/live/5pm" preload="auto" controls></audio>
-Listen in external player
+      <button>5min ago</button>
+      <button>10min ago</button>
+      <button>15min ago</button>
+      <br>
+      <button>Starting at 12:30</button>
+      <button>Starting at 12:00</button>
+      <br>
+      <audio src="http://kpcc.indycast.net:8930/live/5pm" preload="auto" controls></audio>
+      Listen in external player
+    </div>
+</div>
 <script>
 
 function timeConvert(ts) {

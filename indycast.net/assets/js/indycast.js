@@ -3,6 +3,7 @@ var
   // #57 - see why ipad needs to double click
   isiDevice = navigator.userAgent.match(/ip(hone|od|ad)/i),
   isMobile = true,
+  page = false,
   listenEvent = isiDevice ? 'touchend' : 'click',
   ev = EvDa({start: '', name: '', day: []}),
   fullName = {
@@ -239,6 +240,11 @@ $(function() {
   ev.fire(['start','name']);
 
 });
+
+function station_select() {
+  $("#station-preselect").slideUp();
+  $("#station").slideDown();
+}
 
 // #30: Da Goog!
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

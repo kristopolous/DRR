@@ -286,11 +286,6 @@ var
     end_time: +date_diff(right_now, {minutes: "% 30 + 30 - (ts.getMinutes() % 30)"}) / 1000
   }
 
-function station_select() {
-  $("#station-preselect").slideUp();
-  $("#station").slideDown();
-}
-
 ev.after('', function(map) {
   if(map.email && map.station && map.start_time && map.end_time) {
     $(".big-button").removeClass('disabled');
@@ -357,11 +352,4 @@ ev('duration', function(what, meta) {
   }
 });
 
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-ga('create', 'UA-28399789-2', 'auto');
-ga('send', 'pageview');
 </script>
