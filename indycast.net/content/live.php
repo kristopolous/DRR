@@ -35,6 +35,7 @@ Pause, Rewind, Fast Forward live radio.</h1>
     </div>
   </section>
 </div>
+<?= $emit_script ?>
 <script>
 
 function timeConvert(ts) {

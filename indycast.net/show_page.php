@@ -93,16 +93,21 @@ if(isset($_GET['callsign'])) {
     </nav>
 
     <div class="container-fluid page-content">
-  <script src="/assets/js/common.js"></script>
 <? 
+
+$emit_script = "
+  <script src='/assets/js/evda.min.js'></script>
+  <script src='/assets/js/common.js'></script>
+  <script src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js'></script>
+  <script src='//code.jquery.com/jquery-1.11.3.min.js'></script>
+  <script src='/assets/js/bootstrap.min.js'></script>
+";
+
 if(file_exists("content/$page.php")) {
   include("content/$page.php");
 }
 ?>
     </div>
   </div>
-  <script src="/assets/js/evda.min.js"></script>
-  <script src="/assets/js/jquery.js"></script>
-  <script src="/assets/js/bootstrap.min.js"></script>
 </body>
 </html>
