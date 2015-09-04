@@ -77,8 +77,8 @@ function time_markers() {
   
     last_half_hour: {
       human_time: 'the previous half hour',
-      start_time: +date_diff(right_now, {minutes: "% 30 - 30 - (ts.getMinutes() % 30)"}) / 1000,
-      end_time: +date_diff(right_now, {minutes: "% 30 - (ts.getMinutes() % 30)"}) / 1000
+      start_time: +date_diff(right_now, {minutes: "- 30 - ts.getMinutes() % 30"}) / 1000,
+      end_time: +date_diff(right_now, {minutes: "- ts.getMinutes() % 30"}) / 1000
     },
 
     current_half_hour: {
@@ -147,6 +147,7 @@ function date_diff(ts, change_map) {
   } else if (change_map.minutes.length) {
     eval("change_map['minutes'] = ts.getMinutes() " + change_map['minutes']);
   }
+  console.log(change_map);
 
   return new Date(
     ts.getFullYear(),
