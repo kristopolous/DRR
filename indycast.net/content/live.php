@@ -47,6 +47,17 @@ Pause, Rewind, Fast Forward live radio.</h1>
 <?= $emit_script ?>
 <script>
 
+function to_numeric(number) {
+  var my_date = new Date(number * 1000);
+  return my_date.getHours() + ':' + String(my_date.getMinutes() + 100).slice(1);
+}
+
+var 
+  markers = time_markers(),
+  last_half_hour = to_numeric(markers.last_half_hour.start_time),
+  current_half_hour = to_numeric(markers.current_half_hour.start_time),
+  last_hour = to_numeric(markers.current_hour.start_time);
+
 function timeConvert(ts) {
   return ts.toLocaleString();
 }
