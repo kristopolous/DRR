@@ -92,71 +92,6 @@
 <?= $emit_script ?>
 <!--[if lte IE 8]><script src="/assets/js/ie/respond.min.js"></script><![endif]-->
 <script>
-function ls(key, value) {
-  if (arguments.length == 1) {
-    return localStorage[key] || false;
-  } else {
-    localStorage[key] = value;
-  }
-  return value;
-}
-
-function easy_bind(list) {
-  _.each(list, function(what) {
-
-    var node = document.querySelector('#' + what);
-
-    if(!node) {
-      node = document.querySelector('input[name="' + what + '"]');
-      if(!node) {
-        throw new Error("Can't find anything matching ", what);
-      }
-    }
-
-    if(node.nodeName == 'INPUT') {
-
-      $(node).on('blur focus change keyup', function() {
-        ev(what, this.value, {node: this});
-      });
-
-      ev(what, function(val){ 
-        node.value = val; 
-      });
-
-    } else {
-      $("a", node).on(listenEvent, function(){
-        // This tricks stupid iDevices into not fucking around and screwing with the user.
-        // (Requiring a user to tap twice to select anything.  WTF apple...)
-        var mthis = this;
-
-        setTimeout(function(){
-          ev(what, mthis.getAttribute('data') || mthis.innerHTML);
-        }, 0);
-      });
-
-      ev(what, function(val) {
-        $("a", node).removeClass('selected');
-        $("a:contains(" + val + ")", node).addClass("selected");
-        $("a[data='" + val + "']", node).addClass("selected");
-      });
-    }
-    ev.fire(what); 
-  });
-}
-
-function easy_sync(list) {
-  _.each(list, function(what) {
-    if(ls(what)) {
-      ev(what, ls(what));
-    } 
-    ev.after(what, function(value) {
-      ls(what, value);
-    });
-  });
-  return ev('');
-}
-
-
 //
 // 2 range suggestions 30 min, 1 hr are always offered.
 // the 1 hour is always the current hour and the 30 minute
@@ -180,25 +115,11 @@ var
     notes: ''
   }),
 
-  right_now = new Date(),
+  markers = time_markers(),
 
-  current_hour = {
-    human_time: 'the current hour',
-    start_time: +date_diff(right_now, {minutes: 0}) / 1000,
-    end_time: +date_diff(right_now, {minutes: 0, hours: "+1"}) / 1000
-  },
-  
-  last_half_hour = {
-    human_time: 'the previous half hour',
-    start_time: +date_diff(right_now, {minutes: "% 30 - 30 - (ts.getMinutes() % 30)"}) / 1000,
-    end_time: +date_diff(right_now, {minutes: "% 30 - (ts.getMinutes() % 30)"}) / 1000
-  }
-
-  current_half_hour = {
-    human_time: 'the current half hour',
-    start_time: +date_diff(right_now, {minutes: "% 30 - (ts.getMinutes() % 30)"}) / 1000,
-    end_time: +date_diff(right_now, {minutes: "% 30 + 30 - (ts.getMinutes() % 30)"}) / 1000
-  }
+  current_hour = markers.current_hour,
+  last_half_hour = markers.last_half_hour,
+  current_half_hour = markers.current_half_hour;
 
 ev.after('', function(map) {
   if(map.email && map.station && map.start_time && map.end_time) {
