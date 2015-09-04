@@ -28,6 +28,18 @@ from glob import glob
 
 fail_list = []
 
+OFF = False
+ON = True
+
+def stdout(switch):
+  if switch:
+    sys.stdout.close()
+    sys.stdout = globals()['old']
+
+  else:
+    globals()['old'] = sys.stdout
+    sys.stdout = open('/dev/null', "w")
+    
 def find_misbehaving_servers(db, fail_list):
   max_values = {
     'disk': '3.5',
@@ -73,7 +85,11 @@ parser.add_argument("-s", "--station", default="all", help="station to query (de
 parser.add_argument('-l', '--list', action='store_true', help='show stations')
 parser.add_argument('-k', '--key', default=None, help='Get a specific key in a json formatted result')
 parser.add_argument('-n', '--notrandom', action='store_true', help='do not reandomize order')
+
+stdout(OFF)
 mail_config = misc.mail_config(parser)
+stdout(ON)
+
 args = parser.parse_args()
 
 if args.config and not os.path.exists(args.config) and args.station == 'all':
