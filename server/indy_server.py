@@ -258,6 +258,11 @@ def server_manager(config):
     return send_file_partial("%s/%s" % (base_dir, path), requested_path=path, file_name=download_name)
 
 
+  @app.route('/db-debug')
+  def db_debug():
+    misc.queue.put(('db-debug', True))
+    return "Db debug sent"
+
   @app.route('/restart')
   def restart():
     """ 
@@ -772,6 +777,9 @@ def stream_manager():
         logging.info("Using %s as the stream now" % value)
         # We now don't toggle to flag in order to shutdown the
         # old process and start a new one
+
+      elif what == 'db-debug':
+        DB.debug()
 
       elif what == 'shutdown':
         change_state = SHUTDOWN
