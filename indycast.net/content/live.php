@@ -18,11 +18,12 @@ Pause, Rewind, Fast Forward live radio.</h1>
     <div class="content">
       <label for="station">How Long Ago?</label>
       <div id="text-container">
-        <div class="box alt container">
+        <div class="box alt container radio-group">
           <button class='button'>5min ago</button>
           <button class='button'>10min ago</button>
           <button class='button'>15min ago</button>
-          <br>
+
+        <label for="station">Or choose a specific time</label>
           <button class='button'>Starting at 12:30</button>
           <button class='button'>Starting at 12:00</button>
           <br>
