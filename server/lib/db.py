@@ -90,6 +90,13 @@ def upgrade():
 
       db['conn'].commit()
 
+def debug():
+  global g_db
+  for thread_id, c in g_db:
+    c['conn'].commit()
+
+  logging.info(g_db)
+
 def map(row_list, table, db=None):
   """ 
   Using the schema of a table, map the row_list to a list of dicts.
