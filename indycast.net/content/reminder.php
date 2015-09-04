@@ -3,49 +3,7 @@
 <link rel="stylesheet" href="/assets/css/main.css" />
 <link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'>
-<style>
-h1 { background: white } 
-a { cursor: pointer }
-#duration { width: 100%; text-align: center }
-#duration li { width: 32% }
-#podcast-done { display: block }
-#podcast-url { line-height: 0 }
-#podcast-url-container { text-align: center;background: white }
-#podcast-url-container { height: 40px }
-#text-container { text-align: left }
-#text-container *  {display: block}
-#text-container label { float:left; width: 70px; clear: both }
-#text-container div { margin-left: 70px;}
-#text-container input { width: 100%; margin-bottom: 1em }
-.box {margin-bottom: 0}
-#custom-time { 
-  display: none; 
-  background: #D0D3CE; 
-  margin: 0 auto 1em auto;
-  padding: 0.25em; 
-  text-align: center; 
-  width: 97%;
-  border-radius: 5px;
-}
-#rss-img {
-  width: 48px;
-}
-#rss-header {
-  margin-left: 48px;
-}
-#duration a { line-height: 1.7em;padding: 0.5em 0}
-#custom-time input { width: 48%; background: white }
-#err, #thanks, #station, #station-preselect { display: none }
-#err, #thanks { position: relative; top: 0; left: 0; line-height: 1.25em }
-
-label { font-size: 0.8em; line-height: 1.3em }
-
-@media screen and (max-width: 736px) {
-  .feature .content {
-    padding: 2em 0.5em !important;
-  }
-}
-</style>
+<link rel="stylesheet" href="/assets/css/reminder.css" />
 <div id="main">
   <h1>Indycast Reminders<br/>Listen later to what's on now</h1>
 
