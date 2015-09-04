@@ -55,6 +55,9 @@ def connect(config=False):
   from azure.storage import BlobService
   container = 'streams'
 
+  if not 'azure' in config:
+    return None, None
+
   blob_service = BlobService(config['azure']['storage_account_name'], config['azure']['primary_access_key'])
   blob_service.create_container(container, x_ms_blob_public_access='container')
   return blob_service, container
