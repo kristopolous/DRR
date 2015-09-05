@@ -1,5 +1,6 @@
 <link rel="stylesheet" href="/assets/css/main.css" />
 <style>
+#player-link { color: white }
 #radio-container { text-align:center }
 .box { margin-bottom: 0 }
 #half-hour,#whole-hour { display: none }
@@ -8,7 +9,7 @@
   <h1>Indycast TiVo<br/>
   Pause, Rewind, Fast Forward live radio.
 <br/>
-<small>(under development 2015-09-04)</small>
+<small>(under development 2015-09-05)</small>
 </h1>
   <div class="box alt container">
     <section class="feature left">
