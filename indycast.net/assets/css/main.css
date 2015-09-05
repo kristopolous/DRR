@@ -396,6 +396,7 @@ ul.icons li a, ul.icons li span {
   width: 2em;
 }
 input[type="submit"],
+a.button,
 .button {
   background: #544d55;
   border-radius: 4px;
