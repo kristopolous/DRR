@@ -45,7 +45,7 @@ function easy_bind(list) {
       });
 
     } else {
-      $("a", node).on(listenEvent, function(){
+      $("a,button", node).on(listenEvent, function(){
         // This tricks stupid iDevices into not fucking around and screwing with the user.
         // (Requiring a user to tap twice to select anything.  WTF apple...)
         var mthis = this;
@@ -58,7 +58,7 @@ function easy_bind(list) {
       ev(what, function(val) {
         $("a", node).removeClass('selected');
         if(val) {
-          $("a:contains(" + val + ")", node).addClass("selected");
+          $("a", node).filter(function(){return this.innerHTML == val}).addClass("selected");
           $("a[data='" + val + "']", node).addClass("selected");
         }
       });
