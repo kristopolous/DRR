@@ -181,7 +181,7 @@ def connect(db_file=None):
   if 'conn' not in instance:
 
     if not os.path.exists(db_file):
-      print "Info: Creating db file %s" % db_file
+      sys.stderr.write("Info: Creating db file %s\n" % db_file)
 
     conn = sqlite3.connect(db_file)
     instance.update({
