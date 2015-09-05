@@ -30,7 +30,7 @@ function easy_bind(list) {
     if(!node) {
       node = document.querySelector('input[name="' + what + '"]');
       if(!node) {
-        throw new Error("Can't find anything matching ", what);
+        throw new Error("Can't find anything matching " + what);
       }
     }
 
@@ -57,8 +57,10 @@ function easy_bind(list) {
 
       ev(what, function(val) {
         $("a", node).removeClass('selected');
-        $("a:contains(" + val + ")", node).addClass("selected");
-        $("a[data='" + val + "']", node).addClass("selected");
+        if(val) {
+          $("a:contains(" + val + ")", node).addClass("selected");
+          $("a[data='" + val + "']", node).addClass("selected");
+        }
       });
     }
     ev.fire(what); 
@@ -83,8 +85,8 @@ function time_markers() {
 
     current_half_hour: {
       human_time: 'the current half hour',
-      start_time: +date_diff(right_now, {minutes: "% 30 - (ts.getMinutes() % 30)"}) / 1000,
-      end_time: +date_diff(right_now, {minutes: "% 30 + 30 - (ts.getMinutes() % 30)"}) / 1000
+      start_time: +date_diff(right_now, {minutes: " - (ts.getMinutes() % 30)"}) / 1000,
+      end_time: +date_diff(right_now, {minutes: " + 30 - (ts.getMinutes() % 30)"}) / 1000
     }
   };
 }
