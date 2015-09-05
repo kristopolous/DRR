@@ -42,7 +42,7 @@ if(isset($_GET['callsign'])) {
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="author" content="Chris McKenzie">
-  <meta name="description" content="indycast DVR: A free technology that sends you MP3s of any radio show - at any time, right now." />
+  <meta name="description" content="A free technology that sends you MP3s of any radio show - at any time, right now." />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:creator" content="@indycaster" />
   <meta name="twitter:description" content="A free technology that sends you MP3s of any radio show - at any time, right now." />
