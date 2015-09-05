@@ -35,7 +35,6 @@
       </div>
       <div id='radio-container'>
         <div id="radio-random">
-          <h2 id="url"></h2>
           <div id='radio-widget'>
             <div id='html5-widget'>
             <audio id="radio-control" controls type='audio/mpeg'>
@@ -43,7 +42,7 @@
             <div id="flash-widget">
             </div>
           </div>
-          <a>Listen in external player</a>
+          <a id="player-link">Listen with an external player</a>
         </div>
       </div>
 
@@ -51,6 +50,8 @@
   </div>
 </div>
 <?= $emit_script ?>
+<script src="//releases.flowplayer.org/js/flowplayer-3.2.13.min.js"></script>
+<script src="//releases.flowplayer.org/js/flowplayer.controls-3.2.11.min.js"></script>
 <script>
 
 function to_numeric(number) {
@@ -59,6 +60,7 @@ function to_numeric(number) {
 }
 
 var 
+  html5_audio,
   markers = time_markers(),
   last_half_hour = to_numeric(markers.last_half_hour.start_time),
   ev = EvDa({start_time:'',station:''}),
@@ -66,12 +68,20 @@ var
   current_hour = to_numeric(markers.current_hour.start_time);
 
 $(function(){
+  html5_audio = document.getElementById('radio-control');
   if(current_half_hour != current_hour) {
     $("#whole-hour").html(current_hour).css('display','inline-block');
   }
   $("#half-hour").html(current_half_hour).css('display','inline-block');
 
   easy_bind(['station', 'start_time']);
+});
+
+ev('', function(map) {
+  if(map.station && map.start_time) {
+    var url = set_player('http://indycast.net/' + map.station + '/live/' + map.start_time.replace(' ',''));
+    $("#player-link").attr({href: url});
+  }
 });
 
 function timeConvert(ts) {

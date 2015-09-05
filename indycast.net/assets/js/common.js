@@ -195,7 +195,7 @@ function set_fallback(url, count) {
 }
 
 function set_player(url) {
-  var local = audio_count;
+  var local = self.audio_count ? self.audio_count : 0;
 
   $("#url").html(url);
 
@@ -211,12 +211,16 @@ function set_player(url) {
 
   html5_audio.src = url;
 
-  // Don't auto-play if it's the first
-  if (audio_count > 0) {
-    html5_audio.play();
+  if(self.hasOwnProperty('audio_count')) {
+    // Don't auto-play if it's the first
+    if (audio_count > 0) {
+      html5_audio.play();
+    }
+
+    audio_count ++;
   }
 
-  audio_count ++;
+  return url;
 }
 
 function random_url(){
