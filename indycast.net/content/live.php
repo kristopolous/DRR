@@ -1,12 +1,15 @@
 <link rel="stylesheet" href="/assets/css/main.css" />
 <style>
-#now{ font-size: 4em }
+#radio-container { text-align:center }
 .box { margin-bottom: 0 }
 #half-hour,#whole-hour { display: none }
 </style>
 <div id="main">
   <h1>Indycast TiVo<br/>
-  Pause, Rewind, Fast Forward live radio.</h1>
+  Pause, Rewind, Fast Forward live radio.
+<br/>
+<small>(under development 2015-09-04)</small>
+</h1>
   <div class="box alt container">
     <section class="feature left">
       <div class="content">
@@ -30,16 +33,18 @@
           <a id='whole-hour' class='button'>Starting at 12:00</a>
         </div>
       </div>
-      <div id="radio-random">
-        <h2 id="url"></h2>
-        <div id='radio-widget'>
-          <div id='html5-widget'>
-          <audio id="radio-control" controls type='audio/mpeg'>
+      <div id='radio-container'>
+        <div id="radio-random">
+          <h2 id="url"></h2>
+          <div id='radio-widget'>
+            <div id='html5-widget'>
+            <audio id="radio-control" controls type='audio/mpeg'>
+            </div>
+            <div id="flash-widget">
+            </div>
           </div>
-          <div id="flash-widget">
-          </div>
+          <a>Listen in external player</a>
         </div>
-        <a>Listen in external player</a>
       </div>
 
     </section>
