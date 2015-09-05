@@ -31,14 +31,14 @@ fail_list = []
 OFF = False
 ON = True
 
-def stdout(switch):
+def stderr(switch):
   if switch:
-    sys.stdout.close()
-    sys.stdout = globals()['old']
+    sys.stderr.close()
+    sys.stderr = globals()['old']
 
   else:
-    globals()['old'] = sys.stdout
-    sys.stdout = open('/dev/null', "w")
+    globals()['old'] = sys.stderr
+    sys.stderr = open('/dev/null', "w")
     
 def find_misbehaving_servers(db, fail_list):
   max_values = {
@@ -73,6 +73,7 @@ def find_misbehaving_servers(db, fail_list):
 CALLSIGN = 'callsign'
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
+stderr(OFF)
 try:
   db = DB.connect(db_file='../db/main.db')
 
@@ -86,9 +87,8 @@ parser.add_argument('-l', '--list', action='store_true', help='show stations')
 parser.add_argument('-k', '--key', default=None, help='Get a specific key in a json formatted result')
 parser.add_argument('-n', '--notrandom', action='store_true', help='do not reandomize order')
 
-stdout(OFF)
 mail_config = misc.mail_config(parser)
-stdout(ON)
+stderr(ON)
 
 args = parser.parse_args()
 
