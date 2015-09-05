@@ -29,8 +29,8 @@
           <a class='button'>15 min</a>
 
           <label for="station">Or choose a specific time</label>
-          <a id='half-hour' class='button'>Starting at 12:30</a>
-          <a id='whole-hour' class='button'>Starting at 12:00</a>
+          <a id='half-hour' class='button'></a>
+          <a id='whole-hour' class='button'></a>
         </div>
       </div>
       <div id='radio-container'>
@@ -55,7 +55,7 @@
 
 function to_numeric(number) {
   var my_date = new Date(number * 1000);
-  return my_date.toLocaleTimeString();
+  return my_date.toLocaleTimeString().replace(':00 ', ' ');
 }
 
 var 
@@ -67,9 +67,9 @@ var
 
 $(function(){
   if(current_half_hour != current_hour) {
-    $("#whole-hour").html("Starting at " + current_hour).css('display','inline-block');
+    $("#whole-hour").html(current_hour).css('display','inline-block');
   }
-  $("#half-hour").html('Starting at ' + current_half_hour).css('display','inline-block');
+  $("#half-hour").html(current_half_hour).css('display','inline-block');
 
   easy_bind(['station', 'start_time']);
 });
