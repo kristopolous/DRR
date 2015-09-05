@@ -30,38 +30,32 @@ if(isset($_GET['callsign'])) {
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="">
-  <meta name="author" content="">
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta http-equiv="Content-Style-Type" content="text/css" />
-  <link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
-  <link href='http://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'>
-  <link href='http://fonts.googleapis.com/css?family=Arvo' rel='stylesheet' type='text/css'>
-  <link href='http://fonts.googleapis.com/css?family=Slabo+27px' rel='stylesheet' type='text/css'>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta charset="utf-8" />
-  <meta name="description" content="indycast DVR: A free technology that sends you MP3s of any radio show - at any time, right now." />
-  <meta property="og:site_name" content="Indycast" />
-  <meta property="og:url" content="http://indycast.net" />
-  <meta property="og:title" content="A free technology that sends you MP3s of any radio show - at any time, right now." />
-  <meta property="og:type" content="website" />
-  <meta property="og:description" content="A free technology that sends you MP3s of any radio show - at any time, right now." />
-  <meta property="og:image" content="http://indycast.net/og-image.php" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:site" content="@indycaster" />
-  <meta name="twitter:creator" content="@indycaster" />
-  <meta name="twitter:title" content="incycast DVR: A free technology that sends you MP3s of any radio show - at any time, right now" />
-  <meta name="twitter:url" content="http://indycast.net" />
-  <meta name="twitter:description" content="A free technology that sends you MP3s of any radio show - at any time, right now." />
-  <meta name="twitter:image:src" content="http://indycast.net/images/twit-image.jpg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="favicon.ico" >
   <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
   <link href="/assets/css/sb-admin.css" rel="stylesheet"> 
   <link href="/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link href='http://fonts.googleapis.com/css?family=Arvo' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Slabo+27px' rel='stylesheet' type='text/css'>
+  <link rel="icon" href="favicon.ico" >
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="author" content="Chris McKenzie">
+  <meta name="description" content="indycast DVR: A free technology that sends you MP3s of any radio show - at any time, right now." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:creator" content="@indycaster" />
+  <meta name="twitter:description" content="A free technology that sends you MP3s of any radio show - at any time, right now." />
+  <meta name="twitter:image:src" content="http://indycast.net/images/twit-image.jpg" />
+  <meta name="twitter:site" content="@indycaster" />
+  <meta name="twitter:title" content="incycast DVR: A free technology that sends you MP3s of any radio show - at any time, right now" />
+  <meta name="twitter:url" content="http://indycast.net" />
+  <meta property="og:description" content="A free technology that sends you MP3s of any radio show - at any time, right now." />
+  <meta property="og:image" content="http://indycast.net/og-image.php" />
+  <meta property="og:site_name" content="Indycast" />
+  <meta property="og:title" content="A free technology that sends you MP3s of any radio show - at any time, right now." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="http://indycast.net" />
   <!--[if lt IE 9]>
     <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
     <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
