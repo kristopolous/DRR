@@ -2,6 +2,9 @@
 <style>
 #player-link { color: white }
 #radio-container { text-align:center }
+.disabled #radio-random { opacity: 0.4 }
+#instructions { display: none }
+.disabled #instructions { display: block }
 .box { margin-bottom: 0 }
 #half-hour,#whole-hour { display: none }
 </style>
@@ -34,7 +37,8 @@
           <a id='whole-hour' class='button'></a>
         </div>
       </div>
-      <div id='radio-container'>
+      <div id='radio-container' class='disabled'>
+        <span id='instructions'>Select the station and time above and then you can listen here.</span>
         <div id="radio-random">
           <div id='radio-widget'>
             <div id='html5-widget'>
@@ -80,6 +84,7 @@ $(function(){
 
 ev('', function(map) {
   if(map.station && map.start_time) {
+    $("#radio-container").removeClass('disabled');
     var url = set_player('http://indycast.net/' + map.station + '/live/' + map.start_time.replace(' ',''));
     $("#player-link").attr({href: url});
   }
