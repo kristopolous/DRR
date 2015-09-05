@@ -1,6 +1,8 @@
 <link rel="stylesheet" href="/assets/css/main.css" />
 <style>
 #now{ font-size: 4em }
+.box { margin-bottom: 0 }
+#half-hour,#whole-hour { display: none }
 </style>
 <h1>Indycast TiVo<br/>
 Pause, Rewind, Fast Forward live radio.</h1>
@@ -19,13 +21,13 @@ Pause, Rewind, Fast Forward live radio.</h1>
       <label for="station">How Long Ago?</label>
       <div id="text-container">
         <div class="box alt container radio-group">
-          <button class='button'>5min ago</button>
-          <button class='button'>10min ago</button>
-          <button class='button'>15min ago</button>
+          <button class='button'>5 min</button>
+          <button class='button'>10 min</button>
+          <button class='button'>15 min</button>
 
         <label for="station">Or choose a specific time</label>
-          <button class='button'>Starting at 12:30</button>
-          <button class='button'>Starting at 12:00</button>
+          <button id='half-hour' class='button'>Starting at 12:30</button>
+          <button id='whole-hour' class='button'>Starting at 12:00</button>
           <br>
         </div>
       </div>
@@ -49,14 +51,21 @@ Pause, Rewind, Fast Forward live radio.</h1>
 
 function to_numeric(number) {
   var my_date = new Date(number * 1000);
-  return my_date.getHours() + ':' + String(my_date.getMinutes() + 100).slice(1);
+  return my_date.toLocaleTimeString();
 }
 
 var 
   markers = time_markers(),
   last_half_hour = to_numeric(markers.last_half_hour.start_time),
   current_half_hour = to_numeric(markers.current_half_hour.start_time),
-  last_hour = to_numeric(markers.current_hour.start_time);
+  current_hour = to_numeric(markers.current_hour.start_time);
+
+$(function(){
+  if(current_half_hour != current_hour) {
+    $("#whole-hour").html("Starting at " + current_hour).show();
+  }
+  $("#half-hour").html('Starting at ' + current_half_hour).show();
+});
 
 function timeConvert(ts) {
   return ts.toLocaleString();
