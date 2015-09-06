@@ -3,7 +3,7 @@
 #player-link { color: white }
 #radio-container { text-align:center }
 .disabled #radio-random { opacity: 0.4 }
-#instructions { display: none }
+#instructions { display: none; line-height:1.2em;padding: 0.5em  0}
 .disabled #instructions { display: block }
 .box { margin-bottom: 0 }
 #half-hour,#whole-hour { display: none }
