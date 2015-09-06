@@ -7,6 +7,7 @@
 .disabled #instructions { display: block }
 .box { margin-bottom: 0 }
 #half-hour,#whole-hour { display: none }
+.radio-group .button { width: 6em }
 </style>
 <div id="main">
   <h1>Indycast TiVo<br/>
