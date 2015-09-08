@@ -6,6 +6,7 @@
 #instructions { display: none; line-height:1.2em;padding: 0.5em  0}
 .disabled #instructions { display: block }
 .box { margin-bottom: 0 }
+.button { white-space: nowrap }
 #half-hour,#whole-hour { display: none }
 .radio-group .button { width: 6em }
 </style>
