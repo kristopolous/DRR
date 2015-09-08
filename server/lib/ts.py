@@ -29,6 +29,7 @@ import urllib
 MINUTES_PER_WEEK = 10080
 ONE_DAY_MINUTE = 60 * 24
 ONE_DAY_SECOND = 60 * ONE_DAY_MINUTE
+WEEKDAY_LIST = ['mon','tue','wed','thu','fri','sat','sun']
 
 def now(offset_sec=0):
   """ Returns the time.time() equivalent given the offset of the station """
@@ -150,7 +151,7 @@ def to_utc(day_str, hour):
     return int(hour[:-3])
 
   try:
-    day_number = ['mon','tue','wed','thu','fri','sat','sun'].index(day_str[0:3].lower())
+    day_number = WEEKDAY_LIST.index(day_str[0:3].lower())
     dt_struct = dt_parser.parse(hour)
 
   except:
