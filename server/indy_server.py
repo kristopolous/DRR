@@ -415,18 +415,7 @@ def server_manager(config):
 
     Will work fine
     """
-    start = re.sub('[+_-]', ' ', start)
-    try:
-      dt = dt_parser.parse(start)
-      
-      # This silly library will take "monday" to mean NEXT monday, not the
-      # one that just past.  What a goofy piece of shit this is.
-      if dt > TS.now():
-        dt -= timedelta(days=7)
-
-    except:
-      return "Unfortunately, I don't know what '%s' means." % start
-
+    dt = TS.str_to_time(start)
     duration_min = TS.duration_parse(duration_string)
     endpoint = '%s-%s_%d.mp3' % (misc.config['callsign'], TS.ts_to_name(dt), duration_min)
     return send_stream(endpoint, download_name=endpoint)
@@ -440,6 +429,10 @@ def server_manager(config):
 
     You must specify a single weekday ... I know, total bummer.
     """
+    # The alternative form for this is something like
+    # /tuesday_8pm/1hr/showname.xml
+    if duration_string.count('.') > 0
+
     weekday_map = {
       'mon': 'monday', 
       'tue': 'tuesday',

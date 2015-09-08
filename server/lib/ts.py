@@ -49,6 +49,20 @@ def to_minute(unix_time):
 
   return unix_time.weekday() * (24.0 * 60) + unix_time.hour * 60 + unix_time.minute + (unix_time.second / 60.0)
 
+def str_to_time(in_str):
+  start = re.sub('[+_-]', ' ', in_str)
+  try:
+    dt = dt_parser.parse(start)
+    
+    # This silly library will take "monday" to mean NEXT monday, not the
+    # one that just past.  What a goofy piece of shit this is.
+    if dt > TS.now():
+      dt -= timedelta(days=7)
+  except:
+    return None
+
+  return dt
+
 def duration_parse(duration_string):
   # Duration is expressed either in minutes or in \d+hr\d+ minute
   re_minute = re.compile('^(\d+)(?:min|)$')
