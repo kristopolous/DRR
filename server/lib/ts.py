@@ -56,7 +56,7 @@ def str_to_time(in_str):
     
     # This silly library will take "monday" to mean NEXT monday, not the
     # one that just past.  What a goofy piece of shit this is.
-    if dt > TS.now():
+    if dt > now():
       dt -= timedelta(days=7)
 
   except:

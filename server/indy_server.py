@@ -442,6 +442,7 @@ def server_manager(config):
     # /tuesday_8pm/1hr/showname.xml
     if duration_string.count('.') > 0:
       dt = TS.str_to_time(weekday)
+      print weekday, dt
       print TS.to_minute(dt)
 
 
