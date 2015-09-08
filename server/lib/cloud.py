@@ -422,12 +422,7 @@ def prune_process(lockMap, reindex=False):
 
     # print "Looking at ", file_name, ctime, cutoff, archive_duration,  misc.config['archivedays'], misc.am_i_official()
     # We observe the rules set up in the config.
-    if file_name.startswith('slices') and ctime < slice_cutoff:
-      logging.debug("Prune[remove]: %s" % file_name)
-      os.unlink(file_name)
-      count += 1 
-
-    elif ctime < cutoff:
+    if file_name.startswith('slices') and ctime < slice_cutoff or ctime < cutoff:
       logging.debug("Prune[remove]: %s" % file_name)
       os.unlink(file_name)
       count += 1 
