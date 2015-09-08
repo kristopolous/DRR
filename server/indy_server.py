@@ -89,7 +89,7 @@ def server_manager(config):
       if not file_name:
         file_name = os.path.basename(path)
         
-      disposition += ' file_name="%s"' % file_name
+      disposition += ' filename="%s"' % file_name
 
       rv.headers.add('Content-Disposition', disposition)
       return rv
