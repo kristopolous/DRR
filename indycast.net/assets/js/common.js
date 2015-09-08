@@ -237,15 +237,6 @@ function random_url(){
   //}
 }
 
-  
-// #30: Da Goog!
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-ga('create', 'UA-28399789-2', 'auto');
-ga('send', 'pageview');
 
 // kissmetrics
 var _kmk = _kmk || '50fbdb18c781bcc6e6ec20bb7388bbe9d504c3b5';
@@ -259,3 +250,12 @@ function _kms(u){
 }
 _kms('//i.kissmetrics.com/i.js');
 _kms('//scripts.kissmetrics.com/' + _kmk + '.2.js');
+  
+// #30: Da Goog!
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-28399789-2', 'auto');
+ga('send', 'pageview');
