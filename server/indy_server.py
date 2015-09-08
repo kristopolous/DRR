@@ -86,8 +86,10 @@ def server_manager(config):
       rv = Response( data, 200, mimetype=audio.our_mime(), direct_passthrough=True )
       disposition = 'attachment;'
 
-      if file_name:
-        disposition += ' file_name="%s"' % file_name
+      if not file_name:
+        file_name = os.path.basename(path)
+        
+      disposition += ' file_name="%s"' % file_name
 
       rv.headers.add('Content-Disposition', disposition)
       return rv
@@ -427,7 +429,7 @@ def server_manager(config):
 
     duration_min = TS.duration_parse(duration_string)
     endpoint = '%s-%s_%d.mp3' % (misc.config['callsign'], TS.ts_to_name(dt), duration_min)
-    return send_stream(endpoint)
+    return send_stream(endpoint, download_name=endpoint)
 
   @app.route('/<weekday>/<start>/<duration_string>')
   def at_method2(weekday, start, duration_string):
