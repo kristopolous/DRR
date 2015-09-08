@@ -442,7 +442,7 @@ def server_manager(config):
     # /tuesday_8pm/1hr/showname.xml
     if duration_string.count('.') > 0:
       dt = TS.str_to_time(weekday)
-      print TS.to_minute(dt)
+      return stream(TS.to_minute(dt), None, start, duration_string)
 
 
     if weekday not in weekday_map:
@@ -473,8 +473,9 @@ def server_manager(config):
     to indycast@googlegroups.com.
     """
     
-    if isinstance(weekday,  (float)):
+    if isinstance(weekday, (float)):
       start_time_list = [weekday]
+      weekday_list = [ TS.WEEKDAY_LIST[ int(weekday / (60 * 24)) ] ]
 
     else:
       # Supports multiple weekdays
