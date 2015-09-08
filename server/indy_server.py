@@ -474,8 +474,13 @@ def server_manager(config):
     to indycast@googlegroups.com.
     """
     
-    # Supports multiple weekdays
-    weekday_list = weekday.split(',')
+    if isinstance(weekday,  (float)):
+      start_time_list = [weekday]
+
+    else:
+      # Supports multiple weekdays
+      weekday_list = weekday.split(',')
+      start_time_list = [TS.to_utc(day, start) for day in weekday_list]
 
     duration_min = TS.duration_parse(duration_string)
 
@@ -491,8 +496,6 @@ def server_manager(config):
     #
     duration_min += 2
 
-    start_time_list = [TS.to_utc(day, start) for day in weekday_list]
-    
     if not isinstance(start_time_list[0], (int, long, float)):
       return server.do_error('weekday and start times are not set correctly')
 
