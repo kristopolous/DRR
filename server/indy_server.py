@@ -38,7 +38,6 @@ import urllib
 
 from logging.handlers import RotatingFileHandler
 from datetime import datetime, timedelta, date
-from dateutil import parser as dt_parser
 from glob import glob
 from flask import Flask, request, jsonify, Response, url_for, redirect
 import flask
@@ -429,10 +428,6 @@ def server_manager(config):
 
     You must specify a single weekday ... I know, total bummer.
     """
-    # The alternative form for this is something like
-    # /tuesday_8pm/1hr/showname.xml
-    if duration_string.count('.') > 0
-
     weekday_map = {
       'mon': 'monday', 
       'tue': 'tuesday',
@@ -442,6 +437,13 @@ def server_manager(config):
       'sat': 'saturday', 
       'sun': 'sunday'
     }
+
+    # The alternative form for this is something like
+    # /tuesday_8pm/1hr/showname.xml
+    if duration_string.count('.') > 0:
+      dt = TS.str_to_time(weekday)
+      print TS.to_minute(dt)
+
 
     if weekday not in weekday_map:
       return "The first parameter, %s, is not a recognized weekday." % weekday

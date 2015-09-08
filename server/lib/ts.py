@@ -58,10 +58,12 @@ def str_to_time(in_str):
     # one that just past.  What a goofy piece of shit this is.
     if dt > TS.now():
       dt -= timedelta(days=7)
+
   except:
     return None
 
   return dt
+
 
 def duration_parse(duration_string):
   # Duration is expressed either in minutes or in \d+hr\d+ minute
