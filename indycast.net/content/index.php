@@ -1,4 +1,3 @@
-<script src="//cdn.optimizely.com/js/3407300498.js"></script>
 <link rel="stylesheet" href="/assets/css/main.css" />
 <title>Indycast - A free technology that sends you MP3s of any radio show - at any time, right now.</title>
 <div id="header">

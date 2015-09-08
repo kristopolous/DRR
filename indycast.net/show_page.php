@@ -28,6 +28,7 @@ if(isset($_GET['callsign'])) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
+  <script src="//cdn.optimizely.com/js/3407300498.js"></script>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
