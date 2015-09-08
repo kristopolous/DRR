@@ -9,12 +9,11 @@
 .button { white-space: nowrap }
 #half-hour,#whole-hour { display: none }
 .radio-group .button { width: 6em }
+.section { margin-top: 0.5em }
 </style>
 <div id="main">
   <h1>Indycast TiVo<br/>
   Pause, Rewind, Fast Forward live radio.
-<br/>
-<small>(under development 2015-09-05)</small>
 </h1>
   <div class="box alt container">
     <section class="feature left">
@@ -34,9 +33,12 @@
           <a class='button'>10 min</a>
           <a class='button'>15 min</a>
 
-          <label for="station">Or choose a specific time</label>
-          <a id='half-hour' class='button'></a>
-          <a id='whole-hour' class='button'></a>
+          <div class='section'>
+            <label for="station">Or choose a specific time</label>
+            <a id='half-hour' class='button'></a>
+            <a id='whole-hour' class='button'></a>
+            <a id='custom'>custom</a>
+          </div>
         </div>
       </div>
       <div id='radio-container' class='disabled'>
