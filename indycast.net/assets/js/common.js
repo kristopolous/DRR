@@ -239,6 +239,7 @@ function random_url(){
 
 
 // kissmetrics
+var _kmq = _kmq || [];
 var _kmk = _kmk || '50fbdb18c781bcc6e6ec20bb7388bbe9d504c3b5';
 function _kms(u){
   setTimeout(function(){
