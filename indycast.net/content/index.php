@@ -148,7 +148,11 @@
           <div>
             <input id='email-input' placeholder='ex: user@example.com' type='email' name='email'>
           </div>
-          <p>You'll be sent a free download link when your show is ready and can unsubscribe at any time.</p>
+          <p>Every week, you'll get a free download link to the most recent episode.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-link" data-dismiss="modal">Not Interested</button>
+          <button type="button" class="btn btn-primary">Get Free MP3s</button>
         </div>
       </div>
     </div>
