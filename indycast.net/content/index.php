@@ -132,7 +132,7 @@
         <% if (phrase) { %>
           <p><%= phrase %></p>
         <% } %>
-      </span><a onclick="<%= click_action %>" id="podcast-url" class='big-button'>
+      </span><a id="podcast-url" class='big-button'>
         <div id='rss-img'>
           <i class="fa fa-headphones"></i>
         </div>
