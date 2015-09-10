@@ -22,6 +22,7 @@ ev('', function(map) {
   var 
     start_time = "Pick the start time", 
     todo = [],
+    tpl_params = {},
     phrase = "Choose the ",
     podcast_url = '',
     live_url = '',
@@ -124,44 +125,26 @@ ev('', function(map) {
     }
     phrase += '.';
   } else {
-    name = "You're Done."
+    name = "You're Done.";
     phrase = "Hit the green button.";
   }
 
-  $("#podcast-top").html(
-    tpl.top({
-      name: name,
-      day: fullday,
-      time: start_time,
-      is_ready: _is_ready,
-      showname: showname,
-      station: station,
-      podcast_url: podcast_url,
-      phrase: phrase
-    })
-  );
+  tpl_params = {
+    name: name,
+    day: fullday,
+    time: start_time,
+    is_ready: _is_ready,
+    showname: showname,
+    station: station,
+    podcast_url: podcast_url,
+    phrase: phrase,
+    tweet_text: encodeURI("Listening to a recording of " + station.toUpperCase() + "'s " + showname + " at indycast.net. It's free. You can too: " + live_url),
+    live_url: live_url
+  };
 
-  $("#podcast-bottom").html(
-    tpl.bottom({
-      name: name,
-      day: fullday,
-      time: start_time,
-      is_ready: _is_ready,
-      showname: showname,
-      station: station,
-      podcast_url: podcast_url,
-      phrase: phrase
-    })
-  );
-
-  $("#dialog-body").html(
-    tpl.dialog({
-      podcast_url: podcast_url,
-      showname: showname,
-      live_url: live_url,
-      tweet_text: encodeURI("Listening to a recording of " + station.toUpperCase() + "'s " + showname + " at indycast.net. It's free. You can too: " + live_url)
-    })
-  );
+  _.each(['top','bottom','dialog'], function(what) {
+    $("#podcast-" + what).html( tpl[what](tpl_params));
+  });
 
   $("#dialog-title").html('latest episode of ' + showname);
 
