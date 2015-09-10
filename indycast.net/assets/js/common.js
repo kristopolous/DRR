@@ -2,6 +2,7 @@
 var 
   // #57 - see why ipad needs to double click
   isiDevice = navigator.userAgent.match(/ip(hone|od|ad)/i),
+  html5_audio,
   isMobile = true,
   listenEvent = isiDevice ? 'touchend' : 'click',
   ev = EvDa({start: '', name: '', station: '', ampm: '', day: []}),
@@ -195,6 +196,10 @@ function set_fallback(url, count) {
 }
 
 function set_player(url) {
+  if(!html5_audio) {
+    html5_audio = document.getElementById('radio-control');
+  }
+
   var local = self.audio_count ? self.audio_count : 0;
 
   $("#url").html(url);

@@ -1,7 +1,6 @@
 var 
   audio_count = 0,
   station_list = [],
-  html5_audio,
   random = {
     num: function(max, min) {
       min = min || 0;
@@ -35,8 +34,6 @@ var
 
 $(function(){
   var callsign;
-
-  html5_audio = document.getElementById('radio-control');
 
   $.getJSON('/api/stations', function(list) {
     for (var ix = 0; ix < list.length; ix++) {
