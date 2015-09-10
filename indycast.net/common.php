@@ -57,6 +57,31 @@ $schema = [
 
     'notes'       => 'TEXT'
   ]
+
+  'subscriptions' => [
+    'id'          => 'INTEGER PRIMARY KEY', 
+
+    'signup'      => 'TIMESTAMP',
+
+    // times the email was sent
+    'sent'        => 'INTEGER DEFAULT 0',
+
+    // last time this particular email was sent
+    'last_sent'   => 'TIMESTAMP',
+
+    'email'       => 'TEXT',
+    'station'     => 'TEXT',
+    'duration'    => 'INTEGER DEFAULT 0',
+    'start_min'   => 'INTEGER DEFAULT 0',
+
+    // The group id is something that conveniently avoids
+    // normalization ... if a show is on multiple times a week
+    // and it's part of the same "subscription package" then
+    // that is indicated with a groupid so that if a person
+    // "unsubscribes" they unsubscribe from the who package
+    // and not just a certain day.
+    'groupid'     => 'INTEGER DEFAULT 0', 
+  ]
 ];
 
 define('INT', 0);
