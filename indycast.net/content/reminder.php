@@ -35,7 +35,7 @@
         <div id="text-container">
 
           <label id='email-label' for="email">Your Email</label>
-          <div>
+          <div id='email-wrap'>
             <input id='email-input' type='email' name='email'>
           </div>
 
