@@ -169,7 +169,7 @@
     </div>
 
     <div class='well'>
-      <h5>Get <%= showname %> Weekly</h5>
+      <h5>Get <%= showname %> Weekly for free!</h5>
       <div style='text-align: center'>
         <a target=_blank href='<%= podcast_url %>' class='btn btn-lg btn-default'><i class="fa fa-apple"></i> In iTunes</a>
         <a target=_blank href='<%= podcast_url %>' class='btn btn-lg btn-default'><i class="fa fa-rss-square"></i> In another podcaster</a>
