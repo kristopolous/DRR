@@ -117,10 +117,9 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title">How would you like to get the audio?</h4>
+          <h4 class="modal-title">Latest Episode</h4>
         </div>
         <div class="modal-body">
-          <h4>Latest Episode</h4>
           <div id="radio-index">
             <div id='radio-widget'>
               <div id='html5-widget'>
@@ -132,15 +131,18 @@
             <div style='text-align:right'>
               <span class='st_facebook'></span>
               <span class='st_twitter'></span>
-              <span class='st_email'></span>
-              <button type='button' class='btn btn-md btn-default'><i class="fa fa-download"></i> Download This</button>
+              <button type='button' class='btn btn-lg btn-link'><i class="fa fa-download"></i> Download </button>
             </div>
           </div>
-
-          <h4>Get It Weekly</h4>
-          <button type='button' class='btn btn-lg btn-default'><i class="fa fa-apple"></i> In iTunes</button>
-          <button type='button' class='btn btn-lg btn-default'><i class="fa fa-rss-square"></i> In another podcaster</button>
-          <button type='button' class='btn btn-lg btn-default'><i class="fa fa-envelope"></i> Emailed to me</button>
+        
+          <div class='well'>
+            <h5>Get It Weekly</h5>
+            <div style='text-align: center'>
+              <button type='button' class='btn btn-lg btn-default'><i class="fa fa-apple"></i> In iTunes</button>
+              <button type='button' class='btn btn-lg btn-default'><i class="fa fa-rss-square"></i> In another podcaster</button>
+              <button type='button' class='btn btn-lg btn-default'><i class="fa fa-envelope"></i> Emailed to me</button>
+            </div>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
