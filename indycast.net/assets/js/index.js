@@ -134,6 +134,8 @@ ev('', function(map) {
       live_url: live_url
     })
   );
+  set_player(live_url);
+
   $("#dialog-choose").modal();
   $("#podcast-container").css({width: $("#podcast-url").width() + 30});
 });

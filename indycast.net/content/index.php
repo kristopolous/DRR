@@ -165,7 +165,7 @@
         <a target=_blank class="btn btn-md btn-default" href="https://twitter.com/intent/tweet?text=Hello%20world" title="Share this on twitter">
         <i class="fa fa-twitter"></i>
         </a>
-        <button title="Download this to your device" type='button' class='btn btn-lg btn-link'><i class="fa fa-download"></i> Download </button>
+        <a href="<%= live_url %>" title="Download this to your device" class='btn btn-lg btn-link'><i class="fa fa-download"></i> Download </a>
       </div>
     </div>
 
