@@ -123,8 +123,13 @@ ev('', function(map) {
       parts: parts
     })
   );
+  $("#dialog-body").html(
+    tpl.dialog()
+  );
+  $("#dialog-choose").modal();
   $("#podcast-container").css({width: $("#podcast-url").width() + 30});
 });
+
 
 ev.test('start', function(v, cb, meta) {
   var res = time_re.test(v);

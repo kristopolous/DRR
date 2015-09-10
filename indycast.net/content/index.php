@@ -119,36 +119,12 @@
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title">Latest Episode</h4>
         </div>
-        <div class="modal-body">
-          <div id="radio-index">
-            <div id='radio-widget'>
-              <div id='html5-widget'>
-              <audio id="radio-control" controls type='audio/mpeg'>
-              </div>
-              <div id="flash-widget">
-              </div>
-            </div>
-            <div style='text-align:right'>
-              <a target=_blank class="btn btn-md btn-default" href="https://twitter.com/intent/tweet?text=Hello%20world" title="Share this on twitter">
-              <i class="fa fa-twitter"></i>
-              </a>
-              <button title="Download this to your device" type='button' class='btn btn-lg btn-link'><i class="fa fa-download"></i> Download </button>
-            </div>
-          </div>
-        
-          <div class='well'>
-            <h5>Get It Weekly</h5>
-            <div style='text-align: center'>
-              <button type='button' class='btn btn-lg btn-default'><i class="fa fa-apple"></i> In iTunes</button>
-              <button type='button' class='btn btn-lg btn-default'><i class="fa fa-rss-square"></i> In another podcaster</button>
-              <button type='button' class='btn btn-lg btn-default'><i class="fa fa-envelope"></i> Emailed to me</button>
-            </div>
-          </div>
-        </div>
+        <div class="modal-body" id="dialog-body"></div>
       </div>
     </div>
   </div>
 </div>
+`
 <script type='text/template' id='tpl-podcast'>
   <div id='podcast-container'>
     <span id='rss-note'>
@@ -170,6 +146,33 @@
          A free subscription to "<em><%= showname %></em>" which airs <%= day %> at <%= time %> on <%= station.toUpperCase() %>. No Ads. No strings attached. 100% Free.
       </span>
     <% } %>
+  </div>
+</script>
+
+<script type='text/template' id='tpl-dialog'>
+  <div id="radio-index">
+    <div id='radio-widget'>
+      <div id='html5-widget'>
+      <audio id="radio-control" controls type='audio/mpeg'>
+      </div>
+      <div id="flash-widget">
+      </div>
+    </div>
+    <div style='text-align:right'>
+      <a target=_blank class="btn btn-md btn-default" href="https://twitter.com/intent/tweet?text=Hello%20world" title="Share this on twitter">
+      <i class="fa fa-twitter"></i>
+      </a>
+      <button title="Download this to your device" type='button' class='btn btn-lg btn-link'><i class="fa fa-download"></i> Download </button>
+    </div>
+  </div>
+
+  <div class='well'>
+    <h5>Get It Weekly</h5>
+    <div style='text-align: center'>
+      <button type='button' class='btn btn-lg btn-default'><i class="fa fa-apple"></i> In iTunes</button>
+      <button type='button' class='btn btn-lg btn-default'><i class="fa fa-rss-square"></i> In another podcaster</button>
+      <button type='button' class='btn btn-lg btn-default'><i class="fa fa-envelope"></i> Emailed to me</button>
+    </div>
   </div>
 </script>
 
