@@ -129,13 +129,13 @@
               <div id="flash-widget">
               </div>
             </div>
-            <a id="player-link">Download</a>
+            <button type='button' class='btn btn-lg btn-default'><i class="fa fa-apple"></i> Download</button>
           </div>
 
           <h4>Get It Weekly</h4>
           <button type='button' class='btn btn-lg btn-default'><i class="fa fa-apple"></i> In iTunes</button>
           <button type='button' class='btn btn-lg btn-default'><i class="fa fa-rss-square"></i> In another podcaster</button>
-          <button type='button' class='btn btn-lg btn-default'><i class="fa fa-envelope"></i> Emailed to me weekly</button>
+          <button type='button' class='btn btn-lg btn-default'><i class="fa fa-envelope"></i> Emailed to me</button>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
