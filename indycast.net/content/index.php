@@ -135,6 +135,25 @@
       </div>
     </div>
   </div>
+
+  <div class="modal fade" id="dialog-email">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id='dialog-title'>Your Email</h4>
+        </div>
+        <div class="modal-body" id="podcast-dialog">
+          <p>We'll send you an email when your show is ready for download.  We won't give your email to anyone else and you can unsubscribe at any time.</p>
+          <label id='email-label' for="email">Your Email</label>
+          <div>
+            <input id='email-input' type='email' name='email'>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <div id='template-list'>
@@ -153,9 +172,6 @@
        Listen to "<em><%= showname %></em>" which airs <%= day %> at <%= time %> on <%= station.toUpperCase() %>. No Ads. No strings attached. 100% Free.
      </span>
     <% } %>
-  </script>
-
-  <script type='text/template' id='tpl-email'>
   </script>
 
   <script type='text/template' id='tpl-dialog'>
