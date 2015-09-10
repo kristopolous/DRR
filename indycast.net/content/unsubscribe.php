@@ -17,33 +17,31 @@ textarea { border: 1px solid #ccc; border-radius: 3; padding: 0.5em; width: 100%
         <p>I'll take your input into serious consideration. Thanks.</p>
 
         <p><small>~chris - founder of indycast</small></p>
-        <label for='input'>Message (optional)</label>
-        <textarea id='input' name='input'></textarea>
 
       </div>
       <div class="content">
         <div id="text-container">
+          <label style='width:auto' for='input'>Optional Message</label>
+          <textarea id='input' name='input'></textarea>
 
-          <label id='email-label' for="email">Your Email</label>
-          <div>
-            <input id='email-input' type='email' name='email'>
+          <div style='margin-top:0.5em'>
+            <label id='email-label' for="email">Your Email</label>
+            <div id='email-wrap'>
+              <input id='email-input' type='email' name='email'>
+            </div>
           </div>
 
-          <label for="notes">Show Notes</label>
-          <div>
-            <input type='text' name='notes' placeholder="To help remember what this is">
-          </div>
         </div>
         <div id='podcast-url-container'>
-          <div id="thanks">Thanks, we'll notify you when the show is over and ready for download.</div>
-          <div id="err">Woops, unable to register this reminder. Please try again. If the problem persists, <a href=mailto:indycast@googlegroups.com>Email us</a> with details.</div>
+          <div id="thanks">Thanks, you've been removed.</div>
+          <div id="err">Woops, unable to unsubscribe this email address. Please try again. If the problem persists, <a href=mailto:indycast@googlegroups.com>Email us</a> with details.</div>
           <a class='big-button disabled'>
             <span id='rss-top'>
               <div id='rss-img'>
                 <i class="fa fa-envelope"></i>
               </div>
               <div id='rss-header'>
-                <h3 id='rss-title'>Email me the MP3</h3>
+                <h3 id='rss-title'>Stop The Emails</h3>
               </div>
             </span>
           </a>
