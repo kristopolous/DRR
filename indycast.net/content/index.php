@@ -62,7 +62,20 @@
     <div class="content">
       <label for="name">Show's Name</label>
       <input class="text" type="text" name="name" id="name" value="" placeholder="ex. Alien Air Music" />
-    <div id="podcast-done" class="disabled"></div>
+      <div id="podcast-done" class="disabled">
+        <div id='podcast-container'>
+          <div id="podcast-top"></div>
+          <a id="podcast-url" class='big-button'>
+            <div id='rss-img'>
+              <i class="fa fa-headphones"></i>
+            </div>
+            <div id='rss-header'>
+              <h3 id='rss-title'>&nbsp;Listen Now</h3>
+            </div>
+          </a>
+          <div id="podcast-bottom"></div>
+        </div>
+      </div>
     </div>
   </section>
 </div>
@@ -125,27 +138,21 @@
 </div>
 
 <div id='template-list'>
-  <script type='text/template' id='tpl-podcast'>
-    <div id='podcast-container'>
-      <span id='rss-note'>
-        <h3><%= name %></h3>
-        <% if (phrase) { %>
-          <p><%= phrase %></p>
-        <% } %>
-      </span><a id="podcast-url" class='big-button'>
-        <div id='rss-img'>
-          <i class="fa fa-headphones"></i>
-        </div>
-        <div id='rss-header'>
-          <h3 id='rss-title'>&nbsp;Listen Now</h3>
-        </div>
-      </a>
-      <% if (is_ready) { %>
-        <span id="rss-post">
-           Listen to "<em><%= showname %></em>" which airs <%= day %> at <%= time %> on <%= station.toUpperCase() %>. No Ads. No strings attached. 100% Free.
-        </span>
+  <script type='text/template' id='tpl-top'>
+    <span id='rss-note'>
+      <h3><%= name %></h3>
+      <% if (phrase) { %>
+        <p><%= phrase %></p>
       <% } %>
-    </div>
+    </span>
+  </script>
+
+  <script type='text/template' id='tpl-bottom'>
+    <% if (is_ready) { %>
+     <span id="rss-post">
+       Listen to "<em><%= showname %></em>" which airs <%= day %> at <%= time %> on <%= station.toUpperCase() %>. No Ads. No strings attached. 100% Free.
+     </span>
+    <% } %>
   </script>
 
   <script type='text/template' id='tpl-email'>
