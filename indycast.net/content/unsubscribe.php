@@ -1,8 +1,8 @@
-<meta name="description" content="Sending you audio for later enjoyment" />
 <link rel="stylesheet" href="/assets/css/main.css" />
 <link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="/assets/css/reminder.css" />
+<title>indycast | unsubscribe</title>
 <style>
 p{margin-bottom:0.5em;}
 textarea { border: 1px solid #ccc; border-radius: 3; padding: 0.5em; width: 100% }
@@ -35,16 +35,7 @@ textarea { border: 1px solid #ccc; border-radius: 3; padding: 0.5em; width: 100%
         <div id='podcast-url-container'>
           <div id="thanks">Thanks, you've been removed.</div>
           <div id="err">Woops, unable to unsubscribe this email address. Please try again. If the problem persists, <a href=mailto:indycast@googlegroups.com>Email us</a> with details.</div>
-          <a class='big-button disabled'>
-            <span id='rss-top'>
-              <div id='rss-img'>
-                <i class="fa fa-envelope"></i>
-              </div>
-              <div id='rss-header'>
-                <h3 id='rss-title'>Stop The Emails</h3>
-              </div>
-            </span>
-          </a>
+          <a class='button disabled'>Stop The Emails</h3>
         </div>
       </div>
     </section>
