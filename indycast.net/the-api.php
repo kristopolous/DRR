@@ -3,10 +3,34 @@
 // poor-mans router and controller that doesn't distinguish between HTTP verbs.
 include_once('common.php');
 
+function passes($message) {
+  return ['result' => true, 'message' => $message];
+}
+
+function fails($message) {
+  return ['result' => false, 'message' => $message];
+}
+
 function pl_subscribe($who, $what) {
 }
 
-function pl_unsubscribe($who, $what) {
+function pl_unsubscribe() {
+  $param_map = sanitize([
+    'who' => STR,
+    'what' => INT
+  ]);
+
+  $db = db_connect();
+  // test for existence
+  $res = db_get('select * from subscriptions where email="' . $param_map['who'] . '" and groupid="' . $param_map['what'] . '"');
+
+  if(count($res) > 0) {
+
+    $db->exec('delete from subscriptions where email="' . $param_map['who'] . '" and groupid="' . $param_map['what'] . '"');
+
+    return passes('removed ' . count($res) . ' entries');
+  } 
+  return fails('nothing found');
 }
 
 function pl_reminder($what) {
@@ -44,7 +68,7 @@ function pl_reminder($what) {
   $db = db_connect();
   $db->exec('insert into reminders (' . implode(',', $lhs) . ') values (' . implode(',', $rhs) . ')');
 
-  return 'true';
+  return passes('reminder added');
 }
 
 function pl_stations() {
@@ -56,7 +80,11 @@ if(isset($_REQUEST['func']) && function_exists('pl_' . $_REQUEST['func'])) {
   unset($_REQUEST['func']);
 
   $result = $toRun ( $_REQUEST );
-  echo $result;
+  if(is_string($result)) {
+    echo $result;
+  } else {
+    echo json_encode($result);
+  }
 } else {
-  echo json_encode(['error' => 'uknown api call']);
+  echo json_encode(fails('uknown api call'));
 }
