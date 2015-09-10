@@ -141,14 +141,14 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id='dialog-title'>Your Email</h4>
+          <h4 class="modal-title" id='dialog-title'>Get your show by email</h4>
         </div>
         <div class="modal-body" id="podcast-dialog">
-          <p>We'll send you an email when your show is ready for download.  We won't give your email to anyone else and you can unsubscribe at any time.</p>
-          <label id='email-label' for="email">Your Email</label>
+          <label id='email-label' for="email">Email Address</label>
           <div>
-            <input id='email-input' type='email' name='email'>
+            <input id='email-input' placeholder='ex: user@example.com' type='email' name='email'>
           </div>
+          <p>You'll be sent a free download link when your show is ready and can unsubscribe at any time.</p>
         </div>
       </div>
     </div>
