@@ -8,6 +8,11 @@ ev('station', function(what) {
   mixpanel.track("station selected");
 });
 
+function show_download() {
+  console.log(+(new Date()) + "here");
+  $('#dialog-choose').modal();
+}
+
 ev('', function(map) {
   var 
     start_time = "Pick the start time", 
@@ -95,7 +100,7 @@ ev('', function(map) {
       encodeURI(map.name).replace(/%20/g,'_')
     ].join('/') + ".xml";
 
-    click_action = "$('#dialog-choose').modal()";
+    click_action = "show_download()";
 
     live_url = 'http://' + [
       'indycast.net',
