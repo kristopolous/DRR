@@ -5,6 +5,7 @@
 <link rel="stylesheet" href="/assets/css/reminder.css" />
 <style>
 p{margin-bottom:0.5em;}
+textarea { border: 1px solid #ccc; border-radius: 3; padding: 0.5em; width: 100% }
 </style>
 <div id="main">
   <h1>Unsubscribe from weekly emails</h1>
@@ -16,21 +17,9 @@ p{margin-bottom:0.5em;}
         <p>I'll take your input into serious consideration. Thanks.</p>
 
         <p><small>~chris - founder of indycast</small></p>
-        <label for="duration">What period?</label>
+        <label for='input'>Message (optional)</label>
+        <textarea id='input' name='input'></textarea>
 
-        <ul class="week-group group" id="duration">
-          <li><a data="-30" class="button">Last<br/>half hour</a></li>
-          <li><a data="30" class="button">Current<br/>half hour</a></li>
-          <li><a data="60" class="button">Current<br/>hour</a></li>
-        </ul>
-
-        <div id="custom-time">
-          <input id="start_time" type="text" placeholder="start time">
-          <input id="end_time" type="text" placeholder="end time">
-        </div>
-
-        <label for="station">What station?</label>
-        <div id="station-preselect"></div>
       </div>
       <div class="content">
         <div id="text-container">
