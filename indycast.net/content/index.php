@@ -129,7 +129,12 @@
               <div id="flash-widget">
               </div>
             </div>
-            <button type='button' class='btn btn-lg btn-default'><i class="fa fa-apple"></i> Download</button>
+            <div style='text-align:right'>
+              <span class='st_facebook'></span>
+              <span class='st_twitter'></span>
+              <span class='st_email'></span>
+              <button type='button' class='btn btn-md btn-default'><i class="fa fa-download"></i> Download This</button>
+            </div>
           </div>
 
           <h4>Get It Weekly</h4>
@@ -169,6 +174,9 @@
 </script>
 
 <?= $emit_script ?>
+<script type="text/javascript">var switchTo5x=true;</script>
+<script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+<script type="text/javascript">stLight.options({publisher: "267bbdfa-84d7-4508-bb7a-4a881dc62d47", doNotHash: false, doNotCopy: false, hashAddressBar: false});</script>
 <!--[if lte IE 8]><script src="/assets/js/ie/respond.min.js"></script><![endif]-->
 <script src="/assets/js/index.js"></script>
 <? if ($callsign) { ?>
