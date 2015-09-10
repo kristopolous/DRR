@@ -13,7 +13,8 @@ ev('', function(map) {
     start_time = "Pick the start time", 
     todo = [],
     phrase = "Choose the ",
-    url = '',
+    podcast_url = '',
+    live_url = '',
     showname = '',
     single = '',
     parts = [],
@@ -83,9 +84,8 @@ ev('', function(map) {
     todo.push('name');
   }
 
-
   if (is_ready) {
-    url = 'http://' + [
+    podacast_url = 'http://' + [
       'indycast.net',
       station,
       map.day.join(','),
@@ -93,6 +93,15 @@ ev('', function(map) {
       map.duration,
       encodeURI(map.name).replace(/%20/g,'_')
     ].join('/') + ".xml";
+
+    live_url = 'http://' + [
+      'indycast.net',
+      station,
+      'at',
+      fullName[map.day[0]],
+      start_time,
+      map.duration
+    ].join('/');
   } 
 
   if(todo.length) {
@@ -121,7 +130,8 @@ ev('', function(map) {
   );
   $("#dialog-body").html(
     tpl.dialog({
-      podcast_url: url
+      podcast_url: url,
+      live_url: live_url
     })
   );
   $("#dialog-choose").modal();
