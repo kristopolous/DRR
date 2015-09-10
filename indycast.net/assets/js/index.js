@@ -116,7 +116,7 @@ ev('', function(map) {
     phrase = "Hit the green button.";
   }
 
-  $("#podcast-done").attr({'href': url }).html(
+  $("#podcast-done").attr({'href': podcast_url }).html(
     tpl.podcast({
       name: name,
       day: fullday,
@@ -124,13 +124,13 @@ ev('', function(map) {
       is_ready: is_ready,
       showname: showname,
       station: station,
-      podcast_url: url,
+      podcast_url: podcast_url,
       phrase: phrase
     })
   );
   $("#dialog-body").html(
     tpl.dialog({
-      podcast_url: url,
+      podcast_url: podcast_url,
       live_url: live_url
     })
   );
