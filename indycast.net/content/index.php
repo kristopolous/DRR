@@ -134,7 +134,7 @@
           <p><%= phrase %></p>
         <% } %>
       </span>
-      <a href="<%=single%>" id="podcast-url" class='big-button'>
+      <a href="<%=podcast_url%>" id="podcast-url" class='big-button'>
         <div id='rss-img'>
           <i class="fa fa-rss"></i>
         </div>
@@ -149,6 +149,10 @@
       <% } %>
     </div>
   </script>
+
+  <script type='text/template' id='tpl-email'>
+  </script>
+
   <script type='text/template' id='tpl-dialog'>
     <div id="radio-index">
       <div id='radio-widget'>
@@ -168,8 +172,8 @@
     <div class='well'>
       <h5>Get It Weekly</h5>
       <div style='text-align: center'>
-        <a class='btn btn-lg btn-default'><i class="fa fa-apple"></i> In iTunes</a>
-        <a class='btn btn-lg btn-default'><i class="fa fa-rss-square"></i> In another podcaster</a>
+        <a target=_blank href='<%= podcast_url %>' class='btn btn-lg btn-default'><i class="fa fa-apple"></i> In iTunes</a>
+        <a target=_blank href='<%= podcast_url %>' class='btn btn-lg btn-default'><i class="fa fa-rss-square"></i> In another podcaster</a>
         <button type='button' class='btn btn-lg btn-default'><i class="fa fa-envelope"></i> Emailed to me</button>
       </div>
     </div>

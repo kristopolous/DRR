@@ -88,14 +88,11 @@ ev('', function(map) {
     url = 'http://' + [
       'indycast.net',
       station,
-      map.day.join(',') + " ",
+      map.day.join(','),
       start_time,
       map.duration,
       encodeURI(map.name).replace(/%20/g,'_')
     ].join('/') + ".xml";
-
-    single = url.replace(' ', '');
-    parts = url.split(' ');
   } 
 
   if(todo.length) {
@@ -110,7 +107,7 @@ ev('', function(map) {
     phrase = "Hit the green button.";
   }
 
-  $("#podcast-done").attr({'href': single }).html(
+  $("#podcast-done").attr({'href': url }).html(
     tpl.podcast({
       name: name,
       day: fullday,
@@ -118,13 +115,14 @@ ev('', function(map) {
       is_ready: is_ready,
       showname: showname,
       station: station,
-      single: single,
-      phrase: phrase,
-      parts: parts
+      podcast_url: url,
+      phrase: phrase
     })
   );
   $("#dialog-body").html(
-    tpl.dialog()
+    tpl.dialog({
+      podcast_url: url
+    })
   );
   $("#dialog-choose").modal();
   $("#podcast-container").css({width: $("#podcast-url").width() + 30});
