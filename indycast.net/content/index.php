@@ -129,9 +129,10 @@
               </div>
             </div>
             <div style='text-align:right'>
-              <span class='st_facebook'></span>
-              <span class='st_twitter'></span>
-              <button type='button' class='btn btn-lg btn-link'><i class="fa fa-download"></i> Download </button>
+              <a target=_blank class="btn btn-md btn-default" href="https://twitter.com/intent/tweet?text=Hello%20world" title="Share this on twitter">
+              <i class="fa fa-twitter"></i>
+              </a>
+              <button title="Download this to your device" type='button' class='btn btn-lg btn-link'><i class="fa fa-download"></i> Download </button>
             </div>
           </div>
         
@@ -173,9 +174,6 @@
 </script>
 
 <?= $emit_script ?>
-<script type="text/javascript">var switchTo5x=true;</script>
-<script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
-<script type="text/javascript">stLight.options({publisher: "267bbdfa-84d7-4508-bb7a-4a881dc62d47", doNotHash: false, doNotCopy: false, hashAddressBar: false});</script>
 <!--[if lte IE 8]><script src="/assets/js/ie/respond.min.js"></script><![endif]-->
 <script src="/assets/js/index.js"></script>
 <? if ($callsign) { ?>
