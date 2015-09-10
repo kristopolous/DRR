@@ -3,6 +3,12 @@
 // poor-mans router and controller that doesn't distinguish between HTTP verbs.
 include_once('common.php');
 
+function pl_subscribe($who, $what) {
+}
+
+function pl_unsubscribe($who, $what) {
+}
+
 function pl_reminder($what) {
 
   $param_map = sanitize([
