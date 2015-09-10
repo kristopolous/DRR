@@ -17,6 +17,7 @@ ev('', function(map) {
     live_url = '',
     showname = '',
     single = '',
+    click_action = 'void(0)',
     parts = [],
     station = "Choose the station", 
     name = '',
@@ -85,7 +86,7 @@ ev('', function(map) {
   }
 
   if (is_ready) {
-    podacast_url = 'http://' + [
+    podcast_url = 'http://' + [
       'indycast.net',
       station,
       map.day.join(','),
@@ -94,13 +95,17 @@ ev('', function(map) {
       encodeURI(map.name).replace(/%20/g,'_')
     ].join('/') + ".xml";
 
+    click_action = "$('#dialog-choose').modal()";
+
     live_url = 'http://' + [
       'indycast.net',
       station,
       'at',
-      fullName[map.day[0]] + "_" + start_time,
+      fullName[map.day[0]].slice(0,-1).toLowerCase() + "_" + start_time,
       map.duration
     ].join('/');
+
+    set_player(live_url);
   } 
 
   if(todo.length) {
@@ -122,6 +127,7 @@ ev('', function(map) {
       time: start_time,
       is_ready: is_ready,
       showname: showname,
+      click_action: click_action,
       station: station,
       podcast_url: podcast_url,
       phrase: phrase
@@ -130,12 +136,13 @@ ev('', function(map) {
   $("#dialog-body").html(
     tpl.dialog({
       podcast_url: podcast_url,
-      live_url: live_url
+      showname: showname,
+      live_url: live_url,
+      tweet_text: encodeURI("Listening to a recording of " + station.toUpperCase() + "'s " + showname + " at indycast.net. It's free. You can too: " + live_url)
     })
   );
-  set_player(live_url);
+  $("#dialog-title").html('latest episode of ' + showname);
 
-  $("#dialog-choose").modal();
   $("#podcast-container").css({width: $("#podcast-url").width() + 30});
 });
 
@@ -216,8 +223,6 @@ $(function() {
     }
   }
   
-  ev({"start":"3pm","name":"my show","station":"kdvs","ampm":"pm","day":["wed"],"duration":"1hr"});
-
   ev.fire(['start', 'name']);
 });
 

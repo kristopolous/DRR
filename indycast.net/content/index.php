@@ -117,7 +117,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title">Latest Episode</h4>
+          <h4 class="modal-title" id='dialog-title'>Latest Episode</h4>
         </div>
         <div class="modal-body" id="dialog-body"></div>
       </div>
@@ -134,7 +134,7 @@
           <p><%= phrase %></p>
         <% } %>
       </span>
-      <a href="<%=podcast_url%>" id="podcast-url" class='big-button'>
+      <a onclick="<%= click_action %>" id="podcast-url" class='big-button'>
         <div id='rss-img'>
           <i class="fa fa-rss"></i>
         </div>
@@ -144,7 +144,7 @@
       </a>
       <% if (is_ready) { %>
         <span id="rss-post">
-           A free subscription to "<em><%= showname %></em>" which airs <%= day %> at <%= time %> on <%= station.toUpperCase() %>. No Ads. No strings attached. 100% Free.
+           Listen to "<em><%= showname %></em>" which airs <%= day %> at <%= time %> on <%= station.toUpperCase() %>. No Ads. No strings attached. 100% Free.
         </span>
       <% } %>
     </div>
@@ -162,7 +162,7 @@
         <div id="flash-widget"></div>
       </div>
       <div style='text-align:right'>
-        <a target=_blank class="btn btn-md btn-default" href="https://twitter.com/intent/tweet?text=Hello%20world" title="Share this on twitter">
+        <a target=_blank class="btn btn-md btn-default" href="https://twitter.com/intent/tweet?text=<%=tweet_text%>" title="Share this on twitter">
         <i class="fa fa-twitter"></i>
         </a>
         <a href="<%= live_url %>" title="Download this to your device" class='btn btn-lg btn-link'><i class="fa fa-download"></i> Download </a>
@@ -170,7 +170,7 @@
     </div>
 
     <div class='well'>
-      <h5>Get It Weekly</h5>
+      <h5>Get <%= showname %> Weekly</h5>
       <div style='text-align: center'>
         <a target=_blank href='<%= podcast_url %>' class='btn btn-lg btn-default'><i class="fa fa-apple"></i> In iTunes</a>
         <a target=_blank href='<%= podcast_url %>' class='btn btn-lg btn-default'><i class="fa fa-rss-square"></i> In another podcaster</a>
