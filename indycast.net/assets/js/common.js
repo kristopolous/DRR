@@ -237,21 +237,13 @@ function random_url(){
   //}
 }
 
+$(function() {
+  $("#template-list > div").each(function(){
+    var name = this.id.split('-').pop();
+    tpl[name] = _.template(this.innerHTML);
+  });
+});
 
-// kissmetrics
-var _kmq = _kmq || [];
-var _kmk = _kmk || '50fbdb18c781bcc6e6ec20bb7388bbe9d504c3b5';
-function _kms(u){
-  setTimeout(function(){
-    var d = document, f = d.getElementsByTagName('script')[0],
-    s = d.createElement('script');
-    s.type = 'text/javascript'; s.async = true; s.src = u;
-    f.parentNode.insertBefore(s, f);
-  }, 1);
-}
-_kms('//i.kissmetrics.com/i.js');
-_kms('//scripts.kissmetrics.com/' + _kmk + '.2.js');
-  
 // #30: Da Goog!
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

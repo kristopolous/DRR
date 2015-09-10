@@ -149,32 +149,34 @@
   </div>
 </script>
 
-<script type='text/template' id='tpl-dialog'>
-  <div id="radio-index">
-    <div id='radio-widget'>
-      <div id='html5-widget'>
-      <audio id="radio-control" controls type='audio/mpeg'>
+<div id='template-list'>
+  <script type='text/template' id='tpl-dialog'>
+    <div id="radio-index">
+      <div id='radio-widget'>
+        <div id='html5-widget'>
+        <audio id="radio-control" controls type='audio/mpeg'>
+        </div>
+        <div id="flash-widget">
+        </div>
       </div>
-      <div id="flash-widget">
+      <div style='text-align:right'>
+        <a target=_blank class="btn btn-md btn-default" href="https://twitter.com/intent/tweet?text=Hello%20world" title="Share this on twitter">
+        <i class="fa fa-twitter"></i>
+        </a>
+        <button title="Download this to your device" type='button' class='btn btn-lg btn-link'><i class="fa fa-download"></i> Download </button>
       </div>
     </div>
-    <div style='text-align:right'>
-      <a target=_blank class="btn btn-md btn-default" href="https://twitter.com/intent/tweet?text=Hello%20world" title="Share this on twitter">
-      <i class="fa fa-twitter"></i>
-      </a>
-      <button title="Download this to your device" type='button' class='btn btn-lg btn-link'><i class="fa fa-download"></i> Download </button>
-    </div>
-  </div>
 
-  <div class='well'>
-    <h5>Get It Weekly</h5>
-    <div style='text-align: center'>
-      <button type='button' class='btn btn-lg btn-default'><i class="fa fa-apple"></i> In iTunes</button>
-      <button type='button' class='btn btn-lg btn-default'><i class="fa fa-rss-square"></i> In another podcaster</button>
-      <button type='button' class='btn btn-lg btn-default'><i class="fa fa-envelope"></i> Emailed to me</button>
+    <div class='well'>
+      <h5>Get It Weekly</h5>
+      <div style='text-align: center'>
+        <button type='button' class='btn btn-lg btn-default'><i class="fa fa-apple"></i> In iTunes</button>
+        <button type='button' class='btn btn-lg btn-default'><i class="fa fa-rss-square"></i> In another podcaster</button>
+        <button type='button' class='btn btn-lg btn-default'><i class="fa fa-envelope"></i> Emailed to me</button>
+      </div>
     </div>
-  </div>
-</script>
+  </script>
+</div>
 
 <?= $emit_script ?>
 <!--[if lte IE 8]><script src="/assets/js/ie/respond.min.js"></script><![endif]-->

@@ -145,8 +145,6 @@ ev.test('start', function(v, cb, meta) {
 });
 
 $(function() {
-  tpl.podcast = _.template($("#tpl-podcast").html());
-
   $(".radio-group a").hover(function(){
     $("#description").html("<h2>" + this.innerHTML + "</h2>" + htmldo(this.getAttribute('desc'))).show();
   });
@@ -209,6 +207,8 @@ $(function() {
     }
   }
   
+  ev({"start":"3pm","name":"my show","station":"kdvs","ampm":"pm","day":["wed"],"duration":"1hr"});
+
   ev.fire(['start', 'name']);
 });
 
