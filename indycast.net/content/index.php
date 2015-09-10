@@ -67,7 +67,6 @@
   </section>
 </div>
 
- <li><a data-toggle="modal" data-target="#dialog-choose">Log in</a></li>
 <div id="footer">
   <div class="container 75%">
     <header class="major last">
