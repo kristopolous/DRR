@@ -56,7 +56,7 @@ $schema = [
     'email'       => 'TEXT',
 
     'notes'       => 'TEXT'
-  ]
+  ],
 
   'subscriptions' => [
     'id'          => 'INTEGER PRIMARY KEY', 
@@ -80,7 +80,7 @@ $schema = [
     // that is indicated with a groupid so that if a person
     // "unsubscribes" they unsubscribe from the who package
     // and not just a certain day.
-    'groupid'     => 'INTEGER DEFAULT 0', 
+    'groupid'     => 'INTEGER DEFAULT 0' 
   ]
 ];
 
