@@ -133,13 +133,12 @@
         <% if (phrase) { %>
           <p><%= phrase %></p>
         <% } %>
-      </span>
-      <a onclick="<%= click_action %>" id="podcast-url" class='big-button'>
+      </span><a onclick="<%= click_action %>" id="podcast-url" class='big-button'>
         <div id='rss-img'>
-          <i class="fa fa-rss"></i>
+          <i class="fa fa-headphones"></i>
         </div>
         <div id='rss-header'>
-          <h3 id='rss-title'>Listen Now</h3>
+          <h3 id='rss-title'>&nbsp;Listen Now</h3>
         </div>
       </a>
       <% if (is_ready) { %>
