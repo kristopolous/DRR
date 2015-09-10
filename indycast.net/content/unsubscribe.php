@@ -3,13 +3,19 @@
 <link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="/assets/css/reminder.css" />
+<style>
+p{margin-bottom:0.5em;}
+</style>
 <div id="main">
   <h1>Unsubscribe from weekly emails</h1>
 
   <div class="box alt container">
     <section class="feature left">
       <div class="content">
+        <p>Sorry to see you go. I'd like to understand why are leaving.</p>
+        <p>I'll take your input into serious consideration. Thanks.</p>
 
+        <p><small>~chris - founder of indycast</small></p>
         <label for="duration">What period?</label>
 
         <ul class="week-group group" id="duration">
@@ -25,11 +31,6 @@
 
         <label for="station">What station?</label>
         <div id="station-preselect"></div>
-        <ul class="radio-group group" id="station"><?php
-          foreach(active_stations() as $station) {
-            echo '<li><a desc="' . $station['description'] . '" class="button">' . ($station['callsign']) . '</a></li>';
-          }
-        ?></ul>
       </div>
       <div class="content">
         <div id="text-container">
