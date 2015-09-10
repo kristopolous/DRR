@@ -121,6 +121,16 @@
         </div>
         <div class="modal-body">
           <h4>Latest Episode</h4>
+          <div id="radio-index">
+            <div id='radio-widget'>
+              <div id='html5-widget'>
+              <audio id="radio-control" controls type='audio/mpeg'>
+              </div>
+              <div id="flash-widget">
+              </div>
+            </div>
+            <a id="player-link">Download</a>
+          </div>
 
           <h4>Get It Weekly</h4>
           <button type='button' class='btn btn-lg btn-default'><i class="fa fa-apple"></i> In iTunes</button>

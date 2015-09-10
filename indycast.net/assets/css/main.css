@@ -1252,3 +1252,6 @@ code{white-space: pre;}
   vertical-align: text-bottom;
 }
 
+#radio-index audio {
+  width: 100%;
+}
