@@ -120,11 +120,12 @@
           <h4 class="modal-title">How would you like to get the audio?</h4>
         </div>
         <div class="modal-body">
+          <h4>Latest Episode</h4>
+
+          <h4>Get It Weekly</h4>
           <button type='button' class='btn btn-lg btn-default'><i class="fa fa-apple"></i> In iTunes</button>
-          <button type='button' class='btn btn-lg btn-default'><i class="fa fa-rss-square"></i>
- In another podcaster</button>
-          <button type='button' class='btn btn-lg btn-default'><i class="fa fa-envelope"></i>
- Emailed to me weekly</button>
+          <button type='button' class='btn btn-lg btn-default'><i class="fa fa-rss-square"></i> In another podcaster</button>
+          <button type='button' class='btn btn-lg btn-default'><i class="fa fa-envelope"></i> Emailed to me weekly</button>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
