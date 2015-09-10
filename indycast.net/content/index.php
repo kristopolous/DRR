@@ -1,8 +1,8 @@
 <link rel="stylesheet" href="/assets/css/main.css" />
 <title>Indycast - A free technology that sends you MP3s of any radio show - at any time, right now.</title>
 <div id="header">
-  <h1>Indycast DVR</h1>
-  <p>A free technology that sends you MP3s of <?= $callsign ? strtoupper($callsign) : "any radio show - at any time, right now." ?>
+  <h1>A DVR for Radio</h1>
+  <p>Get MP3s of <?= $callsign ? strtoupper($callsign) : "any radio show - at any time, right now." ?>
   <?php if ($callsign) { ?><br/><small>(<a href="/">and more</a>)</small><?php } ?></p>
   <small><b>Specify the show and start listening now.</b></small>
 </div>
@@ -144,9 +144,6 @@
             </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-        </div>
       </div>
     </div>
   </div>
@@ -164,7 +161,7 @@
         <i class="fa fa-rss"></i>
       </div>
       <div id='rss-header'>
-        <h3 id='rss-title'>Get Weekly MP3s</h3>
+        <h3 id='rss-title'>Listen Now</h3>
       </div>
     </a>
     <% if (is_ready) { %>
