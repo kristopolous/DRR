@@ -206,12 +206,12 @@ function set_player(url) {
 
   $("#flash-widget").hide();
   html5_audio.addEventListener('error', function() {
-    $("#html5-widget").fadeOut();
+    $("#html5-widget").hide();
     set_fallback(url, local);
   });
 
   html5_audio.addEventListener('loadstart', function(){
-    $("#html5-widget").fadeIn();
+    $("#html5-widget").show();
   });
 
   html5_audio.src = url;

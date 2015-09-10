@@ -128,8 +128,21 @@ ev('', function(map) {
     phrase = "Hit the green button.";
   }
 
-  $("#podcast-done").html(
-    tpl.podcast({
+  $("#podcast-top").html(
+    tpl.top({
+      name: name,
+      day: fullday,
+      time: start_time,
+      is_ready: _is_ready,
+      showname: showname,
+      station: station,
+      podcast_url: podcast_url,
+      phrase: phrase
+    })
+  );
+
+  $("#podcast-bottom").html(
+    tpl.bottom({
       name: name,
       day: fullday,
       time: start_time,
@@ -149,10 +162,6 @@ ev('', function(map) {
       tweet_text: encodeURI("Listening to a recording of " + station.toUpperCase() + "'s " + showname + " at indycast.net. It's free. You can too: " + live_url)
     })
   );
-
-  setTimeout(function(){
-    $("#podcast-url").attr('href', 'javascript:show_download()');
-  },0);
 
   $("#dialog-title").html('latest episode of ' + showname);
 

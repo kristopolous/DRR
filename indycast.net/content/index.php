@@ -65,7 +65,7 @@
       <div id="podcast-done" class="disabled">
         <div id='podcast-container'>
           <div id="podcast-top"></div>
-          <a id="podcast-url" class='big-button'>
+          <a id="podcast-url" class='big-button' href="javascript:show_download()">
             <div id='rss-img'>
               <i class="fa fa-headphones"></i>
             </div>
