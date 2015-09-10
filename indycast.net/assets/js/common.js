@@ -238,7 +238,7 @@ function random_url(){
 }
 
 $(function() {
-  $("#template-list > div").each(function(){
+  $("#template-list > script").each(function(){
     var name = this.id.split('-').pop();
     tpl[name] = _.template(this.innerHTML);
   });
