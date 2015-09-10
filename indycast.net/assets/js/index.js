@@ -46,7 +46,7 @@ ev('', function(map) {
     $("#podcast-done").removeClass('disabled');
   } else {
     $("#podcast-done").addClass('disabled');
-    name = "You're almost done";
+    name = "Almost done!";
   }
 
   if(map.station) {

@@ -1187,7 +1187,7 @@ small {
 #rss-note {
   display: block;
   text-align: left;
-  margin: 0 1em;
+  margin: 0 0.5em;
 }
 #rss-note h3 {
   line-height: 1.3em;
