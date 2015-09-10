@@ -59,8 +59,6 @@
   </div>
 </div>
 <?= $emit_script ?>
-<script src="//releases.flowplayer.org/js/flowplayer-3.2.13.min.js"></script>
-<script src="//releases.flowplayer.org/js/flowplayer.controls-3.2.11.min.js"></script>
 <script>
 
 function to_numeric(number) {

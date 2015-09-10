@@ -98,8 +98,7 @@ ev('', function(map) {
       'indycast.net',
       station,
       'at',
-      fullName[map.day[0]],
-      start_time,
+      fullName[map.day[0]] + "_" + start_time,
       map.duration
     ].join('/');
   } 
