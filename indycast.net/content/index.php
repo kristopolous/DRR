@@ -199,7 +199,7 @@
       <div style='text-align: center'>
         <a target=_blank href='<%= podcast_url %>' class='btn btn-lg btn-default'><i class="fa fa-apple"></i> In iTunes</a>
         <a target=_blank href='<%= podcast_url %>' class='btn btn-lg btn-default'><i class="fa fa-rss-square"></i> In another podcaster</a>
-        <button type='button' class='btn btn-lg btn-default'><i class="fa fa-envelope"></i> Emailed to me</button>
+        <button data-toggle="modal" data-target="#dialog-email" type='button' class='btn btn-lg btn-default'><i class="fa fa-envelope"></i> Emailed to me</button>
       </div>
     </div>
   </script>

@@ -24,6 +24,10 @@ a { cursor: pointer }
 #rss-img {
   width: 48px;
 }
+.button.disabled { 
+  opacity: 0.5;
+  cursor: default;
+}
 #rss-header {
   margin-left: 48px;
 }

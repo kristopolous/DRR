@@ -3,10 +3,12 @@
 <link href='http://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="/assets/css/reminder.css" />
 <title>indycast | unsubscribe</title>
+
 <style>
 p{margin-bottom:0.5em;}
 textarea { border: 1px solid #ccc; border-radius: 3; padding: 0.5em; width: 100% }
 </style>
+
 <div id="main">
   <h1>Unsubscribe from weekly emails</h1>
 
@@ -27,7 +29,7 @@ textarea { border: 1px solid #ccc; border-radius: 3; padding: 0.5em; width: 100%
           <div style='margin-top:0.5em'>
             <label id='email-label' for="email">Your Email</label>
             <div id='email-wrap'>
-              <input id='email-input' type='email' name='email'>
+              <input id='email' type='email' name='email'>
             </div>
           </div>
 
@@ -35,7 +37,7 @@ textarea { border: 1px solid #ccc; border-radius: 3; padding: 0.5em; width: 100%
         <div id='podcast-url-container'>
           <div id="thanks">Thanks, you've been removed.</div>
           <div id="err">Woops, unable to unsubscribe this email address. Please try again. If the problem persists, <a href=mailto:indycast@googlegroups.com>Email us</a> with details.</div>
-          <a class='button disabled'>Stop The Emails</h3>
+          <a id='stopit' class='button disabled'>Stop The Emails</a>
         </div>
       </div>
     </section>
@@ -43,3 +45,24 @@ textarea { border: 1px solid #ccc; border-radius: 3; padding: 0.5em; width: 100%
 </div>
 <?= $emit_script ?>
 <!--[if lte IE 8]><script src="/assets/js/ie/respond.min.js"></script><![endif]-->
+<script>
+$(function() {
+  ev(<?= json_encode($_GET); ?>);
+  easy_bind(['email','input']);
+
+  ev('', function(p) {
+    $("#stopit")[p.email ? 'removeClass' : 'addClass']('disabled');
+  });
+
+  $("#stopit").click(function(){
+    if(ev('email')) {
+      $("#stopit").slideUp();
+      remote('unsubscribe', ev('')).then(function(){
+        $("#thanks").slideDown();
+      }).fail(function(){
+        $("#err").slideDown();
+      });
+    }
+  });
+});
+</script>
