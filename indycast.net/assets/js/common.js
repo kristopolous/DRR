@@ -137,7 +137,9 @@ function easy_bind(list, instance) {
       });
 
       instance(what, function(val){ 
-        node.value = val; 
+        if(val !== undefined) {
+          node.value = val; 
+        }
       });
 
     } else {
@@ -324,10 +326,6 @@ function set_player(url) {
   return url;
 }
 
-
-function api(ep, params) {
-  $.post(ep, params, function(res) {
-    if(res.result) {
 
 function random_url(){
   var 
