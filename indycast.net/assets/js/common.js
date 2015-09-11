@@ -13,6 +13,97 @@ var
   tpl = {},
   time_re = /^\s*(1[0-2]|[1-9])(:[0-5][0-9])?\s*([ap]m)?\s*$/i;
 
+// remote API
+// first we have a generic promise harness
+function stub() {
+  var res = {};
+
+  // Take the things to be stubbed out
+  _.each(_.toArray(arguments), function(what) {
+
+    // Assign each one to the map as a function
+    res[what] = function(cb) {
+
+      // If the arguments passed in is another function
+      // then we put this in our callback list.
+      if(_.isFunction(cb)) {
+        res[what].cb.push(cb);
+
+        // and return our primary object 
+        // for chaining
+        return res;
+
+      } else {
+        // If the arguments passed in is not a function,
+        // then this is data.  We go through the list
+        // that we've constructed (if any) and call each
+        // callback with the argument passed in - returning
+        // the results as a list, if needed.
+        return _.map(res[what].cb, function(cb_ix) {
+          cb_ix(cb);
+        });
+      }
+    }
+
+    res[what].cb = [];
+
+  });
+
+  return res;
+}
+
+// Then we have a queue-able api call system
+function do_remote(ep, what, verb, amd) {
+  remote.lock = true;
+  if(_.isArray(ep)) {
+    ep = ep.join('/');
+  }
+
+  $[verb || 'post']('/' + ep, what, function(res) {
+    if(res.result) {
+      amd.then(res.data);
+    } else {
+      amd.fail(res);
+    }
+  }, 'json')
+    .fail(amd.fail)
+    .always(function(){
+      remote.ix++;
+      console.log('r:' + ep + (what === undefined ? "" : (":" + JSON.stringify(what))));
+      remote.lock = false;
+      amd.always();
+
+      if(remote.queue.length) {
+        var opts = remote.queue.shift();
+        do_remote.apply(this, opts);
+      }
+    })
+}
+
+function remote_queue(ep, what, verb) {
+  var amd = stub('then', 'fail', 'always');
+
+  if(remote.lock) {
+    remote.queue.push([ep, what, verb, amd]);
+  } else { 
+    do_remote(ep, what, verb, amd);
+  }
+
+  return amd;
+}
+
+function remote(ep, what, verb) {
+  var amd = stub('then', 'fail', 'always');
+
+  do_remote(ep, what, verb, amd);
+
+  return amd;
+}
+
+remote.queue = [];
+remote.lock = false;
+remote.ix = 0;
+
 // local storage
 function ls(key, value) {
   if (arguments.length == 1) {
@@ -23,7 +114,11 @@ function ls(key, value) {
   return value;
 }
 
-function easy_bind(list) {
+function easy_bind(list, instance) {
+  if(!instance) {
+    instance = ev;
+  }
+
   _.each(list, function(what) {
 
     var node = document.querySelector('#' + what);
@@ -38,10 +133,10 @@ function easy_bind(list) {
     if(node.nodeName == 'INPUT') {
 
       $(node).on('blur focus change keyup', function() {
-        ev(what, this.value, {node: this});
+        instance(what, this.value, {node: this});
       });
 
-      ev(what, function(val){ 
+      instance(what, function(val){ 
         node.value = val; 
       });
 
@@ -52,11 +147,11 @@ function easy_bind(list) {
         var mthis = this;
 
         setTimeout(function(){
-          ev(what, mthis.getAttribute('data') || mthis.innerHTML);
+          instance(what, mthis.getAttribute('data') || mthis.innerHTML);
         }, 0);
       });
 
-      ev(what, function(val) {
+      instance(what, function(val) {
         $("a", node).removeClass('selected');
         if(val) {
           $("a", node).filter(function(){return this.innerHTML == val}).addClass("selected");
@@ -64,7 +159,8 @@ function easy_bind(list) {
         }
       });
     }
-    ev.fire(what); 
+
+    instance.fire(what); 
   });
 }
 
@@ -227,6 +323,11 @@ function set_player(url) {
 
   return url;
 }
+
+
+function api(ep, params) {
+  $.post(ep, params, function(res) {
+    if(res.result) {
 
 function random_url(){
   var 
