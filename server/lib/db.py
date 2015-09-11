@@ -91,11 +91,14 @@ def upgrade():
       db['conn'].commit()
 
 def debug():
+  """ Commits the individual database connections in each thread. """
   global g_db
-  for thread_id, c in g_db:
-    c['conn'].commit()
 
-  logging.info(g_db)
+  for thread_id, all_db in g_db.items():
+    for name, db in all_db.items():
+      logging.info("%s:%s commit" %(thread_id, name))
+      db['conn'].commit()
+
 
 def map(row_list, table, db=None):
   """ 
@@ -204,9 +207,10 @@ def shutdown():
   """ Closes the individual database connections in each thread. """
   global g_db
 
-  for instance in g_db.items():
-    if 'conn' in instance:
-      instance['conn'].close()
+  for thread_id, all_db in g_db.items():
+    for name, db in all_db.items():
+      if 'conn' in db:
+        db['conn'].close()
 
 
 def incr(key, value=1):
