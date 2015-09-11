@@ -328,6 +328,7 @@ def server_manager(config):
       'hits': db['c'].execute('select sum(read_count) from intents').fetchone()[0],
       'kv': DB.all('kv'),
       'uptime': TS.uptime(),
+      'pwd': os.getcwd(),
       'free': os.popen("df -h / | tail -1").read().strip(),
       # Reporting the list as fractional GB is more useful.
       'streams': DB.all('streams', sort_by='start_unix'),
