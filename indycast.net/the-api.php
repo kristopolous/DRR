@@ -12,6 +12,7 @@ function fails($message) {
 }
 
 function pl_subscribe($who, $what) {
+  return fails("unimplemented");
 }
 
 function pl_unsubscribe() {
@@ -19,6 +20,10 @@ function pl_unsubscribe() {
     'who' => STR,
     'what' => INT
   ]);
+
+  if(empty($who) || empty($what)) {
+    return fails('empty input');
+  }
 
   $db = db_connect();
   // test for existence
