@@ -16,10 +16,13 @@ function pl_subscribe($who, $what) {
 }
 
 function pl_unsubscribe() {
-  $param_map = sanitize([
-    'who' => STR,
-    'what' => INT
+  $p = sanitize([
+    'email' => STR,
+    'groupid' => INT
   ]);
+
+  $who = $p['email'];
+  $what = $p['groupid'];
 
   if(empty($who) || empty($what)) {
     return fails('empty input');
@@ -27,11 +30,11 @@ function pl_unsubscribe() {
 
   $db = db_connect();
   // test for existence
-  $res = db_get('select * from subscriptions where email="' . $param_map['who'] . '" and groupid="' . $param_map['what'] . '"');
+  $res = db_get('select * from subscriptions where email="' . $who . '" and groupid="' . $what . '"');
 
   if(count($res) > 0) {
 
-    $db->exec('delete from subscriptions where email="' . $param_map['who'] . '" and groupid="' . $param_map['what'] . '"');
+    $db->exec('delete from subscriptions where email="' . $who . '" and groupid="' . $what . '"');
 
     return passes('removed ' . count($res) . ' entries');
   } 

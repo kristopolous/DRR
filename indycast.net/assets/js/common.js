@@ -59,7 +59,7 @@ function do_remote(ep, what, verb, amd) {
     ep = ep.join('/');
   }
 
-  $[verb || 'post']('/' + ep, what, function(res) {
+  $[verb || 'post']('/api/' + ep, what, function(res) {
     if(res.result) {
       amd.then(res.data);
     } else {
