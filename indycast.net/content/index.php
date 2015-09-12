@@ -196,7 +196,7 @@
 
     <div class='well'>
       <h5>Get <%= showname %> Weekly for free!</h5>
-      <div style='text-align: center'>
+      <div id='dl-buttons'>
         <a target=_blank href='<%= podcast_url %>' class='btn btn-lg btn-default'><i class="fa fa-apple"></i> In iTunes</a>
         <a target=_blank href='<%= podcast_url %>' class='btn btn-lg btn-default'><i class="fa fa-rss-square"></i> In another podcaster</a>
         <button data-toggle="modal" data-target="#dialog-email" type='button' class='btn btn-lg btn-default'><i class="fa fa-envelope"></i> Emailed to me</button>

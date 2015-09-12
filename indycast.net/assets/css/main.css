@@ -1164,12 +1164,21 @@ small {
     margin-right: 20px;
     text-align: center;
   }
+  #dl-buttons {
+    text-align: center;
+  }
 } 
 @media screen and (max-width: 768px) {
   #day-picker label { text-align: center; }
   #station { height: auto }
   .page-content { margin-top: 40px }
   .feature .image { display: none }
+  #dl-buttons {
+    text-align: left;
+  }
+  #dl-buttons a {
+    margin-bottom: 0.5em;
+  }
 }
 .button.selected {
   color: #544d55;
