@@ -1176,9 +1176,12 @@ small {
   #dl-buttons {
     text-align: left;
   }
-  #dl-buttons a {
+  #dl-buttons a, #dl-buttons button {
     margin-bottom: 0.5em;
   }
+}
+#dl-buttons button {
+  color: black;
 }
 .button.selected {
   color: #544d55;
