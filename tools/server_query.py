@@ -44,7 +44,7 @@ def find_misbehaving_servers(db, fail_list):
   max_values = {
     'disk': '3.5',
     'load': '0.7',
-    'last_record': '480',
+    'delta': '300',
     'plist': [ 4, 6 ]
   }
 
@@ -53,7 +53,7 @@ def find_misbehaving_servers(db, fail_list):
   if len(fail_list):
     report.append("Failure: %s" % ' '.join(fail_list))
 
-  misbehaving = db['c'].execute('select callsign, disk, load, last_record from stations where active = 1 and (disk > ? or load > ?)', (max_values['disk'], max_values['load'])).fetchall()
+  misbehaving = db['c'].execute('select callsign, disk, load, last_record from stations where active = 1 and (disk > ? or load > ? or last_record > ?)', (max_values['disk'], max_values['load'], max_values['delta'])).fetchall()
 
   if len(misbehaving):
     report.append("Thresholds: %s" % json.dumps(max_values, indent=2))
