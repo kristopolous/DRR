@@ -59,6 +59,12 @@ def server_manager(config):
     logging.info("[%s:%d] Shutting down" % (title, os.getpid()))
     request.environ.get('werkzeug.server.shutdown')()
 
+  def success(message):
+    return jsonify({'res': True, 'message': message}), 200
+
+  def fail(message):
+    return jsonify({'res': False, 'message': message}), 500
+
   # from http://blog.asgaard.co.uk/2012/08/03/http-206-partial-content-for-flask-python
   @app.after_request
   def after_request(response):
@@ -181,7 +187,7 @@ def server_manager(config):
     so this shouldn't be done as the default.
     """
     cloud.prune(reindex=True)
-    return "Reindexing started"
+    return success("Reindexing started")
 
   @app.route('/prune')
   def prune():
@@ -190,7 +196,7 @@ def server_manager(config):
     following the rules outlined in the configuration file (viewable with the stats call)
     """
     cloud.prune()
-    return "Pruning started"
+    return success("Pruning started")
 
 
   @app.route('/slices/<time>/<name>')
@@ -262,7 +268,7 @@ def server_manager(config):
   @app.route('/db-debug')
   def db_debug():
     misc.queue.put(('db-debug', True))
-    return "Db debug sent"
+    return success("Db debug sent")
 
   @app.route('/restart')
   def restart():
@@ -270,7 +276,7 @@ def server_manager(config):
     Restarts an instance. This does so in a gapless non-overlapping way.
     """
     misc.shutdown(do_restart=True)
-    return "restarting..."
+    return success("restarting...")
 
 
   @app.route('/upgrade')
@@ -292,10 +298,10 @@ def server_manager(config):
 
       # from http://blog.petrzemek.net/2014/03/23/restarting-a-python-script-within-itself/
       misc.shutdown(do_restart=True)
-      return "Upgrading from %s to %s" % (misc.__version__, newversion)
+      return success("Upgrading from %s to %s" % (misc.__version__, newversion))
 
     os.chdir(cwd)
-    return 'Version %s is current' % misc.__version__
+    return success('Version %s is current' % misc.__version__)
 
 
   @app.route('/heartbeat')
