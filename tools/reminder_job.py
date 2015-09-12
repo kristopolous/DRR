@@ -67,6 +67,7 @@ def do_template(template_file, settings):
     } 
 
 
-config = misc.mail_config()
+parser = argparse.ArgumentParser()
+config = misc.mail_config(parser)
 find_requests_and_send_mail(config)
 
