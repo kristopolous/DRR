@@ -934,7 +934,7 @@ form#donate {
   text-transform: none;
   white-space: normal;
 }
-.big-button h3 { font-size: 1.3em }
+.big-button h3 { font-size: 1.3em; white-space: nowrap }
 .big-button.disabled, .disabled .big-button { 
   color: grey;
   border-color: silver;
