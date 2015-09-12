@@ -9,7 +9,7 @@ a { cursor: pointer }
 #text-container { text-align: left }
 #text-container *  {display: block}
 #text-container label { float:left; width: 70px; clear: both }
-#email-wrap { margin-left: 70px;}
+.inline-input,#email-wrap { margin-left: 70px;}
 #text-container input { width: 100%; margin-bottom: 1em }
 .box {margin-bottom: 0}
 #custom-time { 

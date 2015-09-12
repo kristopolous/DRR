@@ -35,12 +35,12 @@
         <div id="text-container">
 
           <label id='email-label' for="email">Your Email</label>
-          <div id='email-wrap'>
+          <div class='inline-input' id='email-wrap'>
             <input id='email-input' type='email' name='email'>
           </div>
 
           <label for="notes">Show Notes</label>
-          <div>
+          <div class='inline-input'>
             <input type='text' name='notes' placeholder="To help remember what this is">
           </div>
         </div>
