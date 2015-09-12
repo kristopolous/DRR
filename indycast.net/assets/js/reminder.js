@@ -73,13 +73,12 @@ $(function(){
       ev('human_time', 'from ' + ev('start_time') + ' to ' + ev('end_time'));
     }
 
-    $.post('/api/reminder', ev(''), function(res) {
+    remote('reminder', ev('')).then(function(res) {
+      $("#thanks").slideDown();
+    }).fail(function(){
+      $("#err").slideDown();
+    }).always(function(){
       $('.big-button').slideUp();
-      if(res != 'true') {
-        $("#err").slideDown();
-      } else {
-        $("#thanks").slideDown();
-      }
     });
   });
 
