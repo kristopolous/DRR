@@ -310,6 +310,9 @@ def unregister_stream(name, do_all=False):
     res = db['c'].execute('delete from streams where id = %d' % res[0][0])
     db['conn'].commit()
 
+  else:
+    logging.warn("Requested to remove reference of %s but couldn't find it." % name)
+
   return True
 
 
@@ -337,16 +340,19 @@ def register_stream(info):
   if res:
     unregister_stream(name, do_all=True)
 
-  db['c'].execute("""insert into streams 
-  (name, start_unix, end_unix, start_minute, end_minute, week_number, size) values
-  (   ?,          ?,        ?,            ?,          ?,           ?,    ?) """, 
-  (name, start_unix, end_unix, start_minute, end_minute, week_number, size))
+  try:
+    db['c'].execute("""insert into streams 
+    (name, start_unix, end_unix, start_minute, end_minute, week_number, size) values
+    (   ?,          ?,        ?,            ?,          ?,           ?,    ?) """, 
+    (name, start_unix, end_unix, start_minute, end_minute, week_number, size))
 
-  db['conn'].commit()
+  except:
+    logging.warn("Unable to insert a record with a name %s" % name)
+
+  finally:
+    db['conn'].commit()
+
   return db['c'].lastrowid
-
-  return res[0]
- 
 
 def register_intent(minute_list, duration):
   """
