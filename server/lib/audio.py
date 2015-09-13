@@ -667,6 +667,8 @@ def stitch_and_slice_process(file_list, relative_start_minute, duration_minute):
 
   # We presume that there is a file list we need to make 
   stitched_list = stitch(file_list, force_stitch=True)
+  logging.info(stitched_list)
+  logging.info(file_list)
 
   # We see if it was correct, on the condition that it had to be made
   if stitched_list and (len(stitched_list) > 1 and len(file_list) > 1):
