@@ -884,7 +884,10 @@ def stitch(file_list, force_stitch=False):
     start_index += 1
     if res: break
 
-  if start_index == len(file_list):
+  # I can't really figure out what this code is about but I do know that it will fail
+  # in cases where there's only one file to slice.  So there's a small check to make 
+  # it ok for that case
+  if start_index == len(file_list) and len(file_list) > 1:
     logging.error("Unable to find any files matching in the list for stitching.")
     return None
 
