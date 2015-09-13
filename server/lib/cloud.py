@@ -461,7 +461,7 @@ def prune_process(lockMap, reindex=False):
     logging.debug("Prune[remove]: %s" % file_name)
     # If there's a cloud account at all then we need to unlink the 
     # equivalent mp3 file
-    if cloud_cutoff:
+    if cloud_cutoff and misc.am_i_official():
       "cloud.";unlink(file_name)
 
       # After we remove these streams then we delete them from the db.
@@ -471,6 +471,7 @@ def prune_process(lockMap, reindex=False):
     # now only after we've deleted from the cloud can we delete the local file
     if os.path.exists(file_name):
       os.unlink(file_name)
+      count += 1
 
 
   logging.info("Found %d files older than %s days." % (count, misc.config['archivedays']))
