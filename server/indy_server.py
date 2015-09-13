@@ -555,7 +555,7 @@ def server_manager(config):
     attempt = 1
 
     start = TS.unixtime('delay')
-    while TS.unixtime('delay') - start < patience:
+    while TS.unixtime('delay') - start < (patience + 3):
       try:
         print "Listening on %s" % config['port']
         app.logger.addHandler(logging.getLogger())
@@ -567,6 +567,11 @@ def server_manager(config):
           print "[attempt: %d] Error, can't start server ... perhaps %s is already in use?" % (attempt, config['port'])
           attempt += 1
           time.sleep(misc.PROCESS_DELAY / 4)
+
+        else:
+          pid=os.popen("netstat -anlp | grep :%s | awk ' { print $NF }' | sed 's/\/.*//'" % config['port']).read().strip()
+          print "Fuck it, I'm killing %s." % pid
+          os.kill(pid)
 
 ##
 ## Stream management functions
