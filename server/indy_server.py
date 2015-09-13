@@ -793,8 +793,11 @@ def stream_manager():
         change_state = SHUTDOWN
 
       elif what == 'restart':
+        cwd = os.getcwd()
         os.chdir(misc.PROCESS_PATH)
         subprocess.Popen(sys.argv)
+        os.chdir(cwd)
+
         change_state = RESTART
 
         # Try to record for another restart_overlap seconds - make sure that

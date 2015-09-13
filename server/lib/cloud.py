@@ -505,7 +505,7 @@ def get_size(fname):
 
  
 def download(path):
-  """ Download a file from the cloud and put it in a servicable place. """
+  """ Download a file from the cloud and put it in a serviceable place. """
   blob_service, container = connect()
 
   if blob_service:
@@ -522,7 +522,7 @@ def download(path):
       return True
 
     except azure.WindowsAzureMissingResourceError as e:
-      logging.debug('Unable to retreive %s from the cloud. It is not there' % path)
+      logging.debug('Unable to retreive %s from the cloud. It is not there' % fname)
 
       # TODO: This is a pretty deep (and probably wrong) place to do this.
       DB.unregister_stream(path)
