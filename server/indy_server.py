@@ -568,7 +568,7 @@ def server_manager(config):
           attempt += 1
           time.sleep(misc.PROCESS_DELAY / 4)
 
-        elsif TS.unixtime('delay') - start < (patience + 4):
+        elif TS.unixtime('delay') - start < (patience + 4):
           pid=os.popen("netstat -anlp | grep :%s | awk ' { print $NF }' | sed 's/\/.*//'" % config['port']).read().strip()
 
           try:
