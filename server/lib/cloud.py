@@ -423,7 +423,7 @@ def prune_process(lockMap, reindex=False):
     # print "Looking at ", file_name, ctime, cutoff, archive_duration,  misc.config['archivedays'], misc.am_i_official()
     # We observe the rules set up in the config.
     if file_name.startswith('slices') and ctime < slice_cutoff or ctime < cutoff:
-      logging.debug("Prune[remove]: %s" % file_name)
+      logging.debug("Prune[remove]: %s (ctime)" % file_name)
       os.unlink(file_name)
       count += 1 
 
@@ -452,13 +452,13 @@ def prune_process(lockMap, reindex=False):
   # cloud thingie associated with it.
   db = DB.connect()
 
-  unlink_list = db['c'].execute('select name, id from streams where end_unix < date("now", "-%d seconds") or end_minute - start_minute < 0.05' % archive_duration).fetchall()
+  unlink_list = db['c'].execute('select name, id from streams where end_unix < date("now", "-%d seconds") or (end_minute - start_minute < 0.05 and end_unix < date("now", "-%d seconds"))' % archive_duration, 1200).fetchall()
 
   for file_name_tuple in unlink_list:
     file_name = str(file_name_tuple[0])
     id = file_name_tuple[1]
 
-    logging.debug("Prune[remove]: %s" % file_name)
+    logging.debug("Prune[remove]: %s (unlink list)" % file_name)
     # If there's a cloud account at all then we need to unlink the 
     # equivalent mp3 file
     if cloud_cutoff and misc.am_i_official():
