@@ -452,7 +452,7 @@ def prune_process(lockMap, reindex=False):
   # cloud thingie associated with it.
   db = DB.connect()
 
-  unlink_list = db['c'].execute('select name, id from streams where end_unix < date("now", "-%d seconds") or (end_minute - start_minute < 0.05 and end_unix < date("now", "-%d seconds"))' % archive_duration, 1200).fetchall()
+  unlink_list = db['c'].execute('select name, id from streams where end_unix < date("now", "-%d seconds") or (end_minute - start_minute < 0.05 and end_unix < date("now", "-%d seconds"))' % (archive_duration, 1200)).fetchall()
 
   for file_name_tuple in unlink_list:
     file_name = str(file_name_tuple[0])
