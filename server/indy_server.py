@@ -568,10 +568,16 @@ def server_manager(config):
           attempt += 1
           time.sleep(misc.PROCESS_DELAY / 4)
 
-        else:
+        elsif TS.unixtime('delay') - start < (patience + 4):
           pid=os.popen("netstat -anlp | grep :%s | awk ' { print $NF }' | sed 's/\/.*//'" % config['port']).read().strip()
-          print "Fuck it, I'm killing %s." % pid
-          os.kill(pid)
+
+          try:
+            pid_numeric = int(pid)
+            print "Fuck it, I'm killing %d." % pid
+            os.kill(pid)
+
+          except:
+            pass
 
 ##
 ## Stream management functions
