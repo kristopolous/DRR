@@ -18,7 +18,7 @@
         </div>
         <ul class="radio-group group" id="station"><?php
           foreach(active_stations() as $station) {
-            echo '<li><a desc="' . $station['description'] . '" class="button">' . ($station['callsign']) . '</a></li>';
+            echo '<li><a freq="' . $station['frequency'] . '" desc="' . $station['description'] . '" class="button">' . ($station['callsign']) . '</a></li>';
           }
         ?></ul>
         <a href="#volunteer">Volunteer to add a station!</a>
