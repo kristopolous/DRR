@@ -151,7 +151,6 @@ ev('', function(map) {
   $("#podcast-container").css({width: $("#podcast-url").width() + 30});
 });
 
-
 ev.test('start', function(v, cb, meta) {
   var res = time_re.test(v);
   
@@ -185,7 +184,7 @@ $(function() {
     var query = this.value, show_count = [];
     
     $("#station li").each(function(){
-      var to_test = this.firstChild.innerHTML;
+      var to_test = [this.firstChild.innerHTML, this.firstChild.getAttribute('freq')].join(' ');
       if(to_test.search(query) == -1) {
         $(this).hide();
       } else {
