@@ -20,11 +20,7 @@
       <div class="content">
         <label for="station">What station?</label>
         <div id="station-preselect"></div>
-        <ul class="radio-group group" id="station"><?php
-          foreach(active_stations() as $station) {
-            echo '<li><a desc="' . $station['description'] . '" class="button">' . ($station['callsign']) . '</a></li>';
-          }
-        ?></ul>
+        <ul class="radio-group group" id="station"><? emit_active_stations(); ?></ul>
       </div>
       <div class="content">
         <label for="station">How Long Ago?</label>

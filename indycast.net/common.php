@@ -167,6 +167,12 @@ function sql_kv($hash, $operator = '=', $quotes = "'") {
   return $ret;
 }
 
+function emit_active_stations(){
+  foreach(active_stations() as $station) {
+    echo '<li><a freq="' . $station['frequency'] . '" desc="' . $station['description'] . '" class="button">' . ($station['callsign']) . '</a></li>';
+  }
+}
+
 // active stations are things we've seen in the past few days
 function active_stations() {
   global $db;

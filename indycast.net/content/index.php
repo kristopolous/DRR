@@ -16,11 +16,7 @@
           <i class="fa fa-search"></i>
           <input type="text" placeholder="Search" id='station-query'>
         </div>
-        <ul class="radio-group group" id="station"><?php
-          foreach(active_stations() as $station) {
-            echo '<li><a freq="' . $station['frequency'] . '" desc="' . $station['description'] . '" class="button">' . ($station['callsign']) . '</a></li>';
-          }
-        ?></ul>
+        <ul class="radio-group group" id="station"><? emit_active_stations(); ?></ul>
         <a href="#volunteer">Volunteer to add a station!</a>
       </div>
     </section>
