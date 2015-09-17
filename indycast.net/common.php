@@ -14,6 +14,7 @@ $schema = [
     // FCC callsign or some other unique reference
     'callsign'    => 'TEXT',
 
+    'frequency'   => 'TEXT',
     'description' => 'TEXT',
     'base_url'    => 'TEXT',
     'website'     => 'TEXT',
