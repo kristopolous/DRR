@@ -70,6 +70,7 @@ def server_manager(config):
   def after_request(response):
     """ Supports 206 partial content requests for podcast streams. """
     response.headers.add('Accept-Ranges', 'bytes')
+    logging.info('ua - %s' % request.headers.get('User-Agent'))
     return response
 
 
@@ -804,6 +805,7 @@ def stream_manager():
         change_state = SHUTDOWN
 
       elif what == 'restart':
+        logging.info(DB.get('runcount', use_cache=False))
         cwd = os.getcwd()
         os.chdir(misc.PROCESS_PATH)
         subprocess.Popen(sys.argv)
@@ -817,6 +819,9 @@ def stream_manager():
           shutdown_time = TS.unixtime('dl') + misc.config['restart_overlap']
           logging.info("Restart requested ... shutting down downloader at %s" % TS.ts_to_name(shutdown_time, with_seconds=True))
 
+          time.sleep(8)
+          logging.info(DB.get('runcount', use_cache=False))
+          logging.info(os.popen('ps ax | grep %s' % misc.config['callsign']).read().strip())
           # This makes it a restricted soft shutdown
           misc.shutdown_real(do_restart=True)
           misc.download_ipc.put(('shutdown_time', shutdown_time))
