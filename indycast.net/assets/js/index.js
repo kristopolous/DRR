@@ -166,7 +166,7 @@ ev.test('start', function(v, cb, meta) {
 
 $(function() {
   $(".radio-group a").hover(function(){
-    $("#description").html("<h2>" + this.innerHTML + "</h2>" + htmldo(this.getAttribute('desc'))).show();
+    $("#description").html("<h2>" + $.trim([this.getAttribute('freq') || "", this.innerHTML].join(' ')) + "</h2>" + htmldo(this.getAttribute('desc'))).show();
   });
 
 
