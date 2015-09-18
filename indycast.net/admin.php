@@ -44,6 +44,11 @@ $res = $db->query('select * from stations');
 $isFirst = true;
 
 while($row = prune($res)) {
+  // omit this from displaying.
+  foreach(['lat','long'] as $key) {
+    unset($row[$key]);
+  } 
+
   foreach(['last_seen', 'first_seen'] as $key) {
     $row[$key] = array_shift(explode(' ', $row[$key]));
   }
