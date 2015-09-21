@@ -164,6 +164,15 @@ ev.test('start', function(v, cb, meta) {
   cb(res);
 });
 
+function email_subscribe() {
+  ev('email', $("#email-input").val());
+  remote('api/subscribe', ev('')).then(function(m) {
+    console.log(m);
+  }).fails(function(m) {
+    console.log('fails', m);
+  });
+}
+
 $(function() {
   $(".radio-group a").hover(function(){
     $("#description").html("<h2>" + $.trim([this.getAttribute('freq') || "", this.innerHTML].join(' ')) + "</h2>" + htmldo(this.getAttribute('desc'))).show();

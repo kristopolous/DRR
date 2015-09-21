@@ -148,7 +148,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-link" data-dismiss="modal">Not Interested</button>
-          <button type="button" class="btn btn-primary">Get Free MP3s</button>
+          <button type="button" onclick="email_subscribe()" class="btn btn-primary">Get Free MP3s</button>
         </div>
       </div>
     </div>
