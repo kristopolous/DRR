@@ -570,16 +570,17 @@ def server_manager(config):
           time.sleep(misc.PROCESS_DELAY / 4)
 
         elif TS.unixtime('delay') - start < (patience + 4):
-          pid=os.popen("netstat -anlp | grep :%s | awk ' { print $NF }' | sed 's/\/.*//'" % config['port']).read().strip()
+          pid=os.popen("netstat -anlp | grep :%s | awk ' { print $NF }' | sed 's/\/.*//'" % config['port']).read().strip().split('\n')[0]
 
           try:
             pid_numeric = int(pid)
-            print "Fuck it, I'm killing %d." % pid
+            print "Fuck it, I'm killing %s." % pid
             os.kill(pid)
 
           except:
             pass
 
+          time.sleep(misc.PROCESS_DELAY / 4)
 ##
 ## Stream management functions
 ##
