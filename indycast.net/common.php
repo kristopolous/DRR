@@ -35,6 +35,16 @@ $schema = [
     'load'        => 'DOUBLE default 0'
   ],
 
+  'schedule' => [
+    'id'          => 'INTEGER PRIMARY KEY', 
+    'callsign'    => 'TEXT',
+
+    'duration'    => 'INTEGER DEFAULT 0',
+    'start_min'   => 'INTEGER DEFAULT 0',
+
+    'name'        => 'TEXT'
+  ],
+
   // The reminders table is to email someone
   // when they set a reminder for a particular station.
   'reminders' => [
