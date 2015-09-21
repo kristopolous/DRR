@@ -42,6 +42,9 @@ $schema = [
     'duration'    => 'INTEGER DEFAULT 0',
     'start_min'   => 'INTEGER DEFAULT 0',
 
+    'created_at'  => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
+    'last_seen'   => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
+
     'name'        => 'TEXT'
   ],
 
