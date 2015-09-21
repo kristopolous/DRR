@@ -575,7 +575,7 @@ def server_manager(config):
           try:
             pid_numeric = int(pid)
             print "Fuck it, I'm killing %s." % pid
-            os.kill(pid)
+            os.kill(pid, 9)
 
           except:
             pass
