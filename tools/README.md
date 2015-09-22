@@ -20,6 +20,7 @@ The current files:
  * [p] request_job.py - This perennial script is the back-end technology that checks the reminder table and sends off emails.
  * [pdt] restart_through_ssh.sh - Restarts a server through ssh if the `/restart` directive fails.
  * [pdt] server_query.py - Queries the server(s) for information (see below)
+ * [pdt] time_convert.py - A sweet and simple time conversion for things like php.
  * [p] schedule_scraper.py - Queries the websites of stations for updates on their schedules, storing it for searching.
 
 The tools ending in .py all have documentation using python's argparser which can be invoked by running them with a `-h` option.  All tools are internally documented in their code - along with providing descriptions of what they do and how to use them at the top of the file.
