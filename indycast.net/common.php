@@ -238,6 +238,11 @@ function del_station($dirty) {
   return $db->exec('update stations set active = 0 where ' . implode(' and ', $inj));
 }
 
+function db_insert($table, $map) {
+  $lhs = array_keys($map); $rhs = array_values($map);
+  return $db->exec('insert into ' . $table . ' (' . implode(',', $lhs) . ') values (' . implode(',', $rhs) . ')');
+}
+
 function add_station($dirty) {
   if (is_read_only()) {
     return false;
@@ -249,7 +254,7 @@ function add_station($dirty) {
   $station = db_get('select * from stations where callsign = "' . $clean['callsign'] . '"');
   if(!$station) {
     $lhs = array_keys($dirty); $rhs = array_values($dirty);
-    return $db->exec('insert into stations (' . implode(',', $lhs) . ') values ("' . implode('","', $dirty) . '")');
+    return $db->exec('insert into stations (' . implode(',', $lhs) . ') values ("' . implode('","', $rhs) . '")');
   } else {
     $inj = sql_kv($dirty);
     return $db->exec('update stations set ' . implode(',', $inj) . ' where id = ' . $station['id']);
