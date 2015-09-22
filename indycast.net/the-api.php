@@ -12,6 +12,17 @@ function fails($message) {
 }
 
 function pl_subscribe() {
+  $p = sanitize([
+    'start' => STR,
+    'name' => STR,
+    'station' => STR,
+    'ampm' => STR,
+    'day' => STR|SET,
+    'duration' => STR,
+    'email' => STR
+  ]);
+  $group_id = uuid_gen();
+
   var_dump($_REQUEST);
   return fails("unimplemented");
 }
