@@ -1,0 +1,20 @@
+{
+  "require": {
+    "ramsey/uuid": "~2.8"
+  },
+  "autoload": {
+    "classmap": [
+    ]
+  },
+  "scripts": {
+  },
+  "repositories" : [
+  ],
+  "config": {
+    "preferred-install": "dist"
+  },
+  "config": {
+    "process-timeout": 3000
+  },
+  "minimum-stability": "stable"
+}
