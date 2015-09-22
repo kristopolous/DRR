@@ -126,18 +126,19 @@ function sanitize($list) {
 
   foreach($list as $key => $type) {
     if(isset($_REQUEST[$key])) {
+      // if there are multiple values to pull out, then
+      // we leverage the sanitize single and make sure we do
+      // them one at a time.
       if($type & SET) {
+        $ret[$key] = [];
 
+        foreach($_REQUEST[$key] as $el) {
+          $ret[$key][] = sanitize_single($el, $type);
+        }
       } else {
-        $val = $_REQUEST[$key];
+        // otherwise we can safely pass everything through
+        $ret[$key] = sanitize_single($_REQUEST[$key], $type);
       }
-      $base = SQLite3::escapeString($val);
-
-      if($type & STR) {
-        $ret[$key] = '"' . $base . '"';
-      } else {
-        $ret[$key] = $base;
-      } 
 
     } else {
       $ret[$key] = false;
