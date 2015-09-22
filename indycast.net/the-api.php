@@ -24,12 +24,30 @@ function pl_subscribe() {
   $group_id = uuid_gen();
 
   $ts_input = [];
-  foreach($p['day'] as $day) {
-    $ts_input[] = sprintf("%s %s%s %s", $day, $p['start'],$p['ampm'], $p['duration']);
+  if(is_array($_REQUEST['day'])) {
+    foreach($_REQUEST['day'] as $day) {
+      $ts_input[] = sprintf("%s %s %s", $day, $_REQUEST['start'], $_REQUEST['duration']);
+    }
+  } else {
+    return fails("Invalid day input");
   }
-  $one_line = implode('_', $ts_input);
+  $one_line = escapeshellarg(implode('_', $ts_input));
 
-  var_dump($_REQUEST);
+  $to_record_list = json_decode(shell_exec('echo ' . $one_line . ' | ../tools/time_convert.py'), true);
+
+  foreach($to_record_list as $item) {
+    $to_insert = [
+      'email' => $p['email'],
+      'station' => $p['station'],
+      'duration' => $item[1],
+      'start_min' => $item[0],
+      'group_id' => $group_id
+    ];
+    $res = db_insert('subscriptions', $to_insert);
+    var_dump($res);
+  }
+
+  var_dump($parts);
   return fails("unimplemented");
 }
 
