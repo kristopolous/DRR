@@ -4,22 +4,8 @@ import db as DB
 import logging
 import time
 import json
-import misc 
 from datetime import datetime, timedelta, date
 from dateutil import parser as dt_parser
-
-import socket
-
-#
-# This is needed to force ipv4 on ipv6 devices. It's sometimes needed
-# if there isn't a clean ipv6 route to get to the big wild internet.
-# In these cases, a pure ipv6 route simply will not work.  People aren't
-# always in full control of every hop ... so it's much safer to force
-# ipv4 then optimistically cross our fingers.
-#
-origGetAddrInfo = socket.getaddrinfo
-getAddrInfoWrapper = misc.getAddrInfoWrapper
-socket.getaddrinfo = getAddrInfoWrapper
 
 import urllib2
 import urllib
@@ -37,6 +23,7 @@ def now(offset_sec=0):
 
 
 def uptime():
+  import misc 
   return int(unixtime('uptime') - misc.start_time)
 
 def unixtime(what=''):
@@ -167,6 +154,7 @@ def get_offset(force=False):
 
   Returns an int second offset.
   """
+  import misc 
 
   # If we are testing this from an API level, then we don't
   # have a database
