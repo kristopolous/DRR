@@ -75,13 +75,14 @@ $schema = [
   'subscriptions' => [
     'id'          => 'INTEGER PRIMARY KEY', 
 
-    'signup'      => 'TIMESTAMP',
+    // when the person signed up
+    'created_at'  => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
 
     // times the email was sent
     'sent'        => 'INTEGER DEFAULT 0',
 
     // last time this particular email was sent
-    'last_sent'   => 'TIMESTAMP',
+    'last_sent'   => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
 
     'email'       => 'TEXT',
     'station'     => 'TEXT',
@@ -94,7 +95,7 @@ $schema = [
     // that is indicated with a groupid so that if a person
     // "unsubscribes" they unsubscribe from the who package
     // and not just a certain day.
-    'groupid'     => 'INTEGER DEFAULT 0' 
+    'group_id'     => 'TEXT'
   ]
 ];
 
@@ -132,6 +133,29 @@ function db_all($what) {
     $res[] = $item;
   }
   return $res;
+}
+
+// completely jacked from http://stackoverflow.com/questions/2040240/php-function-to-generate-v4-uuid
+function gen_uuid() {
+  return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+    // 32 bits for "time_low"
+    mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
+
+    // 16 bits for "time_mid"
+    mt_rand( 0, 0xffff ),
+
+    // 16 bits for "time_hi_and_version",
+    // four most significant bits holds version number 4
+    mt_rand( 0, 0x0fff ) | 0x4000,
+
+    // 16 bits, 8 bits for "clk_seq_hi_res",
+    // 8 bits for "clk_seq_low",
+    // two most significant bits holds zero and one for variant DCE1.1
+    mt_rand( 0, 0x3fff ) | 0x8000,
+
+    // 48 bits for "node"
+    mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
+  );
 }
 
 function db_get($str) {
