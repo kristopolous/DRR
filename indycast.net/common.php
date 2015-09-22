@@ -1,4 +1,9 @@
 <?
+require 'vendor/autoload.php';
+
+use Rhumsaa\Uuid\Uuid;
+use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
+
 session_start();
 $db = new SQLite3(__DIR__ . "/../db/main.db");
 
@@ -89,7 +94,7 @@ $schema = [
     'duration'    => 'INTEGER DEFAULT 0',
     'start_min'   => 'INTEGER DEFAULT 0',
 
-    // The group id is something that conveniently avoids
+    // The group_id is something that conveniently avoids
     // normalization ... if a show is on multiple times a week
     // and it's part of the same "subscription package" then
     // that is indicated with a groupid so that if a person
@@ -99,8 +104,10 @@ $schema = [
   ]
 ];
 
-define('INT', 0);
-define('STR', 1);
+define('INT',       0x0001);
+define('STR',       0x0002);
+define('ARRAY',     0x0100);
+define('REQUIRED',  0x1000);
 
 function sanitize($list) {
   $ret = [];
@@ -136,7 +143,7 @@ function db_all($what) {
 }
 
 // completely jacked from http://stackoverflow.com/questions/2040240/php-function-to-generate-v4-uuid
-function gen_uuid() {
+function uuid_gen() {
   return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
     // 32 bits for "time_low"
     mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
