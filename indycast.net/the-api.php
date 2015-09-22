@@ -11,7 +11,8 @@ function fails($message) {
   return ['result' => false, 'message' => $message];
 }
 
-function pl_subscribe($who, $what) {
+function pl_subscribe() {
+  var_dump($_REQUEST);
   return fails("unimplemented");
 }
 
