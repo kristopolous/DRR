@@ -106,17 +106,34 @@ $schema = [
 
 define('INT',       0x0001);
 define('STR',       0x0002);
-define('ARRAY',     0x0100);
+define('SET',       0x0100);
 define('REQUIRED',  0x1000);
+
+// sanitize raw input to be friendly towards the database.
+// no bobby tables here, no sir.
+function sanitize_single($val, $type) {
+  $base = SQLite3::escapeString($val);
+
+  if($type & STR) {
+    return '"' . $base . '"';
+  } else {
+    return $base;
+  } 
+}
 
 function sanitize($list) {
   $ret = [];
 
   foreach($list as $key => $type) {
     if(isset($_REQUEST[$key])) {
-      $base = SQLite3::escapeString($_REQUEST[$key]);
+      if($type & SET) {
 
-      if($type == STR) {
+      } else {
+        $val = $_REQUEST[$key];
+      }
+      $base = SQLite3::escapeString($val);
+
+      if($type & STR) {
         $ret[$key] = '"' . $base . '"';
       } else {
         $ret[$key] = $base;
@@ -142,27 +159,8 @@ function db_all($what) {
   return $res;
 }
 
-// completely jacked from http://stackoverflow.com/questions/2040240/php-function-to-generate-v4-uuid
 function uuid_gen() {
-  return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-    // 32 bits for "time_low"
-    mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
-
-    // 16 bits for "time_mid"
-    mt_rand( 0, 0xffff ),
-
-    // 16 bits for "time_hi_and_version",
-    // four most significant bits holds version number 4
-    mt_rand( 0, 0x0fff ) | 0x4000,
-
-    // 16 bits, 8 bits for "clk_seq_hi_res",
-    // 8 bits for "clk_seq_low",
-    // two most significant bits holds zero and one for variant DCE1.1
-    mt_rand( 0, 0x3fff ) | 0x8000,
-
-    // 48 bits for "node"
-    mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
-  );
+  return Uuid::uuid4();
 }
 
 function db_get($str) {
@@ -172,7 +170,6 @@ function db_get($str) {
     return $res->fetchArray();
   }
 }
-
 
 function prune($obj) {
   $ret = $obj->fetchArray();
