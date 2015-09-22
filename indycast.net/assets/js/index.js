@@ -166,9 +166,9 @@ ev.test('start', function(v, cb, meta) {
 
 function email_subscribe() {
   ev('email', $("#email-input").val());
-  remote('api/subscribe', ev('')).then(function(m) {
+  remote('subscribe', ev('')).then(function(m) {
     console.log(m);
-  }).fails(function(m) {
+  }).fail(function(m) {
     console.log('fails', m);
   });
 }
