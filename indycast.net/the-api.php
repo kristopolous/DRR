@@ -23,10 +23,11 @@ function pl_subscribe() {
   ]);
   $group_id = uuid_gen();
 
+  $ts_input = [];
   foreach($p['day'] as $day) {
-    $ts_input = sprintf("%s %s%s %s", $day, $p['start'],$p['ampm'], $p['duration']);
-    var_dump($ts_input);
+    $ts_input[] = sprintf("%s %s%s %s", $day, $p['start'],$p['ampm'], $p['duration']);
   }
+  $one_line = implode('_', $ts_input);
 
   var_dump($_REQUEST);
   return fails("unimplemented");
