@@ -1,11 +1,7 @@
 #!/usr/bin/python -O
-import argparse
-import os
-import re
-import ConfigParser
 import sys
 import lib.misc as misc
-import lib.TS as TS
+import lib.ts as TS
 
-in = sys.stdin.read()
-print in
+data = sys.stdin.readlines()[0].split(' ')
+print TS.to_utc(data[0], data[1])
