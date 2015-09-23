@@ -17,4 +17,8 @@ else
   station=$1
 fi
 
-ssh $station.indycast.net "cd radio/$station;tail -n $length -f indycast.log"
+if [ "$length" = 'all' ]; then
+  ssh $station.indycast.net "cd radio/$station;cat indycast.log*"
+else
+  ssh $station.indycast.net "cd radio/$station;tail -n $length -f indycast.log"
+fi
