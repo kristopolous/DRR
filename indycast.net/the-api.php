@@ -115,18 +115,26 @@ function pl_reminder($what) {
   return passes('reminder added');
 }
 
+function pl_stations_txt() {
+  foreach(active_stations() as $station) {
+    echo $station['callsign'] . "\n";
+  }
+  return false;
+}
+
 function pl_stations() {
   return json_encode(active_stations());
 }
 
-if(isset($_REQUEST['func']) && function_exists('pl_' . $_REQUEST['func'])) {
-  $toRun = 'pl_' . $_REQUEST['func'];
+$toRun = 'pl_' . preg_replace('/\./', '_', $_REQUEST['func']);
+
+if(isset($_REQUEST['func']) && function_exists($toRun)) {
   unset($_REQUEST['func']);
 
   $result = $toRun ( $_REQUEST );
   if(is_string($result)) {
     echo $result;
-  } else {
+  } else if (!is_bool($result)) {
     echo json_encode($result);
   }
 } else {
