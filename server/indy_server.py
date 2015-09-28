@@ -820,12 +820,18 @@ def stream_manager():
           shutdown_time = TS.unixtime('dl') + misc.config['restart_overlap']
           logging.info("Restart requested ... shutting down downloader at %s" % TS.ts_to_name(shutdown_time, with_seconds=True))
 
-          time.sleep(8)
-          logging.info(DB.get('runcount', use_cache=False))
-          logging.info(os.popen('ps ax | grep %s' % misc.config['callsign']).read().strip())
-          # This makes it a restricted soft shutdown
-          misc.shutdown_real(do_restart=True)
-          misc.download_ipc.put(('shutdown_time', shutdown_time))
+          time.sleep(12)
+          #logging.info(DB.get('runcount', use_cache=False))
+          ps_out = int(os.popen('ps axf | grep [%c]%s | grep python | wc -l' % (misc.config['callsign'][0], misc.config['callsign'][1:]) ).read().strip())
+
+          if ps_out > 0: 
+            logging.info("Found %d potential candidates (need at least 1)" % ps_out)
+            # This makes it a restricted soft shutdown
+            misc.shutdown_real(do_restart=True)
+            misc.download_ipc.put(('shutdown_time', shutdown_time))
+
+          else:
+            logging.warn("Couldn't find a replacement ... not going anywhere.");
 
       elif what == 'heartbeat':
         if not lr_set and value[1] > 100:
