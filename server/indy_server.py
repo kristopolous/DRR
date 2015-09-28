@@ -1099,7 +1099,7 @@ def read_config(config):
 
   logger = logging.getLogger()
   formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', '%Y%m%d_%H%M_%S')
-  handler = RotatingFileHandler('indycast.log', maxBytes=500000, backupCount=2)
+  handler = RotatingFileHandler('indycast.log', maxBytes=2000000, backupCount=5)
   handler.setFormatter(formatter)
   handler.setLevel(numeric_level)
   logger.setLevel(numeric_level)
