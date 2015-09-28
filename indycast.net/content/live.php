@@ -33,7 +33,7 @@
             <label for="station">Or choose a specific time</label>
             <a id='half-hour' class='button'></a>
             <a id='whole-hour' class='button'></a>
-            <a id='custom'>custom</a>
+            <!--<a id='custom'>custom</a>-->
           </div>
         </div>
       </div>

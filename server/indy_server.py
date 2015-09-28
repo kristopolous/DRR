@@ -831,7 +831,7 @@ def stream_manager():
             misc.download_ipc.put(('shutdown_time', shutdown_time))
 
           else:
-            logging.warn("Couldn't find a replacement ... not going anywhere.");
+            logging.warn("Couldn't find a replacement process ... not going anywhere.");
 
       elif what == 'heartbeat':
         if not lr_set and value[1] > 100:
