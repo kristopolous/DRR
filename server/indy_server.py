@@ -494,7 +494,7 @@ def server_manager(config):
 
     # This means we failed to parse
     if not duration_min:
-      return do_error("duration '%s' is not set correctly" % duration_string)
+      return server.do_error("duration '%s' is not set correctly" % duration_string)
 
     #
     # See https://github.com/kristopolous/DRR/issues/22:
