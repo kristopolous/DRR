@@ -55,7 +55,7 @@ def str_to_time(in_str):
 
 def duration_parse(duration_string):
   # Duration is expressed either in minutes or in \d+hr\d+ minute
-  re_minute = re.compile('^(\d+)(?:min|)$')
+  re_minute = re.compile('^(\d+)(?:min|m|)$')
   re_hr_solo = re.compile('^(\d+)hr$', re.I)
   re_hr_min = re.compile('^(\d+)hr(\d+).*$', re.I)
 
