@@ -42,7 +42,7 @@ def stderr(switch):
     
 def find_misbehaving_servers(db, fail_list):
   max_values = {
-    'disk': '3.5',
+    'disk': '3.8',
     'load': '0.9',
     'delta': '300',
     'plist': [ 4, 6 ]
