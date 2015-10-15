@@ -369,13 +369,13 @@ def prune(reindex=False):
   return process
 
 
-def prune_process(lockMap, reindex=False):
+def prune_process(lockMap, reindex=False, force=False):
   """ 
   This is internal, call prune() directly. This is a normally blocking
   process that is prepared by prune(), making it easily callable asynchronously 
   """
   # If another prune is running then we just bail
-  if not lockMap['prune'].acquire(False):
+  if not lockMap['prune'].acquire(False) and not force:
     logging.warn("Tried to run another prune whilst one is running. Aborting")
     return True
 
