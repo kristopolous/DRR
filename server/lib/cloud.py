@@ -392,6 +392,7 @@ def prune_process(lockMap, reindex=False, force=False):
     register_stream_list(reindex)
 
   except:
+    lockMap['prune'].release()
     return None
 
   db = DB.connect()
@@ -416,6 +417,7 @@ def prune_process(lockMap, reindex=False, force=False):
     # other instances of itself.
     #
     if not misc.manager_is_running():
+      lockMap['prune'].release()
       return None
 
     ctime = os.path.getctime(file_name)
