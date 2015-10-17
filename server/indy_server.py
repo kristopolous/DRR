@@ -196,7 +196,7 @@ def server_manager(config):
     Starts the prune sub-process which cleans up and offloads audio files 
     following the rules outlined in the configuration file (viewable with the stats call)
     """
-    cloud.pruneforce=True)
+    cloud.prune(force=True)
     return success("Pruning started")
 
 
