@@ -55,12 +55,12 @@ def find_misbehaving_servers(db, fail_list):
 
   misbehaving = db['c'].execute('select callsign, disk, load, last_record from stations where active = 1 and (disk > ? or load > ? or last_record > ?)', (max_values['disk'], max_values['load'], max_values['delta'])).fetchall()
 
-  if len(misbehaving):
-    report.append("Thresholds: %s" % json.dumps(max_values, indent=2))
-
   for row in misbehaving:
     report.append("  %s: disk:%s load:%s last:%s" % row)
  
+  if len(misbehaving):
+    report.append("Thresholds: %s" % json.dumps(max_values, indent=2))
+
   if len(report) and mail_config:
     # Don't want any scripts to read this and harvest my email.
     email_to_use = 'kri%s@%soo.com' % ("stopolous", "yah")
