@@ -13,7 +13,7 @@
 </style>
 <div id="main">
   <h1>Indycast TiVo<br/>
-  Pause, Rewind, Fast Forward live radio.
+  Pause, Rewind, and Fast Forward live radio; take it with you.
 </h1>
   <div class="box alt container">
     <section class="feature left">
