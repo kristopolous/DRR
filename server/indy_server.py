@@ -498,16 +498,16 @@ def server_manager(config):
     if not duration_min:
       return server.do_error("duration '%s' is not set correctly" % duration_string)
 
-    #
-    # See https://github.com/kristopolous/DRR/issues/22:
-    #
-    # We're going to add 2 minutes to the duration to make sure that we get
-    # the entire episode.
-    #
-    duration_min += 2
-
     if not isinstance(start_time_list[0], (int, long, float)):
       return server.do_error('weekday and start times are not set correctly')
+
+    # In #22 We're going to add 2 minutes to the duration to make sure that we get
+    # the entire episode.
+    duration_min += 2
+
+    # And according to #149 we also go a minute back for the start time ... 
+    # we need to do a little math to make sure we don't get a -1 edge case
+    start_time_list = [(ts.MINUTES_PER_WEEK + offset - 1) % ts.MINUTES_PER_WEEK for offset in start_time_list]
 
     # If we are here then it looks like our input is probably good.
     
