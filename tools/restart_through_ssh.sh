@@ -1,6 +1,7 @@
 #!/bin/bash
 # 
-# Restarts a single server through ssh under the following assumptions:
+# Restarts n servers (specified as stations through command 
+# arguments) through ssh under the following assumptions:
 #
 #   * The station exists 
 #   * Is registered through indycast.net
