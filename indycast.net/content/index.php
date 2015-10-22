@@ -1,9 +1,8 @@
 <link rel="stylesheet" href="/assets/css/main.css" />
 <title>Indycast - A free technology that sends you MP3s of any radio show - at any time, right now.</title>
-<div id="header">
+<div class='super-main' id="main">
   <h1>A DVR for Radio</h1>
-  <p>Get MP3s of <?= $callsign ? strtoupper($callsign) : "any radio show - at any time, right now." ?>
-  <?php if ($callsign) { ?><br/><small>(<a href="/">and more</a>)</small><?php } ?></p>
+  <p>MP3s of everything broadcasted on 16 stations over the past 4 weeks</p>
   <small><b>Specify the show and start listening now.</b></small>
 </div>
 <div class="box alt container"><?

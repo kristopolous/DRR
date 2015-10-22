@@ -699,16 +699,6 @@ input[type="submit"].fit,
   position: relative;
   z-index: 1;
 }
-#main:before {
-  background: rgba(224, 224, 224, 0.75);
-  content: '';
-  height: 100%;
-  left: 50%;
-  position: absolute;
-  top: 0;
-  width: 1px;
-  z-index: -1;
-}
 #main header.major,
 #main footer.major {
   background: #ffffff;
@@ -1269,4 +1259,15 @@ code{white-space: pre;}
 }
 #radio-index audio {
   width: 100%;
+}
+#main.super-main {
+  padding: 4.5em 0;
+  background: #fff;
+  text-align: center;
+  font-size: 120%;
+}
+.super-main p { margin-bottom: 0; font-size: 90% }
+.super-main h1 { 
+  margin-bottom: 0;
+  font-size: 120%;
 }
