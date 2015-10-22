@@ -643,7 +643,7 @@ input[type="submit"].fit,
   padding: calc(460px + 6em) 0 10em 0;
   position: relative;
   text-align: center;
-  z-index: -1;
+  z-index: 1;
 }
 #footer:before {
   background: rgba(224, 224, 224, 0.75);

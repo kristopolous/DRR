@@ -1,4 +1,6 @@
 #!/usr/bin/python -O
+import memory_profiler
+from memory_profiler import profile
 import argparse
 import ConfigParser
 import json
@@ -50,6 +52,7 @@ g_download_pid = 0
 ##
 ## Storage and file related
 ##
+@profile
 def server_manager(config):
   """ Main flask process that manages the end points. """
   app = Flask(__name__)
@@ -942,7 +945,6 @@ def stream_manager():
     DB.incr('uptime', cycle_time)
 
     time.sleep(cycle_time)
-
 
 def read_config(config):
   """
