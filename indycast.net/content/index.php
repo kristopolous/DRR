@@ -3,14 +3,14 @@
 <div class='super-main' id="main">
   <h1>A DVR for Radio</h1>
   <span style=display:inline-block>
-  <p>MP3s of everything on<br>16 stations archived</p>
+  <p>MP3 archives of<br>16 stations</p>
   <small style=display:block;line-height:1.4em;text-align:center><b>Subscribe to shows<br>Listen to what you missed</b></small>
   </span>
 </div>
 <div class="box alt container"><?
   if(!$callsign) { ?>
     <section class="feature left">
-      <a href="#" class="image icon fa-signal"><img src="/images/pic01.jpg" alt="" /><div id="description"></div></a>
+      <a href="#" class="imgbox image icon fa-signal"><div id="description"></div></a>
       <div class="content">
         <h3>Choose the station</h3>
         <div id='station-search-box'>
@@ -23,7 +23,7 @@
     </section>
   <? } ?>
   <section class="feature right">
-    <a href="#" class="image icon fa-clock-o"><img src="/images/pic02.jpg" alt="" /></a>
+    <a href="#" style=background:#737F77 class="imgbox image icon fa-clock-o"></a>
     <div class="content" id='day-picker'>
 
       <label for="day">day(s) of week</label>
@@ -55,7 +55,7 @@
     </div>
   </section>
   <section class="feature left">
-    <a href="#" class="image icon fa-mobile"><img src="/images/pic03.jpg" alt="" /></a>
+    <a href="#" style='background:#7B7F73' class="imgbox image icon fa-mobile"></a>
     <div class="content">
       <label for="name">Show's Name</label>
       <input class="text" type="text" name="name" id="name" value="" placeholder="ex. Alien Air Music" />
