@@ -6,10 +6,6 @@ ev('ampm', function(val){
   }
 });
 
-ev('station', function(what) {
-  mixpanel.track("station selected");
-});
-
 function show_download() {
   console.log(+(new Date()) + "here", _is_ready);
 
@@ -185,9 +181,6 @@ $(function() {
       document.location = this.getAttribute('href');
     });
   }
-  $("#podcast-url").click(function(){
-    mixpanel.track("podcast-click");
-  });
 
   $("#station-query").on('keyup', function(){
     var query = this.value, show_count = [];
