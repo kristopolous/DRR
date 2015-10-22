@@ -1261,12 +1261,15 @@ code{white-space: pre;}
   width: 100%;
 }
 #main.super-main {
-  padding: 4.5em 0;
+  padding: 5em 0;
   background: #fff;
   text-align: center;
   font-size: 120%;
 }
-.super-main p { margin-bottom: 0; font-size: 90% }
+.super-main p { 
+  line-height: 1.30em;
+margin: 0.60em; 
+font-size: 90% }
 .super-main h1 { 
   margin-bottom: 0;
   font-size: 120%;

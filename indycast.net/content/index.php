@@ -2,8 +2,10 @@
 <title>Indycast - A free technology that sends you MP3s of any radio show - at any time, right now.</title>
 <div class='super-main' id="main">
   <h1>A DVR for Radio</h1>
-  <p>MP3s of everything broadcasted on 16 stations over the past 4 weeks</p>
-  <small><b>Specify the show and start listening now.</b></small>
+  <span style=display:inline-block>
+  <p>MP3s of everything on<br>16 stations archived</p>
+  <small style=display:block;line-height:1.4em;text-align:center><b>Subscribe to shows<br>Listen to what you missed</b></small>
+  </span>
 </div>
 <div class="box alt container"><?
   if(!$callsign) { ?>
