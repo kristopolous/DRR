@@ -586,27 +586,6 @@ def server_manager(config):
             pass
 
           time.sleep(misc.PROCESS_DELAY / 4)
-##
-## Stream management functions
-##
-def stream_should_be_recording():
-  """ Queries the database and see if we ought to be recording at this moment. """
-
-  db = DB.connect()
-
-  current_minute = TS.minute_now()
-
-  intent_count = db['c'].execute("""
-    select count(*) from intents where 
-      start >= ? and 
-      end <= ? and 
-      accessed_at > datetime('now','-%s days')
-    """ % misc.config['expireafter'], 
-    (current_minute, current_minute)
-  ).fetchone()[0]
-
-  return intent_count != 0
-
 
 def stream_download(callsign, url, my_pid, file_name):
   """ 
