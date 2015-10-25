@@ -861,19 +861,14 @@ def stream_manager():
       logging.info("Manager isn't running");
       change_state = SHUTDOWN
 
-    # If we are not in full mode, then we should check whether we should be 
-    # recording right now according to our intents.
-    if not mode_full:
-      should_record = stream_should_be_recording()
-
     # The only way for the bool to be toggled off is if we are not in full-mode ... 
     # we get here if we should NOT be recording.  So we make sure we aren't.
-    if not should_record or change_state == SHUTDOWN or (change_state == RESTART and TS.unixtime('dl') > shutdown_time):
+    if change_state == SHUTDOWN or (change_state == RESTART and TS.unixtime('dl') > shutdown_time):
       process = my_process_shutdown(process)
       process_next = my_process_shutdown(process_next)
       misc.shutdown_real()
 
-    elif should_record:
+    else:
       # Didn't respond in cycle_time seconds so kill it
       if not flag:
         process = my_process_shutdown(process)
@@ -934,10 +929,6 @@ def read_config(config):
   defaults = {
     # The log level to be put into the indycast.log file.
     'loglevel': 'DEBUG',
-
-    # The recording mode, either 'full' meaning to record everything, or != 'full' 
-    # meaning to record only when an intent is matched.
-    'mode': 'full',
 
     #
     # The relative, or absolute directory to put things in
