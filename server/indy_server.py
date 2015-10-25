@@ -710,15 +710,11 @@ def stream_manager():
   last_prune = 0
   last_success = 0
 
-  mode_full = (misc.config['mode'].lower() == 'full')
-
   change_state = None
   SHUTDOWN = 1
   RESTART = 2
   shutdown_time = None
   misc.download_ipc = Queue()
-
-  should_record = mode_full
 
   # Number of seconds to be cycling
   cycle_time = misc.config['cycletime']
