@@ -11,7 +11,6 @@ origGetAddrInfo = socket.getaddrinfo
 getAddrInfoWrapper = misc.getAddrInfoWrapper
 socket.getaddrinfo = getAddrInfoWrapper
 
-import urllib2
 import urllib
 
 def do_error(errstr):

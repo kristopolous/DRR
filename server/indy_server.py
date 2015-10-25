@@ -1,6 +1,4 @@
 #!/usr/bin/python -O
-import memory_profiler
-from memory_profiler import profile
 import argparse
 import ConfigParser
 import json
@@ -14,14 +12,12 @@ import signal
 import sys
 import time
 import setproctitle as SP
-import sqlite3
 import lib.db as DB
 import lib.server as server
 import lib.audio as audio
 import lib.ts as TS
 import lib.misc as misc
 import lib.cloud as cloud
-import uuid
 import socket
 
 #
@@ -35,11 +31,10 @@ origGetAddrInfo = socket.getaddrinfo
 getAddrInfoWrapper = misc.getAddrInfoWrapper
 socket.getaddrinfo = getAddrInfoWrapper
 
-import urllib2
 import urllib
 
 from logging.handlers import RotatingFileHandler
-from datetime import datetime, timedelta, date
+from datetime import timedelta, date
 from glob import glob
 from flask import Flask, request, jsonify, Response, url_for, redirect
 import flask
@@ -52,7 +47,6 @@ g_download_pid = 0
 ##
 ## Storage and file related
 ##
-@profile
 def server_manager(config):
   """ Main flask process that manages the end points. """
   app = Flask(__name__)
@@ -1082,7 +1076,7 @@ def read_config(config):
 
   # This is how we discover if we are the official server or not.
   # Look at the /uuid endpoint to see how this magic works.
-  misc.config['uuid'] = str(uuid.uuid4())
+  misc.config['uuid'] = os.popen('uuidgen').read().strip()
 
   signal.signal(signal.SIGINT, misc.shutdown_handler)
   signal.signal(signal.SIGUSR1, misc.shutdown_handler)
