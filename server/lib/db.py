@@ -1,4 +1,4 @@
-#!/usr/bin/python -O
+#!/usr/bin/python 
 import threading
 import logging
 import sqlite3
