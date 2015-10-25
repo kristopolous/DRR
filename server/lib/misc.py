@@ -1,4 +1,4 @@
-#!/usr/bin/python -O
+#!/usr/bin/python 
 import setproctitle as SP
 import ConfigParser
 import argparse
@@ -43,12 +43,11 @@ def getAddrInfoWrapper(host, port, family=0, socktype=0, proto=0, flags=0):
 socket.getaddrinfo = getAddrInfoWrapper
 
 import urllib2
-import urllib
 
 import ts as TS
 import db as DB
 import cloud
-from multiprocessing import Process, Queue, Lock
+from multiprocessing import Queue, Lock
 from flask import request
 
 #
