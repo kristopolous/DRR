@@ -1,4 +1,4 @@
-#!/usr/bin/python -O
+#!/usr/bin/python -OO
 import os
 import math
 import re
@@ -6,11 +6,10 @@ import struct
 import logging
 import misc
 import cloud
-import sys
 import time
 import db as DB
 import ts as TS
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 
 # Most common frame-length ... in practice, I haven't 
 # seen other values in the real world.
@@ -746,7 +745,6 @@ def list_slice_stream(start_info, start_sec):
 
         block = stream_handle.read(read_size)
         block_count += 1
-        # sys.stdout.write('!')
         times_none = 0 
         yield block
 
