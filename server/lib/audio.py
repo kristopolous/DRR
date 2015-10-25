@@ -1,7 +1,6 @@
 #!/usr/bin/python -O
 import os
 import math
-import gzip
 import re
 import struct
 import logging
