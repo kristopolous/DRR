@@ -1,6 +1,6 @@
-#!/usr/bin/python -O
-import os
-import re
+#!/usr/bin/python 
+from os import path as Path
+from re import compile
 import time 
 import logging
 import misc 
@@ -10,7 +10,7 @@ import audio
 from sets import Set
 from glob import glob
 from datetime import datetime, timedelta
-from multiprocessing import Process, Queue
+from multiprocessing import Process
 
 def size(basedir):
   total = 0
@@ -19,11 +19,11 @@ def size(basedir):
     
     path = "%s/%s" % (basedir, basename)
 
-    if os.path.isdir(path):
+    if Path.isdir(path):
       total += size(path)
 
-    elif os.path.isfile(path):
-      total += os.path.getsize(path)
+    elif Path.isfile(path):
+      total += Path.getsize(path)
 
   return total
 
@@ -35,7 +35,7 @@ def get(path, do_open=True):
   """
   # Let's make sure it exists and isn't some nonsense size
   # Which I've arbitrary set as a few thousand bytes
-  if os.path.exists(path) and os.path.getsize(path) > 3000:
+  if Path.exists(path) and Path.getsize(path) > 3000:
     if do_open: return open(path, 'rb')
     return True
 
@@ -65,7 +65,7 @@ def connect(config=False):
 
 def unlink(path, config=False):
   """ Remove a file from the cloud service. """
-  fname = os.path.basename(path)
+  fname = Path.basename(path)
   blob_service, container = connect(config)
 
   try:
@@ -90,7 +90,7 @@ def put(path):
     try:
       res = blob_service.put_block_blob_from_path(
         container,
-        os.path.basename(path),
+        Path.basename(path),
         path,
         max_connections=5,
       )
@@ -136,7 +136,7 @@ def register_stream_list(reindex=False):
   cutoff = time.mktime((datetime.now() - timedelta(minutes=1, seconds=misc.config['cascadetime'])).timetuple())
 
   for fname in diff:
-    if len(fname) == 0 or os.path.getctime(fname) > cutoff:
+    if len(fname) == 0 or Path.getctime(fname) > cutoff:
       next
 
     info = audio.stream_info(fname)
@@ -420,7 +420,7 @@ def prune_process(lockMap, reindex=False, force=False):
       lockMap['prune'].release()
       return None
 
-    ctime = os.path.getctime(file_name)
+    ctime = Path.getctime(file_name)
 
     # print "Looking at ", file_name, ctime, cutoff, archive_duration,  misc.config['archivedays'], misc.am_i_official()
     # We observe the rules set up in the config.
@@ -442,7 +442,7 @@ def prune_process(lockMap, reindex=False, force=False):
           logging.debug("Prune[cloud]: Couldn't remove %s" % file_name)
 
   for file_name in glob('%s/*.gz' % misc.DIR_BACKUPS):
-    ctime = os.path.getctime(file_name)
+    ctime = Path.getctime(file_name)
 
     # We observe the rules set up in the config.
     if ctime < cutoff:
@@ -474,7 +474,7 @@ def prune_process(lockMap, reindex=False, force=False):
       db['conn'].commit()
 
     # now only after we've deleted from the cloud can we delete the local file
-    if os.path.exists(file_name):
+    if Path.exists(file_name):
       os.unlink(file_name)
       count += 1
 
@@ -485,11 +485,11 @@ def prune_process(lockMap, reindex=False, force=False):
 
 def get_size(fname):
   """ Gets a file size or just plain guesses it if it doesn't exist yet. """
-  if os.path.exists(fname):
-    return os.path.getsize(fname)
+  if Path.exists(fname):
+    return Path.getsize(fname)
 
   # Otherwise we try to parse the magical file which doesn't exist yet.
-  ts_re_duration = re.compile('_(\d*).{4}')
+  ts_re_duration = compile('_(\d*).{4}')
   ts = ts_re_duration.findall(fname)
 
   if len(ts):
@@ -517,7 +517,7 @@ def download(path):
   if blob_service:
     import azure
 
-    fname = os.path.basename(path)
+    fname = Path.basename(path)
     try:
       blob_service.get_blob_to_path(
         container,
