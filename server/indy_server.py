@@ -504,7 +504,7 @@ def server_manager(config):
 
     # And according to #149 we also go a minute back for the start time ... 
     # we need to do a little math to make sure we don't get a -1 edge case
-    start_time_list = [(ts.MINUTES_PER_WEEK + offset - 1) % ts.MINUTES_PER_WEEK for offset in start_time_list]
+    start_time_list = [(TS.MINUTES_PER_WEEK + offset - 1) % TS.MINUTES_PER_WEEK for offset in start_time_list]
 
     # If we are here then it looks like our input is probably good.
     
