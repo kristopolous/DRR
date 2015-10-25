@@ -2,7 +2,6 @@
 import os
 import math
 import gzip
-import marshal
 import re
 import struct
 import logging
