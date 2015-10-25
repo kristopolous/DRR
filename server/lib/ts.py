@@ -4,11 +4,10 @@ import db as DB
 import logging
 import time
 import json
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 from dateutil import parser as dt_parser
 
 import urllib2
-import urllib
 
 # Everything is presumed to be weekly and on the minute
 # scale. We use this to do wrap around when necessary
