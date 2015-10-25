@@ -4,7 +4,7 @@ import logging
 import sqlite3
 import os
 import sys
-from datetime import datetime, timedelta, date
+from datetime import timedelta
 
 g_db = {}
 g_params = {}

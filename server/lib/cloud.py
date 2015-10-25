@@ -9,7 +9,7 @@ import lib.ts as TS
 import audio
 from sets import Set
 from glob import glob
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 from multiprocessing import Process, Queue
 
 def size(basedir):
