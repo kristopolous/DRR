@@ -3,24 +3,15 @@ import misc
 import cloud
 import lxml.etree as ET
 from flask import Response, jsonify
-
-import socket
-
-origGetAddrInfo = socket.getaddrinfo
-getAddrInfoWrapper = misc.getAddrInfoWrapper
-socket.getaddrinfo = getAddrInfoWrapper
-
 import urllib
 
 def do_error(errstr):
-  """ Returns a server error as a JSON result. """
+  # Returns a server error as a JSON result. 
   return jsonify({'result': False, 'error':errstr}), 500
     
 def generate_feed(file_type, **kwargs):
-  """
-  Take the file extension that the user supplied and then try to return
-  a feed based on it
-  """
+  # Take the file extension that the user supplied and then try to return
+  # a feed based on it
   if file_type == 'pls': 
     payload = generate_pls(**kwargs)
     mime = 'audio/x-scpls'
@@ -65,11 +56,8 @@ def generate_pls(showname, feed_list, duration_min, weekday_list, start, duratio
 
 
 def generate_xml(showname, feed_list, duration_min, weekday_list, start, duration_string):
-  """
-  It obviously returns an xml file ... I mean duh.
-
-  In the xml file we will lie about the duration to make life easier
-  """
+  # It obviously returns an xml file ... I mean duh.
+  # In the xml file we will lie about the duration to make life easier
   day_map = {
     'sun': 'Sunday',
     'mon': 'Monday',
@@ -98,7 +86,7 @@ def generate_xml(showname, feed_list, duration_min, weekday_list, start, duratio
     'feedburner': 'http://rssnamespace.org/feedburner/ext/1.0'
   }
 
-  root = ET.Element("rss", nsmap=nsmap)
+  root = ET.Element('rss', nsmap=nsmap)
   root.attrib['version'] = '2.0'
 
   channel = ET.SubElement(root, "channel")

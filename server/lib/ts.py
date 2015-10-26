@@ -17,7 +17,7 @@ ONE_DAY_SECOND = 60 * ONE_DAY_MINUTE
 WEEKDAY_LIST = ['mon','tue','wed','thu','fri','sat','sun']
 
 def now(offset_sec=0):
-  """ Returns the time.time() equivalent given the offset of the station """
+  # Returns the time.time() equivalent given the offset of the station 
   return datetime.utcnow() + timedelta(minutes=get_offset(), seconds=offset_sec)
 
 
@@ -26,11 +26,11 @@ def uptime():
   return int(unixtime('uptime') - misc.start_time)
 
 def unixtime(what=''):
-  """ This is used instead of time.time() in order to make this more testable """
+  # This is used instead of time.time() in order to make this more testable 
   return time.time()
 
 def to_minute(unix_time):
-  """ Takes a given unix time and finds the week minute corresponding to it. """
+  # Takes a given unix time and finds the week minute corresponding to it. 
   if isinstance(unix_time, (int, long)):
     unix_time = datetime.fromtimestamp(unix_time)
 
@@ -95,11 +95,9 @@ def name_to_unix(name):
   return int(time.mktime(time.strptime(name, "%Y%m%d%H%M")))
 
 def ts_to_name(ts=None, with_seconds=False):
-  """
-  This goes from a datetime to a name. Since python has so many different confusing
-  time types, we have to be a bit clever about this to keep our code sane. Also we shouldn't
-  necessarily be suggesting any type for our conversion.
-  """
+  # This goes from a datetime to a name. Since python has so many different confusing
+  # time types, we have to be a bit clever about this to keep our code sane. Also we shouldn't
+  # necessarily be suggesting any type for our conversion.
   if not ts: ts = now()
 
   if isinstance(ts, (int, long, float)):
@@ -114,11 +112,8 @@ def ts_to_name(ts=None, with_seconds=False):
   return time.strftime("%Y%m%d%H%M", ts)
 
 def sec_now(offset_sec=0):
-  """ 
-  Returns the unix time with respect to the timezone of the station being recorded.
-  
-  Accepts an optional offset_sec to forward the time into the future.
-  """
+  # Returns the unix time with respect to the timezone of the station being recorded.
+  # Accepts an optional offset_sec to forward the time into the future.
   return int((now(offset_sec=offset_sec)).strftime('%s'))
 
 
