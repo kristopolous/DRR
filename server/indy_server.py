@@ -18,19 +18,6 @@ import lib.audio as audio
 import lib.ts as TS
 import lib.misc as misc
 import lib.cloud as cloud
-import socket
-
-#
-# This is needed to force ipv4 on ipv6 devices. It's sometimes needed
-# if there isn't a clean ipv6 route to get to the big wild internet.
-# In these cases, a pure ipv6 route simply will not work.  People aren't
-# always in full control of every hop ... so it's much safer to force
-# ipv4 then optimistically cross our fingers.
-#
-origGetAddrInfo = socket.getaddrinfo
-getAddrInfoWrapper = misc.getAddrInfoWrapper
-socket.getaddrinfo = getAddrInfoWrapper
-
 import urllib
 
 from logging.handlers import RotatingFileHandler
@@ -48,7 +35,7 @@ g_download_pid = 0
 ## Storage and file related
 ##
 def server_manager(config):
-  """ Main flask process that manages the end points. """
+  # Main flask process that manages the end points. 
   app = Flask(__name__)
 
   def webserver_shutdown(signal=15, frame=None):
@@ -65,17 +52,15 @@ def server_manager(config):
   # from http://blog.asgaard.co.uk/2012/08/03/http-206-partial-content-for-flask-python
   @app.after_request
   def after_request(response):
-    """ Supports 206 partial content requests for podcast streams. """
+    # Supports 206 partial content requests for podcast streams. 
     response.headers.add('Accept-Ranges', 'bytes')
     logging.info('ua - %s' % request.headers.get('User-Agent'))
     return response
 
 
   def send_file_partial(path, requested_path, file_name=None):
-    """ 
-    Wrapper around send_file which handles HTTP 206 Partial Content
-    (byte ranges)
-    """
+    # Wrapper around send_file which handles HTTP 206 Partial Content
+    # (byte ranges)
 
     # If we requested something that isn't around, then we bail.
     if not os.path.exists(path):
@@ -582,10 +567,8 @@ def server_manager(config):
           time.sleep(misc.PROCESS_DELAY / 4)
 
 def stream_download(callsign, url, my_pid, file_name):
-  """ 
-  Curl interfacing which downloads the stream to disk. 
-  Follows redirects and parses out basic m3u.
-  """
+  # Curl interfacing which downloads the stream to disk. 
+  # Follows redirects and parses out basic m3u.
   pid = misc.change_proc_name("%s-download" % callsign)
 
   nl = {'stream': None, 'curl_handle': None}
@@ -667,7 +650,7 @@ def stream_download(callsign, url, my_pid, file_name):
 
 
 def my_process_shutdown(process):
-  """ A small function to simplify the logic below. """
+  # A small function to simplify the logic below. 
   if process and process.is_alive():
     logging.info("[%s:%d] Shutting down" % ('download', process.pid))
     process.terminate()
@@ -676,10 +659,8 @@ def my_process_shutdown(process):
 
 
 def stream_manager():
-  """
-  Manager process which makes sure that the
-  streams are running appropriately.
-  """
+  # Manager process which makes sure that the
+  # streams are running appropriately.
   callsign = misc.config['callsign']
 
   #
@@ -911,10 +892,8 @@ def stream_manager():
     time.sleep(cycle_time)
 
 def read_config(config):
-  """
-  Reads a configuration file. 
-  Currently documented at https://github.com/kristopolous/DRR/wiki/Join-the-Federation
-  """
+  # Reads a configuration file. 
+  # Currently documented at https://github.com/kristopolous/DRR/wiki/Join-the-Federation
   Config = ConfigParser.ConfigParser()
   Config.read(config)
   misc.config = misc.config_section_map('Main', Config)
