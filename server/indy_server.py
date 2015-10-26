@@ -14,7 +14,6 @@ import lib.audio as audio
 import lib.ts as TS
 import lib.misc as misc
 import lib.cloud as cloud
-import urllib
 
 from logging.handlers import RotatingFileHandler
 from datetime import timedelta, date
@@ -126,7 +125,7 @@ def server_manager(config):
         options[arg] = "[{0}]".format(arg)
 
       url = url_for(rule.endpoint, **options)
-      line = urllib.unquote("{:15s} {}".format(url, app.view_functions[rule.endpoint].__doc__))
+      line = "{:15s} {}".format(url, app.view_functions[rule.endpoint].__doc__)
       output.append(line)
       output.append("")
 

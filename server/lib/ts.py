@@ -7,8 +7,6 @@ import json
 from datetime import datetime, timedelta
 from dateutil import parser as dt_parser
 
-import urllib2
-
 # Everything is presumed to be weekly and on the minute
 # scale. We use this to do wrap around when necessary
 MINUTES_PER_WEEK = 10080
@@ -151,13 +149,14 @@ def get_offset(force=False):
 
   offset = DB.get('offset', expiry=ONE_DAY_SECOND)
   if not offset or force:
+    from urllib2 import urlopen
 
     when = int(unixtime())
 
     api_key = 'AIzaSyBkyEMoXrSYTtIi8bevEIrSxh1Iig5V_to'
     url = "https://maps.googleapis.com/maps/api/timezone/json?location=%s,%s&timestamp=%d&key=%s" % (misc.config['lat'], misc.config['long'], when, api_key)
    
-    stream = urllib2.urlopen(url)
+    stream = urlopen(url)
     data = stream.read()
     opts = json.loads(data)
 
