@@ -175,20 +175,17 @@ def am_i_official():
 
 
 def public_config():
-  """ Returns a configuration, removing sensitive information """
+  # Returns a configuration, removing sensitive information 
   global config 
   return {k: v for k, v in config.items() if k != '_private'}
 
 def shutdown_handler(signal=signal.SIGINT, frame=None):
-  """ shutdown_handler is hit on the keyboard interrupt """
+  # shutdown_handler is hit on the keyboard interrupt 
   shutdown()
 
 def shutdown_real(do_restart=False):
-  """ 
-  During a restart shutdown we just kill the webserver.
-  The other processes will die off later.
-  """
-
+  # During a restart shutdown we just kill the webserver.
+  # The other processes will die off later.
   if 'webserver' in pid_map:
     os.kill(pid_map['webserver'].pid, signal.SIGUSR1)
 
@@ -212,7 +209,7 @@ def shutdown_real(do_restart=False):
 
 
 def shutdown(do_restart=False):
-  """ All shutdown should be instantiated from the manager thread """
+  # All shutdown should be instantiated from the manager thread 
   # Make sure that all shutdown happens from the manager
   # thread
   #
@@ -228,13 +225,10 @@ def shutdown(do_restart=False):
 
 
 def manager_is_running(pid=None):
-  """
-  Checks to see if the manager is still running or if we should 
-  shutdown.  It works by sending a signal(0) to a pid and seeing
-  if that fails.
-
-  Returns True/False
-  """
+  # Checks to see if the manager is still running or if we should 
+  # shutdown.  It works by sending a signal(0) to a pid and seeing
+  # if that fails.
+  # Returns True/False
   global manager_pid
 
   if pid:

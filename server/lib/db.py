@@ -92,7 +92,7 @@ def upgrade():
       db['conn'].commit()
 
 def debug():
-  """ Commits the individual database connections in each thread. """
+  # Commits the individual database connections in each thread. 
   global g_db
 
   for thread_id, all_db in g_db.items():
@@ -102,9 +102,7 @@ def debug():
 
 
 def map(row_list, table, db=None):
-  """ 
-  Using the schema of a table, map the row_list to a list of dicts.
-  """
+  # Using the schema of a table, map the row_list to a list of dicts.
   mapped = []
   my_schema = schema(table, db)
 
@@ -125,7 +123,7 @@ def map(row_list, table, db=None):
 
 
 def all(table, field_list='*', sort_by='id'):
-  """ Returns all entries from the sqlite3 database for a given table. """
+  # Returns all entries from the sqlite3 database for a given table. 
   db = connect()
 
   column_count = 1
@@ -142,7 +140,7 @@ def all(table, field_list='*', sort_by='id'):
 
 
 def schema(table, db=None):
-  """ Returns the schema for a given table. """
+  # Returns the schema for a given table. 
   if not db:
     db = connect()
 
@@ -154,12 +152,9 @@ def schema(table, db=None):
 
 
 def connect(db_file=None):
-  """
-  A "singleton pattern" or some other fancy $10-world style of maintaining 
-  the database connection throughout the execution of the script.
-
-  Returns the database instance.
-  """
+  # A "singleton pattern" or some other fancy $10-world style of maintaining 
+  # the database connection throughout the execution of the script.
+  # Returns the database instance.
   global g_db
 
   if not db_file:
@@ -229,11 +224,8 @@ def incr(key, value=1):
 
 
 def set(key, value):
-  """ 
-  Sets (or replaces) a given key to a specific value.  
-
-  Returns the value that was sent.
-  """
+  # Sets (or replaces) a given key to a specific value.  
+  # Returns the value that was sent.
   global g_params
 
   db = connect()
