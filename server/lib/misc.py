@@ -48,7 +48,6 @@ import ts as TS
 import db as DB
 import cloud
 from multiprocessing import Queue, Lock
-from flask import request
 
 #
 # The process delay is used throughout to measure things like the delay in
@@ -88,15 +87,13 @@ lockMap = {'prune': Lock()}
 last_official_query = None
 
 def do_nothing(signal, frame=None):
-  """ Catches signals that we would rather just ignore """
+  # Catches signals that we would rather just ignore 
   return True
 
 
 def base_stats():
-  """
-  Reports base-level statistical information about the health of the server.
-  This is used for the /stats and /heartbeat call.
-  """
+  # Reports base-level statistical information about the health of the server.
+  # This is used for the /stats and /heartbeat call.
   try:
     # for some reason this can lead to a memory error
     load = [float(unit) for unit in os.popen("uptime | awk -F : ' { print $NF } '").read().split(', ')]
@@ -148,11 +145,9 @@ def send_email(config, who, subject, body, sender='Indycast Reminders <reminders
 
 
 def am_i_official():
-  """ 
-  Takes the callsign and port and queries the server for its per-instance uuid
-  If those values match our uuid then we claim that we are the official instance
-  and can do various privileged things.  Otherwise, we try not to intrude.
-  """
+  # Takes the callsign and port and queries the server for its per-instance uuid
+  # If those values match our uuid then we claim that we are the official instance
+  # and can do various privileged things.  Otherwise, we try not to intrude.
   global config, last_official_query
 
   # Don't cache a true value ... see https://github.com/kristopolous/DRR/issues/84 for details
