@@ -1,7 +1,6 @@
 #!/usr/bin/python -O
 import misc 
 import cloud
-import math
 import lxml.etree as ET
 from flask import Response, jsonify
 
@@ -138,7 +137,7 @@ def generate_xml(showname, feed_list, duration_min, weekday_list, start, duratio
 
     itunes_duration = "%02d:00" % (duration_min % 60)
     if duration_min > 60:
-      itunes_duration = "%d:%s" % (int(math.floor(duration_min / 60 )), itunes_duration)    
+      itunes_duration = "%d:%s" % (int(duration_min / 60.0), itunes_duration)    
 
     for k,v in {
       'title': "%s - %s" % (showname, feed['start_date'].strftime("%Y.%m.%d")),
