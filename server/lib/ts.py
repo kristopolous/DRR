@@ -118,16 +118,14 @@ def sec_now(offset_sec=0):
 
 
 def minute_now():
-  """ Returns the mod 10080 week minute with respect to the timezone of the station being recorded. """
+  # Returns the mod 10080 week minute with respect to the timezone of the station being recorded. 
   return to_minute(now())
 
 
 def to_utc(day_str, hour):
-  """
-  Takes the nominal weekday (sun, mon, tue, wed, thu, fri, sat)
-  and a 12 hour time hh:mm [ap]m and converts it to our absolute units
-  with respect to the timestamp in the configuration file.
-  """
+  # Takes the nominal weekday (sun, mon, tue, wed, thu, fri, sat)
+  # and a 12 hour time hh:mm [ap]m and converts it to our absolute units
+  # with respect to the timestamp in the configuration file.
   if hour.endswith('min'):
     return int(hour[:-3])
 
@@ -142,12 +140,9 @@ def to_utc(day_str, hour):
 
 
 def get_offset(force=False):
-  """
-  Contacts the goog, giving a longitude and lattitude and gets the time 
-  offset with regard to the UTC.  There's a sqlite cache entry for the offset.
-
-  Returns an int second offset.
-  """
+  # Contacts the goog, giving a longitude and lattitude and gets the time 
+  # offset with regard to the UTC.  There's a sqlite cache entry for the offset.
+  # Returns an int second offset.
   import misc 
 
   # If we are testing this from an API level, then we don't

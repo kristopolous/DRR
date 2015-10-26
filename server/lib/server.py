@@ -1,9 +1,9 @@
 #!/usr/bin/python -O
 import misc 
-import cloud
+from cloud import get_size
 import lxml.etree as ET
 from flask import Response, jsonify
-import urllib
+from urllib import quote
 
 def do_error(errstr):
   # Returns a server error as a JSON result. 
@@ -104,14 +104,14 @@ def generate_xml(showname, feed_list, duration_min, weekday_list, start, duratio
     ET.SubElement(channel, k).text = v
 
   itunes_image = ET.SubElement(channel, '{%s}image' % nsmap['itunes'])
-  itunes_image.attrib['href'] = 'http://indycast.net/icon/%s_1400.png' % urllib.quote(showname)
+  itunes_image.attrib['href'] = 'http://indycast.net/icon/%s_1400.png' % quote(showname)
 
   media_image = ET.SubElement(channel, '{%s}thumbnail' % nsmap['media'])
-  media_image.attrib['url'] = 'http://indycast.net/icon/%s_1400.png' % urllib.quote(showname)
+  media_image.attrib['url'] = 'http://indycast.net/icon/%s_1400.png' % quote(showname)
 
   image = ET.SubElement(channel, 'image')
   for k,v in {
-    'url': 'http://indycast.net/icon/%s_200.png' % urllib.quote(showname),
+    'url': 'http://indycast.net/icon/%s_200.png' % quote(showname),
     'title': showname,
     'link': 'http://indycast.net'
   }.items():
@@ -149,13 +149,13 @@ def generate_xml(showname, feed_list, duration_min, weekday_list, start, duratio
     # frame_length seconds of audio (128k/44.1k no id3)
     content = ET.SubElement(item, '{%s}content' % nsmap['media'])
     content.attrib['url'] = link
-    content.attrib['fileSize'] = str(cloud.get_size(file_name))
+    content.attrib['fileSize'] = str(get_size(file_name))
     content.attrib['type'] = 'audio/mpeg'
 
     # The length of the audio we will just take as the duration
     content = ET.SubElement(item, 'enclosure')
     content.attrib['url'] = link
-    content.attrib['length'] = str(cloud.get_size(file_name))
+    content.attrib['length'] = str(get_size(file_name))
     content.attrib['type'] = 'audio/mpeg'
 
   tree = ET.ElementTree(root)

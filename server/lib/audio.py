@@ -1,12 +1,12 @@
 #!/usr/bin/python -OO
 import os
-import math
+from math import ceil
 import re
 import struct
 import logging
 import misc
 import cloud
-import time
+from time import sleep
 import db as DB
 import ts as TS
 from datetime import datetime, timedelta
@@ -708,7 +708,7 @@ def list_slice_stream(start_info, start_sec):
 
   # get the regular map so we know where to start from
   siglist, offset = signature(current_info['name'])
-  start_frame = min(max(int(math.floor(start_sec / FRAME_LENGTH)), 0), len(offset) - 1)
+  start_frame = min(max(int(start_sec / FRAME_LENGTH), 0), len(offset) - 1)
   start_byte = offset[start_frame]
 
   while True:
@@ -750,7 +750,7 @@ def list_slice_stream(start_info, start_sec):
 
         # We wait 1/2 second and then try this process again, hopefully
         # the disk has sync'd and we have more data
-        time.sleep(0.5)
+        sleep(0.5)
         sig, offset = signature(stream_handle)
 
       
@@ -788,12 +788,10 @@ def list_slice_stream(start_info, start_sec):
 
 
 def list_slice(list_in, name_out, duration_sec, start_sec=0, do_confirm=False):
-  """
-  Takes some stitch list, list_in and then create a new one based on the start and end times 
-  by finding the closest frames and just doing an extraction.
-
-  Setting the duration as None is equivalent to a forever stream 
-  """
+  # Takes some stitch list, list_in and then create a new one based on the start and end times 
+  # by finding the closest frames and just doing an extraction.
+  #
+  # Setting the duration as None is equivalent to a forever stream 
   pid = misc.change_proc_name("%s-audioslice" % misc.config['callsign'])
 
   out = open(name_out, 'wb+')
@@ -807,13 +805,13 @@ def list_slice(list_in, name_out, duration_sec, start_sec=0, do_confirm=False):
     siglist, offset = signature(item['name'])
 
     if ix == len(list_in) - 1:
-      frame_end = min(int(math.ceil(duration_sec / FRAME_LENGTH)), len(offset) - 1)
+      frame_end = min(int(ceil(duration_sec / FRAME_LENGTH)), len(offset) - 1)
 
     else:
       frame_end = len(offset) - 1
 
     if ix == 0:
-      frame_start = min(max(int(math.floor(start_sec / FRAME_LENGTH)), 0), len(offset) - 1)
+      frame_start = min(max(int(start_sec / FRAME_LENGTH), 0), len(offset) - 1)
       duration_sec -= (item['duration_sec'] - start_sec)
 
     else:
