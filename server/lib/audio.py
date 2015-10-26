@@ -32,7 +32,7 @@ TS_RE = re.compile('(\w*)-(\d*)[.|_]')
 MAX_HEADER_ATTEMPTS = 32000
 
 def list_info(file_list):
-  """ A version of the stream_info that accepts a list. """
+  # A version of the stream_info that accepts a list. 
   info = stream_info(file_list[0]['name'])
 
   # Some things are the same such as the
@@ -47,15 +47,14 @@ def list_info(file_list):
 
 
 def stream_info(file_name, skip_size=False):
-  """
-  Determines the date the thing starts,
-  the minute time it starts, and the duration
+  # Determines the date the thing starts,
+  # the minute time it starts, and the duration
+  #
+  # If you do skip_size = True then you avoid any i/o 
+  # and have everything determined solely by the name.
+  # This means that some values returned will be set to 
+  # None
 
-  If you do skip_size = True then you avoid any i/o 
-  and have everything determined solely by the name.
-  This means that some values returned will be set to 
-  None
-  """
   if type(file_name) is list:
     return list_info(file_name)
 
@@ -121,7 +120,7 @@ def stream_info(file_name, skip_size=False):
 
 
 def stream_name(list_in, absolute_start_minute, duration_minute, relative_start_minute=None):
-  """ Get the stream name from list and start minute over a given duration. """
+  # Get the stream name from list and start minute over a given duration. 
   duration_sec = duration_minute * 60.0
 
   # The start_minute above is in absolute terms, not those relative to the file.
@@ -238,11 +237,8 @@ def mp3_info(byte, b1):
 
 
 def get_audio_format(file_name):
-  """ 
-  Determines the audio format of file_name and return 
-  where the start of the audio block is.
-  """
-
+  # Determines the audio format of file_name and return 
+  # where the start of the audio block is.
   if isinstance(file_name, (str, unicode)):
     is_stream = False 
     file_handle = open(file_name, 'rb')
@@ -464,11 +460,9 @@ def aac_signature(file_name, blockcount=-1):
 
 
 def mp3_signature(file_name, blockcount=-1):
-  """
-  Opens an mp3 file, find all the blocks, the byte offset of the blocks, and if they
-  are audio blocks, construct a signature mapping of some given beginning offset of the audio
-  data ... this is intended for stitching.
-  """
+  # Opens an mp3 file, find all the blocks, the byte offset of the blocks, and if they
+  # are audio blocks, construct a signature mapping of some given beginning offset of the audio
+  # data ... this is intended for stitching.
   frame_sig = []
   start_byte = []
   first_header_seen = False
@@ -648,7 +642,7 @@ def our_mime():
 
 
 def stitch_and_slice_process(file_list, relative_start_minute, duration_minute):
-  """ The process wrapper around stitch_and_slice to do it asynchronously. """
+  # The process wrapper around stitch_and_slice to do it asynchronously. 
   name_out = stream_name(file_list, relative_start_minute=relative_start_minute, duration_minute=duration_minute, absolute_start_minute=None) 
 
   if os.path.isfile(name_out):
@@ -697,21 +691,17 @@ def stitch_and_slice_process(file_list, relative_start_minute, duration_minute):
 
 
 def stitch_and_slice(file_list, start_minute, duration_minute):
-  """
-  Given a file_list in a directory and a duration, this function will seek out
-  adjacent files if necessary and serialize them accordingly, and then return the
-  file name of an audio slice that is the combination of them.
-  """
+  # Given a file_list in a directory and a duration, this function will seek out
+  # adjacent files if necessary and serialize them accordingly, and then return the
+  # file name of an audio slice that is the combination of them.
   from multiprocessing import Process
   slice_process = Process(target=stitch_and_slice_process, args=(file_list, start_minute, duration_minute, ))
   slice_process.start()
 
 
 def list_slice_stream(start_info, start_sec):
-  """
-  This is part of the /live/time feature ... this streams files hopping from one to the next
-  in a live manner ... it constructs things while running ... hopping to the next stream in real time.
-  """
+  # This is part of the /live/time feature ... this streams files hopping from one to the next
+  # in a live manner ... it constructs things while running ... hopping to the next stream in real time.
   pid = misc.change_proc_name("%s-audiostream" % misc.config['callsign'])
   block_count = 0
 
@@ -870,10 +860,8 @@ def list_slice(list_in, name_out, duration_sec, start_sec=0, do_confirm=False):
 
 
 def stitch(file_list, force_stitch=False):
-  """
-  Takes a list of files and then attempt to seamlessly stitch them 
-  together by looking at their signature checksums of the data payload in the blocks.
-  """
+  # Takes a list of files and then attempt to seamlessly stitch them 
+  # together by looking at their signature checksums of the data payload in the blocks.
   duration = 0
 
   start_index = 0
