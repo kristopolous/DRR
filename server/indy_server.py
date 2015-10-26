@@ -1,9 +1,7 @@
 #!/usr/bin/python -O
 import argparse
 import ConfigParser
-import json
 import logging
-import math
 import os
 import pycurl
 import re
@@ -25,8 +23,7 @@ from datetime import timedelta, date
 from glob import glob
 from flask import Flask, request, jsonify, Response, url_for, redirect
 import flask
-from subprocess import call
-import subprocess
+from subprocess import Popen
 from multiprocessing import Process, Queue
 
 g_download_pid = 0
@@ -764,7 +761,7 @@ def stream_manager():
         logging.info(DB.get('runcount', use_cache=False))
         cwd = os.getcwd()
         os.chdir(misc.PROCESS_PATH)
-        subprocess.Popen(sys.argv)
+        Popen(sys.argv)
         os.chdir(cwd)
 
         change_state = RESTART
@@ -1079,7 +1076,7 @@ if __name__ == "__main__":
     parser.add_argument("--daemon", action='store_true',  help="run as daemon")
     args = parser.parse_args()
     if args.daemon:
-      subprocess.Popen( filter(lambda x: x != '--daemon', sys.argv) )
+      Popen( filter(lambda x: x != '--daemon', sys.argv) )
       sys.exit(0)
 
     read_config(args.config)      

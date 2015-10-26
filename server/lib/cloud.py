@@ -29,10 +29,8 @@ def size(basedir):
 
 
 def get(path, do_open=True):
-  """
-  If the file exists locally then we return it, otherwise
-  we go out to the network store and retrieve it.
-  """
+  # If the file exists locally then we return it, otherwise
+  # we go out to the network store and retrieve it.
   # Let's make sure it exists and isn't some nonsense size
   # Which I've arbitrary set as a few thousand bytes
   if os.path.exists(path) and os.path.getsize(path) > 3000:
@@ -49,7 +47,7 @@ def get(path, do_open=True):
 
 
 def connect(config=False):
-  """ Connect to the cloud service. """
+  # Connect to the cloud service. 
   if not config: config = misc.config['_private']
 
   from azure.storage import BlobService
@@ -64,7 +62,7 @@ def connect(config=False):
 
 
 def unlink(path, config=False):
-  """ Remove a file from the cloud service. """
+  # Remove a file from the cloud service. 
   fname = os.path.basename(path)
   blob_service, container = connect(config)
 
@@ -79,7 +77,7 @@ def unlink(path, config=False):
 
 
 def put(path):
-  """ Place a file, given a path, in the cloud. """
+  # Place a file, given a path, in the cloud. 
   if not misc.am_i_official():
     logging.info ("I would have uploaded %s but I'm not the official %s server" % (path, misc.config['callsign']) )
     return False
@@ -103,7 +101,7 @@ def put(path):
 
 
 def register_stream_list(reindex=False):
-  """ Find the local streams and make sure they are all registered in the sqlite3 database. """
+  # Find the local streams and make sure they are all registered in the sqlite3 database. 
   #
   # Get the existing streams as a set
   #
@@ -151,11 +149,9 @@ def register_stream_list(reindex=False):
 
 
 def find_streams(start_list, duration_min):
-  """
-  Given a start week minute this looks for streams in the storage 
-  directory that match it - regardless of duration ... so it may return
-  partial shows results.
-  """
+  # Given a start week minute this looks for streams in the storage 
+  # directory that match it - regardless of duration ... so it may return
+  # partial shows results.
   stream_list = []
 
   if type(start_list) is int:
@@ -271,12 +267,10 @@ def find_and_make_slices(start_list, duration_min):
 
 
 def get_file_for_ts(target_time, bias=None, exclude_path=None):
-  """ 
-  Given a datetime target_time, this finds the closest file either with a bias
-  of +1 for after, -1 for before (or within) or no bias for the closest match.
-
-  An exclude_path can be set to remove it from the candidates to be searched
-  """
+  # Given a datetime target_time, this finds the closest file either with a bias
+  # of +1 for after, -1 for before (or within) or no bias for the closest match.
+  #
+  # An exclude_path can be set to remove it from the candidates to be searched
   best_before_time = None
   best_before_info = None
 
@@ -346,7 +340,7 @@ def get_file_for_ts(target_time, bias=None, exclude_path=None):
 
 
 def get_next(info_query):
-  """ Given a file, we look to see if there's another one which could come after -- we won't look in the database """
+  # Given a file, we look to see if there's another one which could come after -- we won't look in the database 
   if type(info_query) is str:
     info_query = audio.stream_info(info_query)
 
@@ -361,7 +355,7 @@ def get_next(info_query):
 
   
 def prune(reindex=False):
-  """ Gets rid of files older than archivedays - cloud stores things if relevant. """
+  # Gets rid of files older than archivedays - cloud stores things if relevant. 
 
   # Now when the child calls it it won't hit the network for every prune.
   process = Process(target=prune_process, args=(misc.lockMap, reindex,))
@@ -370,10 +364,8 @@ def prune(reindex=False):
 
 
 def prune_process(lockMap, reindex=False, force=False):
-  """ 
-  This is internal, call prune() directly. This is a normally blocking
-  process that is prepared by prune(), making it easily callable asynchronously 
-  """
+  # This is internal, call prune() directly. This is a normally blocking
+  # process that is prepared by prune(), making it easily callable asynchronously 
   # If another prune is running then we just bail
   if not lockMap['prune'].acquire(False) and not force:
     logging.warn("Tried to run another prune whilst one is running. Aborting")
@@ -484,7 +476,7 @@ def prune_process(lockMap, reindex=False, force=False):
 
 
 def get_size(fname):
-  """ Gets a file size or just plain guesses it if it doesn't exist yet. """
+  # Gets a file size or just plain guesses it if it doesn't exist yet. 
   if os.path.exists(fname):
     return os.path.getsize(fname)
 
@@ -511,7 +503,7 @@ def get_size(fname):
 
  
 def download(path):
-  """ Download a file from the cloud and put it in a serviceable place. """
+  # Download a file from the cloud and put it in a serviceable place. 
   blob_service, container = connect()
 
   if blob_service:
