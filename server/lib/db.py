@@ -205,7 +205,7 @@ def connect(db_file=None):
 
 
 def shutdown():
-  """ Closes the individual database connections in each thread. """
+  # Closes the individual database connections in each thread. 
   global g_db
 
   for thread_id, all_db in g_db.items():
@@ -215,10 +215,8 @@ def shutdown():
 
 
 def incr(key, value=1):
-  """
-  Increments some key in the database by some value.  It is used
-  to maintain statistical counters.
-  """
+  # Increments some key in the database by some value.  It is used
+  # to maintain statistical counters.
   db = connect()
 
   try:
@@ -228,12 +226,6 @@ def incr(key, value=1):
     db['c'].execute('update kv set value = value + ? where key = ?', (value, key, ))
 
   db['conn'].commit()
-
-
-def flush_cache(): 
-  global g_params
-  g_params = {}
-  return True
 
 
 def set(key, value):
@@ -271,12 +263,10 @@ def set(key, value):
 
 
 def get(key, expiry=0, use_cache=True, default=None):
-  """ 
-  Retrieves a value from the database, tentative on the expiry. 
-  If the cache is set to true then it retrieves it from in-memory if available, otherwise
-  it goes out to the db. Other than directly hitting up the g_params parameter which is 
-  used internally, there is no way to invalidate the cache.
-  """
+  # Retrieves a value from the database, tentative on the expiry. 
+  # If the cache is set to true then it retrieves it from in-memory if available, otherwise
+  # it goes out to the db. Other than directly hitting up the g_params parameter which is 
+  # used internally, there is no way to invalidate the cache.
   global g_params
 
   if use_cache and key in g_params:
@@ -301,7 +291,7 @@ def get(key, expiry=0, use_cache=True, default=None):
 
 
 def unregister_stream(name, do_all=False):
-  """ Deletes a stream by name, contingent on it existing only once """
+  # Deletes a stream by name, contingent on it existing only once 
 
   db = connect()
   res = db['c'].execute('select id from streams where name = ?', (name, )).fetchall()
@@ -318,12 +308,9 @@ def unregister_stream(name, do_all=False):
 
 
 def register_stream(info):
-  """
-  Registers a stream as existing to be found later when trying to stitch and slice files together.
-  This is all that ought to be needed to know if the streams should attempt to be stitched. The input
-  info is grabbed from audio.stream_info(filename)
-  """
-
+  # Registers a stream as existing to be found later when trying to stitch and slice files together.
+  # This is all that ought to be needed to know if the streams should attempt to be stitched. The input
+  # info is grabbed from audio.stream_info(filename)
   name = info['name']
   start_unix = info['start_date']
   end_unix = info['start_date'] + timedelta(seconds=info['duration_sec']) 
@@ -356,10 +343,8 @@ def register_stream(info):
   return db['c'].lastrowid
 
 def register_intent(minute_list, duration):
-  """
-  Tells the server to record on a specific minute for a specific duration when
-  not in full mode.  Otherwise, this is just here for statistical purposes.
-  """
+  # Tells the server to record on a specific minute for a specific duration when
+  # not in full mode.  Otherwise, this is just here for statistical purposes.
   db = connect()
 
   for minute in minute_list:

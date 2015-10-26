@@ -418,7 +418,6 @@ def aac_signature(file_name, blockcount=-1):
 
           # We second guess our format decision
           #DB.set('format', None)
-          #DB.flush_cache()
 
           if not aac_find_frame(file_handle, file_name): 
             return None, None
