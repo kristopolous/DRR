@@ -1,11 +1,9 @@
 #!/usr/bin/python -O
 import argparse
-import ConfigParser
 import logging
 import os
 import pycurl
 import re
-import random
 import signal
 import sys
 import time
@@ -21,8 +19,7 @@ import urllib
 from logging.handlers import RotatingFileHandler
 from datetime import timedelta, date
 from glob import glob
-from flask import Flask, request, jsonify, Response, url_for, redirect
-import flask
+from flask import Flask, request, jsonify, Response, url_for, redirect, send_file
 from subprocess import Popen
 from multiprocessing import Process, Queue
 
@@ -153,7 +150,7 @@ def server_manager(config):
     filename = '%s/%s-%s.gz' % (misc.DIR_BACKUPS, misc.config['callsign'], time.strftime('%Y%m%d-%H%M', time.localtime()))
     os.popen('sqlite3 config.db .dump | gzip -9 > %s' % filename)
     time.sleep(1)
-    return flask.send_file(filename)
+    return send_file(filename)
 
 
   @app.route('/reindex')
@@ -654,6 +651,8 @@ def my_process_shutdown(process):
 
 
 def stream_manager():
+  import random
+
   # Manager process which makes sure that the
   # streams are running appropriately.
   callsign = misc.config['callsign']
@@ -887,6 +886,7 @@ def stream_manager():
     time.sleep(cycle_time)
 
 def read_config(config):
+  import ConfigParser
   # Reads a configuration file. 
   # Currently documented at https://github.com/kristopolous/DRR/wiki/Join-the-Federation
   Config = ConfigParser.ConfigParser()
