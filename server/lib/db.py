@@ -11,7 +11,7 @@ g_params = {}
 
 # This is a way to get the column names after grabbing everything
 # I guess it's also good practice
-SCHEMA = {
+_SCHEMA = {
   'intents': [
      ('id', 'INTEGER PRIMARY KEY'),
      ('key', 'TEXT UNIQUE'),
@@ -46,7 +46,7 @@ def upgrade():
   my_set = __builtins__['set']
   db = connect()
 
-  for table, schema in SCHEMA.items():
+  for table, schema in _SCHEMA.items():
     existing_schema = db['c'].execute('pragma table_info(%s)' % table).fetchall()
     existing_column_names = [str(row[1]) for row in existing_schema]
 
@@ -190,7 +190,7 @@ def connect(db_file=None):
 
     if db_file == 'config.db': 
 
-      for table, schema in SCHEMA.items():
+      for table, schema in _SCHEMA.items():
         dfn = ','.join(["%s %s" % (key, klass) for key, klass in schema])
         instance['c'].execute("CREATE TABLE IF NOT EXISTS %s(%s)" % (table, dfn))
 
