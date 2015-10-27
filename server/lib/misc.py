@@ -1,7 +1,6 @@
 #!/usr/bin/python 
 import setproctitle as SP
 import ConfigParser
-import argparse
 import os
 import time
 import requests
