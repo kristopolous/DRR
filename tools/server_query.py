@@ -52,7 +52,7 @@ def find_misbehaving_servers(db, fail_list):
   if len(fail_list):
     report.append("Failure: %s" % ' '.join(fail_list))
 
-  misbehaving = db['c'].execute('select callsign, disk, load, last_record from stations where active = 1 and (disk > ? or load > ? or last_record > ?)', (max_values['disk'], max_values['load'], max_values['delta'])).fetchall()
+  misbehaving = db['c'].execute('select callsign, disk, load, last_record from stations where active = 1 and (disk > ? or last_record > ?)', (max_values['disk'], max_values['delta'])).fetchall()
 
   for row in misbehaving:
     report.append("  %s: disk:%s load:%s last:%s" % row)
