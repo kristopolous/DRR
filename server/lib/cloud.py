@@ -6,7 +6,7 @@ import logging
 import misc 
 import lib.db as DB
 import lib.ts as TS
-import audio
+from audio import stream_info
 from sets import Set
 from glob import glob
 from datetime import datetime, timedelta
@@ -137,7 +137,7 @@ def register_stream_list(reindex=False):
     if len(fname) == 0 or os.path.getctime(fname) > cutoff:
       next
 
-    info = audio.stream_info(fname)
+    info = stream_info(fname)
     if not info:
       continue
 
@@ -247,7 +247,7 @@ def find_streams(start_list, duration_min):
         print '--name',episode[0]['name'], fname
 
         # We get the name that it will be and then append that
-        stream_list.append(audio.stream_info(fname))
+        stream_list.append(stream_info(fname))
 
         # print offset_start, duration_min, episode
         episode_list.append((episode, offset_start, duration_min))
@@ -284,7 +284,7 @@ def get_file_for_ts(target_time, bias=None, exclude_path=None):
   for candidate_path in glob('%s/*.mp3' % misc.DIR_STREAMS):
     if candidate_path == exclude_path: continue
 
-    info_candidate = audio.stream_info(candidate_path)
+    info_candidate = stream_info(candidate_path)
     if not info_candidate or info_candidate['duration_sec'] < 10.0:
       next
 
@@ -342,7 +342,7 @@ def get_file_for_ts(target_time, bias=None, exclude_path=None):
 def get_next(info_query):
   # Given a file, we look to see if there's another one which could come after -- we won't look in the database 
   if type(info_query) is str:
-    info_query = audio.stream_info(info_query)
+    info_query = stream_info(info_query)
 
   #
   # We are looking for a file with the closest start time to 

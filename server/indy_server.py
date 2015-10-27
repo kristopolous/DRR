@@ -1,6 +1,5 @@
 #!/usr/bin/python -O
-import objgraph
-objgraph.show_growth()
+#import objgraph
 import argparse
 import logging
 import os
@@ -68,14 +67,10 @@ def server_manager(config):
         data = f.read()
 
       rv = Response( data, 200, mimetype=audio.our_mime(), direct_passthrough=True )
-      disposition = 'attachment;'
-
       if not file_name:
         file_name = os.path.basename(path)
         
-      disposition += ' filename="%s"' % file_name
-
-      rv.headers.add('Content-Disposition', disposition)
+      rv.headers.add('Content-Disposition', 'attachment; filename="%s"' % file_name)
       return rv
     
     size = os.path.getsize(path)    
@@ -1042,6 +1037,7 @@ def read_config(config):
   # Increment the number of times this has been run so we can track the stability of remote 
   # servers and instances.
   DB.upgrade()
+  del(DB.upgrade)
   DB.incr('runcount')
 
   # This is how we discover if we are the official server or not.
@@ -1074,6 +1070,7 @@ if __name__ == "__main__":
       sys.exit(0)
 
     read_config(args.config)      
+    del(read_config)
 
     pid = misc.change_proc_name("%s-manager" % misc.config['callsign'])
 
