@@ -36,7 +36,7 @@ def server_manager(config):
 
   def webserver_shutdown(signal=15, frame=None):
     title = SP.getproctitle()
-    logging.info("[%s:%d] Shutting down" % (title, os.getpid()))
+    logging.info('[%s:%d] Shutting down' % (title, os.getpid()))
     request.environ.get('werkzeug.server.shutdown')()
 
   def success(message):
@@ -60,7 +60,7 @@ def server_manager(config):
 
     # If we requested something that isn't around, then we bail.
     if not os.path.exists(path):
-     return "File %s not found. Perhaps the stream is old?" % requested_path, 404
+      return 'File %s not found. Perhaps the stream is old?' % requested_path, 404
 
     range_header = request.headers.get('Range', None)
     if not range_header: 
@@ -166,7 +166,7 @@ def server_manager(config):
     so this shouldn't be done as the default.
     """
     cloud.prune(reindex=True)
-    return success("Reindexing started")
+    return success('Reindexing...')
 
   @app.route('/prune')
   def prune():
@@ -175,7 +175,7 @@ def server_manager(config):
     following the rules outlined in the configuration file (viewable with the stats call)
     """
     cloud.prune(force=True)
-    return success("Pruning started")
+    return success('Pruning...')
 
 
   @app.route('/slices/<time>/<name>')
@@ -249,7 +249,7 @@ def server_manager(config):
     Restarts an instance. This does so in a gapless non-overlapping way.
     """
     misc.shutdown(do_restart=True)
-    return success("restarting...")
+    return success('restarting...')
 
 
   @app.route('/upgrade')
@@ -428,7 +428,7 @@ def server_manager(config):
 
 
     if weekday not in weekday_map:
-      return "The first parameter, %s, is not a recognized weekday." % weekday
+      return 'The first parameter, %s, is not a recognized weekday.' % weekday
 
     return at("%s_%s" % (weekday_map[weekday], start), duration_string)
     
@@ -530,14 +530,14 @@ def server_manager(config):
     start = TS.unixtime('delay')
     while TS.unixtime('delay') - start < (patience + 3):
       try:
-        print "Listening on %s" % config['port']
+        print 'Listening on %s' % config['port']
         app.logger.addHandler(logging.getLogger())
         app.run(threaded=True, port=config['port'], host='0.0.0.0')
         break
 
       except Exception as exc:
         if TS.unixtime('delay') - start < patience:
-          print "[attempt: %d] Error, can't start server ... perhaps %s is already in use?" % (attempt, config['port'])
+          print '[attempt: %d] Error, can not start server ... perhaps %s is already in use?' % (attempt, config['port'])
           attempt += 1
           time.sleep(misc.PROCESS_DELAY / 4)
 
@@ -587,7 +587,7 @@ def stream_download(callsign, url, my_pid, file_name):
 
         # A pls style playlist
         elif re.findall('File\d', data, re.M):
-          logging.info("Found a pls, using the File1 parameter");
+          logging.info('Found a pls, using the File1 parameter')
           matches = re.findall('File1=(.*)\n', data, re.M)
           misc.queue.put(('stream', matches[0].strip()))
           return True
@@ -621,7 +621,7 @@ def stream_download(callsign, url, my_pid, file_name):
     curl_handle.perform()
 
   except TypeError as exc:
-    logging.info("Properly shutting down.")
+    logging.info('Properly shutting down.')
 
   except Exception as exc:
     logging.warning("Couldn't resolve or connect to %s." % url)
@@ -699,7 +699,7 @@ def stream_manager():
     global g_download_pid
 
     g_download_pid += 1
-    logging.info("Starting cascaded downloader #%d. Next up in %ds" % (g_download_pid, cascade_margin))
+    logging.info('Starting cascaded downloader #%d. Next up in %ds' % (g_download_pid, cascade_margin))
 
     #
     # There may be a multi-second lapse time from the naming of the file to
