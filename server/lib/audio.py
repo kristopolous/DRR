@@ -15,12 +15,11 @@ from datetime import datetime, timedelta
 # seen other values in the real world.
 #
 # TODO: This implicitly opens a database instance ... not a good idea
-FRAME_LENGTH = (1152.0 / 44100) #DB.get('samp', default=44100))
+_FRAME_LENGTH = (1152.0 / 44100) #DB.get('samp', default=44100))
+_TS_RE = re.compile('(\w*)-(\d*)[.|_]')
 
-FORMAT_MP3 = 'mp3'
-FORMAT_AAC = 'aac'
-
-TS_RE = re.compile('(\w*)-(\d*)[.|_]')
+_FORMAT_MP3 = 'mp3'
+_FORMAT_AAC = 'aac'
 
 #
 # Some stations don't start you off with a valid mp3 header
@@ -29,7 +28,7 @@ TS_RE = re.compile('(\w*)-(\d*)[.|_]')
 # In practice, 217 appears to be enough, so we make it about
 # ten times that and cross our fingers.
 #
-MAX_HEADER_ATTEMPTS = 32000
+_MAX_HEADER_ATTEMPTS = 32000
 
 def list_info(file_list):
   # A version of the stream_info that accepts a list. 
@@ -58,7 +57,7 @@ def stream_info(file_name, skip_size=False):
   if type(file_name) is list:
     return list_info(file_name)
 
-  info = TS_RE.findall(file_name)
+  info = _TS_RE.findall(file_name)
 
   duration_sec = None
   start_minute = None
@@ -153,7 +152,7 @@ def samp_guess(samp):
 
   if samp_distribution[samp] > cutoff:
     DB.set('samp', samp)
-    globals()['FRAME_LENGTH'] = (1152.0 / samp)
+    globals()['_FRAME_LENGTH'] = (1152.0 / samp)
 
 
 def mp3_info(byte, b1):
@@ -264,7 +263,7 @@ def get_audio_format(file_name):
       b1 = ord(file_handle.read(1))
 
       if b1 & 0xf6 == 0xf0:
-        audio_format = FORMAT_AAC, pos
+        audio_format = _FORMAT_AAC, pos
         break
 
       elif b1 >> 4 == 0xf:
@@ -286,7 +285,7 @@ def get_audio_format(file_name):
           if b0 == 0xff and b1 >> 4 == 0xf:
             # That's good enough for us
             file_handle.close()
-            audio_format = FORMAT_MP3, pos
+            audio_format = _FORMAT_MP3, pos
             break
 
       file_handle.seek(pos + 1)
@@ -310,14 +309,14 @@ def signature(fname, blockcount=-1):
       return False
   
   block = None
-  if audio_format == FORMAT_AAC:
+  if audio_format == _FORMAT_AAC:
     sig, block = aac_signature(fname, blockcount)
 
-  if audio_format == FORMAT_MP3 or not block: 
+  if audio_format == _FORMAT_MP3 or not block: 
     sig, block = mp3_signature(fname, blockcount)
 
-    if len(block) > 0 and audio_format == FORMAT_AAC:
-      DB.set('format', FORMAT_MP3)
+    if len(block) > 0 and audio_format == _FORMAT_AAC:
+      DB.set('format', _FORMAT_MP3)
       DB.clear_cache()
 
   return sig, block
@@ -589,13 +588,13 @@ def mp3_signature(file_name, blockcount=-1):
         # We are at the end of file, but let's just continue.
         next
 
-      elif header_attempts > MAX_HEADER_ATTEMPTS:
+      elif header_attempts > _MAX_HEADER_ATTEMPTS:
         if not is_stream:
           import binascii
-          logging.debug('[mp3-sig] %d[%d/%d]%s:%s:%s %s %d' % (len(frame_sig), header_attempts, MAX_HEADER_ATTEMPTS, binascii.b2a_hex(header), binascii.b2a_hex(file_handle.read(5)), file_name, hex(file_handle.tell()), len(start_byte) * (1152.0 / DB.get('samp', default=44100)) / 60))
+          logging.debug('[mp3-sig] %d[%d/%d]%s:%s:%s %s %d' % (len(frame_sig), header_attempts, _MAX_HEADER_ATTEMPTS, binascii.b2a_hex(header), binascii.b2a_hex(file_handle.read(5)), file_name, hex(file_handle.tell()), len(start_byte) * (1152.0 / DB.get('samp', default=44100)) / 60))
 
         # This means that perhaps we didn't guess the start correct so we try this again
-        if len(frame_sig) == 1 and header_attempts < MAX_HEADER_ATTEMPTS:
+        if len(frame_sig) == 1 and header_attempts < _MAX_HEADER_ATTEMPTS:
           logging.debug("[mp3-sig] False start -- trying again")
 
           # seek to the first start byte + 1
@@ -708,7 +707,7 @@ def list_slice_stream(start_info, start_sec):
 
   # get the regular map so we know where to start from
   siglist, offset = signature(current_info['name'])
-  start_frame = min(max(int(start_sec / FRAME_LENGTH), 0), len(offset) - 1)
+  start_frame = min(max(int(start_sec / _FRAME_LENGTH), 0), len(offset) - 1)
   start_byte = offset[start_frame]
 
   while True:
@@ -805,13 +804,13 @@ def list_slice(list_in, name_out, duration_sec, start_sec=0, do_confirm=False):
     siglist, offset = signature(item['name'])
 
     if ix == len(list_in) - 1:
-      frame_end = min(int(ceil(duration_sec / FRAME_LENGTH)), len(offset) - 1)
+      frame_end = min(int(ceil(duration_sec / _FRAME_LENGTH)), len(offset) - 1)
 
     else:
       frame_end = len(offset) - 1
 
     if ix == 0:
-      frame_start = min(max(int(start_sec / FRAME_LENGTH), 0), len(offset) - 1)
+      frame_start = min(max(int(start_sec / _FRAME_LENGTH), 0), len(offset) - 1)
       duration_sec -= (item['duration_sec'] - start_sec)
 
     else:
@@ -897,10 +896,10 @@ def stitch(file_list, force_stitch=False):
     'start_offset': 0,
     'end_byte': end_byte,
     'start_minute': 0,
-    'duration_sec': (len(first['offset']) - 1) * FRAME_LENGTH
+    'duration_sec': (len(first['offset']) - 1) * _FRAME_LENGTH
   }]
 
-  duration += len(first['offset']) * FRAME_LENGTH
+  duration += len(first['offset']) * _FRAME_LENGTH
 
   for second in file_list[start_index:]:
     res = cloud.get(second['name'], do_open=False)
@@ -972,11 +971,11 @@ def stitch(file_list, force_stitch=False):
         'start_byte': second['offset'][pos], 
         'end_byte': end_byte,
         'start_offset': pos,
-        'start_minute': (pos * FRAME_LENGTH) / 60.0,
-        'duration_sec': (len(second['offset']) - pos - 1) * FRAME_LENGTH
+        'start_minute': (pos * _FRAME_LENGTH) / 60.0,
+        'duration_sec': (len(second['offset']) - pos - 1) * _FRAME_LENGTH
       })
 
-      duration += (len(second['offset']) - pos - 1) * FRAME_LENGTH
+      duration += (len(second['offset']) - pos - 1) * _FRAME_LENGTH
       first = second
       continue
 
