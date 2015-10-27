@@ -1,5 +1,5 @@
 #!/usr/bin/python 
-import logging
+import logging, re
 import misc 
 from cloud import get_size
 import signal
