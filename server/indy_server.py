@@ -1,4 +1,6 @@
 #!/usr/bin/python -O
+import objgraph
+objgraph.show_growth()
 import argparse
 import logging
 import os
@@ -8,6 +10,7 @@ import signal
 import sys
 import time
 import setproctitle as SP
+
 import lib.db as DB
 import lib.server as server
 import lib.audio as audio
@@ -239,12 +242,6 @@ def server_manager(config):
           break
 
     return send_file_partial("%s/%s" % (base_dir, path), requested_path=path, file_name=download_name)
-
-
-  @app.route('/db-debug')
-  def db_debug():
-    misc.queue.put(('db-debug', True))
-    return success("Db debug sent")
 
   @app.route('/restart')
   def restart():

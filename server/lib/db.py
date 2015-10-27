@@ -91,16 +91,6 @@ def upgrade():
 
       db['conn'].commit()
 
-def debug():
-  # Commits the individual database connections in each thread. 
-  global g_db
-
-  for thread_id, all_db in g_db.items():
-    for name, db in all_db.items():
-      logging.info("%s:%s commit" %(thread_id, name))
-      db['conn'].commit()
-
-
 def map(row_list, table, db=None):
   # Using the schema of a table, map the row_list to a list of dicts.
   mapped = []
@@ -201,8 +191,6 @@ def connect(db_file=None):
 
 def shutdown():
   # Closes the individual database connections in each thread. 
-  global g_db
-
   for thread_id, all_db in g_db.items():
     for name, db in all_db.items():
       if 'conn' in db:
@@ -333,6 +321,7 @@ def register_stream(info):
     db['conn'].commit()
 
   return db['c'].lastrowid
+
 
 def register_intent(minute_list, duration):
   # Tells the server to record on a specific minute for a specific duration when
