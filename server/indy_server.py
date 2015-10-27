@@ -764,8 +764,8 @@ def stream_manager():
           #logging.info(DB.get('runcount', use_cache=False))
           ps_out = int(os.popen('ps axf | grep [%c]%s | grep python | wc -l' % (misc.config['callsign'][0], misc.config['callsign'][1:]) ).read().strip())
 
-          if ps_out > 0: 
-            logging.info("Found %d potential candidates (need at least 1)" % ps_out)
+          if ps_out > 1: 
+            logging.info("Found %d potential candidates (need at least 2)" % ps_out)
             # This makes it a restricted soft shutdown
             misc.shutdown_real(do_restart=True)
             misc.download_ipc.put(('shutdown_time', shutdown_time))
