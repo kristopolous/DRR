@@ -3,5 +3,3 @@ lxml
 setproctitle
 azure
 requests
-guppy
-objdump

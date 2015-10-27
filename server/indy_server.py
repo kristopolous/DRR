@@ -261,7 +261,7 @@ def server_manager(config):
     # See what the version is after the pull
     newversion = os.popen("git describe").read().strip()
 
-    if newversion != misc.__version__:
+    if True or newversion != misc.__version__:
       os.system('pip install --user -r requirements.txt') 
 
       # from http://blog.petrzemek.net/2014/03/23/restarting-a-python-script-within-itself/
