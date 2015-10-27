@@ -252,7 +252,7 @@ for station in all_stations:
     # Stop the timer and register it as a drop.
     stop = time.time()
     print "[ %d:%s ] Failure(@%d): %s\n" % (stop - start, url, exc_traceback.tb_lineno, hasFailure)
-    fail_list.append(url)
+    fail_list.append(url.split('.')[0])
 
     if db:
       db['c'].execute('update stations set drops = drops + 1 where callsign = "%s"' % station[CALLSIGN] )
@@ -265,4 +265,5 @@ if args.key and station_count > 1:
   sys.stdout.write(']')
 
 elif len(fail_list):
+  os.popen('./restart_through_ssh.sh %s' % ' '.join(fail_list))
   print "Failure", fail_list
