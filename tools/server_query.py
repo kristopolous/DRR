@@ -20,7 +20,6 @@ getAddrInfoWrapper = misc.getAddrInfoWrapper
 socket.getaddrinfo = getAddrInfoWrapper
 
 import urllib2
-import sqlite3
 import time
 import random
 import lib.db as DB

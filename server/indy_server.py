@@ -1,4 +1,4 @@
-#!/usr/bin/python -O
+#!/usr/bin/python 
 #import objgraph
 import argparse
 import logging

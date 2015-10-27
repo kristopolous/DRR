@@ -1,4 +1,4 @@
-#!/usr/bin/python -O
+#!/usr/bin/python 
 import misc 
 from cloud import get_size
 import lxml.etree as ET

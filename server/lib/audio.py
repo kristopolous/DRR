@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python
 import os
 from math import ceil
 import re

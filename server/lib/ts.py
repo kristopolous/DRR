@@ -1,4 +1,4 @@
-#!/usr/bin/python -O
+#!/usr/bin/python 
 import re
 import db as DB
 import logging
