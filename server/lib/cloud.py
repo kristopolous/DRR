@@ -7,6 +7,7 @@ import misc
 import lib.db as DB
 import lib.ts as TS
 from audio import stream_info
+import lib.audio as audio
 from sets import Set
 from glob import glob
 from datetime import datetime, timedelta
