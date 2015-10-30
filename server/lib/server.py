@@ -607,10 +607,10 @@ def manager(config):
 
     # This means we failed to parse
     if not duration_min:
-      return server.do_error("duration '%s' is not set correctly" % duration_string)
+      return do_error("duration '%s' is not set correctly" % duration_string)
 
     if not isinstance(start_time_list[0], (int, long, float)):
-      return server.do_error('weekday and start times are not set correctly')
+      return do_error('weekday and start times are not set correctly')
 
     # In #22 We're going to add 2 minutes to the duration to make sure that we get
     # the entire episode.
@@ -645,7 +645,7 @@ def manager(config):
     # print feed_list
 
     # Then, taking those two things, make a feed list from them.
-    return server.generate_feed(
+    return generate_feed(
       file_type=file_type,
       showname=showname, 
       feed_list=feed_list, 
