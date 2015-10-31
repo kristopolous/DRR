@@ -10,6 +10,7 @@ from dateutil import parser as dt_parser
 # Everything is presumed to be weekly and on the minute
 # scale. We use this to do wrap around when necessary
 MINUTES_PER_WEEK = 10080
+ONE_HOUR_SECOND = 60 * 60
 ONE_DAY_MINUTE = 60 * 24
 ONE_DAY_SECOND = 60 * ONE_DAY_MINUTE
 WEEKDAY_LIST = ['mon','tue','wed','thu','fri','sat','sun']
@@ -147,7 +148,7 @@ def get_offset(force=False):
   # have a database
   if misc.IS_TEST: return 0
 
-  offset = DB.get('offset', expiry=ONE_DAY_SECOND)
+  offset = DB.get('offset', expiry=ONE_HOUR_SECOND * 4)
   if not offset or force:
     from urllib2 import urlopen
 

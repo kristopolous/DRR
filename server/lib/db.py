@@ -249,7 +249,8 @@ def get(key, expiry=0, use_cache=True, default=None):
   # used internally, there is no way to invalidate the cache.
   global g_params
 
-  if use_cache and key in g_params:
+  # only use the cache if the expiry is not set.
+  if use_cache and key in g_params and expiry == 0:
     return g_params[key]
 
   db = connect()
