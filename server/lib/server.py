@@ -341,6 +341,7 @@ def manager(config):
     The streams are created and sent on-demand, so there may be a slight delay before
     it starts.
     """
+    DB.incr('hits-dl')
     base_dir = "%s%s/" % (config['storage'], misc.DIR_SLICES)
 
     if not path.startswith(config['callsign']):
@@ -467,6 +468,7 @@ def manager(config):
         For instance, to start the stream from 5 minutes ago, you can do "-5"
 
     """
+    DB.incr('hits-live')
     if start[0] == '-' or start.endswith('min'):
       # dump things like min or m
       start = re.sub('[a-z]', '', start)
