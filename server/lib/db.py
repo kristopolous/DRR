@@ -257,7 +257,7 @@ def get(key, expiry=0, use_cache=True, default=None):
 
   if expiry > 0:
     # If we let things expire, we first sweep for it
-    db['c'].execute('delete from kv where key = ? and created_at < (current_timestamp - ?)', (key, expiry, ))
+    db['c'].execute("delete from kv where key = '%s' and created_at < date(current_timestamp, '+%d second')" % (key, expiry))
     db['conn'].commit()
 
   res = db['c'].execute('select value, created_at from kv where key = ?', (key, )).fetchone()
