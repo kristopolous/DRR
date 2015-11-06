@@ -9,7 +9,7 @@ bootstrap() {
       python-dev   libxslt1-dev \
       libxml2-dev  python-pycurl \
       sqlite3      zlib1g-dev     \
-      build-essential
+      uuid-runtime build-essential
 }
 
 hardupgrade() {
