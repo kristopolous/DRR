@@ -1,7 +1,7 @@
 #!/bin/sh
 cd server
 
-bootstrap() {
+aptinstall() {
   sudo apt-get update
 
   sudo apt-get -y -f install  \
@@ -17,5 +17,6 @@ hardupgrade() {
   yes | sudo pip uninstall azure 
 }
 
+aptinstall
 # hardupgrade
 pip install --user -r requirements.txt
