@@ -103,7 +103,8 @@ def base_stats():
   return {
     'uptime': TS.uptime(),
     'last_recorded': float(DB.get('last_recorded', use_cache=False) or 0),
-    'now': TS.ts_to_name(),
+    'now': time.time(),
+    'now-human': TS.ts_to_name(),
     'version': __version__,
     'load': load,
     'plist': [ line.strip() for line in os.popen("ps auxf | grep [%s]%s" % (config['callsign'][0], config['callsign'][1:])).read().strip().split('\n') ],
