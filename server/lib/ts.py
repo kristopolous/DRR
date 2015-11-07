@@ -148,7 +148,7 @@ def get_offset(force=False):
   # have a database
   if misc.IS_TEST: return 0
 
-  offset = DB.get('offset', expiry=ONE_HOUR_SECOND * 4)
+  offset = DB.get('offset', expiry=ONE_HOUR_SECOND * 4000000000)
   if not offset or force:
     from urllib2 import urlopen
 
