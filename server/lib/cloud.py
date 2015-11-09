@@ -103,6 +103,8 @@ def put(path):
 
 def rename():
   all_files = glob('%s/*.mp3' % misc.DIR_STREAMS)
+  count = 0
+  total = 0
   for fname in all_files:
     (mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime) = os.stat(fname)
     oldts = os.path.getctime(fname)
@@ -110,10 +112,12 @@ def rename():
     newname = "%s/%s-%s.mp3" % (misc.DIR_STREAMS, misc.config['callsign'], newts)
 
     if not os.path.exists(newname):
+      count += 1.0
       os.rename(fname, newname)
       
-    print "%s ~~ %s %s %s" % (fname, newname, oldts, atime)
+    total += 1.0
 
+  return "%f" % (count / total)
 
 
 def register_stream_list(reindex=False):
