@@ -294,6 +294,10 @@ def manager(config):
     return send_file(filename)
 
 
+  @app.route('/rename')
+  def rename():
+    return cloud.rename()
+
   @app.route('/reindex')
   def reindex():
     """ 

@@ -101,6 +101,15 @@ def put(path):
   return False
 
 
+def rename():
+  all_files = glob('%s/*.mp3' % misc.DIR_STREAMS)
+  for fname in all_files:
+    newts = TS.ts_to_name(os.path.getctime(fname) + TS.get_offset() * 60)
+    newname = "%s/%s-%s.mp3" % (misc.DIR_STREAMS, misc.config['callsign'], newts)
+    print "%s ~~ %s" % (fname, newname)
+
+
+
 def register_stream_list(reindex=False):
   # Find the local streams and make sure they are all registered in the sqlite3 database. 
   #
