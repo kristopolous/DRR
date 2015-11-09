@@ -104,13 +104,15 @@ def put(path):
 def rename():
   all_files = glob('%s/*.mp3' % misc.DIR_STREAMS)
   for fname in all_files:
-    newts = TS.ts_to_name(os.path.getctime(fname) + TS.get_offset() * 60)
+    (mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime) = os.stat(fname)
+    oldts = os.path.getctime(fname)
+    newts = TS.ts_to_name(atime + TS.get_offset() * 60)
     newname = "%s/%s-%s.mp3" % (misc.DIR_STREAMS, misc.config['callsign'], newts)
 
     if not os.path.exists(newname):
       os.rename(fname, newname)
       
-    print "%s ~~ %s" % (fname, newname)
+    print "%s ~~ %s %s %s" % (fname, newname, oldts, atime)
 
 
 
