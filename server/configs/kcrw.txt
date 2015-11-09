@@ -5,3 +5,4 @@ lat=33.955766
 stream=http://kcrw.ic.llnwd.net/stream/kcrw_live
 port=8990
 cloud=~/cloudcreds.cfg
+archivedays=28

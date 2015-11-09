@@ -5,3 +5,4 @@ lat=33.955766
 stream=http://ic1.mainstreamnetwork.com/kpfk-fm.mp3
 port=9070
 cloud=~/cloudcreds.cfg
+archivedays=56
