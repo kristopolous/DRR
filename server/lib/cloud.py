@@ -106,6 +106,10 @@ def rename():
   for fname in all_files:
     newts = TS.ts_to_name(os.path.getctime(fname) + TS.get_offset() * 60)
     newname = "%s/%s-%s.mp3" % (misc.DIR_STREAMS, misc.config['callsign'], newts)
+
+    if (!os.path.exists(newname)):
+      os.rename(fname, newname)
+      
     print "%s ~~ %s" % (fname, newname)
 
 
