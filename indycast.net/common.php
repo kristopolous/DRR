@@ -257,7 +257,9 @@ function add_station($dirty) {
     return $db->exec('insert into stations (' . implode(',', $lhs) . ') values ("' . implode('","', $rhs) . '")');
   } else {
     $inj = sql_kv($dirty);
-    return $db->exec('update stations set ' . implode(',', $inj) . ' where id = ' . $station['id']);
+    $inj['active'] = intval($inj['active']);
+    $query = 'update stations set ' . implode(',', $inj) . ' where id = ' . $station['id'];
+    return $db->exec($query);
   }
 }
 
