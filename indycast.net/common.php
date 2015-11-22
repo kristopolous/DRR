@@ -199,11 +199,15 @@ function sql_escape_hash($obj) {
   return $res;
 }
 
-function sql_kv($hash, $operator = '=', $quotes = "'") {
+function sql_kv($hash, $operator = '=', $quotes = "'", $intList = []) {
   $ret = [];
   foreach($hash as $key => $value) {
-    if ( !empty($value) ) {
-      $ret[] = "$key $operator $quotes$value$quotes";
+    if ( is_string($value) ) {
+      if(in_array($key, $intList)) {
+      	$ret[] = "$key $operator $value";
+      } else {
+        $ret[] = "$key $operator $quotes$value$quotes";
+      }
     }
   } 
   return $ret;
@@ -256,9 +260,9 @@ function add_station($dirty) {
     $lhs = array_keys($dirty); $rhs = array_values($dirty);
     return $db->exec('insert into stations (' . implode(',', $lhs) . ') values ("' . implode('","', $rhs) . '")');
   } else {
-    $inj = sql_kv($dirty);
-    $inj['active'] = intval($inj['active']);
+    $inj = sql_kv($dirty, '=', "'", ['active']);
     $query = 'update stations set ' . implode(',', $inj) . ' where id = ' . $station['id'];
+var_dump($query);exit(0);
     return $db->exec($query);
   }
 }
