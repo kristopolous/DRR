@@ -262,7 +262,6 @@ function add_station($dirty) {
   } else {
     $inj = sql_kv($dirty, '=', "'", ['active']);
     $query = 'update stations set ' . implode(',', $inj) . ' where id = ' . $station['id'];
-var_dump($query);exit(0);
     return $db->exec($query);
   }
 }
