@@ -264,7 +264,7 @@ def find_streams(start_list, duration_min):
         # The start_minute is based on the week
         offset_start = week_start - episode[0]['start_minute']
         fname = audio.stream_name(episode, week_start, duration_min)
-        print '--name',episode[0]['name'], fname
+        # print '--name',episode[0]['name'], fname
 
         # We get the name that it will be and then append that
         stream_list.append(stream_info(fname))
