@@ -3,7 +3,7 @@
 <div class='super-main' id="main">
   <h1>A DVR for Radio</h1>
   <span style=display:inline-block>
-  <p>MP3 archives<br>16 stations</p>
+  <p>MP3 archives<br><?= count(active_stations()); ?> stations</p>
   <small style=display:block;line-height:1.4em;text-align:center><b>Subscribe to shows<br>Listen to what you missed</b></small>
   </span>
 </div>
