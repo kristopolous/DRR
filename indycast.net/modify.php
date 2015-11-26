@@ -6,7 +6,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     unset($_POST['_action']);
     $res = del_station($_POST);
   } else {
-    $_POST['active'] = 1;
     $res = add_station($_POST);
   }
 
