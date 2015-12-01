@@ -374,11 +374,11 @@ def get_next(info_query):
   return get_file_for_ts(target_time=target_time, bias=None, exclude_path=info_query['name'])
 
   
-def prune(reindex=False):
+def prune(reindex=False, force=False):
   # Gets rid of files older than archivedays - cloud stores things if relevant. 
 
   # Now when the child calls it it won't hit the network for every prune.
-  process = Process(target=prune_process, args=(misc.lockMap, reindex,))
+  process = Process(target=prune_process, args=(misc.lockMap, reindex, force))
   process.start()
   return process
 
