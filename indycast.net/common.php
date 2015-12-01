@@ -231,17 +231,6 @@ function get_station($dirty) {
   return db_get('select * from stations where ' . implode(' and ', $inj));
 }
 
-function del_station($dirty) {
-  if (is_read_only()) {
-    return false;
-  }
-
-  global $db;
-  $clean = sql_escape_hash($dirty);
-  $inj = sql_kv($dirty);
-  return $db->exec('update stations set active = 0 where ' . implode(' and ', $inj));
-}
-
 function db_insert($table, $map) {
   $lhs = array_keys($map); $rhs = array_values($map);
   return $db->exec('insert into ' . $table . ' (' . implode(',', $lhs) . ') values (' . implode(',', $rhs) . ')');

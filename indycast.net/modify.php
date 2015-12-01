@@ -2,13 +2,7 @@
 include_once('common.php');
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
-  if(isset($_POST['_action'])) {
-    unset($_POST['_action']);
-    $res = del_station($_POST);
-  } else {
-    $_POST['active'] = 1;
-    $res = add_station($_POST);
-  }
+  $res = add_station($_POST);
 
   $dir = dirname($_SERVER['REQUEST_URI']);
 
@@ -74,10 +68,3 @@ button { padding: 0}
   <input type='submit' value='Add/Modify station'>
   <a href="admin.php">cancel</a>
 </form>
-<?php if (!empty($station)) { ?>
-<form method="post">
-  <input type='hidden' name='id' value='<?= $station['id'] ?>'>
-  <input type='hidden' value='delete' name='_action'>
-  <button>Delete <?= $station['callsign'] ?></button>
-</form>
-<?php } ?>
