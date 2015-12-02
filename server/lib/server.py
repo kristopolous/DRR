@@ -664,9 +664,9 @@ def manager(config):
 
   print __name__
   if __name__ == 'lib.server':
-    pid = misc.change_proc_name("%s-webserver" % config['callsign'])
+    #pid = misc.change_proc_name("%s-webserver" % config['callsign'])
 
-    signal.signal(signal.SIGUSR1, webserver_shutdown)
+    #signal.signal(signal.SIGUSR1, webserver_shutdown)
     # When we do an upgrade or a restart, there's a race condition of getting to start this server
     # before the previous one has cleaned up all the socket work.  So if the time is under our
     # patience threshold then we sleep a second and just try again, hoping that it will work.
@@ -688,7 +688,7 @@ def manager(config):
           time.sleep(misc.PROCESS_DELAY / 4)
 
         elif TS.unixtime('delay') - start < (patience + 4):
-          pid=os.popen("netstat -anlp | grep :%s | awk ' { print $NF }' | sed 's/\/.*//'" % config['port']).read().strip().split('\n')[0]
+          pid = os.popen("netstat -anlp | grep :%s | awk ' { print $NF }' | sed 's/\/.*//'" % config['port']).read().strip().split('\n')[0]
 
           try:
             pid_numeric = int(pid)
