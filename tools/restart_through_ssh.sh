@@ -11,7 +11,7 @@
 
 while [ $# -gt 0 ]; do
   station=$1
-  ssh $station.indycast.net "cd DRR;git pull;./bootstrap.sh;cd server;pkill $station;./indy_server.py -c configs/$station.txt --daemon &" &
+  ssh $station.indycast.net "cd DRR;rm -f .git/refs/remotes/origin/master.lock;git pull;./bootstrap.sh;cd server;pkill $station;./indy_server.py -c configs/$station.txt --daemon &" &
   shift
 done
 sleep 120
