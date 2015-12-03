@@ -181,8 +181,8 @@ def shutdown_handler(signal=signal.SIGINT, frame=None):
 def shutdown_real(do_restart=False):
   # During a restart shutdown we just kill the webserver.
   # The other processes will die off later.
-  if 'webserver' in pid_map:
-    os.kill(pid_map['webserver'].pid, signal.SIGUSR1)
+  #if 'webserver' in pid_map:
+  #  os.kill(pid_map['webserver'].pid, signal.SIGUSR1)
 
   if not do_restart:
     for key, value in pid_map.items():
