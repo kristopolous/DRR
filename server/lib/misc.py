@@ -46,7 +46,9 @@ import urllib2
 import ts as TS
 import db as DB
 import cloud
-from multiprocessing import Queue, Lock
+from Queue import Queue
+from threading import Lock
+#from multiprocessing import Queue, Lock
 
 #
 # The process delay is used throughout to measure things like the delay in
@@ -193,7 +195,7 @@ def shutdown_real(do_restart=False):
 
     title = SP.getproctitle()
     logging.info("[%s:%d] Shutting down" % (title, os.getpid()))
-    DB.shutdown()
+    #DB.shutdown()
 
     logging.info("Uptime: %ds", TS.uptime())
 

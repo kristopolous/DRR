@@ -12,7 +12,7 @@ from sets import Set
 from glob import glob
 from datetime import datetime, timedelta
 from threading import Thread
-from multiprocessing import Process
+#from multiprocessing import Process
 
 def size(basedir):
   total = 0
