@@ -1,5 +1,4 @@
 #!/usr/bin/python 
-import setproctitle as SP
 import ConfigParser
 import os
 import time
@@ -9,6 +8,7 @@ import logging
 import sys
 import socket
 import signal
+import threading
 __version__ = os.popen("git describe").read().strip()
 
 #
@@ -193,8 +193,7 @@ def shutdown_real(do_restart=False):
       except:
         pass
 
-    title = SP.getproctitle()
-    logging.info("[%s:%d] Shutting down" % (title, os.getpid()))
+    logging.info("[%d] Shutting down" % (os.getpid(), ))
     #DB.shutdown()
 
     logging.info("Uptime: %ds", TS.uptime())
@@ -243,9 +242,9 @@ def manager_is_running(pid=None):
 def change_proc_name(what):
   # Sets a more human-readable process name for the various 
   # parts of the system to be viewed in top/htop.
-  SP.setproctitle(what)
-  print "[%s:%d] Starting" % (what, os.getpid())
-  return os.getpid()
+  #SP.setproctitle(what)
+  print "[%s] Starting" % (what,)
+  return threading.current_thread()
 
 
 # From https://wiki.python.org/moin/ConfigParserExamples
