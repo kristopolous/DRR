@@ -210,7 +210,7 @@ def shutdown(do_restart=False):
   # thread
   #
   # All we do it put it in our queue ... and then trust the that
-  # queue will call the real shutdown
+  # queue will call the real shutdown   
   if do_restart:
     queue.put(('restart', True))
 
@@ -219,26 +219,6 @@ def shutdown(do_restart=False):
 
   return None
 
-
-def manager_is_running(pid=None):
-  # Checks to see if the manager is still running or if we should 
-  # shutdown.  It works by sending a signal(0) to a pid and seeing
-  # if that fails.
-  # Returns True/False
-  global manager_pid
-
-  if pid:
-    manager_pid = pid
-    return pid
-
-  try:
-    os.kill(manager_pid, 0)
-    return True
-
-  except:
-    return False
-
-  
 def change_proc_name(what):
   # Sets a more human-readable process name for the various 
   # parts of the system to be viewed in top/htop.

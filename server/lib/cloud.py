@@ -164,11 +164,6 @@ def register_stream_list(reindex=False):
 
     DB.register_stream(info)
 
-    if not misc.manager_is_running():
-      logging.info("Manager is gone, shutting down")
-      raise Exception()
-
-
 def find_streams(start_list, duration_min):
   # Given a start week minute this looks for streams in the storage 
   # directory that match it - regardless of duration ... so it may return
