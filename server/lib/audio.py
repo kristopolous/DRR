@@ -692,8 +692,10 @@ def stitch_and_slice(file_list, start_minute, duration_minute):
   # Given a file_list in a directory and a duration, this function will seek out
   # adjacent files if necessary and serialize them accordingly, and then return the
   # file name of an audio slice that is the combination of them.
-  from multiprocessing import Process
-  slice_process = Process(target=stitch_and_slice_process, args=(file_list, start_minute, duration_minute, ))
+  #from multiprocessing import Process
+  from threading import Thread
+  slice_process = Thread(target=stitch_and_slice_process, args=(file_list, start_minute, duration_minute, ))
+  slice_process.daemon = True
   slice_process.start()
 
 

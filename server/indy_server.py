@@ -15,6 +15,7 @@ from logging.handlers import RotatingFileHandler
 from datetime import timedelta, date
 from glob import glob
 from subprocess import Popen
+from threading import Thread
 from multiprocessing import Process, Queue
 
 g_download_pid = 0
@@ -105,8 +106,8 @@ def stream_download(callsign, url, my_pid, file_name):
 def my_process_shutdown(process):
   # A small function to simplify the logic below. 
   if process and process.is_alive():
-    logging.info("[%s:%d] Shutting down" % ('download', process.pid))
-    process.terminate()
+    logging.info("[%s:%d] Shutting down" % ('download', -1))
+    #process.terminate()
 
   return None
 
@@ -153,7 +154,7 @@ def stream_manager():
   process_next = None
 
   # The manager will be the one that starts this.
-  misc.pid_map['webserver'] = Process(target=server.manager, args=(misc.config,))
+  misc.pid_map['webserver'] = Thread(target=server.manager, args=(misc.config,))
   misc.pid_map['webserver'].start()
 
   file_name = None
@@ -172,7 +173,8 @@ def stream_manager():
     # in the future by some margin
     #
     file_name = '%s/%s-%s.mp3' % (misc.DIR_STREAMS, callsign, TS.ts_to_name(TS.now(offset_sec=misc.PROCESS_DELAY / 2)))
-    process = Process(target=stream_download, args=(callsign, misc.config['stream'], g_download_pid, file_name))
+    process = Thread(target=stream_download, args=(callsign, misc.config['stream'], g_download_pid, file_name))
+    process.daemon = True
     process.start()
     return [file_name, process]
 

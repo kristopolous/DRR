@@ -11,6 +11,7 @@ import lib.audio as audio
 from sets import Set
 from glob import glob
 from datetime import datetime, timedelta
+from threading import Thread
 from multiprocessing import Process
 
 def size(basedir):
@@ -378,7 +379,7 @@ def prune(reindex=False, force=False):
   # Gets rid of files older than archivedays - cloud stores things if relevant. 
 
   # Now when the child calls it it won't hit the network for every prune.
-  process = Process(target=prune_process, args=(misc.lockMap, reindex, force))
+  process = Thread(target=prune_process, args=(misc.lockMap, reindex, force))
   process.start()
   return process
 
