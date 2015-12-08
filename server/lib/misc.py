@@ -183,8 +183,20 @@ def shutdown_handler(signal=signal.SIGINT, frame=None):
 def shutdown_real(do_restart=False):
   # During a restart shutdown we just kill the webserver.
   # The other processes will die off later.
+
+  logging.info('total: %d' % (threading.activeCount(), ))
+  # we release our main lock which signifies that the 
+  # threads should die off.
+  lockMap['main'].release() 
+  logging.info("Releasing main lock")
+
   #if 'webserver' in pid_map:
   #  os.kill(pid_map['webserver'].pid, signal.SIGUSR1)
+
+
+  for x in range(50):
+    logging.info('total: %d' % (threading.activeCount(), ))
+    time.sleep(0.25)
 
   if not do_restart:
     for key, value in pid_map.items():

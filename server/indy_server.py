@@ -27,9 +27,6 @@ def stream_download(callsign, url, my_pid, file_name):
 
   nl = {'stream': None, 'curl_handle': None}
 
-  def dl_stop(signal, frame):
-    sys.exit(0)
-
   def cback(data): 
 
     if not misc.params['shutdown_time']:
@@ -73,9 +70,10 @@ def stream_download(callsign, url, my_pid, file_name):
     nl['stream'].write(data)
 
     if not misc.manager_is_running():
+      logging.info("-- shutdown")
       misc.shutdown()
+      raise TypeError("Download Stop")
 
-  # signal.signal(signal.SIGTERM, dl_stop)
   misc.params['isFirst'] = True
   curl_handle = pycurl.Curl()
   curl_handle.setopt(curl_handle.URL, url)
