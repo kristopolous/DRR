@@ -418,16 +418,6 @@ def prune_process(lockMap, reindex=False, force=False):
   # Put thingies into the cloud.
   count = 0
   for file_name in glob('*/*.mp3'):
-    #
-    # Depending on many factors this could be running for hours
-    # or even days.  We want to make sure this isn't a blarrrghhh
-    # zombie process or worse yet, still running and competing with
-    # other instances of itself.
-    #
-    if not misc.manager_is_running():
-      lockMap['prune'].release()
-      return None
-
     ctime = os.path.getctime(file_name)
 
     # print "Looking at ", file_name, ctime, cutoff, archive_duration,  misc.config['archivedays'], misc.am_i_official()
