@@ -475,7 +475,7 @@ def prune_process(lockMap, reindex=False, force=False):
     file_name = str(file_name_tuple[0])
     id = file_name_tuple[1]
 
-    logging.debug("Prune[remove]: %s (unlink list)" % file_name)
+    #logging.debug("Prune[remove]: %s (unlink list)" % file_name)
     # If there's a cloud account at all then we need to unlink the 
     # equivalent mp3 file
     if cloud_cutoff and misc.am_i_official():

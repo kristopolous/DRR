@@ -70,7 +70,6 @@ def stream_download(callsign, url, my_pid, file_name):
     nl['stream'].write(data)
 
     if not misc.manager_is_running():
-      logging.info("-- shutdown")
       misc.shutdown()
       raise TypeError("Download Stop")
 
@@ -87,8 +86,9 @@ def stream_download(callsign, url, my_pid, file_name):
   except TypeError as exc:
     logging.info('Properly shutting down.')
 
-  except Exception as exc:
+  except pycurl.error as exc:
     logging.warning("Couldn't resolve or connect to %s." % url)
+
 
   curl_handle.close()
 
