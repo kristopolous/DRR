@@ -12,7 +12,6 @@ from sets import Set
 from glob import glob
 from datetime import datetime, timedelta
 from threading import Thread
-#from multiprocessing import Process
 
 def size(basedir):
   total = 0
@@ -163,6 +162,11 @@ def register_stream_list(reindex=False):
       continue
 
     DB.register_stream(info)
+
+    if not misc.manager_is_running():
+      logging.info("Manager is gone, shutting down")
+      raise Exception()
+
 
 def find_streams(start_list, duration_min):
   # Given a start week minute this looks for streams in the storage 
@@ -418,6 +422,16 @@ def prune_process(lockMap, reindex=False, force=False):
   # Put thingies into the cloud.
   count = 0
   for file_name in glob('*/*.mp3'):
+    #
+    # Depending on many factors this could be running for hours
+    # or even days.  We want to make sure this isn't a blarrrghhh
+    # zombie process or worse yet, still running and competing with
+    # other instances of itself.
+    #
+    if not misc.manager_is_running():
+      lockMap['prune'].release()
+      return None
+
     ctime = os.path.getctime(file_name)
 
     # print "Looking at ", file_name, ctime, cutoff, archive_duration,  misc.config['archivedays'], misc.am_i_official()

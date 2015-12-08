@@ -84,7 +84,7 @@ params = {'shutdown_time': None}
 start_time = None
 config = {}
 pid_map = {}
-lockMap = {'prune': Lock()}
+lockMap = {'prune': Lock(), 'main': Lock()}
 last_official_query = None
 
 def do_nothing(signal, frame=None):
@@ -218,6 +218,16 @@ def shutdown(do_restart=False):
     queue.put(('shutdown', True))
 
   return None
+
+def manager_is_running(pid=None):
+  if pid is not None:
+    lockMap['main'].acquire(False)
+
+  if lockMap['main'].acquire(False):
+    lockMap['main'].release()
+    return False
+
+  return True
 
 def change_proc_name(what):
   # Sets a more human-readable process name for the various 

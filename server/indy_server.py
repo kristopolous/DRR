@@ -17,7 +17,6 @@ from glob import glob
 from subprocess import Popen
 from threading import Thread
 from Queue import Queue
-#from multiprocessing import Process, Queue
 
 g_download_pid = 0
 
@@ -72,6 +71,9 @@ def stream_download(callsign, url, my_pid, file_name):
         sys.exit(-1)
 
     nl['stream'].write(data)
+
+    if not misc.manager_is_running():
+      misc.shutdown()
 
   # signal.signal(signal.SIGTERM, dl_stop)
   misc.params['isFirst'] = True
@@ -291,11 +293,15 @@ def stream_manager():
               bitrate = int( round (est / 1000) * 8 )
               DB.set('bitrate', bitrate)
 
-    # The only way for the bool to be toggled off is if we are not in full-mode ... 
+    # Check for our management process
+    if not misc.manager_is_running():
+      logging.info("Manager isn't running");
+      change_state = SHUTDOWN
+
     # we get here if we should NOT be recording.  So we make sure we aren't.
     if change_state == SHUTDOWN or (change_state == RESTART and TS.unixtime('dl') > shutdown_time):
-      process = my_process_shutdown(process)
-      process_next = my_process_shutdown(process_next)
+      #process = my_process_shutdown(process)
+      #process_next = my_process_shutdown(process_next)
       misc.shutdown_real()
 
     else:
@@ -344,7 +350,6 @@ def stream_manager():
     # Increment the amount of time this has been running
     DB.incr('uptime', cycle_time)
 
-    logging.info('cycle time: %d' % (cycle_time, ))
     time.sleep(cycle_time)
 
 def read_config(config):
@@ -547,6 +552,7 @@ if __name__ == "__main__":
 
     # This is the pid that should be killed to shut the system
     # down.
+    misc.manager_is_running(pid)
     with open(misc.PIDFILE_MANAGER, 'w+') as f:
       f.write(str(pid))
 

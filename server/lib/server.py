@@ -664,10 +664,6 @@ def manager(config):
 
   print __name__
   if __name__ == 'lib.server':
-    #pid = misc.change_proc_name("%s-webserver" % config['callsign'])
-
-    #signal.signal(signal.SIGUSR1, webserver_shutdown)
-
     # When we do an upgrade or a restart, there's a race condition of getting to start this server
     # before the previous one has cleaned up all the socket work.  So if the time is under our
     # patience threshold then we sleep a second and just try again, hoping that it will work.
