@@ -101,15 +101,6 @@ def stream_download(callsign, url, my_pid, file_name):
     DB.register_stream(info)
 
 
-def my_process_shutdown(process):
-  # A small function to simplify the logic below. 
-  if process and process.is_alive():
-    logging.info("[%s:%d] Shutting down" % ('download', -1))
-    #process.terminate()
-
-  return None
-
-
 def stream_manager():
   import random
 
@@ -298,15 +289,9 @@ def stream_manager():
 
     # we get here if we should NOT be recording.  So we make sure we aren't.
     if change_state == SHUTDOWN or (change_state == RESTART and TS.unixtime('dl') > shutdown_time):
-      #process = my_process_shutdown(process)
-      #process_next = my_process_shutdown(process_next)
       misc.shutdown_real()
 
     else:
-      # Didn't respond in cycle_time seconds so kill it
-      if not flag:
-        process = my_process_shutdown(process)
-
       if not process and not change_state:
         file_name, process = download_start(file_name)
         last_success = TS.unixtime('dl')
