@@ -30,7 +30,7 @@ def getAddrInfoWrapper(host, port, family=0, socktype=0, proto=0, flags=0):
       return res
 
     except:
-      print "[%d/%d] Unable to resolve %s on %d ... sleeping a bit" % (attempts, max_attempts, host, port)
+      logging.warn( "[%d/%d] Unable to resolve %s on %d ... sleeping a bit" % (attempts, max_attempts, host, port))
       time.sleep(1)
       attempts += 1
 
@@ -233,7 +233,7 @@ def change_proc_name(what):
   # Sets a more human-readable process name for the various 
   # parts of the system to be viewed in top/htop.
   #SP.setproctitle(what)
-  print "[%s] Starting" % (what,)
+  logging.info( "[%s] Starting" % (what,) )
   return threading.current_thread()
 
 
