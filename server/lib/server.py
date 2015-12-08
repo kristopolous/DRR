@@ -178,8 +178,7 @@ def manager(config):
   app = Flask(__name__)
 
   def webserver_shutdown(signal=15, frame=None):
-    title = SP.getproctitle()
-    logging.info('[%s:%d] Shutting down' % (title, os.getpid()))
+    logging.info('Shutting down')
     request.environ.get('werkzeug.server.shutdown')()
 
   def success(message):
@@ -387,11 +386,18 @@ def manager(config):
 
     return send_file_partial("%s/%s" % (base_dir, path), requested_path=path, file_name=download_name)
 
+  @app.route('/halt')
+  def halt():
+    webserver_shutdown()
+    misc.shutdown(do_restart=False)
+    return success('halt...')
+
   @app.route('/restart')
   def restart():
     """ 
     Restarts an instance. This does so in a gapless non-overlapping way.
     """
+    webserver_shutdown()
     misc.shutdown(do_restart=True)
     return success('restarting...')
 
@@ -662,7 +668,6 @@ def manager(config):
     )
 
 
-  print __name__
   if __name__ == 'lib.server':
     # When we do an upgrade or a restart, there's a race condition of getting to start this server
     # before the previous one has cleaned up all the socket work.  So if the time is under our
@@ -675,7 +680,7 @@ def manager(config):
       try:
         print 'Listening on %s' % config['port']
         app.logger.addHandler(logging.getLogger())
-        app.run(threaded=True, port=config['port'], host='0.0.0.0')
+        app.run(threaded=True, use_reloader=False, port=config['port'], host='0.0.0.0')
         break
 
       except Exception as exc:

@@ -36,7 +36,7 @@ def stream_download(callsign, url, my_pid, file_name):
           misc.params['shutdown_time'] = value
 
     elif TS.unixtime('dl') > misc.params['shutdown_time']:
-      sys.exit(0)
+      raise TypeError("Download Stop")
 
     if misc.params['isFirst'] == True:
       misc.params['isFirst'] = False
@@ -143,8 +143,10 @@ def stream_manager():
   process_next = None
 
   # The manager will be the one that starts this.
-  misc.pid_map['webserver'] = Thread(target=server.manager, args=(misc.config,))
-  misc.pid_map['webserver'].start()
+  server.manager(misc.config)
+
+  #misc.pid_map['webserver'] = Thread(target=server.manager, args=(misc.config,))
+  #misc.pid_map['webserver'].start()
 
   file_name = None
 
