@@ -227,7 +227,7 @@ def stream_manager():
           while True:
             time.sleep(20)
             #logging.info(DB.get('runcount', use_cache=False))
-            logging.info(('ps axf | grep [%c]%s | grep python | wc -l' % (misc.config['callsign'][0], misc.config['callsign'][1:]) ).read().strip())
+            #logging.info(('ps axf | grep [%c]%s | grep python | wc -l' % (misc.config['callsign'][0], misc.config['callsign'][1:]) ).read().strip())
             ps_out = int(os.popen('ps axf | grep [%c]%s | grep python | wc -l' % (misc.config['callsign'][0], misc.config['callsign'][1:]) ).read().strip())
 
             if ps_out > 1: 

@@ -193,10 +193,11 @@ def shutdown_real(do_restart=False):
   #if 'webserver' in pid_map:
   #  os.kill(pid_map['webserver'].pid, signal.SIGUSR1)
 
-
+  """
   for x in range(50):
     logging.info('total: %d' % (threading.activeCount(), ))
     time.sleep(0.25)
+  """
 
   if not do_restart:
     for key, value in pid_map.items():
