@@ -23,7 +23,7 @@ g_download_pid = 0
 def stream_download(callsign, url, my_pid, file_name):
   # Curl interfacing which downloads the stream to disk. 
   # Follows redirects and parses out basic m3u.
-  pid = misc.change_proc_name("%s-download" % callsign)
+  #pid = misc.change_proc_name("%s-download" % callsign)
 
   nl = {'stream': None, 'curl_handle': None}
 
