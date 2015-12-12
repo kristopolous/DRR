@@ -1,4 +1,5 @@
 #!/usr/bin/python 
+import setproctitle as SP
 import ConfigParser
 import os
 import time
@@ -245,7 +246,7 @@ def manager_is_running(pid=None):
 def change_proc_name(what):
   # Sets a more human-readable process name for the various 
   # parts of the system to be viewed in top/htop.
-  #SP.setproctitle(what)
+  SP.setproctitle(what)
   logging.info( "[%s] Starting" % (what,) )
   return threading.current_thread()
 

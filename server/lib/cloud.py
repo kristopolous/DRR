@@ -395,8 +395,7 @@ def prune_process(lockMap, reindex=False, force=False):
   # we do this to check to see if we are official
   time.sleep(2)
 
-  pid = misc.change_proc_name("%s-cleanup" % misc.config['callsign'])
-
+  #pid = misc.change_proc_name("%s-cleanup" % misc.config['callsign'])
   # We want to run the am_i_official here since it could block on a DNS lookup
   misc.am_i_official()
 
