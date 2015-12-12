@@ -702,7 +702,7 @@ def stitch_and_slice(file_list, start_minute, duration_minute):
 def list_slice_stream(start_info, start_sec):
   # This is part of the /live/time feature ... this streams files hopping from one to the next
   # in a live manner ... it constructs things while running ... hopping to the next stream in real time.
-  pid = misc.change_proc_name("%s-audiostream" % misc.config['callsign'])
+  #pid = misc.change_proc_name("%s-audiostream" % misc.config['callsign'])
   block_count = 0
 
   current_info = start_info
@@ -793,7 +793,7 @@ def list_slice(list_in, name_out, duration_sec, start_sec=0, do_confirm=False):
   # by finding the closest frames and just doing an extraction.
   #
   # Setting the duration as None is equivalent to a forever stream 
-  pid = misc.change_proc_name("%s-audioslice" % misc.config['callsign'])
+  #pid = misc.change_proc_name("%s-audioslice" % misc.config['callsign'])
 
   out = open(name_out, 'wb+')
   buf_confirm = None
