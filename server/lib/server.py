@@ -677,15 +677,16 @@ def manager(config):
 
     start = TS.unixtime('delay')
     while TS.unixtime('delay') - start < (patience + 3):
+      app.logger.addHandler(logging.getLogger())
+      logging.info('Listening on %s' % config['port'])
+
       try:
-        print 'Listening on %s' % config['port']
-        app.logger.addHandler(logging.getLogger())
         app.run(threaded=True, use_reloader=False, port=config['port'], host='0.0.0.0')
         break
 
       except Exception as exc:
         if TS.unixtime('delay') - start < patience:
-          print '[attempt: %d] Error, can not start server ... perhaps %s is already in use?' % (attempt, config['port'])
+          logging.info('[attempt: %d] Error, can not start server ... perhaps %s is already in use?' % (attempt, config['port']))
           attempt += 1
           time.sleep(misc.PROCESS_DELAY / 4)
 
@@ -693,9 +694,8 @@ def manager(config):
           pid = os.popen("netstat -anlp | grep :%s | awk ' { print $NF }' | sed 's/\/.*//'" % config['port']).read().strip().split('\n')[0]
 
           try:
-            pid_numeric = int(pid)
-            print "Fuck it, I'm killing %s." % pid
-            os.kill(pid_numeric)
+            logging.info("Fuck it, I'm killing %s." % pid)
+            os.kill(int(pid))
 
           except:
             pass
