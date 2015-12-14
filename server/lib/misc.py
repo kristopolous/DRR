@@ -174,8 +174,12 @@ def am_i_official():
 def webserver_shutdown():
   endpoint = "http://127.0.0.1:%d/halt" % (config['port'],)
 
-  stream = urllib2.urlopen(endpoint)
-  data = stream.read()
+  try: 
+    stream = urllib2.urlopen(endpoint)
+    data = stream.read()
+
+  except urllib2.URLError:
+    logging.info("Webserver already shutdown")
 
 
 def public_config():
@@ -219,8 +223,8 @@ def shutdown_real(do_restart=False):
 
     logging.info("Uptime: %ds", TS.uptime())
 
-    if os.path.isfile(PIDFILE_MANAGER):
-      os.unlink(PIDFILE_MANAGER)
+    #if os.path.isfile(PIDFILE_MANAGER):
+    #  os.unlink(PIDFILE_MANAGER)
 
     sys.exit(0)
 

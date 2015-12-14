@@ -33,10 +33,11 @@ def stream_download(callsign, url, my_pid, file_name):
   def cback(data): 
 
     # misc.params can fail based on a shutdown sequence.
-    if type(misc.params) is None:
-      raise TypeError("Download Stop")
+    if misc is None or misc.params is None or not misc.manager_is_running():
+      misc.shutdown()
+      return False
 
-    if not misc.params['shutdown_time']:
+    elif not misc.params['shutdown_time']:
       if not misc.download_ipc.empty():
         what, value = misc.download_ipc.get(False)
         if what == 'shutdown_time':
@@ -76,9 +77,6 @@ def stream_download(callsign, url, my_pid, file_name):
 
     nl['stream'].write(data)
 
-    if not misc.manager_is_running():
-      misc.shutdown()
-      raise TypeError("Download Stop")
 
   misc.params['isFirst'] = True
   curl_handle = pycurl.Curl()
@@ -233,8 +231,15 @@ def stream_manager():
           shutdown_time = TS.unixtime('dl') + misc.config['restart_overlap']
           logging.info("Restart requested ... shutting down downloader at %s" % TS.ts_to_name(shutdown_time, with_seconds=True))
 
+          misc.shutdown_real(do_restart=False)
+          misc.download_ipc.put(('shutdown_time', shutdown_time))
+
           while True:
             time.sleep(20)
+            with open(misc.PIDFILE_MANAGER, 'r') as f:
+              manager_pid = f.read()
+
+            print manager_pid, os.getpid(), manager_pid == os.getpid()
             #logging.info(DB.get('runcount', use_cache=False))
             #logging.info(('ps axf | grep [%c]%s | grep python | wc -l' % (misc.config['callsign'][0], misc.config['callsign'][1:]) ).read().strip())
             ps_out = int(os.popen('ps axf | grep [%c]%s | grep python | wc -l' % (misc.config['callsign'][0], misc.config['callsign'][1:]) ).read().strip())
@@ -300,7 +305,6 @@ def stream_manager():
 
     # we get here if we should NOT be recording.  So we make sure we aren't.
     if change_state == SHUTDOWN or (change_state == RESTART and TS.unixtime('dl') > shutdown_time):
-      print "shutdown real"
       misc.shutdown_real()
 
     else:
@@ -549,6 +553,6 @@ if __name__ == "__main__":
   # down.
   misc.manager_is_running(pid)
   with open(misc.PIDFILE_MANAGER, 'w+') as f:
-    f.write(str(pid))
+    f.write(str(os.getpid()))
 
   stream_manager()
