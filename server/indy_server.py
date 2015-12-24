@@ -200,7 +200,6 @@ def stream_manager():
     while not misc.queue.empty():
       flag = True
       what, value = misc.queue.get(False)
-      #print what, value
 
       # The curl proces discovered a new stream to be
       # used instead.
