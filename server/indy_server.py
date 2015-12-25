@@ -524,13 +524,6 @@ def read_config(config):
 
 
 if __name__ == "__main__":
-  # From http://stackoverflow.com/questions/25504149/why-does-running-the-flask-dev-server-run-itself-twice
-
-  #if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
-  #  server_manager(misc.config)
-
-  #else: 
-  # Ignore all test scaffolding
   misc.IS_TEST = False
   misc.start_time = TS.unixtime()
 
