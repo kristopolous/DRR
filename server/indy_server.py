@@ -31,7 +31,6 @@ def stream_download(callsign, url, my_pid, file_name):
   nl = {'stream': None, 'curl_handle': None}
 
   def cback(data): 
-
     # misc.params can fail based on a shutdown sequence.
     if misc is None or misc.params is None or not misc.manager_is_running():
       misc.shutdown()
@@ -88,12 +87,11 @@ def stream_download(callsign, url, my_pid, file_name):
   try:
     curl_handle.perform()
 
-  except TypeError as exc:
-    logging.info('Properly shutting down.')
-
   except pycurl.error as exc:
-    logging.warning("Couldn't resolve or connect to %s." % url)
-
+    if exc[0] == 23:
+      logging.info('Properly shutting down.')
+    else:
+      logging.warning("Couldn't resolve or connect to %s." % url)
 
   curl_handle.close()
 
