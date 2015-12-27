@@ -278,7 +278,7 @@ def unregister_stream(name, do_all=False):
   res = db['c'].execute('select id from streams where name = ?', (name, )).fetchall()
 
   if res and (len(res) == 1 or do_all):
-    logging.info("Removing our reference of %s" % name)
+    logging.debug("Removing our reference of %s" % name)
     res = db['c'].execute('delete from streams where id = %d' % res[0][0])
     db['conn'].commit()
 

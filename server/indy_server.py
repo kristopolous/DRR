@@ -499,8 +499,8 @@ def read_config(config):
     raise ValueError('Invalid log level: %s' % loglevel)
 
   logger = logging.getLogger()
-  formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', '%Y%m%d_%H%M_%S')
-  handler = RotatingFileHandler('indycast.log', maxBytes=2000000, backupCount=5)
+  formatter = logging.Formatter(str(os.getpid()) + ':%(asctime)s:%(message)s', '%m%d_%H%M_%S')
+  handler = RotatingFileHandler('indycast.log', maxBytes=5000000, backupCount=2)
   handler.setFormatter(formatter)
   handler.setLevel(numeric_level)
   logger.setLevel(numeric_level)
