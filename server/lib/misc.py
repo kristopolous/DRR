@@ -201,9 +201,6 @@ def shutdown_real(do_restart=False):
   lockMap['main'].release() 
   logging.info("Releasing main lock")
 
-  #if 'webserver' in pid_map:
-  #  os.kill(pid_map['webserver'].pid, signal.SIGUSR1)
-
   """
   for x in range(50):
     logging.info('total: %d' % (threading.activeCount(), ))
@@ -218,7 +215,7 @@ def shutdown_real(do_restart=False):
         pass
 
     webserver_shutdown()
-    logging.info("[%d] Shutting down" % (os.getpid(), ))
+    logging.info("Shutting down")
     #DB.shutdown()
 
     logging.info("Uptime: %ds", TS.uptime())
