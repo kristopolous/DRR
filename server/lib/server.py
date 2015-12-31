@@ -388,9 +388,17 @@ def manager(config):
 
   @app.route('/halt')
   def halt():
-    webserver_shutdown()
-    misc.shutdown(do_restart=False)
-    return success('halt...')
+    """
+    Stops the webserver. This request must be issued from the localhost
+    in order to succeed.
+    """
+    if request.remote_addr == '127.0.0.1':
+      webserver_shutdown()
+      misc.shutdown(do_restart=False)
+      return success('halt...')
+
+    else:
+      return fail('halt aborted. Must be requested from the localhost')
 
   @app.route('/restart')
   def restart():
