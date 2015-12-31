@@ -143,10 +143,11 @@ def stream_manager():
   process_next = None
 
   # The manager will be the one that starts this.
-  server.manager(misc.config)
+  #server.manager(misc.config)
+  misc.pid_map['webserver'] = Thread(target=server.manager, args=(misc.config,))
 
   #misc.pid_map['webserver'] = Thread(target=server.manager, args=(misc.config,))
-  #misc.pid_map['webserver'].start()
+  misc.pid_map['webserver'].start()
 
   file_name = None
 
@@ -194,6 +195,7 @@ def stream_manager():
     while not misc.queue.empty():
       flag = True
       what, value = misc.queue.get(False)
+      #print what, value
 
       # The curl proces discovered a new stream to be
       # used instead.
@@ -291,6 +293,7 @@ def stream_manager():
 
     # we get here if we should NOT be recording.  So we make sure we aren't.
     if change_state == SHUTDOWN or (change_state == RESTART and TS.unixtime('dl') > shutdown_time):
+      print "shutdown real"
       misc.shutdown_real()
 
     else:
@@ -514,6 +517,7 @@ if __name__ == "__main__":
   # From http://stackoverflow.com/questions/25504149/why-does-running-the-flask-dev-server-run-itself-twice
 
   if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+    print "yes"
     server_manager(misc.config)
 
   else: 
