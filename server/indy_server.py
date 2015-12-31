@@ -5,6 +5,8 @@ import argparse, logging, os, pycurl, re
 import re, signal, sys, time
 import setproctitle as SP
 
+# Make sure we are at the root directory of the process
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 import lib.db as DB
 import lib.server as server
 import lib.audio as audio
@@ -521,33 +523,32 @@ def read_config(config):
 if __name__ == "__main__":
   # From http://stackoverflow.com/questions/25504149/why-does-running-the-flask-dev-server-run-itself-twice
 
-  if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
-    print "yes"
-    server_manager(misc.config)
+  #if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+  #  server_manager(misc.config)
 
-  else: 
-    # Ignore all test scaffolding
-    misc.IS_TEST = False
-    misc.start_time = TS.unixtime()
+  #else: 
+  # Ignore all test scaffolding
+  misc.IS_TEST = False
+  misc.start_time = TS.unixtime()
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-c", "--config", default="./indy_config.txt", help="Configuration file (default ./indy_config.txt)")
-    parser.add_argument('--version', action='version', version='indycast %s :: Aug 2015' % misc.__version__)
-    parser.add_argument("--daemon", action='store_true',  help="run as daemon")
-    args = parser.parse_args()
-    if args.daemon:
-      Popen( filter(lambda x: x != '--daemon', sys.argv) )
-      sys.exit(0)
+  parser = argparse.ArgumentParser()
+  parser.add_argument("-c", "--config", default="./indy_config.txt", help="Configuration file (default ./indy_config.txt)")
+  parser.add_argument('--version', action='version', version='indycast %s :: Aug 2015' % misc.__version__)
+  parser.add_argument("--daemon", action='store_true',  help="run as daemon")
+  args = parser.parse_args()
+  if args.daemon:
+    Popen( filter(lambda x: x != '--daemon', sys.argv) )
+    sys.exit(0)
 
-    read_config(args.config)      
-    del(read_config)
+  read_config(args.config)      
+  del(read_config)
 
-    pid = misc.change_proc_name("%s-manager" % misc.config['callsign'])
+  pid = misc.change_proc_name("%s-manager" % misc.config['callsign'])
 
-    # This is the pid that should be killed to shut the system
-    # down.
-    misc.manager_is_running(pid)
-    with open(misc.PIDFILE_MANAGER, 'w+') as f:
-      f.write(str(pid))
+  # This is the pid that should be killed to shut the system
+  # down.
+  misc.manager_is_running(pid)
+  with open(misc.PIDFILE_MANAGER, 'w+') as f:
+    f.write(str(pid))
 
-    stream_manager()
+  stream_manager()
