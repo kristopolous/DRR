@@ -703,7 +703,7 @@ def manager(config):
 
           try:
             logging.info("Fuck it, I'm killing %s." % pid)
-            os.kill(int(pid))
+            os.kill(int(pid), 15)
 
           except:
             pass
