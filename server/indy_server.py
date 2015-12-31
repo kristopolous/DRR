@@ -1,5 +1,6 @@
 #!/usr/bin/python 
 #import objgraph
+#import pdb;pdb.set_trace()
 import argparse, logging, os, pycurl, re
 import re, signal, sys, time
 import setproctitle as SP
@@ -28,6 +29,10 @@ def stream_download(callsign, url, my_pid, file_name):
   nl = {'stream': None, 'curl_handle': None}
 
   def cback(data): 
+
+    # misc.params can fail based on a shutdown sequence.
+    if type(misc.params) is None:
+      raise TypeError("Download Stop")
 
     if not misc.params['shutdown_time']:
       if not misc.download_ipc.empty():
