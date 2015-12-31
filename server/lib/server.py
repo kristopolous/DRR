@@ -178,7 +178,7 @@ def manager(config):
   app = Flask(__name__)
 
   def webserver_shutdown(signal=15, frame=None):
-    logging.info('Shutting down')
+    logging.info('Shutting down webserver')
     request.environ.get('werkzeug.server.shutdown')()
 
   def success(message):

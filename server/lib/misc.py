@@ -171,6 +171,12 @@ def am_i_official():
 
   return config['official']
 
+def webserver_shutdown():
+  endpoint = "http://127.0.0.1:%d/halt" % (config['port'],)
+
+  stream = urllib2.urlopen(endpoint)
+  data = stream.read()
+
 
 def public_config():
   # Returns a configuration, removing sensitive information 
@@ -207,6 +213,7 @@ def shutdown_real(do_restart=False):
       except:
         pass
 
+    webserver_shutdown()
     logging.info("[%d] Shutting down" % (os.getpid(), ))
     #DB.shutdown()
 
