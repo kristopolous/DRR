@@ -100,9 +100,7 @@ def stream_download(callsign, url, my_pid, file_name):
     curl_handle.perform()
 
   except pycurl.error as exc:
-    if exc[0] == 23:
-      logging.info('Properly shutting down.')
-    else:
+    if exc[0] != 23:
       logging.warning("Couldn't resolve or connect to %s." % url)
 
   curl_handle.close()
@@ -173,7 +171,7 @@ def stream_manager():
     global g_download_pid
 
     g_download_pid += 1
-    logging.info('Starting cascaded downloader #%d. Next up in %ds' % (g_download_pid, cascade_margin))
+    logging.info('Starting downloader #%d. Next up in %ds' % (g_download_pid, cascade_margin))
 
     #
     # There may be a multi-second lapse time from the naming of the file to
@@ -344,8 +342,6 @@ def stream_manager():
     # we should shutdown our previous process and move the pointers around.
     #
     if not change_state and TS.unixtime('dl') - last_success > cascade_time and process:
-      logging.info("Stopping cascaded downloader")
-
       # Since we have two downloaders at a time potentially, we need to put this in the queue
       # twice in order to avoid a race condition where the newer downloader receives the message,
       # discards it, and the older one is just hanging out.
