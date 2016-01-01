@@ -28,7 +28,7 @@ def stream_download(callsign, url, my_pid, file_name):
   # Follows redirects and parses out basic m3u.
   #pid = misc.change_proc_name("%s-download" % callsign)
 
-  nl = {'stream': None, 'curl_handle': None}
+  nl = {'stream': None, 'curl_handle': None, 'pid': my_pid}
 
   def cback(data): 
     # misc.params can fail based on a shutdown sequence.
@@ -68,10 +68,15 @@ def stream_download(callsign, url, my_pid, file_name):
     misc.queue.put(('heartbeat', (TS.unixtime('hb'), len(data))))
 
     if not misc.queuedl.empty():
-      what = misc.queuedl.get(False)
-      if what:
-        logging.info("Stopping download")
-        return False
+      what, data = misc.queuedl.get(False)
+      if what == 'STOP':
+        # Since more than one downloader will be running at time, a blanket
+        # request to stop all downloaders is a bug.  We have to make sure
+        # that the OLD ones depart while the NEW ones come.  We do this
+        # by using the g_download_pid incrementer.
+        if nl['pid'] < int(data) < nl:
+          logging.info("Stopping download")
+          return False
 
     if not nl['stream']:
       try:
@@ -112,6 +117,7 @@ def stream_download(callsign, url, my_pid, file_name):
 
 
 def stream_manager():
+  global g_download_pid
   import random
 
   # Manager process which makes sure that the
@@ -339,7 +345,12 @@ def stream_manager():
     #
     if not change_state and TS.unixtime('dl') - last_success > cascade_time and process:
       logging.info("Stopping cascaded downloader")
-      misc.queuedl.put('STOP')
+
+      # Since we have two downloaders at a time potentially, we need to put this in the queue
+      # twice in order to avoid a race condition where the newer downloader receives the message,
+      # discards it, and the older one is just hanging out.
+      misc.queuedl.put(('STOP', g_download_pid))
+      misc.queuedl.put(('STOP', g_download_pid))
       #process.terminate()
 
       # If the process_next is running then we move our last_success forward to the present
