@@ -551,7 +551,7 @@ if args.daemon:
 read_config(args.config)      
 del(read_config)
 
-SP.setproctitle("%s-manager" % misc.config['callsign'])
+SP.setproctitle("%s-indycast" % misc.config['callsign'])
 pid = os.getpid()
 
 # This is the pid that should be killed to shut the system
