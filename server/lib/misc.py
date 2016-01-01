@@ -251,14 +251,6 @@ def manager_is_running(pid=None):
 
   return True
 
-def change_proc_name(what):
-  # Sets a more human-readable process name for the various 
-  # parts of the system to be viewed in top/htop.
-  SP.setproctitle(what)
-  logging.info( "[%s] Starting" % (what,) )
-  return threading.current_thread()
-
-
 # From https://wiki.python.org/moin/ConfigParserExamples
 def config_section_map(section, Config):
   # Takes a section in a config file and makes a dictionary
