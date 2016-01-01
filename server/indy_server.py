@@ -67,6 +67,12 @@ def stream_download(callsign, url, my_pid, file_name):
     # data we've received between two time periods
     misc.queue.put(('heartbeat', (TS.unixtime('hb'), len(data))))
 
+    if not misc.queuedl.empty():
+      what = misc.queuedl.get(False)
+      if what:
+        logging.info("Stopping download")
+        return False
+
     if not nl['stream']:
       try:
         nl['stream'] = open(file_name, 'w')
@@ -333,7 +339,8 @@ def stream_manager():
     #
     if not change_state and TS.unixtime('dl') - last_success > cascade_time and process:
       logging.info("Stopping cascaded downloader")
-      process.terminate()
+      misc.queuedl.put('STOP')
+      #process.terminate()
 
       # If the process_next is running then we move our last_success forward to the present
       last_success = TS.unixtime('dl')
