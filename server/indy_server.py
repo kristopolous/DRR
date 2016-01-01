@@ -229,11 +229,11 @@ def stream_manager():
           shutdown_time = TS.unixtime('dl') + misc.config['restart_overlap']
           logging.info("Restart requested ... shutting down downloader at %s" % TS.ts_to_name(shutdown_time, with_seconds=True))
 
-          misc.shutdown_real(do_restart=False)
-          misc.download_ipc.put(('shutdown_time', shutdown_time))
+          #misc.shutdown_real(do_restart=False)
+          #misc.download_ipc.put(('shutdown_time', shutdown_time))
 
           while True:
-            time.sleep(20)
+            time.sleep(5)
             with open(misc.PIDFILE_MANAGER, 'r') as f:
               manager_pid = f.read()
 
@@ -522,28 +522,28 @@ def read_config(config):
   signal.signal(signal.SIGHUP, misc.do_nothing)
 
 
-if __name__ == "__main__":
-  misc.IS_TEST = False
-  misc.start_time = TS.unixtime()
+misc.IS_TEST = False
+misc.start_time = TS.unixtime()
 
-  parser = argparse.ArgumentParser()
-  parser.add_argument("-c", "--config", default="./indy_config.txt", help="Configuration file (default ./indy_config.txt)")
-  parser.add_argument('--version', action='version', version='indycast %s :: Aug 2015' % misc.__version__)
-  parser.add_argument("--daemon", action='store_true',  help="run as daemon")
-  args = parser.parse_args()
-  if args.daemon:
-    Popen( filter(lambda x: x != '--daemon', sys.argv) )
-    sys.exit(0)
+parser = argparse.ArgumentParser()
+parser.add_argument("-c", "--config", default="./indy_config.txt", help="Configuration file (default ./indy_config.txt)")
+parser.add_argument('--version', action='version', version='indycast %s :: Aug 2015' % misc.__version__)
+parser.add_argument("--daemon", action='store_true',  help="run as daemon")
+args = parser.parse_args()
+if args.daemon:
+  Popen( filter(lambda x: x != '--daemon', sys.argv) )
+  sys.exit(0)
 
-  read_config(args.config)      
-  del(read_config)
+read_config(args.config)      
+del(read_config)
 
-  pid = misc.change_proc_name("%s-manager" % misc.config['callsign'])
+SP.setproctitle("%s-manager" % misc.config['callsign'])
+pid = os.getpid()
 
-  # This is the pid that should be killed to shut the system
-  # down.
-  misc.manager_is_running(pid)
-  with open(misc.PIDFILE_MANAGER, 'w+') as f:
-    f.write(str(os.getpid()))
+# This is the pid that should be killed to shut the system
+# down.
+misc.manager_is_running(pid)
+with open(misc.PIDFILE_MANAGER, 'w+') as f:
+  f.write(str(pid))
 
-  stream_manager()
+stream_manager()
