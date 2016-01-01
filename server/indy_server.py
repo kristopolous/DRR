@@ -68,18 +68,20 @@ def stream_download(callsign, url, my_pid, file_name):
     misc.queue.put(('heartbeat', (TS.unixtime('hb'), len(data))))
 
     if not misc.queuedl.empty():
-      what, data = misc.queuedl.get(False)
-      if what == 'STOP':
+      _what, _value = misc.queuedl.get(False)
+      print nl['pid'], _value
+      if _what == 'STOP':
         # Since more than one downloader will be running at time, a blanket
         # request to stop all downloaders is a bug.  We have to make sure
         # that the OLD ones depart while the NEW ones come.  We do this
         # by using the g_download_pid incrementer.
-        if nl['pid'] < int(data) < nl:
-          logging.info("Stopping download")
+        if nl['pid'] < int(_value):
+          logging.info("Stopping download #%d" % nl['pid'])
           return False
 
     if not nl['stream']:
       try:
+        print file_name
         nl['stream'] = open(file_name, 'w')
 
       except Exception as exc:
@@ -409,7 +411,7 @@ def read_config(config):
     'cascadebuffer': 15,
 
     # The (second) time between cascaded streams
-    'cascadetime': 60 * 15,
+    'cascadetime': 60 * 1,
 
     # Cloud credentials (ec2, azure etc)
     'cloud': None,
