@@ -411,7 +411,7 @@ def read_config(config):
     'cascadebuffer': 15,
 
     # The (second) time between cascaded streams
-    'cascadetime': 60 * 1,
+    'cascadetime': 60 * 15,
 
     # Cloud credentials (ec2, azure etc)
     'cloud': None,
