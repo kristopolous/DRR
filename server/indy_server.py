@@ -33,7 +33,8 @@ def stream_download(callsign, url, my_pid, file_name):
   def cback(data): 
     # misc.params can fail based on a shutdown sequence.
     if misc is None or misc.params is None or not misc.manager_is_running():
-      misc.shutdown()
+      if misc is not None:
+        misc.shutdown()
       return False
 
     elif not misc.params['shutdown_time']:
