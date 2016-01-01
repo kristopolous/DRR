@@ -69,7 +69,6 @@ def stream_download(callsign, url, my_pid, file_name):
 
     if not misc.queuedl.empty():
       _what, _value = misc.queuedl.get(False)
-      print nl['pid'], _value
       if _what == 'STOP':
         # Since more than one downloader will be running at time, a blanket
         # request to stop all downloaders is a bug.  We have to make sure
@@ -81,7 +80,6 @@ def stream_download(callsign, url, my_pid, file_name):
 
     if not nl['stream']:
       try:
-        print file_name
         nl['stream'] = open(file_name, 'w')
 
       except Exception as exc:
