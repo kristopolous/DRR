@@ -69,6 +69,7 @@ def stream_download(callsign, url, my_pid, file_name):
 
     if not misc.queuedl.empty():
       _what, _value = misc.queuedl.get(False)
+      print _what, _value
       if _what == 'STOP':
         # Since more than one downloader will be running at time, a blanket
         # request to stop all downloaders is a bug.  We have to make sure
@@ -77,6 +78,9 @@ def stream_download(callsign, url, my_pid, file_name):
         if nl['pid'] < int(_value):
           logging.info("Stopping download #%d" % nl['pid'])
           return False
+        else:
+          # This wasn't for us, put it back in
+          misc.queuedl.put((_stop, _value))
 
     if not nl['stream']:
       try:
@@ -171,7 +175,7 @@ def stream_manager():
     global g_download_pid
 
     g_download_pid += 1
-    logging.info('Starting downloader #%d. Next up in %ds' % (g_download_pid, cascade_margin))
+    logging.info('Starting download #%d. Next up in %ds' % (g_download_pid, cascade_margin))
 
     #
     # There may be a multi-second lapse time from the naming of the file to
@@ -237,7 +241,7 @@ def stream_manager():
         # we don't perpetually put this in the future due to some bug.
         if not shutdown_time:
           shutdown_time = TS.unixtime('dl') + misc.config['restart_overlap']
-          logging.info("Restart requested ... shutting down downloader at %s" % TS.ts_to_name(shutdown_time, with_seconds=True))
+          logging.info("Restart requested ... shutting down download at %s" % TS.ts_to_name(shutdown_time, with_seconds=True))
 
           #misc.shutdown_real(do_restart=False)
           #misc.download_ipc.put(('shutdown_time', shutdown_time))
@@ -342,10 +346,6 @@ def stream_manager():
     # we should shutdown our previous process and move the pointers around.
     #
     if not change_state and TS.unixtime('dl') - last_success > cascade_time and process:
-      # Since we have two downloaders at a time potentially, we need to put this in the queue
-      # twice in order to avoid a race condition where the newer downloader receives the message,
-      # discards it, and the older one is just hanging out.
-      misc.queuedl.put(('STOP', g_download_pid))
       misc.queuedl.put(('STOP', g_download_pid))
       #process.terminate()
 
