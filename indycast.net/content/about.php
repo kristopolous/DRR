@@ -294,7 +294,7 @@ Let's build some contrast. indycast:
 <p>When the server starts up, it</p>
 <ul>
 <li>Puts everything in a single directory with a simple to understand hierarchy: <code>~/radio/kpcc/</code> (configurable)</li>
-<li>Forks processes from a manager thread, carefully naming them with their purpose.</li>
+<li>Multi-threaded but single process to keep the memory footprint small and managable.</li>
 <li>Has an informative log file that tells the user what's going on: <code>~/radio/kpcc/indycast.log</code></li>
 <li>Is easy to shut down and restart: <code>kill cat ~/radio/kpcc/pid-manager</code> or even <code>pkill callsign</code></li>
 <li>Is remotely upgradable (through the <code>/upgrade</code> endpoint), replacing its own footprint seamlessly.</li>
@@ -304,15 +304,9 @@ Let's build some contrast. indycast:
 kpfa  kpfk  kpcc </code></pre>
 <p>In fact, if I look at the process tree of this machine I see this:</p>
 <pre><code>$ ps af -o comm= | grep kp
- kpfa-manager
-  \_ kpfa-webserver
-  \_ kpfa-download
- kpfk-manager
-  \_ kpfk-webserver
-  \_ kpfk-download
- kpcc-manager
-  \_ kpcc-webserver
-  \_ kpcc-download
+ kpfa-indycast
+ kpfk-indycast
+ kpcc-indycast
 
 $ uptime
 00:34:02 up 579 days, 18:04,  1 user,  load average: 0.01, 0.01, 0.01</code></pre>
