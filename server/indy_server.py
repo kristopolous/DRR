@@ -22,6 +22,7 @@ from threading import Thread
 from Queue import Queue
 
 g_download_pid = 0
+g_download_kill_pid = 0
 
 def stream_download(callsign, url, my_pid, file_name):
   # Curl interfacing which downloads the stream to disk. 
@@ -31,6 +32,7 @@ def stream_download(callsign, url, my_pid, file_name):
   nl = {'stream': None, 'curl_handle': None, 'pid': my_pid}
 
   def cback(data): 
+    global g_download_kill_pid
     # misc.params can fail based on a shutdown sequence.
     if misc is None or misc.params is None or not misc.manager_is_running():
       if misc is not None:
@@ -67,20 +69,9 @@ def stream_download(callsign, url, my_pid, file_name):
     # data we've received between two time periods
     misc.queue.put(('heartbeat', (TS.unixtime('hb'), len(data))))
 
-    if not misc.queuedl.empty():
-      _what, _value = misc.queuedl.get(False)
-      print _what, _value
-      if _what == 'STOP':
-        # Since more than one downloader will be running at time, a blanket
-        # request to stop all downloaders is a bug.  We have to make sure
-        # that the OLD ones depart while the NEW ones come.  We do this
-        # by using the g_download_pid incrementer.
-        if nl['pid'] < int(_value):
-          logging.info("Stopping download #%d" % nl['pid'])
-          return False
-        else:
-          # This wasn't for us, put it back in
-          misc.queuedl.put((_what, _value))
+    print nl['pid'], g_download_kill_pid
+    if nl['pid'] <= g_download_kill_pid:
+      logging.info("Stopping download #%d" % nl['pid'])
 
     if not nl['stream']:
       try:
@@ -119,7 +110,7 @@ def stream_download(callsign, url, my_pid, file_name):
 
 
 def stream_manager():
-  global g_download_pid
+  global g_download_kill_pid
   import random
 
   # Manager process which makes sure that the
@@ -346,7 +337,7 @@ def stream_manager():
     # we should shutdown our previous process and move the pointers around.
     #
     if not change_state and TS.unixtime('dl') - last_success > cascade_time and process:
-      misc.queuedl.put(('STOP', g_download_pid))
+      g_download_kill_pid += 1
       #process.terminate()
 
       # If the process_next is running then we move our last_success forward to the present

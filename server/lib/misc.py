@@ -80,7 +80,6 @@ IS_TEST = True
 
 manager_pid = 0
 queue = Queue()
-queuedl = Queue()
 
 params = {'shutdown_time': None}
 start_time = None
