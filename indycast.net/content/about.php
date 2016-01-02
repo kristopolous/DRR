@@ -616,7 +616,8 @@ $ curl -s kxlu.indycast.net:8890/sun/7pm/1hr/show.m3u | grep -v \# | xargs mplay
 </ul>
 <p>I also encourage you to <a href="https://github.com/kristopolous/DRR">pull down the code</a> which I have taken a serious effort on to be consistent and well-documented. If you find issues, please feel free to send a pull-request.</p>
 <p>Thanks for reading.</p>
-<p>~chris.<br/>September, 2015</p>
+<p>~chris.<br/>September, 2015
+<br/>Updated: January, 2016</p>
 <?= $emit_script ?>
 <script src="/assets/js/demo.js"></script>
 <script src="//releases.flowplayer.org/js/flowplayer-3.2.13.min.js"></script>
