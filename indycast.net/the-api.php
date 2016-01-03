@@ -1,4 +1,4 @@
-<?php
+<?
 // This is the api entry point for the /api/* calls. It's basically a really
 // poor-mans router and controller that doesn't distinguish between HTTP verbs.
 include_once('common.php');

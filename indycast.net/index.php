@@ -3,6 +3,7 @@ $ua = strtolower($_SERVER['HTTP_USER_AGENT']);
 $device = 'device';
 
 if(strpos($ua, 'curl') !== False) {
+  include_once('common.php');
   echo "The current stations are healthy:\n\n";
   foreach(active_stations() as $station) {
     echo ' * http://indycast.net/' . $station['callsign'] . "/\n";
