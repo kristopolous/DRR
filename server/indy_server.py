@@ -69,9 +69,10 @@ def stream_download(callsign, url, my_pid, file_name):
     # data we've received between two time periods
     misc.queue.put(('heartbeat', (TS.unixtime('hb'), len(data))))
 
-    print nl['pid'], g_download_kill_pid
+    # print nl['pid'], g_download_kill_pid
     if nl['pid'] <= g_download_kill_pid:
       logging.info("Stopping download #%d" % nl['pid'])
+      return False
 
     if not nl['stream']:
       try:
