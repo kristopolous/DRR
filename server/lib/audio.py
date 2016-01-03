@@ -767,7 +767,8 @@ def list_slice_stream(start_info, start_sec):
 
       # If there is we find the stitching point
       args = stitch([current_info, next_info], force_stitch=True)
-      print args, pos
+      logging.debug(args)
+      logging.debug(pos)
 
       # We make it our current file
       current_info = next_info
