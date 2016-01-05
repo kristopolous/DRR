@@ -155,9 +155,7 @@ def stream_manager():
 
   # The manager will be the one that starts this.
   #server.manager(misc.config)
-  misc.pid_map['webserver'] = Thread(target=server.manager, args=(misc.config,))
-
-  #misc.pid_map['webserver'] = Thread(target=server.manager, args=(misc.config,))
+  misc.pid_map['webserver'] = Thread(target=server.manager, name='webserver', args=(misc.config,))
   misc.pid_map['webserver'].start()
 
   file_name = None
@@ -176,7 +174,7 @@ def stream_manager():
     # in the future by some margin
     #
     file_name = '%s/%s-%s.mp3' % (misc.DIR_STREAMS, callsign, TS.ts_to_name(TS.now(offset_sec=misc.PROCESS_DELAY / 2)))
-    process = Thread(target=stream_download, args=(callsign, misc.config['stream'], g_download_pid, file_name))
+    process = Thread(target=stream_download, name='download-%d' % (g_download_pid,), args=(callsign, misc.config['stream'], g_download_pid, file_name))
     process.daemon = True
     process.start()
     return [file_name, process]
