@@ -323,7 +323,7 @@ def stream_manager():
       # If we've hit the time when we ought to cascade
       # If our last_success stream was more than cascade_time - cascade_buffer
       # then we start our process_next
-      elif TS.unixtime('dl') - last_success > cascade_margin or (lr_set and time.time() - last_heartbeat > cycle_time * 2):
+      elif TS.unixtime('dl') - last_success > cascade_margin or (last_heartbeat and time.time() - last_heartbeat > cycle_time * 2):
 
         # And we haven't created the next process yet, then we start it now.
         if not process_next:
