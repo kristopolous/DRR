@@ -103,9 +103,6 @@ def base_stats():
   except:
     load = 0
 
-  for thread in threading.enumerate():
-    print thread.name
-
   return {
     'uptime': TS.uptime(),
     'last_recorded': float(DB.get('last_recorded', use_cache=False) or 0),
@@ -119,7 +116,7 @@ def base_stats():
     # of how many threads are in use.
     #
     'plist': [ line.strip() for line in os.popen("ps auxf | grep [%s]%s" % (config['callsign'][0], config['callsign'][1:])).read().strip().split('\n') ],
-    'threads': threading.activeCount(),
+    'tlist': [ thread.name for thread in threading.enumerate() ],
 
     'disk': cloud.size('.') / (1024.0 ** 3)
   }
