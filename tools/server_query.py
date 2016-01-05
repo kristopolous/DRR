@@ -43,8 +43,7 @@ def find_misbehaving_servers(db, fail_list):
   max_values = {
     'disk': '5.0',
     'load': '1.5',
-    'delta': '300',
-    'plist': [ 4, 6 ]
+    'delta': '300'
   }
 
   report = []
@@ -158,12 +157,6 @@ for station in all_stations:
 
     if args.query == 'heartbeat':
       document = json.loads(data)
-      memory = 0
-      for line in document['plist']:
-        numbers = re.split('\s+', line)
-        memory += float(numbers[5])
-      
-      document['memory'] = memory
       document['delta'] = document['now'] - float(document['last_recorded'])
       data = json.dumps(document, indent=2)
 
