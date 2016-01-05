@@ -378,7 +378,7 @@ def prune(reindex=False, force=False):
   # Gets rid of files older than archivedays - cloud stores things if relevant. 
 
   # Now when the child calls it it won't hit the network for every prune.
-  process = Thread(target=prune_process, args=(misc.lockMap, reindex, force))
+  process = Thread(name='prune', target=prune_process, args=(misc.lockMap, reindex, force))
   process.start()
   return process
 
