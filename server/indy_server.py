@@ -139,6 +139,7 @@ def stream_manager():
 
   last_prune = 0
   last_success = 0
+  last_heartbeat = None
 
   change_state = None
   SHUTDOWN = 1
@@ -262,6 +263,7 @@ def stream_manager():
       elif what == 'heartbeat':
         if not lr_set and value[1] > 100:
           lr_set = True
+          last_heartbeat = time.time()
           DB.set('last_recorded', time.time())
 
         if not has_bitrate: 
@@ -312,19 +314,21 @@ def stream_manager():
       misc.shutdown_real()
 
     else:
+      # print lr_set, time.time(), last_heartbeat, 'offset', TS.unixtime('dl') - last_success, cascade_margin
+
       if not process and not change_state:
         file_name, process = download_start(file_name)
         last_success = TS.unixtime('dl')
 
       # If we've hit the time when we ought to cascade
-      elif TS.unixtime('dl') - last_success > cascade_margin:
+      # If our last_success stream was more than cascade_time - cascade_buffer
+      # then we start our process_next
+      elif TS.unixtime('dl') - last_success > cascade_margin or (lr_set and time.time() - last_heartbeat > cycle_time * 2):
 
         # And we haven't created the next process yet, then we start it now.
         if not process_next:
           file_name, process_next = download_start(file_name)
 
-      # If our last_success stream was more than cascade_time - cascade_buffer
-      # then we start our process_next
       
       # If there is still no process then we should definitely bail.
       if not process:
