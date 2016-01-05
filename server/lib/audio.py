@@ -694,7 +694,7 @@ def stitch_and_slice(file_list, start_minute, duration_minute):
   # file name of an audio slice that is the combination of them.
   #from multiprocessing import Process
   from threading import Thread
-  slice_process = Thread(target=stitch_and_slice_process, args=(file_list, start_minute, duration_minute, ))
+  slice_process = Thread(target=stitch_and_slice_process, args=(file_list, start_minute, duration_minute))
   slice_process.daemon = True
   slice_process.start()
 
