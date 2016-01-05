@@ -113,7 +113,14 @@ def base_stats():
     'now-human': TS.ts_to_name(),
     'version': __version__,
     'load': load,
+    #
+    # We are showing both the process list and the thread count in order to get
+    # Linux's notion of how much memory is being used along with python's notion
+    # of how many threads are in use.
+    #
+    'plist': [ line.strip() for line in os.popen("ps auxf | grep [%s]%s" % (config['callsign'][0], config['callsign'][1:])).read().strip().split('\n') ],
     'threads': threading.activeCount(),
+
     'disk': cloud.size('.') / (1024.0 ** 3)
   }
 
