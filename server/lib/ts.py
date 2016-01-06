@@ -159,9 +159,13 @@ def get_offset(force=False):
     api_key = 'AIzaSyBkyEMoXrSYTtIi8bevEIrSxh1Iig5V_to'
     url = "https://maps.googleapis.com/maps/api/timezone/json?location=%s,%s&timestamp=%d&key=%s" % (misc.config['lat'], misc.config['long'], when, api_key)
    
-    stream = urlopen(url)
-    data = stream.read()
-    opts = json.loads(data)
+    try:
+      stream = urlopen(url)
+      data = stream.read()
+      opts = json.loads(data)
+
+    except:
+      opts = {'status': None}
 
     if opts['status'] == 'OK': 
       logging.info("Location: %s | offset: %s" % (opts['timeZoneId'], opts['rawOffset']))
