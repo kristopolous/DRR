@@ -47,14 +47,14 @@ def stream_download(callsign, url, my_pid, file_name):
     return catchall('seek', json.dumps([what, origin]))
 
   def catch_debug(what, origin):
-    return catchall('debug', json.dumps([what, origin]))
+    return catchall('debug', json.dumps([what, origin], ensure_ascii=False))
 
   def catch_progress(download_total, downloaded, upload_total, uploaded):
     return catchall('progress', json.dumps([download_total, downloaded, upload_total, uploaded]))
 
   def cback(data): 
     global g_download_kill_pid
-    catchall('download', json.dumps([g_download_kill_pid, type(data), len(data)]))
+    catchall('download', json.dumps([g_download_kill_pid, len(data)]))
     # print nl['pid'], g_download_kill_pid
     if nl['pid'] <= g_download_kill_pid or not data:
       logging.info("Stopping download #%d" % nl['pid'])
