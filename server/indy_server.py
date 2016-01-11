@@ -2,7 +2,7 @@
 #import objgraph
 #import pdb;pdb.set_trace()
 import argparse, logging, os, pycurl, re
-import re, signal, sys, time
+import re, signal, sys, time, json
 import setproctitle as SP
 
 # Make sure we are at the root directory of the process
@@ -31,8 +31,30 @@ def stream_download(callsign, url, my_pid, file_name):
 
   nl = {'stream': None, 'curl_handle': None, 'pid': my_pid}
 
+  def catchall(which, what):
+    logging.info("%d: %s %s" % (nl['pid'], which, str(what)))
+
+  def catch_header(what):
+    return catchall('header', what)
+
+  def catch_read(what):
+    return catchall('read', what)
+
+  def catch_ioctl(what):
+    return catchall('ioctl', what)
+
+  def catch_seek(what, origin):
+    return catchall('seek', json.dumps([what, origin]))
+
+  def catch_debug(what, origin):
+    return catchall('debug', json.dumps([what, origin]))
+
+  def catch_progress(download_total, downloaded, upload_total, uploaded):
+    return catchall('progress', json.dumps([download_total, downloaded, upload_total, uploaded]))
+
   def cback(data): 
     global g_download_kill_pid
+    catchall('download', json.dumps([g_download_kill_pid, type(data), len(data)]))
     # print nl['pid'], g_download_kill_pid
     if nl['pid'] <= g_download_kill_pid or not data:
       logging.info("Stopping download #%d" % nl['pid'])
@@ -90,6 +112,15 @@ def stream_download(callsign, url, my_pid, file_name):
   curl_handle.setopt(curl_handle.URL, url)
   curl_handle.setopt(pycurl.WRITEFUNCTION, cback)
   curl_handle.setopt(pycurl.FOLLOWLOCATION, True)
+
+  curl_handle.setopt(pycurl.VERBOSE, 1)
+  curl_handle.setopt(pycurl.HEADERFUNCTION, catch_header)
+  curl_handle.setopt(pycurl.READFUNCTION, catch_read)
+  curl_handle.setopt(pycurl.SEEKFUNCTION, catch_seek)
+  curl_handle.setopt(pycurl.IOCTLFUNCTION, catch_ioctl)
+  curl_handle.setopt(pycurl.DEBUGFUNCTION, catch_debug)
+  curl_handle.setopt(pycurl.PROGRESSFUNCTION, catch_progress)
+
   nl['curl_handle'] = curl_handle
 
   try:
