@@ -328,8 +328,8 @@ def stream_manager():
               bitrate = int( round (est / 1000) * 8 )
               DB.set('bitrate', bitrate)
 
-    if last_heartbeat:
-      logging.info("%d heartbeat %d" % (last_heartbeat, last_heartbeat_tid))
+    #if last_heartbeat:
+    #  logging.info("%d heartbeat %d" % (last_heartbeat, last_heartbeat_tid))
 
     # Check for our management process
     if not misc.manager_is_running():
