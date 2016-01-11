@@ -350,7 +350,7 @@ def stream_manager():
       # If our last_success stream was more than cascade_time - cascade_buffer
       # then we start our process_next
       elif TS.unixtime('dl') - last_success > cascade_margin or expired_heartbeat:
-        logging.info("heartbeat expired %s %s %d %d %d" % (type(process_next), type(process), last_success, cascade_time, TS.unixtime('dl')))
+        #logging.info("heartbeat expired %s %s %d %d %d" % (type(process_next), type(process), last_success, cascade_time, TS.unixtime('dl')))
 
         # And we haven't created the next process yet, then we start it now.
         if not process_next:
