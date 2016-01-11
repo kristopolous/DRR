@@ -34,9 +34,6 @@ def stream_download(callsign, url, my_pid, file_name):
   def catchall(which, what):
     logging.info("%d: %s %s" % (nl['pid'], which, str(what)))
 
-  def catch_header(what):
-    return catchall('header', what)
-
   def catch_read(what):
     return catchall('read', what)
 
@@ -48,7 +45,7 @@ def stream_download(callsign, url, my_pid, file_name):
     global g_download_kill_pid
 
     nl['ix'] += 1
-    if nl['ix'] % 10 == 0:
+    if nl['ix'] % 20 == 0:
       if len(data):
         catchall('download', json.dumps([g_download_kill_pid, nl['pid'], len(data)]))
       else:
@@ -113,7 +110,6 @@ def stream_download(callsign, url, my_pid, file_name):
   curl_handle.setopt(pycurl.FOLLOWLOCATION, True)
 
   curl_handle.setopt(pycurl.VERBOSE, 1)
-  curl_handle.setopt(pycurl.HEADERFUNCTION, catch_header)
   curl_handle.setopt(pycurl.READFUNCTION, catch_read)
   curl_handle.setopt(pycurl.DEBUGFUNCTION, catch_debug)
 
@@ -211,6 +207,7 @@ def stream_manager():
   # Randomize prune to offload disk peaks
   prune_duration = misc.config['pruneevery'] + (1 / 8.0 - random.random() / 4.0)
 
+  last_heartbeat_tid = -1
   while True:
     #
     # We cycle this to off for every run. By the time we go throug the queue so long 
@@ -289,6 +286,7 @@ def stream_manager():
         if not lr_set:
           lr_set = True
           last_heartbeat = time.time()
+          last_heartbeat_tid = value[1]
           DB.set('last_recorded', time.time())
 
         if not has_bitrate: 
@@ -330,7 +328,7 @@ def stream_manager():
               DB.set('bitrate', bitrate)
 
     if last_heartbeat:
-      logging.info("%d heartbeat %d" % (last_heartbeat, value[1]))
+      logging.info("%d heartbeat %d" % (last_heartbeat, last_heartbeat_tid))
 
     # Check for our management process
     if not misc.manager_is_running():
