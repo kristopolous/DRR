@@ -33,6 +33,11 @@ def stream_download(callsign, url, my_pid, file_name):
 
   def cback(data): 
     global g_download_kill_pid
+    # print nl['pid'], g_download_kill_pid
+    if nl['pid'] <= g_download_kill_pid or not data:
+      logging.info("Stopping download #%d" % nl['pid'])
+      return False
+
     # misc.params can fail based on a shutdown sequence.
     if misc is None or misc.params is None or not misc.manager_is_running():
       if misc is not None:
@@ -69,18 +74,13 @@ def stream_download(callsign, url, my_pid, file_name):
     # data we've received between two time periods
     misc.queue.put(('heartbeat', (TS.unixtime('hb'), len(data))))
 
-    # print nl['pid'], g_download_kill_pid
-    if nl['pid'] <= g_download_kill_pid:
-      logging.info("Stopping download #%d" % nl['pid'])
-      return False
-
     if not nl['stream']:
       try:
         nl['stream'] = open(file_name, 'w')
 
       except Exception as exc:
         logging.critical("Unable to open %s. Can't record. Must exit." % file_name)
-        sys.exit(-1)
+        return False
 
     nl['stream'].write(data)
 

@@ -118,7 +118,7 @@ def base_stats():
       # Maximum lifetime
       resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024
     ],
-    'tlist': [ thread.name for thread in threading.enumerate() ],
+    'tlist': [ (thread.name, thread.isAlive()) for thread in threading.enumerate() ],
     'disk': cloud.size('.') / (1024.0 ** 3)
   }
 
