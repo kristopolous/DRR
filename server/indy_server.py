@@ -44,13 +44,14 @@ def stream_download(callsign, url, my_pid, file_name):
   def cback(data): 
     global g_download_kill_pid
 
+    """
     nl['ix'] += 1
     if nl['ix'] % 20 == 0:
       if len(data):
         catchall('download', json.dumps([g_download_kill_pid, nl['pid'], len(data)]))
       else:
         catchall('download', json.dumps([g_download_kill_pid, 'no data']))
-
+    """
     # print nl['pid'], g_download_kill_pid
     if nl['pid'] <= g_download_kill_pid or not data:
       logging.info("Stopping download #%d" % nl['pid'])
