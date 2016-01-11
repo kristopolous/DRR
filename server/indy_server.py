@@ -29,7 +29,7 @@ def stream_download(callsign, url, my_pid, file_name):
   # Follows redirects and parses out basic m3u.
   #pid = misc.change_proc_name("%s-download" % callsign)
 
-  nl = {'stream': None, 'curl_handle': None, 'pid': my_pid}
+  nl = {'stream': None, 'curl_handle': None, 'pid': my_pid, 'ix': 0}
 
   def catchall(which, what):
     logging.info("%d: %s %s" % (nl['pid'], which, str(what)))
@@ -55,7 +55,14 @@ def stream_download(callsign, url, my_pid, file_name):
 
   def cback(data): 
     global g_download_kill_pid
-    catchall('download', json.dumps([g_download_kill_pid, len(data)]))
+
+    nl['ix'] += 1
+    if nl['ix'] % 10 == 0:
+      if len(data):
+        catchall('download', json.dumps([g_download_kill_pid, nl['pid'], len(data)]))
+      else:
+        catchall('download', json.dumps([g_download_kill_pid, 'no data']))
+
     # print nl['pid'], g_download_kill_pid
     if nl['pid'] <= g_download_kill_pid or not data:
       logging.info("Stopping download #%d" % nl['pid'])
@@ -95,7 +102,7 @@ def stream_download(callsign, url, my_pid, file_name):
 
     # This provides a reliable way to determine bitrate.  We look at how much 
     # data we've received between two time periods
-    misc.queue.put(('heartbeat', (TS.unixtime('hb'), len(data))))
+    misc.queue.put(('heartbeat', (TS.unixtime('hb'), len(data), nl['pid'])))
 
     if not nl['stream']:
       try:
@@ -291,7 +298,7 @@ def stream_manager():
               logging.warn("Couldn't find a replacement process ... not going anywhere.");
 
       elif what == 'heartbeat':
-        if not lr_set and value[1] > 100:
+        if not lr_set:
           lr_set = True
           last_heartbeat = time.time()
           DB.set('last_recorded', time.time())
@@ -335,7 +342,7 @@ def stream_manager():
               DB.set('bitrate', bitrate)
 
     if last_heartbeat:
-      logging.info("%d heartbeat" % (last_heartbeat, ))
+      logging.info("%d heartbeat %d" % (last_heartbeat, value[2]))
 
     # Check for our management process
     if not misc.manager_is_running():
