@@ -29,6 +29,7 @@ fail_list = []
 
 OFF = False
 ON = True
+specific_station = False
 
 def stderr(switch):
   if switch:
@@ -110,6 +111,7 @@ if args.station == 'all':
   all_stations = config_list
 
 else:
+  specific_station = True
   all_stations = []
   station_list = args.station.split(',')
 
@@ -250,7 +252,10 @@ for station in all_stations:
     if db:
       db['c'].execute('update stations set drops = drops + 1 where callsign = "%s"' % station[CALLSIGN] )
 
-if args.query == 'heartbeat' and db:
+if specific_station:
+  print "\nSpecific station query ... not looking for issues."
+
+elif args.query == 'heartbeat' and db:
   db['conn'].commit()
   find_misbehaving_servers(db, fail_list)
 
