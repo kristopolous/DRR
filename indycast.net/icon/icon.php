@@ -57,7 +57,7 @@ function get_font_size($phrase) {
     $maxLength = max(strlen($word), $maxLength);
   }
 
-  $fontsize = 397;
+  $fontsize = 607;
   if($maxLength > 6) {
     $fontsize = (6 / $maxLength) * $fontsize;
   }
@@ -73,7 +73,7 @@ function tint_bg(&$image, $phrase) {
   $offset = strpos($map, $parts[0]) * $len + strpos($map, $parts[1]);
   $hue = floor($offset / ($len * $len) * 360);
 
-  $strcolor = "hsl($hue, 230, 110)";
+  $strcolor = "hsl($hue, 110, 105)";
   $color = new ImagickPixel($strcolor);
   $image->colorizeImage($color, 1);
   return $hue;
@@ -85,7 +85,7 @@ $image = new Imagick('../images/radio-backdrop_1715.png');
 
 $draw = new ImagickDraw();
 $hue = tint_bg($image, $show);
-$draw->setFont('DejaVu-Sans-Bold');
+$draw->setFont('Liberation-Sans-Narrow-Bold');
 
 $draw->setFontSize( get_font_size($show) );
 $draw->setStrokeColor("black");
@@ -108,12 +108,12 @@ if(count($parts) > 1) {
 }
 
 foreach($parts as $line) {
-  $image->annotateImage($draw, $offset, ($ix + 1) * $height, 0, $line);
+  $image->annotateImage($draw, $offset, ($ix + 1) * 0.75 * $height, 0, $line);
   $ix ++;
 }
 
 $image->thumbnailImage($out_res, 0);
-$image->setImageDepth(2);
+$image->setImageDepth(4);
 $image->writeImage($origFilename);
 
 // I use curl to debug ... when I do that I don't want the image to come back
