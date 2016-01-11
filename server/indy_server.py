@@ -102,7 +102,7 @@ def stream_download(callsign, url, my_pid, file_name):
 
     # This provides a reliable way to determine bitrate.  We look at how much 
     # data we've received between two time periods
-    misc.queue.put(('heartbeat', (TS.unixtime('hb'), len(data), nl['pid'])))
+    misc.queue.put(('heartbeat', (TS.unixtime('hb'), nl['pid'])))
 
     if not nl['stream']:
       try:
@@ -342,7 +342,7 @@ def stream_manager():
               DB.set('bitrate', bitrate)
 
     if last_heartbeat:
-      logging.info("%d heartbeat %d" % (last_heartbeat, value[2]))
+      logging.info("%d heartbeat %d" % (last_heartbeat, value[1]))
 
     # Check for our management process
     if not misc.manager_is_running():
