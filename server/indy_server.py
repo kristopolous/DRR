@@ -80,14 +80,14 @@ def stream_download(callsign, url, my_pid, file_name):
           # If we are getting a redirect then we don't mind, we
           # just put it in the stream and then we leave
           misc.queue.put(('stream', data.strip()))
-          return True
+          return False
 
         # A pls style playlist
         elif re.findall('File\d', data, re.M):
           logging.info('Found a pls, using the File1 parameter')
           matches = re.findall('File1=(.*)\n', data, re.M)
           misc.queue.put(('stream', matches[0].strip()))
-          return True
+          return False
 
     # This provides a reliable way to determine bitrate.  We look at how much 
     # data we've received between two time periods
@@ -214,8 +214,6 @@ def stream_manager():
     # We cycle this to off for every run. By the time we go throug the queue so long 
     # as we aren't supposed to be shutting down, this should be toggled to true.
     #
-    flag = False
-
     if last_prune < (TS.unixtime('prune') - TS.ONE_DAY_SECOND * prune_duration):
       prune_duration = misc.config['pruneevery'] + (1 / 8.0 - random.random() / 4.0)
       # We just assume it can do its business in under a day
@@ -228,15 +226,15 @@ def stream_manager():
     expired_heartbeat = last_heartbeat and time.time() - last_heartbeat > cycle_time * 2
 
     while not misc.queue.empty():
-      flag = True
       what, value = misc.queue.get(False)
       # The curl proces discovered a new stream to be
       # used instead.
       if what == 'stream':
         misc.config['stream'] = value
         logging.info("Using %s as the stream now" % value)
-        # We now don't toggle to flag in order to shutdown the
-        # old process and start a new one
+        # We expire our heartbeat in order to force a new stream
+        # to start
+        expired_heartbeat = True
 
       elif what == 'db-debug':
         DB.debug()
