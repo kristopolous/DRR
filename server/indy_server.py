@@ -47,7 +47,8 @@ def stream_download(callsign, url, my_pid, file_name):
     return catchall('seek', json.dumps([what, origin]))
 
   def catch_debug(what, origin):
-    return catchall('debug', json.dumps([what, origin], ensure_ascii=False))
+    if what != 3:
+      return catchall('debug', json.dumps([what, origin], ensure_ascii=False))
 
   def catch_progress(download_total, downloaded, upload_total, uploaded):
     return catchall('progress', json.dumps([download_total, downloaded, upload_total, uploaded]))
@@ -231,11 +232,11 @@ def stream_manager():
     TS.get_offset()
 
     lr_set = False
+    expired_heartbeat = last_heartbeat and time.time() - last_heartbeat > cycle_time * 2
 
     while not misc.queue.empty():
       flag = True
       what, value = misc.queue.get(False)
-
       # The curl proces discovered a new stream to be
       # used instead.
       if what == 'stream':
@@ -333,6 +334,9 @@ def stream_manager():
               bitrate = int( round (est / 1000) * 8 )
               DB.set('bitrate', bitrate)
 
+    if last_heartbeat:
+      logging.info("%d heartbeat" % (last_heartbeat, ))
+
     # Check for our management process
     if not misc.manager_is_running():
       logging.info("Manager isn't running");
@@ -352,7 +356,8 @@ def stream_manager():
       # If we've hit the time when we ought to cascade
       # If our last_success stream was more than cascade_time - cascade_buffer
       # then we start our process_next
-      elif TS.unixtime('dl') - last_success > cascade_margin or (last_heartbeat and time.time() - last_heartbeat > cycle_time * 2):
+      elif TS.unixtime('dl') - last_success > cascade_margin or expired_heartbeat:
+        logging.info("heartbeat expired %s %s %d %d %d" % (type(process_next), type(process), last_success, cascade_time, TS.unixtime('dl')))
 
         # And we haven't created the next process yet, then we start it now.
         if not process_next:
@@ -370,7 +375,7 @@ def stream_manager():
     # If we are past the cascade_time and we have a process_next, then
     # we should shutdown our previous process and move the pointers around.
     #
-    if not change_state and TS.unixtime('dl') - last_success > cascade_time and process:
+    if not change_state and (expired_heartbeat or (TS.unixtime('dl') - last_success > cascade_time and process)):
       g_download_kill_pid += 1
       #process.terminate()
 
