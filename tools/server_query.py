@@ -151,7 +151,7 @@ for station in all_stations:
     # look at this data as JSON, so we suppress any superfluous output
     if len(all_stations) > 1 and not args.key:
       # Take out the \n (we'll be putting it in below)
-      sys.stderr.write("%s " % url)
+      sys.stdout.write("%s " % url)
 
     stream = urllib2.urlopen("http://%s/%s" % (url, args.query), timeout=15)
     data = stream.read()
@@ -213,7 +213,7 @@ for station in all_stations:
        
     else:
       if not args.key:
-        sys.stderr.write("[ %d ]\n" % (stop - start))
+        sys.stdout.write("[ %d ]\n" % (stop - start))
 
       print data
 
@@ -252,12 +252,14 @@ for station in all_stations:
     if db:
       db['c'].execute('update stations set drops = drops + 1 where callsign = "%s"' % station[CALLSIGN] )
 
-if specific_station:
-  print "\nSpecific station query ... not looking for issues."
 
-elif args.query == 'heartbeat' and db:
+if args.query == 'heartbeat' and db:
   db['conn'].commit()
-  find_misbehaving_servers(db, fail_list)
+
+  if specific_station:
+    print "\nSpecific station query ... not looking for issues."
+  else:
+    find_misbehaving_servers(db, fail_list)
 
 if args.key and station_count > 1:
   sys.stdout.write(']')
