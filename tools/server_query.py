@@ -7,6 +7,9 @@ import sys
 import socket
 import lib.misc as misc
 import json
+import pwd
+
+isRoot = (pwd.getpwuid( os.getuid() ).pw_uid == 0)
 
 #
 # This is needed to force ipv4 on ipv6 devices. It's sometimes needed
@@ -61,12 +64,15 @@ def find_misbehaving_servers(db, fail_list):
     report.append("Thresholds: %s" % json.dumps(max_values, indent=2))
 
   if len(report) and mail_config:
-    # Don't want any scripts to read this and harvest my email.
-    email_to_use = 'kri%s@%soo.com' % ("stopolous", "yah")
+    if not isRoot:
+      print "You aren't root. This is probably a test machine. I'm not mailing"
+    else:
+      # Don't want any scripts to read this and harvest my email.
+      email_to_use = 'kri%s@%soo.com' % ("stopolous", "yah")
 
-    misc.send_email(config=mail_config, who=email_to_use, subject="server issue", body='<br>'.join(report), sender='Indycast Admin <info@indycast.net>')
+      misc.send_email(config=mail_config, who=email_to_use, subject="server issue", body='<br>'.join(report), sender='Indycast Admin <info@indycast.net>')
+      print "Issues found. Sending email to %s." % email_to_use
     print '\n'.join(report)
-    print "Issues found. Sending email to %s." % email_to_use
 
 
 CALLSIGN = 'callsign'
