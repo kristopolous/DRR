@@ -83,7 +83,12 @@ def put(path):
     logging.info ("I would have uploaded %s but I'm not the official %s server" % (path, misc.config['callsign']) )
     return False
 
-  blob_service, container = connect()
+  try:
+    blob_service, container = connect()
+
+  except:
+    logging.warn('Unable to connect to the cloud.')
+    blob_service = False
 
   if blob_service:
     try:
