@@ -273,6 +273,13 @@ def manager(config):
     return Response('\n'.join(output), mimetype='text/plain')
 
 
+  @app.route('/robots.txt')
+  def robots():
+    """
+    Sends off robots.txt for crawlers
+    """
+    return send_file('%s/robots.txt' % (misc.source_dir, ))
+
   @app.route('/uuid')
   def my_uuid():
     """ 
@@ -417,7 +424,7 @@ def manager(config):
     and if the versions are different, the application restarts.
     """
     cwd = os.getcwd()
-    os.chdir(os.path.dirname(os.path.realpath(__file__)))
+    os.chdir(misc.source_dir)
 
     os.system('git pull') 
 
