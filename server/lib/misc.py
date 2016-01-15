@@ -12,6 +12,7 @@ import signal
 import threading
 import resource, psutil
 __version__ = os.popen("git describe").read().strip()
+source_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 #
 # This is needed to force ipv4 on ipv6 devices. It's sometimes needed
