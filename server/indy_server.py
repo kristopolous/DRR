@@ -38,7 +38,7 @@ def stream_download(callsign, url, my_pid, file_name):
     return catchall('read', what)
 
   def catch_debug(what, origin):
-    if what != 3:
+    if what != 3 and what != 0:
       return catchall('debug', json.dumps([what, origin], ensure_ascii=False))
 
   def cback(data): 
@@ -110,7 +110,7 @@ def stream_download(callsign, url, my_pid, file_name):
   curl_handle.setopt(pycurl.WRITEFUNCTION, cback)
   curl_handle.setopt(pycurl.FOLLOWLOCATION, True)
 
-  #curl_handle.setopt(pycurl.VERBOSE, 1)
+  curl_handle.setopt(pycurl.VERBOSE, 1)
   curl_handle.setopt(pycurl.READFUNCTION, catch_read)
   curl_handle.setopt(pycurl.DEBUGFUNCTION, catch_debug)
 
@@ -122,6 +122,9 @@ def stream_download(callsign, url, my_pid, file_name):
   except pycurl.error as exc:
     if exc[0] != 23:
       logging.warning("Couldn't resolve or connect to %s." % url)
+
+  except:
+    pass
 
   curl_handle.close()
 
