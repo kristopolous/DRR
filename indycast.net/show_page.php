@@ -46,7 +46,7 @@ if(isset($_GET['callsign'])) {
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:creator" content="@indycaster" />
   <meta name="twitter:description" content="A free technology that sends you MP3s of any radio show - at any time, right now." />
-  <meta name="twitter:image:src" content="http://indycast.net/images/twit-image.jpg" />
+  <meta name="twitter:image:src" content="http://indycast.net/images/twit-image.png" />
   <meta name="twitter:site" content="@indycaster" />
   <meta name="twitter:title" content="incycast DVR: A free technology that sends you MP3s of any radio show - at any time, right now" />
   <meta name="twitter:url" content="http://indycast.net" />
