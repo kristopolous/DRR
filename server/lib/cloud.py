@@ -453,6 +453,7 @@ def prune_process(lockMap, reindex=False, force=False):
       if put(file_name):
         try:
           os.unlink(file_name)
+          count += 1 
 
         except:
           logging.debug("Prune[cloud]: Couldn't remove %s" % file_name)
