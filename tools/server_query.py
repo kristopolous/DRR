@@ -270,6 +270,6 @@ if args.query == 'heartbeat' and db:
 if args.key and station_count > 1:
   sys.stdout.write(']')
 
-#elif len(fail_list):
-# os.popen('./restart_through_ssh.sh %s' % ' '.join(fail_list))
-# print "Failure", fail_list
+elif len(fail_list):
+ os.popen('./restart_through_ssh.sh %s' % ' '.join(fail_list))
+ print "Failure", fail_list
