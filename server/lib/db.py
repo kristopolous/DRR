@@ -206,8 +206,11 @@ def incr(key, value=1):
     db['c'].execute('insert into kv(value, key) values(?, ?)', (value, key, ))
 
   except Exception as exc:
-    db['c'].execute('update kv set value = value + ? where key = ?', (value, key, ))
-
+    try:
+        db['c'].execute('update kv set value = value + ? where key = ?', (value, key, ))
+    except sqlite3.OperationalError as exc:
+        pass
+  
   db['conn'].commit()
 
 
