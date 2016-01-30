@@ -226,7 +226,6 @@ def shutdown_real(do_restart=False):
 
     webserver_shutdown()
     logging.info("Shutting down")
-    #DB.shutdown()
 
     logging.info("Uptime: %ds", TS.uptime())
 

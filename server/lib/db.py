@@ -189,14 +189,6 @@ def connect(db_file=None):
   return instance
 
 
-def shutdown():
-  # Closes the individual database connections in each thread. 
-  for thread_id, all_db in g_db.items():
-    for name, db in all_db.items():
-      if 'conn' in db:
-        db['conn'].close()
-
-
 def incr(key, value=1):
   # Increments some key in the database by some value.  It is used
   # to maintain statistical counters.
@@ -212,6 +204,7 @@ def incr(key, value=1):
         pass
   
   db['conn'].commit()
+  db['conn'].close()
 
 
 def set(key, value):
