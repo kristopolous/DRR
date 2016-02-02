@@ -463,13 +463,12 @@ def manager(config):
     Use this with the graph.py tool to see station coverage.
     """
     misc.am_i_official()
-    db = DB.connect()
 
     stats = misc.base_stats()
 
     stats.update({
       'intents': DB.all('intents'),
-      'hits': db['c'].execute('select sum(read_count) from intents').fetchone()[0],
+      'hits': DB.run('select sum(read_count) from intents').fetchone()[0],
       'kv': DB.all('kv'),
       'uptime': TS.uptime(),
       'pwd': os.getcwd(),
