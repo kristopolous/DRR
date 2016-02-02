@@ -186,7 +186,6 @@ def find_streams(start_list, duration_min):
   # as sorted by time for us for free.
   stitch_list = []
   episode_list = []
-  db = DB.connect()
 
   # So we have a start list, we are about to query our database using the start_minute
   # and end_minute field ... to get end_minue we need to make use of our duration.
