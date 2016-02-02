@@ -114,14 +114,13 @@ def map(row_list, table, db=None):
 
 def all(table, field_list='*', sort_by='id'):
   # Returns all entries from the sqlite3 database for a given table. 
-  db = connect()
 
   column_count = 1
   if type(field_list) is not str:
     column_count = len(field_list)
     field_list = ','.join(field_list)
 
-  query = db['c'].execute('select %s from %s order by %s asc' % (field_list, table, sort_by))
+  query = run('select %s from %s order by %s asc' % (field_list, table, sort_by))
   if column_count is 1 and field_list != '*':
     return [record[0] for record in query.fetchall()]
 
@@ -130,17 +129,16 @@ def all(table, field_list='*', sort_by='id'):
 
 
 def schema(table, db=None):
-  # Returns the schema for a given table. 
-  if not db:
-    db = connect()
-
-  existing_schema = db['c'].execute('pragma table_info(%s)' % table).fetchall()
+  existing_schema = run('pragma table_info(%s)' % table).fetchall()
   if existing_schema:
     return [str(row[1]) for row in existing_schema]
 
   return None
 
 
+def disconnect():
+  pass  
+  
 def connect(db_file=None):
   # A "singleton pattern" or some other fancy $10-world style of maintaining 
   # the database connection throughout the execution of the script.
@@ -192,19 +190,15 @@ def connect(db_file=None):
 def incr(key, value=1):
   # Increments some key in the database by some value.  It is used
   # to maintain statistical counters.
-  db = connect()
 
   try:
-    db['c'].execute('insert into kv(value, key) values(?, ?)', (value, key, ))
+    run('insert into kv(value, key) values(?, ?)', (value, key, ))
 
   except Exception as exc:
     try:
-        db['c'].execute('update kv set value = value + ? where key = ?', (value, key, ))
+      run('update kv set value = value + ? where key = ?', (value, key, ), raise=True)
     except sqlite3.OperationalError as exc:
-        pass
-  
-  db['conn'].commit()
-  db['conn'].close()
+      pass
 
 
 def set(key, value):
@@ -271,16 +265,23 @@ def get(key, expiry=0, use_cache=True, default=None):
   return default
 
 
-def run(query):
+def run(query, args=None, raise=False):
   db = connect()
   res = None
 
   try:
-    db['c'].execute(query)
-    res = db['conn'].commit()
-    db['conn'].close()
+    if args is None:
+      db['c'].execute(query)
+    else:
+      db['c'].execute(query, args)
 
-  except
+    res = db['conn'].commit()
+    disconnect()
+
+  except Exception as exc:
+    if raise:
+      raise exc
+
     pass
 
   return res
@@ -288,13 +289,11 @@ def run(query):
 def unregister_stream(name, do_all=False):
   # Deletes a stream by name, contingent on it existing only once 
 
-  db = connect()
-  res = db['c'].execute('select id from streams where name = ?', (name, )).fetchall()
+  res = run('select id from streams where name = ?', (name, )).fetchall()
 
   if res and (len(res) == 1 or do_all):
     logging.debug("Removing our reference of %s" % name)
-    res = db['c'].execute('delete from streams where id = %d' % res[0][0])
-    db['conn'].commit()
+    res = run('delete from streams where id = %d' % res[0][0])
 
   else:
     logging.warn("Requested to remove reference of %s but couldn't find it." % name)
