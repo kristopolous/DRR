@@ -229,8 +229,6 @@ def stream_manager():
       # we only do these things occasionally, they 
       # are either not very important or are not
       # expected to change that often
-      DB.incr('uptime', cycle_time)
-
       TS.get_offset()
 
     cycle_count += 1
