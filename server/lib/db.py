@@ -323,15 +323,15 @@ def register_stream(info):
     unregister_stream(name, do_all=True)
 
   try:
-    run("""insert into streams 
+    res, last = run("""insert into streams 
     (name, start_unix, end_unix, start_minute, end_minute, week_number, size) values
     (   ?,          ?,        ?,            ?,          ?,           ?,    ?) """, 
-    (name, start_unix, end_unix, start_minute, end_minute, week_number, size))
+    (name, start_unix, end_unix, start_minute, end_minute, week_number, size), with_last=True)
 
   except:
     logging.warn("Unable to insert a record with a name %s" % name)
 
-  return db['last']
+  return last
 
 
 def register_intent(minute_list, duration):
@@ -343,12 +343,12 @@ def register_intent(minute_list, duration):
     res = run('select id from intents where key = ?', (key, )).fetchone()
 
     if res == None:
-      run('insert into intents(key, start, end) values(?, ?, ?)', (key, minute, minute + duration, ))
+      res, last = run('insert into intents(key, start, end) values(?, ?, ?)', (key, minute, minute + duration, ), with_last=True)
 
     else:
-      run('update intents set read_count = read_count + 1, accessed_at = (current_timestamp) where id = ?', (res[0], )) 
+      res, last = run('update intents set read_count = read_count + 1, accessed_at = (current_timestamp) where id = ?', (res[0], ), with_last=True) 
 
-    return db['last']
+    return last
 
   return None
 
