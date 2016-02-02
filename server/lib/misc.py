@@ -112,7 +112,7 @@ def base_stats():
     'now-human': TS.ts_to_name(),
     'version': __version__,
     'load': load,
-    'files': psutil.Process().open_files(),
+    'files': [m.path for m in psutil.Process().open_files()],
     'mem': [
       # Current memory footprint in MB
       psutil.Process(os.getpid()).memory_info().rss / (1024.0 * 1024), 
