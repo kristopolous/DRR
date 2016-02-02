@@ -239,18 +239,15 @@ def get(key, expiry=0, use_cache=True, default=None):
   if use_cache and key in g_params and expiry == 0:
     return g_params[key]
 
-  db = connect()
-
   if expiry > 0:
     # If we let things expire, we first sweep for it
     try:
-      db['c'].execute("delete from kv where key = '%s' and created_at < date(current_timestamp, '-%d second')" % (key, expiry))
-      db['conn'].commit()
+      run("delete from kv where key = '%s' and created_at < date(current_timestamp, '-%d second')" % (key, expiry))
 
     except:
       return default
 
-  res = db['c'].execute('select value, created_at from kv where key = ?', (key, )).fetchone()
+  res = run('select value, created_at from kv where key = ?', (key, )).fetchone()
 
   if res:
     if default and type(default) is int: res[0] = int(res[0])
@@ -272,6 +269,7 @@ def run(query, args=None, raise=False):
       db['c'].execute(query, args)
 
     res = db['conn'].commit()
+    db['last'] = db['c'].lastrowid
     disconnect()
 
   except Exception as exc:
@@ -309,8 +307,7 @@ def register_stream(info):
   week_number = info['week_number']
   size = info['size']
 
-  db = connect()
-  res = db['c'].execute('select id from streams where name = ?', (name, )).fetchone()
+  res = run('select id from streams where name = ?', (name, )).fetchone()
 
   # If something exists then we remove it and reinsert ... this is not as effecient
   # as an upsert with coalesce, but this is done on rare occasions in heavy workloads ...
@@ -319,7 +316,7 @@ def register_stream(info):
     unregister_stream(name, do_all=True)
 
   try:
-    db['c'].execute("""insert into streams 
+    run("""insert into streams 
     (name, start_unix, end_unix, start_minute, end_minute, week_number, size) values
     (   ?,          ?,        ?,            ?,          ?,           ?,    ?) """, 
     (name, start_unix, end_unix, start_minute, end_minute, week_number, size))
@@ -327,10 +324,7 @@ def register_stream(info):
   except:
     logging.warn("Unable to insert a record with a name %s" % name)
 
-  finally:
-    db['conn'].commit()
-
-  return db['c'].lastrowid
+  return db['last']
 
 
 def register_intent(minute_list, duration):
