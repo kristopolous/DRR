@@ -159,6 +159,7 @@ def stream_manager():
   first_time = 0
   total_bytes = 0
   normalize_delay = 6
+  cycle_count = 0
 
   cascade_time = misc.config['cascadetime']
   cascade_buffer = misc.config['cascadebuffer']
@@ -167,7 +168,7 @@ def stream_manager():
   last_prune = 0
   last_success = 0
   last_heartbeat = None
-
+  
   change_state = None
   SHUTDOWN = 1
   RESTART = 2
@@ -223,7 +224,16 @@ def stream_manager():
       misc.pid_map['prune'] = cloud.prune()
       last_prune = TS.unixtime('prune')
 
-    TS.get_offset()
+    # Increment the amount of time this has been running
+    if cycle_count % 30 == 0:
+      # we only do these things occasionally, they 
+      # are either not very important or are not
+      # expected to change that often
+      DB.incr('uptime', cycle_time)
+
+      TS.get_offset()
+
+    cycle_count += 1
 
     lr_set = False
     expired_heartbeat = last_heartbeat and time.time() - last_heartbeat > cycle_time * 2
@@ -342,8 +352,6 @@ def stream_manager():
       misc.shutdown_real()
 
     else:
-      # print lr_set, time.time(), last_heartbeat, 'offset', TS.unixtime('dl') - last_success, cascade_margin
-
       if not process and not change_state:
         file_name, process = download_start(file_name)
         last_success = TS.unixtime('dl')
@@ -382,9 +390,6 @@ def stream_manager():
 
       # and then clear out the old process_next pointer
       process_next = None
-
-    # Increment the amount of time this has been running
-    DB.incr('uptime', cycle_time)
 
     time.sleep(cycle_time)
 
