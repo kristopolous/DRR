@@ -192,7 +192,7 @@ def incr(key, value=1):
   # to maintain statistical counters.
 
   try:
-    run('insert into kv(value, key) values(?, ?)', (value, key, ))
+    run('insert into kv(value, key) values(?, ?)', (value, key, ), raise=True)
 
   except Exception as exc:
     try:
@@ -206,23 +206,19 @@ def set(key, value):
   # Returns the value that was sent.
   global g_params
 
-  db = connect()
-  
   try:
     if value is None:
-      res = db['c'].execute('delete from kv where key = ?', (key, ))
+      res = run('delete from kv where key = ?', (key, ))
       
     else:
       # From http://stackoverflow.com/questions/418898/sqlite-upsert-not-insert-or-replace
-      res = db['c'].execute('''
+      res = run('''
         INSERT OR REPLACE INTO kv (key, value, created_at) 
           VALUES ( 
             COALESCE((SELECT key FROM kv WHERE key = ?), ?),
             ?,
             current_timestamp 
         )''', (key, key, value, ))
-
-    db['conn'].commit()
 
   except:
     logging.warn("Couldn't set %s to %s" % (key, value))
