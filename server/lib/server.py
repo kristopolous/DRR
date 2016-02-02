@@ -470,7 +470,6 @@ def manager(config):
       'intents': DB.all('intents'),
       'hits': DB.run('select sum(read_count) from intents').fetchone()[0],
       'kv': DB.all('kv'),
-      'uptime': TS.uptime(),
       'pwd': os.getcwd(),
       'free': os.popen("df -h / | tail -1").read().strip(),
       # Reporting the list as fractional GB is more useful.

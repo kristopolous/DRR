@@ -104,8 +104,9 @@ def base_stats():
   except:
     load = 0
 
+  uptime = TS.uptime()
   return {
-    'uptime': TS.uptime(),
+    'uptime': "%dd %02d:%02d:%02d" % ( uptime / TS.ONE_DAY_SECOND, (uptime / TS.ONE_HOUR_SECOND) % 24, (uptime / 60) % 60, uptime % 60 ),
     'last_recorded': float(DB.get('last_recorded', use_cache=False) or 0),
     'now': time.time(),
     'now-human': TS.ts_to_name(),
