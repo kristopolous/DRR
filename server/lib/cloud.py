@@ -219,7 +219,7 @@ def find_streams(start_list, duration_min):
 
   full_query = "select * from streams where %s order by week_number * 10080 + start_minute asc" % condition_query
 
-  entry_list = DB.map(db['c'].execute(full_query).fetchall(), 'streams')
+  entry_list = DB.map(DB.run(full_query).fetchall(), 'streams')
 
   #logging.info(full_query)
   #logging.info(entry_list)
@@ -411,8 +411,6 @@ def prune_process(lockMap, reindex=False, force=False):
     lockMap['prune'].release()
     return None
 
-  db = DB.connect()
-
   archive_duration = misc.config['archivedays'] * TS.ONE_DAY_SECOND
   cutoff = TS.unixtime('prune') - archive_duration
 
@@ -467,14 +465,10 @@ def prune_process(lockMap, reindex=False, force=False):
       os.unlink(file_name)
       count += 1 
 
-  # The map names are different since there may or may not be a corresponding
-  # cloud thingie associated with it.
-  db = DB.connect()
-
   # Don't do this fucking shit at all because fuck this so hard.
   #logging.info('select name, id from streams where end_unix < date("now", "-%d seconds") or (end_minute - start_minute < 0.05 and start_unix < date("now", "%d seconds"))' % (archive_duration, TS.get_offset() * 60 - 1200))
 
-  unlink_list = db['c'].execute('select name, id from streams where end_unix < date("now", "-%d seconds")' % (archive_duration)).fetchall()
+  unlink_list = DB.run('select name, id from streams where end_unix < date("now", "-%d seconds")' % (archive_duration)).fetchall()
 
   for file_name_tuple in unlink_list:
     file_name = str(file_name_tuple[0])
@@ -487,8 +481,7 @@ def prune_process(lockMap, reindex=False, force=False):
       "cloud.";unlink(file_name)
 
       # After we remove these streams then we delete them from the db.
-      db['c'].execute('delete from streams where id = %d' % id)
-      db['conn'].commit()
+      DB.run('delete from streams where id = %d' % id)
 
     # now only after we've deleted from the cloud can we delete the local file
     if os.path.exists(file_name):
