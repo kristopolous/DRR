@@ -271,16 +271,19 @@ def get(key, expiry=0, use_cache=True, default=None):
   return default
 
 
-def exec(query):
+def run(query):
   db = connect()
+  res = None
 
   try:
     db['c'].execute(query)
-    db['conn'].commit()
+    res = db['conn'].commit()
     db['conn'].close()
 
   except
     pass
+
+  return res
 
 def unregister_stream(name, do_all=False):
   # Deletes a stream by name, contingent on it existing only once 
