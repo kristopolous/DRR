@@ -192,11 +192,11 @@ def incr(key, value=1):
   # to maintain statistical counters.
 
   try:
-    run('insert into kv(value, key) values(?, ?)', (value, key, ), raise=True)
+    run('insert into kv(value, key) values(?, ?)', args=(value, key, ), doraise=True)
 
   except Exception as exc:
     try:
-      run('update kv set value = value + ? where key = ?', (value, key, ), raise=True)
+      run('update kv set value = value + ? where key = ?', args=(value, key, ), doraise=True)
     except sqlite3.OperationalError as exc:
       pass
 
@@ -258,22 +258,22 @@ def get(key, expiry=0, use_cache=True, default=None):
   return default
 
 
-def run(query, args=None, raise=False):
+def run(query, args=None, doraise=False):
   db = connect()
   res = None
 
   try:
     if args is None:
-      db['c'].execute(query)
+      res =db['c'].execute(query)
     else:
-      db['c'].execute(query, args)
+      res = db['c'].execute(query, args)
 
-    res = db['conn'].commit()
+    db['conn'].commit()
     db['last'] = db['c'].lastrowid
     disconnect()
 
   except Exception as exc:
-    if raise:
+    if doraise:
       raise exc
 
     pass
