@@ -155,34 +155,25 @@ def connect(db_file=None):
   # We don't have to worry about the different memory sharing models here.
   # Really, just think about it ... it's totally irrelevant.
   #
-  thread_id = threading.current_thread().ident
-  if thread_id not in g_db:
-    g_db[thread_id] = {}
 
-  instance_all_db = g_db[thread_id]
-  if db_file not in instance_all_db:
-    instance_all_db[db_file] = {}
+  instance = {}
 
-  instance = instance_all_db[db_file]
+  if not os.path.exists(db_file):
+    sys.stderr.write("Info: Creating db file %s\n" % db_file)
 
-  if 'conn' not in instance:
+  conn = sqlite3.connect(db_file)
+  instance.update({
+    'conn': conn,
+    'c': conn.cursor()
+  })
 
-    if not os.path.exists(db_file):
-      sys.stderr.write("Info: Creating db file %s\n" % db_file)
+  if db_file == 'config.db': 
 
-    conn = sqlite3.connect(db_file)
-    instance.update({
-      'conn': conn,
-      'c': conn.cursor()
-    })
+    for table, schema in _SCHEMA.items():
+      dfn = ','.join(["%s %s" % (key, klass) for key, klass in schema])
+      instance['c'].execute("CREATE TABLE IF NOT EXISTS %s(%s)" % (table, dfn))
 
-    if db_file == 'config.db': 
-
-      for table, schema in _SCHEMA.items():
-        dfn = ','.join(["%s %s" % (key, klass) for key, klass in schema])
-        instance['c'].execute("CREATE TABLE IF NOT EXISTS %s(%s)" % (table, dfn))
-
-      instance['conn'].commit()
+    instance['conn'].commit()
 
   return instance
 
@@ -259,12 +250,13 @@ def get(key, expiry=0, use_cache=True, default=None):
 
 
 def run(query, args=None, doraise=False):
+  misc.lockMap['db'].acquire()
   db = connect()
   res = None
 
   try:
     if args is None:
-      res =db['c'].execute(query)
+      res = db['c'].execute(query)
     else:
       res = db['c'].execute(query, args)
 
@@ -277,6 +269,9 @@ def run(query, args=None, doraise=False):
       raise exc
 
     pass
+
+  finally:
+    misc.lockMap['db'].release()
 
   return res
 
