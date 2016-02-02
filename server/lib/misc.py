@@ -113,11 +113,11 @@ def base_stats():
     'load': load,
     'files': psutil.Process().open_files(),
     'mem': [
-      # Current memory footprint
-      psutil.Process(os.getpid()).memory_info().rss, 
+      # Current memory footprint in MB
+      psutil.Process(os.getpid()).memory_info().rss / (1024.0 * 1024), 
       
-      # Maximum lifetime
-      resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024
+      # Maximum lifetime memory footpring in MB
+      resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024.0
     ],
     'tlist': [ thread.name for thread in threading.enumerate() ],
     'disk': cloud.size('.') / (1024.0 ** 3)
