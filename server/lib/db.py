@@ -330,20 +330,18 @@ def register_stream(info):
 def register_intent(minute_list, duration):
   # Tells the server to record on a specific minute for a specific duration when
   # not in full mode.  Otherwise, this is just here for statistical purposes.
-  db = connect()
 
   for minute in minute_list:
     key = str(minute) + ':' + str(duration)
-    res = db['c'].execute('select id from intents where key = ?', (key, )).fetchone()
+    res = run('select id from intents where key = ?', (key, )).fetchone()
 
     if res == None:
-      db['c'].execute('insert into intents(key, start, end) values(?, ?, ?)', (key, minute, minute + duration, ))
+      run('insert into intents(key, start, end) values(?, ?, ?)', (key, minute, minute + duration, ))
 
     else:
-      db['c'].execute('update intents set read_count = read_count + 1, accessed_at = (current_timestamp) where id = ?', (res[0], )) 
+      run('update intents set read_count = read_count + 1, accessed_at = (current_timestamp) where id = ?', (res[0], )) 
 
-    db['conn'].commit()
-    return db['c'].lastrowid
+    return db['last']
 
   return None
 
