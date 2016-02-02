@@ -226,7 +226,6 @@ def shutdown_real(do_restart=False):
 
     webserver_shutdown()
     logging.info("Shutting down")
-
     logging.info("Uptime: %ds", TS.uptime())
 
     #if os.path.isfile(PIDFILE_MANAGER):
