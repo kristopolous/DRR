@@ -257,7 +257,11 @@ def get(key, expiry=0, use_cache=True, default=None):
 
 def run(query, args=None, with_last=False):
   start = time.time()
-  print "(%d) %s" % (g_db_count, query)
+  if args is None:
+    print "(%d) %s" % (g_db_count, query)
+  else:
+    print "(%d) %s %s" % (g_db_count, query, ', '.join([str(m) for m in args]))
+
   g_lock.acquire()
   db = connect()
   res = None
@@ -267,7 +271,6 @@ def run(query, args=None, with_last=False):
     if args is None:
       res = db['c'].execute(query)
     else:
-      print " %f args: %s" % (time.time() - start, ','.join([str(m) for m in args]))
       res = db['c'].execute(query, args)
 
     db['conn'].commit()
@@ -279,7 +282,6 @@ def run(query, args=None, with_last=False):
     raise exc
 
   finally:
-    print " %f release" % (time.time() - start)
     g_lock.release()
 
   if with_last:
