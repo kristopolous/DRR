@@ -238,13 +238,9 @@ def get(key, expiry=0, use_cache=True, default=None):
 
   if expiry > 0:
     # If we let things expire, we first sweep for it
-    try:
-      run("delete from kv where key = '%s' and created_at < date(current_timestamp, '-%d second')" % (key, expiry))
-
-    except:
-      return default
-
-  res = run('select value, created_at from kv where key = ?', (key, )).fetchone()
+    res = run("select value, created_at from kv where key = '%s' and created_at >= date(current_timestamp, '-%d second')" % (key, expiry)).fetchone()
+  else:
+    res = run('select value, created_at from kv where key = ?', (key, )).fetchone()
 
   if res:
     if default and type(default) is int: res[0] = int(res[0])
@@ -252,15 +248,18 @@ def get(key, expiry=0, use_cache=True, default=None):
     g_params[key] = res[0]
     return res[0]
 
+  else:
+    run("delete from kv where key = '%s' and created_at < date(current_timestamp, '-%d second')" % (key, expiry))
+
   return default
 
 
 def run(query, args=None, with_last=False):
   start = time.time()
   if args is None:
-    print "(%d) %s" % (g_db_count, query)
+    print "%d: %s" % (g_db_count, query)
   else:
-    print "(%d) %s %s" % (g_db_count, query, ', '.join([str(m) for m in args]))
+    print "%d: %s (%s)" % (g_db_count, query, ', '.join([str(m) for m in args]))
 
   g_lock.acquire()
   db = connect()
