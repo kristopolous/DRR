@@ -179,7 +179,7 @@ def connect(db_file=None):
 
     instance['conn'].commit()
 
-  g_db_count +=1 
+  g_db_count += 1 
 
   return instance
 
@@ -189,11 +189,11 @@ def incr(key, value=1):
   # to maintain statistical counters.
 
   try:
-    run('insert into kv(value, key) values(?, ?)', args=(value, key, ), doraise=True)
+    run('update kv set value = value + ? where key = ?', args=(value, key, ))
 
   except Exception as exc:
     try:
-      run('update kv set value = value + ? where key = ?', args=(value, key, ), doraise=True)
+      run('insert into kv(value, key) values(?, ?)', args=(value, key, ))
     except sqlite3.OperationalError as exc:
       pass
 
@@ -255,7 +255,7 @@ def get(key, expiry=0, use_cache=True, default=None):
   return default
 
 
-def run(query, args=None, doraise=False):
+def run(query, args=None, with_last=False):
   start = time.time()
   print "(%d) %s" % (g_db_count, query)
   g_lock.acquire()
@@ -270,21 +270,20 @@ def run(query, args=None, doraise=False):
       print " %f args: %s" % (time.time() - start, ','.join([str(m) for m in args]))
       res = db['c'].execute(query, args)
 
-    print " %f exec" % (time.time() - start)
     db['conn'].commit()
-    print " %f commit" % (time.time() - start)
-    db['last'] = db['c'].lastrowid
+    last = db['c'].lastrowid
+    print " %f exec" % (time.time() - start)
 
   except Exception as exc:
-    print " %f !! exception" % (time.time() - start)
-    if doraise:
-      raise exc
-
-    pass
+    print " %f !! exception: %s" % (time.time() - start, exc)
+    raise exc
 
   finally:
     print " %f release" % (time.time() - start)
     g_lock.release()
+
+  if with_last:
+    return (res, last)
 
   return res
 
