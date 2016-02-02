@@ -51,7 +51,6 @@ import db as DB
 import cloud
 from Queue import Queue
 from threading import Lock
-#from multiprocessing import Queue, Lock
 
 #
 # The process delay is used throughout to measure things like the delay in
@@ -87,7 +86,7 @@ params = {'shutdown_time': None}
 start_time = None
 config = {}
 pid_map = {}
-lockMap = {'prune': Lock(), 'main': Lock()}
+lockMap = {'prune': Lock(), 'main': Lock(), 'db': Lock()}
 last_official_query = None
 
 def do_nothing(signal, frame=None):
