@@ -86,7 +86,7 @@ params = {'shutdown_time': None}
 start_time = None
 config = {}
 pid_map = {}
-lockMap = {'prune': Lock(), 'main': Lock(), 'db': Lock()}
+lockMap = {'prune': Lock(), 'main': Lock()}
 last_official_query = None
 
 def do_nothing(signal, frame=None):

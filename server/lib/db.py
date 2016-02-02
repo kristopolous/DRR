@@ -2,13 +2,15 @@
 import threading
 import logging
 import sqlite3
+import time
 import os
 import sys
-import misc
 from datetime import timedelta
+from threading import Lock
 
-g_db = {}
+g_db_count = 0
 g_params = {}
+g_lock = Lock();
 
 # This is a way to get the column names after grabbing everything
 # I guess it's also good practice
@@ -137,14 +139,15 @@ def schema(table, db=None):
   return None
 
 
-def disconnect():
+def disconnect(what):
+  what['conn'].close()
   pass  
   
 def connect(db_file=None):
   # A "singleton pattern" or some other fancy $10-world style of maintaining 
   # the database connection throughout the execution of the script.
   # Returns the database instance.
-  global g_db
+  global g_db_count
 
   if not db_file:
     db_file = 'config.db'
@@ -168,13 +171,15 @@ def connect(db_file=None):
     'c': conn.cursor()
   })
 
-  if db_file == 'config.db': 
+  if db_file == 'config.db' and g_db_count == 0: 
 
     for table, schema in _SCHEMA.items():
       dfn = ','.join(["%s %s" % (key, klass) for key, klass in schema])
       instance['c'].execute("CREATE TABLE IF NOT EXISTS %s(%s)" % (table, dfn))
 
     instance['conn'].commit()
+
+  g_db_count +=1 
 
   return instance
 
@@ -251,28 +256,35 @@ def get(key, expiry=0, use_cache=True, default=None):
 
 
 def run(query, args=None, doraise=False):
-  misc.lockMap['db'].acquire()
+  start = time.time()
+  print "(%d) %s" % (g_db_count, query)
+  g_lock.acquire()
   db = connect()
   res = None
 
+  print " %f start" % (time.time() - start)
   try:
     if args is None:
       res = db['c'].execute(query)
     else:
+      print " %f args: %s" % (time.time() - start, ','.join([str(m) for m in args]))
       res = db['c'].execute(query, args)
 
+    print " %f exec" % (time.time() - start)
     db['conn'].commit()
+    print " %f commit" % (time.time() - start)
     db['last'] = db['c'].lastrowid
-    disconnect()
 
   except Exception as exc:
+    print " %f !! exception" % (time.time() - start)
     if doraise:
       raise exc
 
     pass
 
   finally:
-    misc.lockMap['db'].release()
+    print " %f release" % (time.time() - start)
+    g_lock.release()
 
   return res
 
