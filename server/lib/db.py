@@ -256,16 +256,18 @@ def get(key, expiry=0, use_cache=True, default=None):
 
 def run(query, args=None, with_last=False):
   start = time.time()
+  """
   if args is None:
     print "%d: %s" % (g_db_count, query)
   else:
-    print "%d: %s (%s)" % (g_db_count, query, ', '.join([str(m) for m in args]))
+    $print "%d: %s (%s)" % (g_db_count, query, ', '.join([str(m) for m in args]))
+  """
 
   g_lock.acquire()
   db = connect()
   res = None
 
-  print " %f start" % (time.time() - start)
+  #print " %f start" % (time.time() - start)
   try:
     if args is None:
       res = db['c'].execute(query)
@@ -274,10 +276,10 @@ def run(query, args=None, with_last=False):
 
     db['conn'].commit()
     last = db['c'].lastrowid
-    print " %f exec" % (time.time() - start)
+    #print " %f exec" % (time.time() - start)
 
   except Exception as exc:
-    print " %f !! exception: %s" % (time.time() - start, exc)
+    #print " %f !! exception: %s" % (time.time() - start, exc)
     raise exc
 
   finally:
