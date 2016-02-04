@@ -194,7 +194,6 @@ def stream_manager():
     global g_download_pid
 
     g_download_pid += 1
-    logging.info('Starting download #%d. Next up in %ds' % (g_download_pid, cascade_margin))
 
     #
     # There may be a multi-second lapse time from the naming of the file to
@@ -202,6 +201,8 @@ def stream_manager():
     # in the future by some margin
     #
     file_name = '%s/%s-%s.mp3' % (misc.DIR_STREAMS, callsign, TS.ts_to_name(TS.now(offset_sec=misc.PROCESS_DELAY / 2)))
+    logging.info('Starting download #%d (%s). Next up in %ds' % (g_download_pid, file_name, cascade_margin))
+
     process = Thread(target=stream_download, name='Download-%d:%s' % (g_download_pid, TS.ts_to_name()), args=(callsign, misc.config['stream'], g_download_pid, file_name))
     process.daemon = True
     process.start()
