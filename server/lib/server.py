@@ -344,7 +344,7 @@ def manager(config):
     return send_file_http("%s/%s" % (misc.source_dir, path), requested_path=path)
 
   @app.route('/css/<name>')
-  def send_js(name):
+  def send_css(name):
     """
     Serves CSS for audio requests that are made through the browser.
     """
