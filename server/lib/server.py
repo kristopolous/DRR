@@ -340,8 +340,15 @@ def manager(config):
     """
     Serves JS for audio requests that are made through the browser.
     """
-    path = '/js/%s' % name
+    path = 'assets/js/%s' % name
+    return send_file_http("%s/%s" % (misc.source_dir, path), requested_path=path)
 
+  @app.route('/css/<name>')
+  def send_js(name):
+    """
+    Serves CSS for audio requests that are made through the browser.
+    """
+    path = 'assets/css/%s' % name
     return send_file_http("%s/%s" % (misc.source_dir, path), requested_path=path)
 
   @app.route('/slices/<time>/<name>')
