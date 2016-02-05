@@ -4,3 +4,4 @@ setproctitle
 azure
 requests
 psutil
+jinja2
