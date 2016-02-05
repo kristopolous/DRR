@@ -110,7 +110,7 @@ def stream_download(callsign, url, my_pid, file_name):
   curl_handle.setopt(pycurl.WRITEFUNCTION, cback)
   curl_handle.setopt(pycurl.FOLLOWLOCATION, True)
 
-  curl_handle.setopt(pycurl.VERBOSE, 1)
+  #curl_handle.setopt(pycurl.VERBOSE, 1)
   curl_handle.setopt(pycurl.READFUNCTION, catch_read)
   curl_handle.setopt(pycurl.DEBUGFUNCTION, catch_debug)
 
