@@ -84,7 +84,7 @@ def stream_download(callsign, url, my_pid, file_name):
 
         # A pls style playlist
         elif re.findall('File\d', data, re.M):
-          logging.info('Found a pls, using the File1 parameter')
+          logging.info('%d: Found a pls, using the File1 parameter' % (nl['pid'], ))
           matches = re.findall('File1=(.*)\n', data, re.M)
           misc.queue.put(('stream', matches[0].strip()))
           return False
@@ -124,6 +124,7 @@ def stream_download(callsign, url, my_pid, file_name):
       logging.warning("%d: Couldn't resolve or connect to %s." % (nl['pid'], url))
 
   except:
+    logging.warning("%d: Unhandled exception" % (nl['pid'], ))
     pass
 
   curl_handle.close()
