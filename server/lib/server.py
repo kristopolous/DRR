@@ -196,7 +196,13 @@ def manager(config):
     return response
 
 
-  def send_file_partial(path, requested_path, file_name=None):
+  def send_file_http(path, requested_path=''):
+    if not os.path.exists(path):
+      return '<h1>File %s not found</h1><script>alert("%s not found")</script>' % (requested_path, requested_path), 404
+
+    return send_file(path)
+
+  def send_file_partial(path, requested_path='', file_name=None):
     # Wrapper around send_file which handles HTTP 206 Partial Content
     # (byte ranges)
 
@@ -326,12 +332,17 @@ def manager(config):
     cloud.prune(force=True)
     return success('Pruning...')
 
+  def send_html(path, params):
+    pass
 
-  @app.route('/js/<file>')
+  @app.route('/js/<name>')
   def send_js(name):
     """
     Serves JS for audio requests that are made through the browser.
     """
+    path = '/js/%s' % name
+
+    return send_file_http("%s/%s" % (misc.source_dir, path), requested_path=path)
 
   @app.route('/slices/<time>/<name>')
   def send_named_stream(time, name):
