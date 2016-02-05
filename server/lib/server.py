@@ -327,6 +327,12 @@ def manager(config):
     return success('Pruning...')
 
 
+  @app.route('/js/<file>')
+  def send_js(name):
+    """
+    Serves JS for audio requests that are made through the browser.
+    """
+
   @app.route('/slices/<time>/<name>')
   def send_named_stream(time, name):
     """
