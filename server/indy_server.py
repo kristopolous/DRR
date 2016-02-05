@@ -299,6 +299,10 @@ def stream_manager():
           lr_set = True
           last_heartbeat = time.time()
           last_heartbeat_tid = value[1]
+
+          if last_heartbeat_tid > g_download_kill_pid:
+            logging.warn("hb: Got a heartbeat for #%d but everything below #%d should be gone!" % (last_heartbeat_tid, g_download_kill_pid))
+
           DB.set('last_recorded', time.time())
 
         if not has_bitrate: 
