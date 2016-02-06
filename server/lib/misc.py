@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import setproctitle as SP
-import ConfigParser
+import configparser
 import os
 import time
 import requests
@@ -44,11 +44,11 @@ def getAddrInfoWrapper(host, port, family=0, socktype=0, proto=0, flags=0):
 # Replace the original socket.getaddrinfo by our version
 socket.getaddrinfo = getAddrInfoWrapper
 
-import urllib2
+from urllib.request import urlopen
 
-import ts as TS
-import db as DB
-import cloud
+import lib.ts as TS
+import lib.db as DB
+import lib.cloud as cloud
 from Queue import Queue
 from threading import Lock
 
