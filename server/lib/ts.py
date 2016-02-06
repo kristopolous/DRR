@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import re
-import db as DB
+import lib.db as DB
 import logging
 import time
 import json

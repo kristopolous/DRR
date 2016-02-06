@@ -4,11 +4,11 @@ from math import ceil
 import re
 import struct
 import logging
-import misc
+import lib.misc as misc
 import cloud
 from time import sleep
-import db as DB
-import ts as TS
+import lib.db as DB
+import lib.ts as TS
 from datetime import datetime, timedelta
 
 # Most common frame-length ... in practice, I haven't 

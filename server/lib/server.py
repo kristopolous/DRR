@@ -1,13 +1,12 @@
 #!/usr/bin/python3
 import logging, re
-import lib.misc as misc
-from cloud import get_size
 import signal
 import lxml.etree as ET
 import time
 import os
 from datetime import timedelta, date
 
+import lib.misc as misc
 import lib.ts as TS
 import lib.db as DB
 import lib.audio as audio
@@ -160,13 +159,13 @@ def generate_xml(showname, feed_list, duration_min, weekday_list, start, duratio
     # frame_length seconds of audio (128k/44.1k no id3)
     content = ET.SubElement(item, '{%s}content' % nsmap['media'])
     content.attrib['url'] = link
-    content.attrib['fileSize'] = str(get_size(file_name))
+    content.attrib['fileSize'] = str(cloud.get_size(file_name))
     content.attrib['type'] = 'audio/mpeg'
 
     # The length of the audio we will just take as the duration
     content = ET.SubElement(item, 'enclosure')
     content.attrib['url'] = link
-    content.attrib['length'] = str(get_size(file_name))
+    content.attrib['length'] = str(cloud.get_size(file_name))
     content.attrib['type'] = 'audio/mpeg'
 
   tree = ET.ElementTree(root)

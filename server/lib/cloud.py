@@ -3,7 +3,7 @@ import os
 from re import compile
 import time 
 import logging
-import misc 
+import lib.misc as misc
 import lib.db as DB
 import lib.ts as TS
 from audio import stream_info
