@@ -5,3 +5,4 @@ azure
 requests
 psutil
 jinja2
+pycurl
