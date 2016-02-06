@@ -1,4 +1,4 @@
-#!/usr/bin/python 
+#!/usr/bin/python3
 #import objgraph
 #import pdb;pdb.set_trace()
 import argparse, logging, os, pycurl, re
@@ -278,7 +278,7 @@ def stream_manager():
             with open(misc.PIDFILE_MANAGER, 'r') as f:
               manager_pid = f.read()
 
-            print manager_pid, os.getpid(), manager_pid == os.getpid()
+            #print manager_pid, os.getpid(), manager_pid == os.getpid()
             #logging.info(DB.get('runcount', use_cache=False))
             #logging.info(('ps axf | grep [%c]%s | grep python | wc -l' % (misc.config['callsign'][0], misc.config['callsign'][1:]) ).read().strip())
             ps_out = int(os.popen('ps axf | grep [%c]%s | grep python | wc -l' % (misc.config['callsign'][0], misc.config['callsign'][1:]) ).read().strip())

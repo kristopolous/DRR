@@ -1,6 +1,6 @@
-#!/usr/bin/python 
+#!/usr/bin/python3
 import logging, re
-import misc 
+import lib.misc as misc
 from cloud import get_size
 import signal
 import lxml.etree as ET
