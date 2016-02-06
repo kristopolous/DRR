@@ -9,7 +9,8 @@ aptinstall() {
       python-dev   libxslt1-dev \
       libxml2-dev  python-pycurl \
       sqlite3      zlib1g-dev     \
-      uuid-runtime build-essential
+      uuid-runtime build-essential \
+      python3-pip  python3
 }
 
 hardupgrade() {
