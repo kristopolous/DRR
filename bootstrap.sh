@@ -15,9 +15,9 @@ aptinstall() {
 
 hardupgrade() {
   rm -r build
-  yes | sudo pip uninstall azure 
+  yes | sudo pip3 uninstall azure 
 }
 
-aptinstall
+# aptinstall
 # hardupgrade
-pip install --user -r requirements.txt
+pip3 install --user -r requirements.txt
