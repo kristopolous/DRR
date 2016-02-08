@@ -13,7 +13,7 @@ import lib.audio as audio
 import lib.cloud as cloud
 
 from flask import Flask, request, jsonify, Response, url_for, redirect, send_file
-from urllib import quote
+from urllib.parse import quote
 
 def do_error(errstr):
   # Returns a server error as a JSON result. 

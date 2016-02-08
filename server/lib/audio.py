@@ -4,8 +4,8 @@ from math import ceil
 import re
 import struct
 import logging
-import lib.misc as misc
-import cloud
+import lib.misc 
+import lib.cloud
 from time import sleep
 import lib.db as DB
 import lib.ts as TS

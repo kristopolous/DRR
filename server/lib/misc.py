@@ -49,7 +49,7 @@ from urllib.request import urlopen
 import lib.ts as TS
 import lib.db as DB
 import lib.cloud as cloud
-from Queue import Queue
+from queue import Queue
 from threading import Lock
 
 #
@@ -169,7 +169,7 @@ def am_i_official():
     endpoint = "http://%s.indycast.net:%d/uuid" % (config['callsign'], config['port'])
 
     try: 
-      stream = urllib2.urlopen(endpoint)
+      stream = urlopen(endpoint)
       data = stream.read()
       config['official'] = (data.strip() == config['uuid'])
       last_official_query = time.time()
@@ -185,10 +185,10 @@ def webserver_shutdown():
   endpoint = "http://127.0.0.1:%d/halt" % (config['port'],)
 
   try: 
-    stream = urllib2.urlopen(endpoint)
+    stream = urlopen(endpoint)
     data = stream.read()
 
-  except urllib2.URLError:
+  except:
     logging.info("Webserver already shutdown")
 
 

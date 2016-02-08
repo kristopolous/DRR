@@ -22,7 +22,7 @@ origGetAddrInfo = socket.getaddrinfo
 getAddrInfoWrapper = misc.getAddrInfoWrapper
 socket.getaddrinfo = getAddrInfoWrapper
 
-import urllib2
+from urllib.request import urlopen
 import time
 import random
 import lib.db as DB
@@ -159,7 +159,7 @@ for station in all_stations:
       # Take out the \n (we'll be putting it in below)
       sys.stdout.write("%s " % url)
 
-    stream = urllib2.urlopen("http://%s/%s" % (url, args.query), timeout=15)
+    stream = urlopen("http://%s/%s" % (url, args.query), timeout=15)
     data = stream.read()
     stop = time.time()
 

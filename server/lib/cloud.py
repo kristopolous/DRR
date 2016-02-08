@@ -3,12 +3,12 @@ import os
 from re import compile
 import time 
 import logging
-import lib.misc as misc
+import lib.misc 
 import lib.db as DB
 import lib.ts as TS
-from audio import stream_info
+from lib.audio import stream_info
 import lib.audio as audio
-from sets import Set
+#from sets import Set
 from glob import glob
 from datetime import datetime, timedelta
 from threading import Thread
@@ -134,14 +134,14 @@ def register_stream_list(reindex=False):
   # and just go ahead and do everything.
   #
   if reindex:
-    all_registered = Set([])
+    all_registered = set([])
 
   else: 
-    all_registered = Set(DB.all('streams', ['name']))
+    all_registered = set(DB.all('streams', ['name']))
 
   # There should be a smarter way to do this ... you'd think. We should also
   # be more faithfully giving things extensions since it's not 100% mp3
-  all_files = Set(glob('%s/*.mp3' % misc.DIR_STREAMS))
+  all_files = set(glob('%s/*.mp3' % misc.DIR_STREAMS))
  
   diff = all_files.difference(all_registered)
 

@@ -19,7 +19,7 @@ from datetime import timedelta, date
 from glob import glob
 from subprocess import Popen
 from threading import Thread
-from Queue import Queue
+from queue import Queue
 
 g_download_pid = 0
 g_download_kill_pid = 0
