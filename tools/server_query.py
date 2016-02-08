@@ -1,4 +1,4 @@
-#!/usr/bin/python -O
+#!/usr/bin/python3 -O
 import argparse
 import os
 import re
@@ -65,14 +65,14 @@ def find_misbehaving_servers(db, fail_list):
 
   if len(report) and mail_config:
     if not isRoot:
-      print "You aren't root. This is probably a test machine. I'm not mailing"
+      print ("You aren't root. This is probably a test machine. I'm not mailing")
     else:
       # Don't want any scripts to read this and harvest my email.
       email_to_use = 'kri%s@%soo.com' % ("stopolous", "yah")
 
       misc.send_email(config=mail_config, who=email_to_use, subject="server issue", body='<br>'.join(report), sender='Indycast Admin <info@indycast.net>')
-      print "Issues found. Sending email to %s." % email_to_use
-    print '\n'.join(report)
+      print("Issues found. Sending email to %s." % email_to_use)
+    print('\n'.join(report))
 
 
 CALLSIGN = 'callsign'
@@ -128,7 +128,7 @@ else:
 if args.list:
   # Just list all the supported stations
   for station in all_stations:
-    print station[CALLSIGN]
+    print(station[CALLSIGN])
 
   sys.exit(0)
 
@@ -142,7 +142,7 @@ station_count = len(all_stations)
 station_ix = 0
 
 if args.key and station_count > 1:
-  print '['
+  print('[')
 
 for station in all_stations:
   station_ix += 1
