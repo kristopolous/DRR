@@ -5,7 +5,7 @@ import re
 import configparser
 import sys
 import socket
-import lib.misc as misc
+import lib.misc
 import json
 import pwd
 

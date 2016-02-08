@@ -398,10 +398,10 @@ def stream_manager():
     time.sleep(cycle_time)
 
 def read_config(config):
-  import ConfigParser
+  import configparser
   # Reads a configuration file. 
   # Currently documented at https://github.com/kristopolous/DRR/wiki/Join-the-Federation
-  Config = ConfigParser.ConfigParser()
+  Config = configparser.ConfigParser()
   Config.read(config)
   misc.config = misc.config_section_map('Main', Config)
   misc.PROCESS_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -463,7 +463,6 @@ def read_config(config):
       misc.config[k] = v
     else:
       if type(v) is int: misc.config[k] = int(misc.config[k])
-      elif type(v) is long: misc.config[k] = long(misc.config[k])
       elif type(v) is float: misc.config[k] = float(misc.config[k])
 
   # In case someone is specifying ~/radio 
@@ -475,7 +474,7 @@ def read_config(config):
 
     if os.path.exists(misc.config['cloud']):
       # If there's a cloud conifiguration file then we read that too
-      cloud_config = ConfigParser.ConfigParser()
+      cloud_config = configparser.ConfigParser()
       cloud_config.read(misc.config['cloud'])
 
       # Things stored in the _private directory don't get reported back in a status

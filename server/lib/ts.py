@@ -21,7 +21,7 @@ def now(offset_sec=0):
 
 
 def uptime():
-  import misc 
+  import lib.misc 
   return int(unixtime('uptime') - misc.start_time)
 
 def unixtime(what=''):
@@ -142,7 +142,7 @@ def get_offset(force=False):
   # Contacts the goog, giving a longitude and lattitude and gets the time 
   # offset with regard to the UTC.  There's a sqlite cache entry for the offset.
   # Returns an int second offset.
-  import misc 
+  import lib.misc as misc
 
   # If we are testing this from an API level, then we don't
   # have a database
@@ -152,7 +152,7 @@ def get_offset(force=False):
   offset = DB.get('offset', expiry=ONE_HOUR_SECOND * 4)
 
   if not offset or force:
-    from urllib2 import urlopen
+    from urllib.request import urlopen
 
     when = int(unixtime())
 
