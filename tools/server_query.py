@@ -2,7 +2,7 @@
 import argparse
 import os
 import re
-import ConfigParser
+import configparser
 import sys
 import socket
 import lib.misc as misc
@@ -221,7 +221,7 @@ for station in all_stations:
       if not args.key:
         sys.stdout.write("[ %d ]\n" % (stop - start))
 
-      print data
+      print(data)
 
     if db and args.query == 'heartbeat':
       db['c'].execute('''
@@ -252,7 +252,7 @@ for station in all_stations:
   if hasFailure:
     # Stop the timer and register it as a drop.
     stop = time.time()
-    print "[ %d:%s ] Failure(@%d): %s\n" % (stop - start, url, exc_traceback.tb_lineno, hasFailure)
+    print("[ %d:%s ] Failure(@%d): %s\n" % (stop - start, url, exc_traceback.tb_lineno, hasFailure))
     fail_list.append(url.split('.')[0])
 
     if db:
@@ -263,7 +263,7 @@ if args.query == 'heartbeat' and db:
   db['conn'].commit()
 
   if specific_station:
-    print "\nSpecific station query ... not looking for issues."
+    print("\nSpecific station query ... not looking for issues.")
   else:
     find_misbehaving_servers(db, fail_list)
 
@@ -271,5 +271,5 @@ if args.key and station_count > 1:
   sys.stdout.write(']')
 
 elif len(fail_list):
- os.popen('./restart_through_ssh.sh %s' % ' '.join(fail_list))
- print "Failure", fail_list
+  os.popen('./restart_through_ssh.sh %s' % ' '.join(fail_list))
+  print("Failure", fail_list)
