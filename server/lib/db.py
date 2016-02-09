@@ -243,7 +243,9 @@ def get(key, expiry=0, use_cache=True, default=None):
     res = run('select value, created_at from kv where key = ?', (key, )).fetchone()
 
   if res:
-    if default and type(default) is int: res[0] = int(res[0])
+    if default and type(default) is int: 
+      res = list(res)
+      res[0] = int(res[0])
 
     g_params[key] = res[0]
     return res[0]

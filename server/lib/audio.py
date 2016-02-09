@@ -280,7 +280,7 @@ def get_audio_format(file_name):
 
           # If this is an mp3 file and that frame was valid, then
           # we should now be at the start of the next frame.
-          b0, b1 = [ord(byte) for byte in file_handle.read(2)]
+          b0, b1 = [byte for byte in file_handle.read(2)]
 
           if b0 == 0xff and b1 >> 4 == 0xf:
             # That's good enough for us
@@ -509,7 +509,7 @@ def mp3_signature(file_name, blockcount=-1):
     header = file_handle.read(2)
     if header and len(header) == 2:
 
-      b1 = ord(header[1])
+      b1 = header[1]
 
       if header[0] == '\xff' and (b1 >> 4) == 0xf:
 
@@ -709,7 +709,7 @@ def list_slice_stream(start_info, start_sec):
 
   # get the regular map so we know where to start from
   siglist, offset = signature(current_info['name'])
-  start_frame = min(max(int(start_sec / _FRAME_LENGTH), 0), len(offset) - 1)
+  start_frame = min(max(int(start_sec / _FRAME_LENGTH), 0), max(len(offset) - 1, 0))
   start_byte = offset[start_frame]
 
   while True:
