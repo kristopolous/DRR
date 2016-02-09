@@ -5,7 +5,7 @@ import re
 import configparser
 import sys
 import socket
-import lib.misc
+import lib.misc as misc
 import json
 import pwd
 
@@ -107,7 +107,7 @@ if not args.query:
   args.query = "stats" if args.key else "heartbeat"
 
 for station_config in glob('../server/configs/*txt'):
-  Config = ConfigParser.ConfigParser()
+  Config = configparser.ConfigParser()
   Config.read(station_config)
   config = misc.config_section_map('Main', Config)
   config_list.append(config)
@@ -160,7 +160,7 @@ for station in all_stations:
       sys.stdout.write("%s " % url)
 
     stream = urlopen("http://%s/%s" % (url, args.query), timeout=15)
-    data = stream.read()
+    data = stream.read().decode('utf8')
     stop = time.time()
 
     if args.query == 'heartbeat':

@@ -135,7 +135,7 @@ def mail_config(parser):
     sys.stderr.write("Define the cloud configuration location with the CLOUD_CFG environment variable or using the -c option\n")
     return None
 
-  cloud_config = ConfigParser.ConfigParser()
+  cloud_config = configparser.ConfigParser()
   cloud_config.read(args.config)
 
   return config_section_map('Mailgun', cloud_config)
