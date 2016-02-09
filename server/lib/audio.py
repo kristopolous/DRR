@@ -5,7 +5,6 @@ import re
 import struct
 import logging
 import lib.misc 
-import lib.cloud
 from time import sleep
 import lib.db as DB
 import lib.ts as TS
@@ -311,7 +310,6 @@ def signature(fname, blockcount=-1, depth=1):
   block = None
   if audio_format == _FORMAT_AAC:
     sig, block = aac_signature(fname, blockcount)
-    print(len(block))
 
   if audio_format == _FORMAT_MP3 or not block: 
     sig, block = mp3_signature(fname, blockcount)
@@ -336,6 +334,7 @@ def signature(fname, blockcount=-1, depth=1):
 
 def aac_find_frame(file_handle, file_name):
   # This tries to find the first readable SOF bytes
+  start=file_handle.tell()
   while True:
     try:
       b0 = file_handle.read(1)
@@ -345,7 +344,8 @@ def aac_find_frame(file_handle, file_name):
         if flv_skip(f): break
       """
 
-      if ord(b0) == 0xff:
+
+      if b0[0] == 0xff:
         if ord(file_handle.read(1)) & 0xf6 == 0xf0:
           file_handle.seek(file_handle.tell() - 2)
           return True
@@ -353,7 +353,7 @@ def aac_find_frame(file_handle, file_name):
           file_handle.seek(-1, 1)
 
     except:
-      logging.warn("Could not find header. searched %d bytes in %s" % (file_handle.tell(), file_name))
+      logging.warn("[aac-sig] Could not find header. searched %d bytes in %s" % (file_handle.tell() - start, file_name))
       return False
 
 # using http://wiki.multimedia.cx/index.php?title=ADTS
@@ -712,6 +712,7 @@ def stitch_and_slice(file_list, start_minute, duration_minute):
 
 
 def list_slice_stream(start_info, start_sec):
+  import lib.cloud as cloud
   # This is part of the /live/time feature ... this streams files hopping from one to the next
   # in a live manner ... it constructs things while running ... hopping to the next stream in real time.
   #pid = misc.change_proc_name("%s-audiostream" % misc.config['callsign'])
@@ -802,6 +803,7 @@ def list_slice_stream(start_info, start_sec):
 
 
 def list_slice(list_in, name_out, duration_sec, start_sec=0, do_confirm=False):
+  import lib.cloud as cloud
   # Takes some stitch list, list_in and then create a new one based on the start and end times 
   # by finding the closest frames and just doing an extraction.
   #
@@ -871,6 +873,7 @@ def list_slice(list_in, name_out, duration_sec, start_sec=0, do_confirm=False):
 
 
 def stitch(file_list, force_stitch=False):
+  import lib.cloud as cloud
   # Takes a list of files and then attempt to seamlessly stitch them 
   # together by looking at their signature checksums of the data payload in the blocks.
   duration = 0

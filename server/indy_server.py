@@ -95,13 +95,13 @@ def stream_download(callsign, url, my_pid, file_name):
 
     if not nl['stream']:
       try:
-        nl['stream'] = open(file_name, 'w')
+        nl['stream'] = open(file_name, 'wb')
 
       except Exception as exc:
         logging.critical("%d: Unable to open %s. Can't record. Must exit." % (nl['pid'], file_name))
         return False
 
-    nl['stream'].write(str(data))
+    nl['stream'].write(data)
 
 
   misc.params['isFirst'] = True
