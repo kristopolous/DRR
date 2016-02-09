@@ -101,7 +101,7 @@ def stream_download(callsign, url, my_pid, file_name):
         logging.critical("%d: Unable to open %s. Can't record. Must exit." % (nl['pid'], file_name))
         return False
 
-    nl['stream'].write(data)
+    nl['stream'].write(str(data))
 
 
   misc.params['isFirst'] = True
@@ -120,7 +120,7 @@ def stream_download(callsign, url, my_pid, file_name):
     curl_handle.perform()
 
   except pycurl.error as exc:
-    if exc[0] != 23:
+    if exc.args[0] != 23:
       logging.warning("%d: Couldn't resolve or connect to %s." % (nl['pid'], url))
 
   except:

@@ -21,7 +21,7 @@ def now(offset_sec=0):
 
 
 def uptime():
-  import lib.misc 
+  import lib.misc as misc
   return int(unixtime('uptime') - misc.start_time)
 
 def unixtime(what=''):
