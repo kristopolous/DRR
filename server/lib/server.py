@@ -101,7 +101,7 @@ def generate_xml(showname, feed_list, duration_min, weekday_list, start, duratio
 
   channel = ET.SubElement(root, "channel")
 
-  for k,v in {
+  for k,v in list({
     '{%s}summary' % nsmap['itunes']: showname,
     '{%s}subtitle' % nsmap['itunes']: showname,
     '{%s}category' % nsmap['itunes']: 'podcast',
@@ -110,7 +110,7 @@ def generate_xml(showname, feed_list, duration_min, weekday_list, start, duratio
     'copyright': callsign,
     'description': "%s is a %s show recorded every %s on %s at %s. Saved and delivered when you want it, through a volunteer network at http://indycast.net." % (showname, duration_string, week_string, callsign.upper(), start),
     'language': 'en'
-  }.items():
+  }.items()):
     ET.SubElement(channel, k).text = v
 
   itunes_image = ET.SubElement(channel, '{%s}image' % nsmap['itunes'])
@@ -120,11 +120,11 @@ def generate_xml(showname, feed_list, duration_min, weekday_list, start, duratio
   media_image.attrib['url'] = 'http://indycast.net/icon/%s_1400.png' % quote(showname)
 
   image = ET.SubElement(channel, 'image')
-  for k,v in {
+  for k,v in list({
     'url': 'http://indycast.net/icon/%s_200.png' % quote(showname),
     'title': showname,
     'link': 'http://indycast.net'
-  }.items():
+  }.items()):
     ET.SubElement(image, k).text = v
 
   for feed in feed_list:
@@ -137,7 +137,7 @@ def generate_xml(showname, feed_list, duration_min, weekday_list, start, duratio
     if duration_min > 60:
       itunes_duration = "%d:%s" % (int(duration_min / 60.0), itunes_duration)    
 
-    for k,v in {
+    for k,v in list({
       'title': "%s - %s" % (showname, feed['start_date'].strftime("%Y.%m.%d")),
       'description': "%s recorded on %s" % (showname, feed['start_date'].strftime("%Y-%m-%d %H:%M:%S")),
       '{%s}explicit' % nsmap['itunes']: 'no', 
@@ -150,7 +150,7 @@ def generate_xml(showname, feed_list, duration_min, weekday_list, start, duratio
       'pubDate': feed['start_date'].strftime("%Y-%m-%d %H:%M:%S"),
       'link': link,
       'copyright': callsign
-    }.items():
+    }.items()):
       ET.SubElement(item, k).text = v
 
     ET.SubElement(item, 'guid', isPermaLink="false").text = file_name

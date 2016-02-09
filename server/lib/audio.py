@@ -238,7 +238,7 @@ def mp3_info(byte, b1):
 def get_audio_format(file_name):
   # Determines the audio format of file_name and return 
   # where the start of the audio block is.
-  if isinstance(file_name, (str, unicode)):
+  if isinstance(file_name, str):
     is_stream = False 
     file_handle = open(file_name, 'rb')
 
@@ -349,7 +349,7 @@ def aac_signature(file_name, blockcount=-1):
   is_stream = False
   start_pos = None
 
-  if isinstance(file_name, basestring):
+  if isinstance(file_name, str):
     file_handle = open(file_name, 'rb')
 
   else:
@@ -483,7 +483,7 @@ def mp3_signature(file_name, blockcount=-1):
   last_tell = None
   go_back = -1
 
-  if isinstance(file_name, basestring):
+  if isinstance(file_name, str):
     file_handle = open(file_name, 'rb')
 
   else:
@@ -924,7 +924,7 @@ def stitch(file_list, force_stitch=False):
         pos = second['siglist'].index(first['siglist'][-2], pos + 1)
 
         is_found = True
-        for i in xrange(5, 1, -1):
+        for i in range(5, 1, -1):
           if second['siglist'][pos - i + 2] != first['siglist'][-i]:
             is_found = False
             logging.warn("Indices @%d do not match between %s and %s" % (pos, first['name'], second['name']))

@@ -195,7 +195,7 @@ def webserver_shutdown():
 def public_config():
   # Returns a configuration, removing sensitive information 
   global config 
-  return {k: v for k, v in config.items() if k != '_private'}
+  return {k: v for k, v in list(config.items()) if k != '_private'}
 
 def shutdown_handler(signal=signal.SIGINT, frame=None):
   # shutdown_handler is hit on the keyboard interrupt 
@@ -218,7 +218,7 @@ def shutdown_real(do_restart=False):
   """
 
   if not do_restart:
-    for key, value in pid_map.items():
+    for key, value in list(pid_map.items()):
       try:
         value.terminate()
       except:
