@@ -161,7 +161,7 @@ def get_offset(force=False):
    
     try:
       stream = urlopen(url)
-      data = stream.read()
+      data = stream.read().decode('utf8')
       opts = json.loads(data)
 
     except:
