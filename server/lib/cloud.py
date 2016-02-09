@@ -3,7 +3,6 @@ import os
 from re import compile
 import time 
 import logging
-import lib.misc 
 import lib.db as DB
 import lib.ts as TS
 from lib.audio import stream_info
@@ -48,6 +47,7 @@ def get(path, do_open=True):
 
 
 def connect(config=False):
+  import lib.misc as misc 
   # Connect to the cloud service. 
   if not config: config = misc.config['_private']
 
@@ -78,6 +78,7 @@ def unlink(path, config=False):
 
 
 def put(path):
+  import lib.misc as misc 
   # Place a file, given a path, in the cloud. 
   if not misc.am_i_official():
     logging.info ("I would have uploaded %s but I'm not the official %s server" % (path, misc.config['callsign']) )
@@ -107,6 +108,7 @@ def put(path):
 
 
 def rename():
+  import lib.misc as misc 
   all_files = glob('%s/*.mp3' % misc.DIR_STREAMS)
   count = 0
   total = 0
@@ -126,6 +128,7 @@ def rename():
 
 
 def register_stream_list(reindex=False):
+  import lib.misc as misc 
   # Find the local streams and make sure they are all registered in the sqlite3 database. 
   #
   # Get the existing streams as a set
@@ -174,6 +177,7 @@ def register_stream_list(reindex=False):
 
 
 def find_streams(start_list, duration_min):
+  import lib.misc as misc 
   # Given a start week minute this looks for streams in the storage 
   # directory that match it - regardless of duration ... so it may return
   # partial shows results.
@@ -291,6 +295,7 @@ def find_and_make_slices(start_list, duration_min):
 
 
 def get_file_for_ts(target_time, bias=None, exclude_path=None):
+  import lib.misc as misc 
   # Given a datetime target_time, this finds the closest file either with a bias
   # of +1 for after, -1 for before (or within) or no bias for the closest match.
   #
@@ -379,6 +384,7 @@ def get_next(info_query):
 
   
 def prune(reindex=False, force=False):
+  import lib.misc as misc 
   # Gets rid of files older than archivedays - cloud stores things if relevant. 
 
   # Now when the child calls it it won't hit the network for every prune.
@@ -388,6 +394,7 @@ def prune(reindex=False, force=False):
 
 
 def prune_process(lockMap, reindex=False, force=False):
+  import lib.misc as misc 
   # This is internal, call prune() directly. This is a normally blocking
   # process that is prepared by prune(), making it easily callable asynchronously 
   # If another prune is running then we just bail
@@ -520,6 +527,7 @@ def get_size(fname):
 
  
 def download(path):
+  import lib.misc as misc 
   # Download a file from the cloud and put it in a serviceable place. 
   blob_service, container = connect()
 
