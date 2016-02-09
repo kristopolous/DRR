@@ -1,4 +1,4 @@
-#!/usr/bin/python -O
+#!/usr/bin/python3 
 #
 # This is where the mp3 routines get testbedded before being integrated into the server
 #
@@ -122,7 +122,7 @@ def mp3_sig(file_name, blockcount = -1):
       header_attempts += 1 
       if header_attempts > 2:
         sys.stdout.write('!')
-        print binascii.b2a_hex(header), "%x" % file_handle.tell()
+        print(binascii.b2a_hex(header), "%x" % file_handle.tell())
         file_handle.seek(go_back, 1)
 
     frame_start = file_handle.tell()
@@ -146,7 +146,7 @@ def mp3_sig(file_name, blockcount = -1):
           attempt_set = [samp_rate, bit_rate, pad_bit]
 
         frame_size, samp_rate, bit_rate, pad_bit = mp3_info(b, b1)
-        print file_name, file_handle.tell(), frame_size, samp_rate, bit_rate, assumed_set
+        print(file_name, file_handle.tell(), frame_size, samp_rate, bit_rate, assumed_set)
 
         last_tell = file_handle.tell()
 
@@ -160,12 +160,12 @@ def mp3_sig(file_name, blockcount = -1):
         # We make sure that we get the same set of samp_rate, bit_rate, pad_bit twice
         if not assumed_set and attempt_set == [samp_rate, bit_rate, pad_bit]:
           assumed_set = attempt_set
-          print 'assumed_set', assumed_set
+          print('assumed_set', assumed_set)
           attempt_set = False
 
         # This is another indicator that we could be screwing up ... 
         elif assumed_set and samp_rate != assumed_set[0] and bit_rate != assumed_set[1]:
-          print "rates are off assumed set, going back"
+          print("rates are off assumed set, going back")
           file_handle.seek(go_back, 1)
           continue
 
@@ -175,7 +175,7 @@ def mp3_sig(file_name, blockcount = -1):
 
         # Rest of the header
         throw_away = file_handle.read(1)
-        print samp_rate, bit_rate, hex(ord(throw_away))
+        print(samp_rate, bit_rate, hex(ord(throw_away)))
 
         # Get the signature
         #print "%s %d" % (hex(frame_start), rsize)
@@ -187,7 +187,7 @@ def mp3_sig(file_name, blockcount = -1):
         sig = file_handle.read(rsize)
         frame_sig.append(sig)
         start_byte.append(frame_start)
-        print 'start %x' % frame_start
+        print('start %x' % frame_start)
 
         # Move forward the frame file_handle.read size + 4 byte header
         throw_away = file_handle.read(frame_size - (rsize + 4))
@@ -220,11 +220,11 @@ def mp3_sig(file_name, blockcount = -1):
 
       elif header_attempts > MAX_HEADER_ATTEMPTS:
 
-        print "%d[%d/%d]%s:%s:%s %s %d" % (len(frame_sig), header_attempts, MAX_HEADER_ATTEMPTS, binascii.b2a_hex(header), binascii.b2a_hex(file_handle.read(5)), file_name, hex(file_handle.tell()), len(start_byte) * (1152.0 / 44100) / 60)
+        print("%d[%d/%d]%s:%s:%s %s %d" % (len(frame_sig), header_attempts, MAX_HEADER_ATTEMPTS, binascii.b2a_hex(header), binascii.b2a_hex(file_handle.read(5)), file_name, hex(file_handle.tell()), len(start_byte) * (1152.0 / 44100) / 60))
 
         # This means that perhaps we didn't guess the start correct so we try this again
         if len(frame_sig) == 1 and header_attempts < MAX_HEADER_ATTEMPTS:
-          print "False start -- trying again"
+          print("False start -- trying again")
 
           # seek to the first start byte + 1
           file_handle.seek(start_byte[0] + 2)
@@ -241,7 +241,7 @@ def mp3_sig(file_name, blockcount = -1):
       elif first_header_seen:
         header_attempts += 1 
         if len(frame_sig) == 1:
-          print "Resetting"
+          print("Resetting")
           file_handle.seek(start_byte[0] + 2)
 
           # discard what we thought was the first start byte and
@@ -255,7 +255,7 @@ def mp3_sig(file_name, blockcount = -1):
 
         elif header_attempts > 2:
           sys.stdout.write('%s !' % file_name)
-          print binascii.b2a_hex(header), "%x %d" % (file_handle.tell(), len(frame_sig))
+          print(binascii.b2a_hex(header), "%x %d" % (file_handle.tell(), len(frame_sig)))
           
           file_handle.seek(go_back, 1)
           go_back = -1
@@ -271,7 +271,7 @@ def mp3_sig(file_name, blockcount = -1):
 # (fila_name, byte_start, byte_end) where byte_end == -1 
 # means "the whole file" 
 def audio_serialize(file_list, out_path='/tmp/serialize.mp3'):
-  print ">>", out_path
+  print(">>", out_path)
   out = open(out_path, 'wb+')
 
   for name, start, end in file_list:
@@ -359,7 +359,7 @@ def audio_slice(file_name, start, end):
   return True
 
 def audio_stitch(file_list, cb_sig=mp3_sig):
-  print file_list
+  print(file_list)
   first = {'name': file_list[0]}
 
   crc32, offset = cb_sig(first['name'])
@@ -383,10 +383,10 @@ def audio_stitch(file_list, cb_sig=mp3_sig):
     try:
       pos = second['crc32'].index(first['crc32'][-2])
 
-      for i in xrange(5, 1, -1):
+      for i in range(5, 1, -1):
         if second['crc32'][pos - i + 2] != first['crc32'][-i]:
           isFound = False
-          print "Indices do not match between %s and %s" % (first['name'], second['name'])
+          print("Indices do not match between %s and %s" % (first['name'], second['name']))
           break
 
     except: 
@@ -411,9 +411,9 @@ def audio_tag(source, length_sec, out):
   length_ms = length_sec * 1000
   # Make sure our size to inject is 8 bytes long
   tlen_payload = ("%s%s" % ('\x00' * 8, str(length_ms)))[-9:]
-  print tlen_payload
+  print(tlen_payload)
   tlen = 'TLEN\x00\x00\x00\x08\x40%s' % (tlen_payload)
-  print len(tlen)
+  print(len(tlen))
 
   # Our ID3 length is a constant since we are just doing this to make itunes happy.
   block = 'ID3\x03\x00\x00\x00\x00\x00\x12%s' % tlen
@@ -425,7 +425,7 @@ def audio_tag(source, length_sec, out):
 if __name__ == "__main__":
   for file_name in sys.argv[1:]:
     sig, block = mp3_sig(file_name)
-    print len(block)
+    print(len(block))
 
   sys.exit(0)
 
@@ -438,9 +438,9 @@ if __name__ == "__main__":
     if fsize > 50000:
       p = mp3_sig(f)
       if p:
-        print float(len(p[0])) / fsize, len(p[0]), fsize, f
+        print(float(len(p[0])) / fsize, len(p[0]), fsize, f)
       else:
-        print "FAILURE: %s" % f
+        print("FAILURE: %s" % f)
 
   sys.exit(0)
 
