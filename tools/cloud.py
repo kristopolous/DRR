@@ -4,7 +4,7 @@ import os
 import re
 import sys
 from glob import glob
-import ConfigParser
+import configparser
 from azure.storage import BlobService
 import lib.cloud as cloud
 import lib.misc as misc
@@ -12,15 +12,15 @@ import lib.misc as misc
 def get_files(station_list, blob_service):
   for station in station_list:
     for f in blob_service.list_blobs('streams', prefix=station):
-      print f.name
+      print(f.name)
 
 def get_size(station_list, blob_service):
   all_files = []
   by_station = {}
   ix = 1
 
-  print " Station   Files   Space (GB)"
-  print "-----------------------------"
+  print(" Station   Files   Space (GB)")
+  print("-----------------------------")
   for station in sorted(station_list):
     sys.stdout.write( "%2d: %s " % (len(station_list) - ix + 1, station) )
     sys.stdout.flush()
@@ -34,11 +34,11 @@ def get_size(station_list, blob_service):
   disk_space = [ f.content_length for f in all_props ]
 
   gb = sum(disk_space) / (1024.0 ** 3)
-  print "-----------------------------"
-  print " %-8s %5d %9.3f GB" % ("Total", len(all_files), gb)
-  print " %-7s  $%.02f/month" % ("Cost", gb * 0.024)
-  print
-  print " *using $0.024/GB azure pricing"
+  print("-----------------------------")
+  print(" %-8s %5d %9.3f GB" % ("Total", len(all_files), gb))
+  print(" %-7s  $%.02f/month" % ("Cost", gb * 0.024))
+  print()
+  print(" *using $0.024/GB azure pricing")
 
 
 cfg = os.environ.get('CLOUD_CFG')
@@ -52,7 +52,7 @@ parser.add_argument("-q", "--query", default="size", help="query to send to the 
 args = parser.parse_args()
 
 if args.config is None:
-  print "Define the cloud configuration location with the CLOUD_CFG environment variable or using the -c option"
+  print("Define the cloud configuration location with the CLOUD_CFG environment variable or using the -c option")
   sys.exit(-1)
 
 if args.station == 'all':
@@ -60,7 +60,7 @@ if args.station == 'all':
 
 station_list = args.station.split(',')
 
-cloud_config = ConfigParser.ConfigParser()
+cloud_config = configparser.ConfigParser()
 cloud_config.read(args.config)
 config = {'azure': misc.config_section_map('Azure', cloud_config)}
 
@@ -73,9 +73,9 @@ elif args.query == 'list':
   get_files(station_list, blob_service)
 
 elif args.query == 'unlink':
-  print "Reading files to unlink from stdin"
+  print("Reading files to unlink from stdin")
 
   for line in sys.stdin:
     line = line.strip()
-    print "Removing %s" % line
+    print("Removing %s" % line)
     cloud.unlink(line, config=config)

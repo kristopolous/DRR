@@ -1,4 +1,4 @@
-#!/usr/bin/python -O
+#!/usr/bin/python3 -O
 """
 Given a stats query, this generates an ascii art chart which shows how good the coverage is of 
 the station over a week modulus.  This helps test the healthiness of the stream and the 
@@ -118,11 +118,11 @@ for row in stats['streams']:
   region_map[day].append(row)
 
 # Then populate each day in a list, sorted by the time.
-for key, value in region_map.items():
+for key, value in list(region_map.items()):
   region_map[key] = sorted([ (int(round(row[4])) % minutes_per_day, int(round(row[5])) % minutes_per_day) for row in value])
 
 # Start with an aesthetic space and draw our header
-print
+print()
 ts_row(parts)
 
 coverage = 0 
@@ -140,7 +140,7 @@ for day in sorted(region_map.keys()):
       mapper[i] += 1
 
   # Here's how we compute the total coverage
-  coverage += len(filter(lambda x: x != 0, mapper))
+  coverage += len([x for x in mapper if x != 0])
   total += minutes_per_day
 
   # Print the day we are considering
@@ -178,4 +178,4 @@ for day in sorted(region_map.keys()):
 
 # End with another referential header row and the total coverage
 ts_row(parts)
-print "\n         %s coverage: %f%%\n" % (callsign, 100 * (float(coverage) / total))
+print("\n         %s coverage: %f%%\n" % (callsign, 100 * (float(coverage) / total)))
