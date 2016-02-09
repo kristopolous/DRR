@@ -440,6 +440,10 @@ def manager(config):
     return success('restarting...')
 
 
+  @app.route('/list')
+  def list():
+    return success(misc.queue_dbg())
+
   @app.route('/upgrade')
   def upgrade():
     """

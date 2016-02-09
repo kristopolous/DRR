@@ -240,7 +240,7 @@ def stream_manager():
 
     while not misc.queue.empty():
       what, value = misc.queue.get(False)
-      misc.queue_debug((what, value))
+      misc.queue_dbg((what, value))
 
       # The curl proces discovered a new stream to be
       # used instead.
