@@ -59,8 +59,8 @@ def stream_download(callsign, url, my_pid, file_name):
 
     # misc.params can fail based on a shutdown sequence.
     if misc is None or misc.params is None or not misc.manager_is_running():
-      if misc is not None:
-        misc.shutdown()
+      # if misc is not None:
+      #  misc.shutdown()
       return False
 
     elif not misc.params['shutdown_time']:
@@ -240,6 +240,8 @@ def stream_manager():
 
     while not misc.queue.empty():
       what, value = misc.queue.get(False)
+      misc.queue_debug((what, value))
+
       # The curl proces discovered a new stream to be
       # used instead.
       if what == 'stream':
