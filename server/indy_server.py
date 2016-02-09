@@ -45,8 +45,6 @@ def stream_download(callsign, url, my_pid, file_name):
     global g_download_kill_pid
 
     """
-    nl['ix'] += 1
-    if nl['ix'] % 20 == 0:
       if len(data):
         catchall('download', json.dumps([g_download_kill_pid, nl['pid'], len(data)]))
       else:
@@ -91,7 +89,9 @@ def stream_download(callsign, url, my_pid, file_name):
 
     # This provides a reliable way to determine bitrate.  We look at how much 
     # data we've received between two time periods
-    misc.queue.put(('heartbeat', (TS.unixtime('hb'), nl['pid'])))
+    nl['ix'] += 1
+    if nl['ix'] % 30 == 0:
+      misc.queue.put(('heartbeat', (TS.unixtime('hb'), nl['pid'])))
 
     if not nl['stream']:
       try:

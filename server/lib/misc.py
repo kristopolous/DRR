@@ -96,8 +96,9 @@ def queue_dbg(what=False, value=False):
   if what == False:
     return list(filter(None, list(reversed(queue_debug[queue_debug_ix:] + queue_debug[:queue_debug_ix]))))
 
-  print(queue_debug_ix)
-  queue_debug[queue_debug_ix] = (time.time(), what, value)
+  value = list(value)
+  value.append(what)
+  queue_debug[queue_debug_ix] = value
   queue_debug_ix = (queue_debug_ix + 1) % 5000
 
 def do_nothing(signal, frame=None):
