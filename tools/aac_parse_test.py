@@ -17,17 +17,17 @@ def flv_skip(file_handle):
   # And of course python doesn't support uint_24 ... no, why would it 
   # be useful (ug bash)
 
-  print file_handle.tell()
+  print(file_handle.tell())
   # 4 + 1 + 2 + 1 + 2 + 1 + 4
   flv_header = file_handle.read(15)
 
   # i (uint32)       B (uint8) H (uint16)       B (uint8)       H (uint16)    B (uint8)     i (uint32)
   previous_tag_size, tag_type, body_length_u16, body_length_l8, timstamp_u16, timestamp_l8, padding  = struct.unpack('>iBHBHBi', flv_header)
 
-  print tag_type, body_length_u16, body_length_l8
+  print(tag_type, body_length_u16, body_length_l8)
   body_length = body_length_u16 << 8 | body_length_l8
 
-  print body_length
+  print(body_length)
   
 
 def aac_find_frame(file_handle):
@@ -99,13 +99,13 @@ def aac_decode(fname, c=0):
     # A and C (yes this is 0xf SIX and 0xf ZERO)
     if b0 != 0xff or (b1 & 0xf6 != 0xf0): 
       if frame_number == 1:
-        print "False start at byte %d" % file_handle.tell()
+        print("False start at byte %d" % file_handle.tell())
         file_handle.seek(frame_start + 1)
         aac_find_frame(file_handle)
         continue
 
       else:
-        print "Broken at frame#%d" % frame_number
+        print("Broken at frame#%d" % frame_number)
         break
 
     #
@@ -131,7 +131,7 @@ def aac_decode(fname, c=0):
   file_handle.close()
   return [frame_sig, start_byte]
 
-print len(aac_decode(sys.argv[1])[0])
+print(len(aac_decode(sys.argv[1])[0]))
 sys.exit(0)
 
 """
