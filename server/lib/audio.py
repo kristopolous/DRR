@@ -230,7 +230,7 @@ def mp3_info(byte, b1):
   if not bit_rate or not samp_rate: return failCase
 
   # from http://id3.org/mp3Frame
-  frame_size = (144000 * bit_rate / samp_rate) + pad_bit
+  frame_size = int((144000 * bit_rate / samp_rate) + pad_bit)
 
   return frame_size, samp_rate, bit_rate, pad_bit
 
@@ -522,7 +522,7 @@ def mp3_signature(file_name, blockcount=-1):
 
       b1 = header[1]
 
-      if header[0] == '\xff' and (b1 >> 4) == 0xf:
+      if header[0] == 0xff and (b1 >> 4) == 0xf:
 
         try:
           b = ord(file_handle.read(1))
