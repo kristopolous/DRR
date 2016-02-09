@@ -103,7 +103,7 @@ def stream_info(file_name, skip_size=False):
     if ts:
       duration_sec = int(ts[0]) * 60.0
 
-  if isinstance(duration_sec, (int, long, float)):
+  if isinstance(duration_sec, (int, float)):
     end_minute = (duration_sec / 60.0 + start_minute) % TS.MINUTES_PER_WEEK
 
   return {

@@ -30,7 +30,7 @@ def unixtime(what=''):
 
 def to_minute(unix_time):
   # Takes a given unix time and finds the week minute corresponding to it. 
-  if isinstance(unix_time, (int, long)):
+  if isinstance(unix_time, int)):
     unix_time = datetime.fromtimestamp(unix_time)
 
   return unix_time.weekday() * (24.0 * 60) + unix_time.hour * 60 + unix_time.minute + (unix_time.second / 60.0)
@@ -88,7 +88,7 @@ def duration_parse(duration_string):
 
 
 def name_to_unix(name):
-  if isinstance(name, (int, long, float)):
+  if isinstance(name, (int, float)):
     name = str(int(round(name)))
 
   return int(time.mktime(time.strptime(name, "%Y%m%d%H%M")))
@@ -99,7 +99,7 @@ def ts_to_name(ts=None, with_seconds=False):
   # necessarily be suggesting any type for our conversion.
   if not ts: ts = now()
 
-  if isinstance(ts, (int, long, float)):
+  if isinstance(ts, (int, float)):
     ts = datetime.fromtimestamp(ts).timetuple()
 
   if type(ts) is datetime:

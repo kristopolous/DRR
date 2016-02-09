@@ -657,7 +657,7 @@ def manager(config):
     if not duration_min:
       return do_error("duration '%s' is not set correctly" % duration_string)
 
-    if not isinstance(start_time_list[0], (int, long, float)):
+    if not isinstance(start_time_list[0], (int, float)):
       return do_error('weekday and start times are not set correctly')
 
     # In #22 We're going to add 2 minutes to the duration to make sure that we get
