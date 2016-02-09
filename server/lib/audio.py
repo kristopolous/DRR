@@ -327,7 +327,7 @@ def signature(fname, blockcount=-1, depth=1):
 
     # Make sure we don't foolishly recurse
     if depth == 1:
-      return signature(fname, blockcount)
+      return signature(fname, blockcount, depth + 1)
 
   return sig, block
 
