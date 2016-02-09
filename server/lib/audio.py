@@ -294,7 +294,7 @@ def get_audio_format(file_name):
   return audio_format
 
 
-def signature(fname, blockcount=-1):
+def signature(fname, blockcount=-1, depth=1):
   audio_format = DB.get('format') 
 
   if not audio_format:
@@ -318,6 +318,17 @@ def signature(fname, blockcount=-1):
     if len(block) > 0 and audio_format == _FORMAT_AAC:
       DB.set('format', _FORMAT_MP3)
       DB.clear_cache()
+
+  # Stream formats can change actually.
+  if len(block) == 0:
+    tryformat = _FORMAT_AAC
+    if audio_format == _FORMAT_AAC: tryformat = _FORMAT_MP3
+    DB.set('format', tryformat)
+    DB.clear_cache()
+
+    # Make sure we don't foolishly recurse
+    if depth == 1:
+      return signature(fname, blockcount)
 
   return sig, block
 

@@ -225,6 +225,10 @@ def set(key, value):
   return value
 
 
+def clear_cache():
+  global g_params
+  g_params = {}
+
 def get(key, expiry=0, use_cache=True, default=None):
   # Retrieves a value from the database, tentative on the expiry. 
   # If the cache is set to true then it retrieves it from in-memory if available, otherwise
