@@ -717,9 +717,9 @@ def manager(config):
 
     start = TS.unixtime('delay')
 
-    formatter = logging.Formatter("%(asctime)s %(user_agent)s %(name)s %(levelname)s %(message)s")
+    #formatter = logging.Formatter("%(asctime)s %(user_agent)s %(name)s %(levelname)s %(message)s")
     #misc.handler.setFormatter(formatter)
-    app.logger.addHandler(formatter)
+    #app.logger.addHandler(formatter)
 
     while TS.unixtime('delay') - start < (patience + 3):
       logging.info('Listening on %s' % config['port'])
