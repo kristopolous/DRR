@@ -1,8 +1,8 @@
-#!/usr/bin/python -O
+#!/usr/bin/python3 -O
 import re
 import os
 import argparse
-import ConfigParser
+import configparser
 import lib.misc as misc
 import lib.db as DB
 import time
