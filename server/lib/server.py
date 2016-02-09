@@ -442,8 +442,6 @@ def manager(config):
 
   @app.route('/dolist')
   def dolist():
-    m = misc.queue_dbg()
-    print(m)
     return success(misc.queue_dbg())
 
   @app.route('/upgrade')
@@ -718,8 +716,12 @@ def manager(config):
     attempt = 1
 
     start = TS.unixtime('delay')
+
+    formatter = logging.Formatter("%(asctime)s %(user_agent)s %(name)s %(levelname)s %(message)s")
+    #misc.handler.setFormatter(formatter)
+    app.logger.addHandler(formatter)
+
     while TS.unixtime('delay') - start < (patience + 3):
-      app.logger.addHandler(logging.getLogger())
       logging.info('Listening on %s' % config['port'])
 
       try:

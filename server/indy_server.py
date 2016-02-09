@@ -550,11 +550,11 @@ def read_config(config):
 
   logger = logging.getLogger()
   formatter = logging.Formatter(str(os.getpid()) + ':%(asctime)s:%(message)s', '%m%d_%H%M_%S')
-  handler = RotatingFileHandler('indycast.log', maxBytes=5000000, backupCount=2)
-  handler.setFormatter(formatter)
-  handler.setLevel(numeric_level)
+  misc.handler = RotatingFileHandler('indycast.log', maxBytes=5000000, backupCount=2)
+  misc.handler.setFormatter(formatter)
+  misc.handler.setLevel(numeric_level)
   logger.setLevel(numeric_level)
-  logger.addHandler(handler)
+  logger.addHandler(misc.handler)
 
   # Increment the number of times this has been run so we can track the stability of remote 
   # servers and instances.

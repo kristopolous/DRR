@@ -96,10 +96,11 @@ def queue_dbg(what=False, value=False):
   if what == False:
     return list(filter(None, list(reversed(queue_debug[queue_debug_ix:] + queue_debug[:queue_debug_ix]))))
 
-  value = list(value)
-  value.append(what)
-  queue_debug[queue_debug_ix] = value
-  queue_debug_ix = (queue_debug_ix + 1) % 5000
+  if type(value) is not bool:
+    value = list(value)
+    value.append(what)
+    queue_debug[queue_debug_ix] = value
+    queue_debug_ix = (queue_debug_ix + 1) % 5000
 
 def do_nothing(signal, frame=None):
   # Catches signals that we would rather just ignore 
