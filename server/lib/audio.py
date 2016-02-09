@@ -4,7 +4,6 @@ from math import ceil
 import re
 import struct
 import logging
-import lib.misc 
 from time import sleep
 import lib.db as DB
 import lib.ts as TS
@@ -118,6 +117,7 @@ def stream_info(file_name, skip_size=False):
 
 
 def stream_name(list_in, absolute_start_minute, duration_minute, relative_start_minute=None):
+  import lib.misc as misc
   # Get the stream name from list and start minute over a given duration. 
   duration_sec = duration_minute * 60.0
 
