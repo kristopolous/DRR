@@ -2,6 +2,6 @@
 callsign=kusf
 long=-122.166076
 lat=37.424106
-stream=http://216.235.81.101/play?s=kusf
+stream=http://104.236.145.45:8000/stream
 port=9030
 cloud=~/cloudcreds.cfg
