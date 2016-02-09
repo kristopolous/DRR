@@ -69,7 +69,7 @@ def aac_decode(fname, c=0):
     if not block or len(block) < header_size:
       break
 
-    b0, b1, b2, b3, b4, b5, b6 = [ord(byte) for byte in block[:header_size]]
+    b0, b1, b2, b3, b4, b5, b6 = [byte for byte in block[:header_size]]
 
     # b0       b1       b2       b3       b4       b5       b6
     # AAAAAAAA AAAABCCD EEFFFFGH HHIJKLMM MMMMMMMM MMMOOOOO OOOOOOPP 
