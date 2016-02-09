@@ -311,6 +311,7 @@ def signature(fname, blockcount=-1, depth=1):
   block = None
   if audio_format == _FORMAT_AAC:
     sig, block = aac_signature(fname, blockcount)
+    print(len(block))
 
   if audio_format == _FORMAT_MP3 or not block: 
     sig, block = mp3_signature(fname, blockcount)
