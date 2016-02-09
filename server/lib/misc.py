@@ -91,13 +91,13 @@ pid_map = {}
 lockMap = {'prune': Lock(), 'main': Lock()}
 last_official_query = None
 
-def queue_dbg(what = False):
+def queue_dbg(what=False, value=False):
   global queue_debug_ix, queue_debug
   if what == False:
-    return list(reversed(queue_debug[queue_debug_ix:] + queue_debug[:queue_debug_ix]))
+    return list(filter(None, list(reversed(queue_debug[queue_debug_ix:] + queue_debug[:queue_debug_ix]))))
 
   print(queue_debug_ix)
-  queue_debug[queue_debug_ix] = (time, what)
+  queue_debug[queue_debug_ix] = (time.time(), what, value)
   queue_debug_ix = (queue_debug_ix + 1) % 5000
 
 def do_nothing(signal, frame=None):

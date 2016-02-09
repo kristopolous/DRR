@@ -440,8 +440,10 @@ def manager(config):
     return success('restarting...')
 
 
-  @app.route('/list')
-  def list():
+  @app.route('/dolist')
+  def dolist():
+    m = misc.queue_dbg()
+    print(m)
     return success(misc.queue_dbg())
 
   @app.route('/upgrade')
