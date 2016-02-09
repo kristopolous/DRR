@@ -30,7 +30,7 @@ def unixtime(what=''):
 
 def to_minute(unix_time):
   # Takes a given unix time and finds the week minute corresponding to it. 
-  if isinstance(unix_time, int)):
+  if type(unix_time) is int:
     unix_time = datetime.fromtimestamp(unix_time)
 
   return unix_time.weekday() * (24.0 * 60) + unix_time.hour * 60 + unix_time.minute + (unix_time.second / 60.0)
@@ -177,5 +177,5 @@ def get_offset(force=False):
       DB.set('offset', offset_backup)
       offset = offset_backup
 
-  return int(offset)
+  return int(float(offset))
 
