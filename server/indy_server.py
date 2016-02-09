@@ -458,7 +458,7 @@ def read_config(config):
     'pruneevery': 0.5
   }
 
-  for k, v in defaults.items():
+  for k, v in list(defaults.items()):
     if k not in misc.config:
       misc.config[k] = v
     else:
@@ -578,7 +578,7 @@ parser.add_argument('--version', action='version', version='indycast %s :: Aug 2
 parser.add_argument("--daemon", action='store_true',  help="run as daemon")
 args = parser.parse_args()
 if args.daemon:
-  Popen( filter(lambda x: x != '--daemon', sys.argv) )
+  Popen( [x for x in sys.argv if x != '--daemon'] )
   sys.exit(0)
 
 read_config(args.config)      
