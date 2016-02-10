@@ -84,7 +84,7 @@ def ts_row(parts):
   sys.stdout.write("         +-")
   flag = False
   for ix in range(parts):
-    hr = 24 * ix / parts
+    hr = int(24 * ix / parts)
     if hr == last_hr:
       if not flag:
         sys.stdout.write("-")
@@ -101,7 +101,7 @@ def ts_row(parts):
 
 minutes_per_day = 60 * 24
 width, height = getTerminalSize()
-parts = ((width - 10) / 24) * 24
+parts = int(((width - 20) / 24) * 24)
 region_map = {}
 
 stats = json.loads(sys.stdin.read())
@@ -146,7 +146,7 @@ for day in sorted(region_map.keys()):
   # Print the day we are considering
   sys.stdout.write("%s " % day)
 
-  for ix in range(parts):
+  for ix in range(int(parts)):
     lower = minutes_per_day * ix / parts
     upper = minutes_per_day * (ix + 1) / parts
     mid = int((upper - lower) / 2 + lower)
@@ -178,4 +178,4 @@ for day in sorted(region_map.keys()):
 
 # End with another referential header row and the total coverage
 ts_row(parts)
-print("\n         %s coverage: %f%%\n" % (callsign, 100 * (float(coverage) / total)))
+print("\n         %s coverage: %f%%\n" % (callsign, 100.0 * (float(coverage) / total)))
