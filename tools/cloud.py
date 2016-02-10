@@ -23,7 +23,7 @@ def get_all(station):
 
 def get_files(station_list, blob_service):
   for station in station_list:
-    for f in blob_service.list_blobs('streams', prefix=station):
+    for f in get_all(station):
       print(f.name)
 
 def get_size(station_list, blob_service):
