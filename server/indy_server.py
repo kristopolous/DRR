@@ -90,9 +90,7 @@ def stream_download(callsign, url, my_pid, file_name):
 
     # This provides a reliable way to determine bitrate.  We look at how much 
     # data we've received between two time periods
-    nl['ix'] += 1
-    if nl['ix'] % 30 == 0:
-      misc.queue.put(('heartbeat', (TS.unixtime('hb'), nl['pid'])))
+    misc.queue.put(('heartbeat', (TS.unixtime('hb'), nl['pid'], len(data))))
 
     if not nl['stream']:
       try:
@@ -157,7 +155,10 @@ def stream_manager():
   # This is to compute a format agnostic bitrate
   # (see heartbeat for more information)
   #
-  has_bitrate = DB.get('bitrate') 
+  has_bitrate = DB.get('bitrate')
+  if has_bitrate and int(has_bitrate) == 0:
+    has_bitrate = False
+
   first_time = 0
   total_bytes = 0
   normalize_delay = 6
@@ -309,6 +310,7 @@ def stream_manager():
           DB.set('last_recorded', time.time())
 
         if not has_bitrate: 
+          margin = 60
 
           # Keep track of the first time this stream started (this is where our total
           # byte count is derived from)
@@ -330,21 +332,25 @@ def stream_manager():
           # stabilizing convergence far quicker.
           #
           elif (value[0] - first_time > normalize_delay):
+            print(value[0] - first_time, (normalize_delay + margin))
             # If we haven't determined this stream's bitrate (which we use to estimate 
             # the amount of content is in a given archived stream), then we compute it 
             # here instead of asking the parameters of a given block and then presuming.
-            total_bytes += value[1]
+            total_bytes += value[2]
 
             # We still give it a time period after the normalizing delay in order to build enough
             # samples to make a solid guess at what this number should be.
-            if (value[0] - first_time > (normalize_delay + 60)):
+            if (value[0] - first_time > (normalize_delay + margin)):
               # We take the total bytes, calculate it over our time, in this case, 25 seconds.
               est = total_bytes / (value[0] - first_time - normalize_delay)
 
               # We find the nearest 8Kb increment this matches and then scale out.
               # Then we multiply out by 8 (for _K_ B) and 8 again for K _b_.
               bitrate = int( round (est / 1000) * 8 )
-              DB.set('bitrate', bitrate)
+              print("Estimated bitrate:%d total:%d est:%d denom:%d" % (bitrate, total_bytes, est, value[0] - first_time - normalize_delay) )
+              if bitrate > 0:
+                DB.set('bitrate', bitrate)
+                has_bitrate = DB.get('bitrate')
 
     #if last_heartbeat:
     #  logging.info("%d heartbeat %d" % (last_heartbeat, last_heartbeat_tid))
