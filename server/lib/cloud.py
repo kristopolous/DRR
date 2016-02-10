@@ -51,7 +51,7 @@ def connect(config=False):
   # Connect to the cloud service. 
   if not config: config = misc.config['_private']
 
-  from azure.storage import BlobService
+  from azure.storage.blob import BlobService
   container = 'streams'
 
   if not 'azure' in config:
