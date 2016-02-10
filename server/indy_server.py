@@ -74,19 +74,25 @@ def stream_download(callsign, url, my_pid, file_name):
       misc.params['isFirst'] = False
 
       if len(data) < 800:
-        data_string = data.decode('utf-8')
-        if re.match('https?://', data_string):
-          # If we are getting a redirect then we don't mind, we
-          # just put it in the stream and then we leave
-          misc.queue.put(('stream', data_string.strip()))
-          return False
+        try:
+          data_string = data.decode('utf-8')
+        
+          if re.match('https?://', data_string):
+            # If we are getting a redirect then we don't mind, we
+            # just put it in the stream and then we leave
+            misc.queue.put(('stream', data_string.strip()))
+            return False
 
-        # A pls style playlist
-        elif re.findall('File\d', data_string, re.M):
-          logging.info('%d: Found a pls, using the File1 parameter' % (nl['pid'], ))
-          matches = re.findall('File1=(.*)\n', data_string, re.M)
-          misc.queue.put(('stream', matches[0].strip()))
-          return False
+          # A pls style playlist
+          elif re.findall('File\d', data_string, re.M):
+            logging.info('%d: Found a pls, using the File1 parameter' % (nl['pid'], ))
+            matches = re.findall('File1=(.*)\n', data_string, re.M)
+            misc.queue.put(('stream', matches[0].strip()))
+            return False
+
+        # If it gets here it's binary ... I guess that's fine.
+        except:
+          pass
 
     # This provides a reliable way to determine bitrate.  We look at how much 
     # data we've received between two time periods
