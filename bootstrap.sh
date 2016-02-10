@@ -1,8 +1,11 @@
 #!/bin/sh
+#
+# Intended for Jessie (Debian 8)
+#
 cd server
 
 aptinstall() {
-  sudo apt-get update
+  #sudo apt-get update
 
   sudo apt-get -y -f install  \
       python-pip   python      \
@@ -21,4 +24,4 @@ hardupgrade() {
 
 aptinstall
 # hardupgrade
-/usr/bin/pip-3.2 install --user -r requirements.txt
+/usr/bin/pip-3 install --user -r requirements.txt
