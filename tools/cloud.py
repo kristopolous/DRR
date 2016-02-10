@@ -5,9 +5,21 @@ import re
 import sys
 from glob import glob
 import configparser
-from azure.storage import BlobService
+from azure.storage.blob import BlobService
 import lib.cloud as cloud
 import lib.misc as misc
+
+
+def get_all(station):
+  blobs = []
+  marker = None
+  while True:
+    batch = blob_service.list_blobs('streams', prefix=station, marker=marker)
+    blobs.extend(batch)
+    if not batch.next_marker:
+      break
+    marker = batch.next_marker
+  return blobs
 
 def get_files(station_list, blob_service):
   for station in station_list:
@@ -24,7 +36,7 @@ def get_size(station_list, blob_service):
   for station in sorted(station_list):
     sys.stdout.write( "%2d: %s " % (len(station_list) - ix + 1, station) )
     sys.stdout.flush()
-    by_station[station] = [ f for f in blob_service.list_blobs('streams', prefix=station) ]
+    by_station[station] = [ f for f in get_all(station) ]
     total_space = sum([ f.properties.content_length for f in by_station[station] ])
     sys.stdout.write( " %5d %9.3f\n" % (len(by_station[station]),  total_space / (1024.0 ** 3)) )
     all_files += by_station[station]
