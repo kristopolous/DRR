@@ -18,6 +18,6 @@ hardupgrade() {
   yes | sudo pip3 uninstall azure 
 }
 
-# aptinstall
+aptinstall
 # hardupgrade
 pip3 install --user -r requirements.txt
