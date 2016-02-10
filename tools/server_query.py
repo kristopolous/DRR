@@ -160,9 +160,14 @@ for station in all_stations:
       sys.stdout.write("%s " % url)
 
     stream = urlopen("http://%s/%s" % (url, args.query), timeout=15)
-    data = stream.read().decode('utf8')
+    data_raw = stream.read()
     stop = time.time()
 
+    if args.query == 'db':
+      sys.stdout.buffer.write(data_raw)
+      next
+
+    data = data_raw.decode('utf8')
     if args.query == 'heartbeat':
       document = json.loads(data)
       document['delta'] = document['now'] - float(document['last_recorded'])
