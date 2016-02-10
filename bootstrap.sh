@@ -14,8 +14,8 @@ aptinstall() {
       sqlite3      zlib1g-dev     \
       uuid-runtime build-essential \
       python3-pip  python3        \
-      libcurl4-gnutls-dev       \ 
-      libgnutls28-dev         \
+      libcurl4-gnutls-dev       \
+      libgnutls28-dev         
 }
 
 hardupgrade() {
