@@ -282,7 +282,7 @@ def config_section_map(section, Config):
   try:
     options = Config.options(section)
 
-  except ConfigParser.NoSectionError as exc:
+  except configparser.NoSectionError as exc:
     return None
 
   for option in options:
