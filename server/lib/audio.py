@@ -90,6 +90,11 @@ def stream_info(file_name, skip_size=False):
     if skip_size: raise Exception
 
     bitrate = int(DB.get('bitrate') or 128)
+
+    if bitrate == 0:
+      logging.warn("Bitrate is 0. This is a bug.")
+      raise Exception
+
     file_size = os.path.getsize(file_name)
     duration_sec = file_size / (bitrate * (1000.0 / 8.0))
 

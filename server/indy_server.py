@@ -332,7 +332,6 @@ def stream_manager():
           # stabilizing convergence far quicker.
           #
           elif (value[0] - first_time > normalize_delay):
-            print(value[0] - first_time, (normalize_delay + margin))
             # If we haven't determined this stream's bitrate (which we use to estimate 
             # the amount of content is in a given archived stream), then we compute it 
             # here instead of asking the parameters of a given block and then presuming.
@@ -347,7 +346,7 @@ def stream_manager():
               # We find the nearest 8Kb increment this matches and then scale out.
               # Then we multiply out by 8 (for _K_ B) and 8 again for K _b_.
               bitrate = int( round (est / 1000) * 8 )
-              print("Estimated bitrate:%d total:%d est:%d denom:%d" % (bitrate, total_bytes, est, value[0] - first_time - normalize_delay) )
+              #print("Estimated bitrate:%d total:%d est:%d denom:%d" % (bitrate, total_bytes, est, value[0] - first_time - normalize_delay) )
               if bitrate > 0:
                 DB.set('bitrate', bitrate)
                 has_bitrate = DB.get('bitrate')
