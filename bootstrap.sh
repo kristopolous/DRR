@@ -25,4 +25,4 @@ hardupgrade() {
 
 aptinstall
 # hardupgrade
-/usr/bin/pip-3 install --user -r requirements.txt
+/usr/bin/pip3 install --user -r requirements.txt
