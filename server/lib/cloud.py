@@ -12,6 +12,9 @@ from glob import glob
 from datetime import datetime, timedelta
 from threading import Thread
 
+blob_service = False
+container = False
+
 def size(basedir):
   total = 0
 
@@ -48,17 +51,20 @@ def get(path, do_open=True):
 
 def connect(config=False):
   import lib.misc as misc 
+  from azure.storage.blob import BlobService
+  global blob_service, container
   # Connect to the cloud service. 
   if not config: config = misc.config['_private']
 
-  from azure.storage.blob import BlobService
   container = 'streams'
 
   if not 'azure' in config:
     return None, None
 
-  blob_service = BlobService(config['azure']['storage_account_name'], config['azure']['primary_access_key'])
-  blob_service.create_container(container, x_ms_blob_public_access='container')
+  if not blob_service:
+    blob_service = BlobService(config['azure']['storage_account_name'], config['azure']['primary_access_key'])
+    blob_service.create_container(container, x_ms_blob_public_access='container')
+
   return blob_service, container
 
 
@@ -79,6 +85,7 @@ def unlink(path, config=False):
 
 def put(path):
   import lib.misc as misc 
+
   # Place a file, given a path, in the cloud. 
   if not misc.am_i_official():
     logging.info ("I would have uploaded %s but I'm not the official %s server" % (path, misc.config['callsign']) )
