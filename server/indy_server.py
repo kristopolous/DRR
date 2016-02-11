@@ -170,7 +170,7 @@ def stream_manager():
   normalize_delay = 6
   cycle_count = 0
 
-  cascade_time = misc.config['cascadetime']
+  cascade_time = misc.config['cascade_time']
   cascade_buffer = misc.config['cascadebuffer']
   cascade_margin = cascade_time - cascade_buffer
 
@@ -471,7 +471,7 @@ def read_config(config):
     'cascadebuffer': 15,
 
     # The time between cascaded streams
-    'cascadetime': '15m',
+    'cascade_time': '15m',
 
     # Cloud credentials (ec2, azure etc)
     'cloud': None,

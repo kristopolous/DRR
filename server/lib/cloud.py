@@ -166,7 +166,7 @@ def register_stream_list(reindex=False):
   # 
   # If the creation time is less then this then we don't register this
   # until later.
-  cutoff = time.mktime((datetime.now() - timedelta(minutes=1, seconds=misc.config['cascadetime'])).timetuple())
+  cutoff = time.mktime((datetime.now() - timedelta(minutes=1, seconds=misc.config['cascade_time'])).timetuple())
 
   for fname in diff:
     if len(fname) == 0 or os.path.getctime(fname) > cutoff:
@@ -225,7 +225,7 @@ def find_streams(start_list, duration_min):
   condition_query = "((%s))" % ') or ('.join(condition_list)
 
   # see https://github.com/kristopolous/DRR/issues/50 - nah this shit is buggy
-  condition_query += " and start_unix < datetime(%d, 'unixepoch', 'localtime')" % (TS.sec_now() - misc.config['cascadetime'] + 3)
+  condition_query += " and start_unix < datetime(%d, 'unixepoch', 'localtime')" % (TS.sec_now() - misc.config['cascade_time'] + 3)
 
   full_query = "select * from streams where %s order by week_number * 10080 + start_minute asc" % condition_query
 
@@ -250,7 +250,7 @@ def find_streams(start_list, duration_min):
 
       episode = []
 
-    cutoff_minute = entry['start_minute'] + (12 * misc.config['cascadetime']) % TS.MINUTES_PER_WEEK
+    cutoff_minute = entry['start_minute'] + (12 * misc.config['cascade_time']) % TS.MINUTES_PER_WEEK
     current_week = entry['week_number']
 
     # We know by definition that every entry in our stream_list is a valid thing we need
