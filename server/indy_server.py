@@ -412,6 +412,9 @@ def stream_manager():
     time.sleep(cycle_time)
 
 def unit_convert_to_sec(value):
+  if type(value) is not str:
+    return value
+
   m = re.match('^([\-\d\.]+)(.?)', value)
 
   if m is None:
@@ -492,9 +495,8 @@ def read_config(config):
   for k, v in list(defaults.items()):
     if k not in misc.config:
       misc.config[k] = v
-    else:
-      if type(v) is int: misc.config[k] = int(misc.config[k])
-      elif type(v) is float: misc.config[k] = float(misc.config[k])
+
+    misc.config[k] = unit_convert_to_sec(misc.config[k])
 
   # In case someone is specifying ~/radio 
   misc.config['storage'] = os.path.expanduser(misc.config['storage'])
