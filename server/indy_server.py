@@ -412,7 +412,11 @@ def stream_manager():
     time.sleep(cycle_time)
 
 def unit_convert_to_sec(value):
-  m = re.match('([\-\d\.]*)(.?)', value)
+  m = re.match('^([\-\d\.]+)(.?)', value)
+
+  if m is None:
+    return value
+
   value = float(m.groups()[0])
   unit = m.groups()[1].lower
 
