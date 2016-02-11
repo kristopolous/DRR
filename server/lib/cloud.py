@@ -436,7 +436,9 @@ def prune_process(reindex=False, force=False):
     cloud_cutoff = TS.unixtime('prune') - misc.config['disk_archive']
 
   # Put thingies into the cloud.
-  count = 0
+  count_cloud = 0
+  count_delete = 0
+
   for file_name in glob('*/*.mp3'):
     #
     # Depending on many factors this could be running for hours
@@ -456,7 +458,7 @@ def prune_process(reindex=False, force=False):
     if file_name.startswith('slices') and ctime < slice_cutoff or ctime < cutoff:
       logging.debug("Prune[remove]: %s (ctime)" % file_name)
       os.unlink(file_name)
-      count += 1 
+      count_delete += 1 
 
     # We want to make sure we aren't archiving the slices
     elif cloud_cutoff and ctime < cloud_cutoff and not file_name.startswith('slice') and misc.am_i_official():
@@ -466,7 +468,7 @@ def prune_process(reindex=False, force=False):
       if put(file_name):
         try:
           os.unlink(file_name)
-          count += 1 
+          count_cloud += 1 
 
         except:
           logging.debug("Prune[cloud]: Couldn't remove %s" % file_name)
@@ -478,7 +480,7 @@ def prune_process(reindex=False, force=False):
     if ctime < cutoff:
       logging.debug("Prune: %s" % file_name)
       os.unlink(file_name)
-      count += 1 
+      count_delete += 1 
 
   # Don't do this fucking shit at all because fuck this so hard.
   #logging.info('select name, id from streams where end_unix < date("now", "-%d seconds") or (end_minute - start_minute < 0.05 and start_unix < date("now", "%d seconds"))' % (archive_duration, TS.get_offset() * 60 - 1200))
@@ -501,10 +503,10 @@ def prune_process(reindex=False, force=False):
     # now only after we've deleted from the cloud can we delete the local file
     if os.path.exists(file_name):
       os.unlink(file_name)
-      count += 1
+      count_delete += 1
 
 
-  logging.info("Found %d files older than %s days." % (count, misc.config['cloud_archive'] / TS.ONE_DAY_SECOND))
+  logging.info("Deleted %d files and put %d on the cloud." % (count_delete, count_cloud))
   misc.lockMap['prune'].release()
 
 
