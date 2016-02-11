@@ -421,10 +421,9 @@ def unit_convert_to_sec(value):
     return value
 
   value = float(m.groups()[0])
-  unit = m.groups()[1].lower
+  unit = m.groups()[1].lower()
 
   if unit == 'y': return value * 60.0 * 60.0 * 24.0 * 365.25
-  if unit == 'm': return value * 60.0 * 60.0 * 24.0 * 365.25 / 12.0
   if unit == 'w': return value * 60.0 * 60.0 * 24.0 * 7.0
   if unit == 'd': return value * 60.0 * 60.0 * 24.0
   if unit == 'h': return value * 60.0 * 60.0
@@ -463,14 +462,14 @@ def read_config(config):
     # The TCP port to run the server on
     'port': 5000,
 
-    # The (second) time in looking to see if our stream is running
+    # The time in looking to see if our stream is running
     'cycletime': 7,
 
-    # The (second) time to start a stream BEFORE the lapse of the cascade-time
+    # The time to start a stream BEFORE the lapse of the cascade-time
     'cascadebuffer': 15,
 
-    # The (second) time between cascaded streams
-    'cascadetime': 60 * 15,
+    # The time between cascaded streams
+    'cascadetime': '15m',
 
     # Cloud credentials (ec2, azure etc)
     'cloud': None,
