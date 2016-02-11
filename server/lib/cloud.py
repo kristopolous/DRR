@@ -385,7 +385,7 @@ def get_next(info_query):
   
 def prune(reindex=False, force=False):
   import lib.misc as misc 
-  # Gets rid of files older than archivedays - cloud stores things if relevant. 
+  # Gets rid of files older than archive - cloud stores things if relevant. 
 
   # Now when the child calls it it won't hit the network for every prune.
   process = Thread(name='Prune:%s' % (TS.ts_to_name(), ), target=prune_process, args=(reindex, force))
@@ -418,7 +418,7 @@ def prune_process(reindex=False, force=False):
     misc.lockMap['prune'].release()
     return None
 
-  archive_duration = misc.config['archivedays'] * TS.ONE_DAY_SECOND
+  archive_duration = misc.config['cloud_archive']
   cutoff = TS.unixtime('prune') - archive_duration
 
   # Remove all slices older than 4 hours.
@@ -426,7 +426,7 @@ def prune_process(reindex=False, force=False):
 
   cloud_cutoff = None
   if misc.config['cloud']:
-    cloud_cutoff = TS.unixtime('prune') - misc.config['cloudarchive'] * TS.ONE_DAY_SECOND
+    cloud_cutoff = TS.unixtime('prune') - misc.config['disk_archive']
 
   # Put thingies into the cloud.
   count = 0
@@ -443,7 +443,7 @@ def prune_process(reindex=False, force=False):
 
     ctime = os.path.getctime(file_name)
 
-    # print "Looking at ", file_name, ctime, cutoff, archive_duration,  misc.config['archivedays'], misc.am_i_official()
+    # print "Looking at ", file_name, ctime, cutoff, archive_duration,  misc.config['archive'], misc.am_i_official()
     # We observe the rules set up in the config.
     logging.debug("%s cloud:%d ctime:%d slice:%d cutoff:%d ctime-cloud:%d ctime-slice:%d" %(file_name, cloud_cutoff, ctime, slice_cutoff, cutoff, ctime-cloud_cutoff, ctime-slice_cutoff ))
     if file_name.startswith('slices') and ctime < slice_cutoff or ctime < cutoff:
@@ -497,7 +497,7 @@ def prune_process(reindex=False, force=False):
       count += 1
 
 
-  logging.info("Found %d files older than %s days." % (count, misc.config['archivedays']))
+  logging.info("Found %d files older than %s days." % (count, misc.config['cloud_archive'] / TS.ONE_DAY_SECOND))
   misc.lockMap['prune'].release()
 
 
