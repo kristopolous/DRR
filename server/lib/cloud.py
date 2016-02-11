@@ -413,7 +413,8 @@ def prune_process(reindex=False, force=False):
   try:
     register_stream_list(reindex)
 
-  except:
+  except Exception as e:
+    logging.info("Wasn't able to register streams: %s" % e)
     misc.lockMap['prune'].release()
     return None
 
