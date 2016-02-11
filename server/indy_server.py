@@ -230,7 +230,8 @@ def stream_manager():
     # as we aren't supposed to be shutting down, this should be toggled to true.
     #
     if last_prune < (TS.unixtime('prune') - prune_duration):
-      prune_duration = misc.config['prune_every'] + 10000 * (1 / 8.0 - random.random() / 4.0)
+      prune_duration = misc.config['prune_every'] * (1.10 - random.random() / 5.0)
+      misc.prune_duration = prune_duration
       # We just assume it can do its business in under a day
       misc.pid_map['prune'] = cloud.prune()
       last_prune = TS.unixtime('prune')
