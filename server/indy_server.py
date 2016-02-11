@@ -411,6 +411,19 @@ def stream_manager():
 
     time.sleep(cycle_time)
 
+def unit_convert_to_sec(value):
+  m = re.match('([\-\d\.]*)(.?)', value)
+  value = float(m.groups()[0])
+  unit = m.groups()[1].lower
+
+  if unit == 'y': return value * 60.0 * 60.0 * 24.0 * 365.25
+  if unit == 'm': return value * 60.0 * 60.0 * 24.0 * 365.25 / 12.0
+  if unit == 'w': return value * 60.0 * 60.0 * 24.0 * 7.0
+  if unit == 'd': return value * 60.0 * 60.0 * 24.0
+  if unit == 'h': return value * 60.0 * 60.0
+  if unit == 'm': return value * 60.0
+  return value
+
 def read_config(config):
   import configparser
   # Reads a configuration file. 
