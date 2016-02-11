@@ -273,6 +273,7 @@ def run(query, args=None, with_last=False):
   db = connect()
   res = None
 
+  #:logging.debug("sql: %s" % query)
   #print " %f start" % (time.time() - start)
   try:
     if args is None:

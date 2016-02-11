@@ -445,6 +445,7 @@ def prune_process(reindex=False, force=False):
 
     # print "Looking at ", file_name, ctime, cutoff, archive_duration,  misc.config['archivedays'], misc.am_i_official()
     # We observe the rules set up in the config.
+    logging.debug("%s cloud:%d ctime:%d slice:%d cutoff:%d ctime-cloud:%d ctime-slice:%d" %(file_name, cloud_cutoff, ctime, slice_cutoff, cutoff, ctime-cloud_cutoff, ctime-slice_cutoff ))
     if file_name.startswith('slices') and ctime < slice_cutoff or ctime < cutoff:
       logging.debug("Prune[remove]: %s (ctime)" % file_name)
       os.unlink(file_name)
