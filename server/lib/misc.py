@@ -22,6 +22,7 @@ source_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 # ipv4 then optimistically cross our fingers.
 #
 origGetAddrInfo = socket.getaddrinfo
+prune_duration = 0
 
 def getAddrInfoWrapper(host, port, family=0, socktype=0, proto=0, flags=0):
   attempts = 1
@@ -124,6 +125,7 @@ def base_stats():
     'now': time.time(),
     'now-human': TS.ts_to_name(),
     'version': __version__,
+    'next-prune': [TS.unixtime('prune') - prune_duration, last_prune],
     'load': load,
     'files': [m.path for m in psutil.Process().open_files()],
     'mem': [
