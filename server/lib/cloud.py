@@ -388,17 +388,17 @@ def prune(reindex=False, force=False):
   # Gets rid of files older than archivedays - cloud stores things if relevant. 
 
   # Now when the child calls it it won't hit the network for every prune.
-  process = Thread(name='Prune:%s' % (TS.ts_to_name(), ), target=prune_process, args=(misc.lockMap, reindex, force))
+  process = Thread(name='Prune:%s' % (TS.ts_to_name(), ), target=prune_process, args=(reindex, force))
   process.start()
   return process
 
 
-def prune_process(lockMap, reindex=False, force=False):
+def prune_process(reindex=False, force=False):
   import lib.misc as misc 
   # This is internal, call prune() directly. This is a normally blocking
   # process that is prepared by prune(), making it easily callable asynchronously 
   # If another prune is running then we just bail
-  if not lockMap['prune'].acquire(False) and not force:
+  if not misc.lockMap['prune'].acquire(False) and not force:
     logging.warn("Tried to run another prune whilst one is running. Aborting")
     return True
 
@@ -414,7 +414,7 @@ def prune_process(lockMap, reindex=False, force=False):
     register_stream_list(reindex)
 
   except:
-    lockMap['prune'].release()
+    misc.lockMap['prune'].release()
     return None
 
   archive_duration = misc.config['archivedays'] * TS.ONE_DAY_SECOND
@@ -437,7 +437,7 @@ def prune_process(lockMap, reindex=False, force=False):
     # other instances of itself.
     #
     if not misc.manager_is_running():
-      lockMap['prune'].release()
+      misc.lockMap['prune'].release()
       return None
 
     ctime = os.path.getctime(file_name)
@@ -496,7 +496,7 @@ def prune_process(lockMap, reindex=False, force=False):
 
 
   logging.info("Found %d files older than %s days." % (count, misc.config['archivedays']))
-  lockMap['prune'].release()
+  misc.lockMap['prune'].release()
 
 
 def get_size(fname):
