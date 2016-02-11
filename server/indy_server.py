@@ -220,7 +220,7 @@ def stream_manager():
 
   # see https://github.com/kristopolous/DRR/issues/91:
   # Randomize prune to offload disk peaks
-  prune_duration = misc.config['pruneevery'] + (1 / 8.0 - random.random() / 4.0)
+  prune_duration = misc.config['prune_every'] + 10000 * (1 / 8.0 - random.random() / 4.0)
 
   last_heartbeat_tid = -1
   while True:
@@ -228,8 +228,8 @@ def stream_manager():
     # We cycle this to off for every run. By the time we go throug the queue so long 
     # as we aren't supposed to be shutting down, this should be toggled to true.
     #
-    if last_prune < (TS.unixtime('prune') - TS.ONE_DAY_SECOND * prune_duration):
-      prune_duration = misc.config['pruneevery'] + (1 / 8.0 - random.random() / 4.0)
+    if last_prune < (TS.unixtime('prune') - prune_duration):
+      prune_duration = misc.config['prune_every'] + 10000 * (1 / 8.0 - random.random() / 4.0)
       # We just assume it can do its business in under a day
       misc.pid_map['prune'] = cloud.prune()
       last_prune = TS.unixtime('prune')
@@ -456,7 +456,6 @@ def read_config(config):
     # The TCP port to run the server on
     'port': 5000,
 
-
     # The (second) time in looking to see if our stream is running
     'cycletime': 7,
 
@@ -477,13 +476,13 @@ def read_config(config):
     # it does save price VPS disk space which seems to come at an unusual
     # premium.
     #
-    'disk_archive': 1.20,
+    'disk_archive': '1.20d',
 
     # The (day) duration we should be archiving things.
     'cloud_archive': '14d',
     
     # Run the pruning every this many days (float)
-    'pruneevery': 0.5
+    'prune_every': '0.5d'
   }
 
   for k, v in list(defaults.items()):
