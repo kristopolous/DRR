@@ -125,7 +125,7 @@ def base_stats():
     'now': time.time(),
     'now-human': TS.ts_to_name(),
     'version': __version__,
-    'next-prune': [TS.unixtime('prune') - prune_duration, last_prune],
+    'next-prune': last_prune - (TS.unixtime('prune') - prune_duration), 
     'load': load,
     'files': [m.path for m in psutil.Process().open_files()],
     'mem': [
