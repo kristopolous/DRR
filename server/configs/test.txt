@@ -1,0 +1,8 @@
+[Main]
+callsign=test
+long=-118.397920
+lat=33.955766
+stream=http://208.70.75.109:9500/stream
+port=8890
+cloud=~/cloudcreds.cfg
+archivedays=56
