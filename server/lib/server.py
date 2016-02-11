@@ -293,6 +293,10 @@ def manager(config):
     """
     return misc.config['uuid']
 
+  @app.route('/off')
+  def off():
+    misc.am_i_official()
+    return "hello"
 
   @app.route('/db')
   def database():

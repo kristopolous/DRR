@@ -178,18 +178,21 @@ def am_i_official():
 
   # Don't cache a true value ... see https://github.com/kristopolous/DRR/issues/84 for details
   # Actually we'll cache it for a few seconds.
-  if 'official' not in config or (config['official'] and (not last_official_query or last_official_query + 10 < time.time())):
+  if 1:#last_official_query is None or last_official_query + 10 < time.time():
     endpoint = "http://%s.indycast.net:%d/uuid" % (config['callsign'], config['port'])
 
     try: 
       stream = urlopen(endpoint)
-      data = stream.read()
+      data = stream.read().decode('utf-8')
+      print(data.strip())
+      print(config['uuid'])
       config['official'] = (data.strip() == config['uuid'])
       last_official_query = time.time()
 
-    except:
+    except Exception as ex:
       # We can't contact the server so we just return false
       # and set nothing
+      print(ex)
       return False
 
   return config['official']
