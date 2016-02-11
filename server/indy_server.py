@@ -220,7 +220,7 @@ def stream_manager():
 
   # see https://github.com/kristopolous/DRR/issues/91:
   # Randomize prune to offload disk peaks
-  prune_duration = misc.config['prune_every'] + 10000 * (1 / 8.0 - random.random() / 4.0)
+  prune_duration = misc.config['prune_every'] * (1.10 - random.random() / 5.0)
 
   last_heartbeat_tid = -1
   while True:
