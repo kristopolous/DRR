@@ -493,15 +493,19 @@ def manager(config):
 
     stats = misc.base_stats()
 
-    prune_lock = misc.lockMap['prune'].acquire(False)
-    if prune_lock:
-      misc.lockMap['prune'].release()
+    lockMap = {}
+    for k, v in misc.lockMap.items():
+      lock = v.acquire(False)
+      lockMap[k] = True
+      if lock:
+        lockMap[k] = False
+        v.release()
 
     stats.update({
       'intents': DB.all('intents'),
       'hits': DB.run('select sum(read_count) from intents').fetchone()[0],
-      'locks': not prune_lock,
       'kv': DB.all('kv'),
+      'locks': lockMap,
       'pwd': os.getcwd(),
       'free': os.popen("df -h / | tail -1").read().strip(),
       # Reporting the list as fractional GB is more useful.
