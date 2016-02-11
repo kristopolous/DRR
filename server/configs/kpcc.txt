@@ -5,4 +5,4 @@ lat=33.955766
 stream=http://live.scpr.org/kpcclive/
 port=8930
 cloud=~/cloudcreds.cfg
-archivedays=56
+cloud_archive=56d
