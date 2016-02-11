@@ -104,6 +104,8 @@ for station in $station_list; do
     echo "   OK"
     continue
   fi
+  echo `pwd` $PWD
+  exit
 
   # We are going to make sure and confirm that there's nothing we are screwing up
   # before moving forward.

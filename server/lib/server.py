@@ -493,9 +493,14 @@ def manager(config):
 
     stats = misc.base_stats()
 
+    prune_lock = misc.lockMap['prune'].acquire(False)
+    if prune_lock:
+      misc.lockMap['prune'].release()
+
     stats.update({
       'intents': DB.all('intents'),
       'hits': DB.run('select sum(read_count) from intents').fetchone()[0],
+      'locks': not prune_lock,
       'kv': DB.all('kv'),
       'pwd': os.getcwd(),
       'free': os.popen("df -h / | tail -1").read().strip(),
