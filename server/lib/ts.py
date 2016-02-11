@@ -177,5 +177,5 @@ def get_offset(force=False):
       DB.set('offset', offset_backup)
       offset = offset_backup
 
-  return int(offset)
+  return int(float(offset))
 
