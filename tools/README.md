@@ -40,15 +40,37 @@ Works on the cloud storage.  This script is [run daily to compute cloud costs](h
 
 The list format shows files as 
 
-    name  size:(byte size)  date:(number format)
+    name  size: (byte size)  date: (number format)
 
-Where the date number format is the perpetually increasing `strftime('%Y%m%d%H%M%S')`
+Where the date number format is the perpetually increasing `strftime('%Y%m%d%H%M%S')`.
+
+Given the naming convention and the output convention, we can establish the guarantee that there are 5 fields with whitespace (PCRE '\s') between them.  That means that awk ' { print $3 } ' will always print the size, every time - without hassle.  
 
 The deletion works via stdin and reads the first argument. So to delete all the test account mp3s I could do this:
 
     ./cloud.py -q list -s test | ./cloud.py -q unlink
 
-Also you could another thing to say, only delete files that are 50 bytes.
+Also you could another thing to say, only delete files that are 50 bytes.  We can use our guarantees established above to do this pretty easily.
 
-    ./cloud.py -q list -s test | grep 'size:50 ' | ./cloud.py -q unlink
+    ./cloud.py -q list -s test | grep 'size: 50 ' | ./cloud.py -q unlink
 
+Also there doesn't need to be a prefixing query for list
+
+    ./cloud.py -q list
+
+works fine ... 
+
+So to sort all the cloud files based on size, I like to first cache them since it takes about 20 seconds or so.
+
+    ./cloud.py -q list > allfiles
+
+Then I can run things like
+
+    sort -nk 3,3 allfiles   # Finds largest file
+    sort -nrk 5,5 allfiles  # Finds oldest file
+
+If you want to delete specific files you could just have the unlinker running in another terminal
+
+    $ ./cloud.py -q unlink
+
+Now copy and paste the file names into that window and press enter.

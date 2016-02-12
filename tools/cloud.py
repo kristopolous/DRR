@@ -26,7 +26,7 @@ def get_files(station_list, blob_service):
     for f in get_all(station):
       dt = parser.parse(f.properties.last_modified)
       dt_str = dt.strftime('%Y%m%d%H%M%S')
-      print('{} size:{} date:{}'.format(f.name, f.properties.content_length, dt_str))
+      print('%s size: %10s date: %s' %(f.name, f.properties.content_length, dt_str))
 
 def get_size(station_list, blob_service):
   all_files = []
