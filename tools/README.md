@@ -44,7 +44,7 @@ The list format shows files as
 
 Where the date number format is the perpetually increasing `strftime('%Y%m%d%H%M%S')`.
 
-Given the naming convention and the output convention, we can establish the guarantee that there are 5 fields with whitespace (PCRE '\s') between them.  That means that awk ' { print $3 } ' will always print the size, every time - without hassle.  
+Given the naming convention and the output convention, we can establish the guarantee that there are 5 fields with whitespace (PCRE '\s') between them.  That means that `awk ' { print $3 } '` will always print the size, every time - without hassle.  
 
 The deletion works via stdin and reads the first argument. So to delete all the test account mp3s I could do this:
 
