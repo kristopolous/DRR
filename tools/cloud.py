@@ -8,7 +8,7 @@ import configparser
 from azure.storage.blob import BlobService
 import lib.cloud as cloud
 import lib.misc as misc
-
+import pprint
 
 def get_all(station):
   blobs = []
@@ -24,7 +24,7 @@ def get_all(station):
 def get_files(station_list, blob_service):
   for station in station_list:
     for f in get_all(station):
-      print(f.name)
+      print('{} {} {}'.format(f.name, f.properties.content_length, f.properties.last_modified))
 
 def get_size(station_list, blob_service):
   all_files = []
@@ -91,3 +91,6 @@ elif args.query == 'unlink':
     line = line.strip()
     print("Removing %s" % line)
     cloud.unlink(line, config=config)
+
+elif args.query:
+  print("Query '%s' not recognized. Possibilities are unlink, size, and list" % args.query)
