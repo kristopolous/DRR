@@ -7,5 +7,6 @@ port=8890
 cloud=~/cloudcreds.cfg
 cascade_time=3m
 cloud_archive=4d
+prune_every=10m
 disk_archive=0.01d
 
