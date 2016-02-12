@@ -8,7 +8,6 @@ import configparser
 from azure.storage.blob import BlobService
 import lib.cloud as cloud
 import lib.misc as misc
-import pprint
 
 def get_all(station):
   blobs = []
@@ -22,9 +21,12 @@ def get_all(station):
   return blobs
 
 def get_files(station_list, blob_service):
+  from dateutil import parser
   for station in station_list:
     for f in get_all(station):
-      print('{} {} {}'.format(f.name, f.properties.content_length, f.properties.last_modified))
+      dt = parser.parse(f.properties.last_modified)
+      dt_str = dt.strftime('%Y%m%d%H%M%S')
+      print('{} size:{} date:{}'.format(f.name, f.properties.content_length, dt_str))
 
 def get_size(station_list, blob_service):
   all_files = []
@@ -88,8 +90,8 @@ elif args.query == 'unlink':
   print("Reading files to unlink from stdin")
 
   for line in sys.stdin:
-    line = line.strip()
-    print("Removing %s" % line)
+    line = line.strip().split(' ')
+    print("Removing %s" % line[0])
     cloud.unlink(line, config=config)
 
 elif args.query:
