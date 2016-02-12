@@ -88,7 +88,6 @@ queue_debug_ix = 0
 params = {'shutdown_time': None}
 start_time = None
 config = {}
-pid_map = {}
 lockMap = {'prune': Lock(), 'main': Lock()}
 last_official_query = None
 
@@ -233,12 +232,6 @@ def shutdown_real(do_restart=False):
   """
 
   if not do_restart:
-    for key, value in list(pid_map.items()):
-      try:
-        value.terminate()
-      except:
-        pass
-
     webserver_shutdown()
     logging.info("Shutting down")
     logging.info("Uptime: %ds", TS.uptime())
