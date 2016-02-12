@@ -36,4 +36,19 @@ on a callsign.  To get the current end points for a particular server query for 
 
 ## cloud.py
 
-Works on the cloud storage
+Works on the cloud storage.  This script is [run daily to compute cloud costs](http://indycast.net/cloud-costs.txt) but can also be used to list the files for a certain station or delete them.
+
+The list format shows files as 
+
+    name  size:(byte size)  date:(number format)
+
+Where the date number format is the perpetually increasing `strftime('%Y%m%d%H%M%S')`
+
+The deletion works via stdin and reads the first argument. So to delete all the test account mp3s I could do this:
+
+    ./cloud.py -q list -s test | ./cloud.py -q unlink
+
+Also you could another thing to say, only delete files that are 50 bytes.
+
+    ./cloud.py -q list -s test | grep 'size:50 ' | ./cloud.py -q unlink
+
