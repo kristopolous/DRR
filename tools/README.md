@@ -34,3 +34,6 @@ on a callsign.  To get the current end points for a particular server query for 
 
     tools/server_query -q help -s kpcc
 
+## cloud.py
+
+Works on the cloud storage

@@ -374,6 +374,7 @@ def stream_manager():
 
     else:
       if not process and not change_state:
+        logging.info("Failed to find downloader, starting new one")
         file_name, process = download_start(file_name)
         last_success = TS.unixtime('dl')
 
@@ -385,6 +386,7 @@ def stream_manager():
 
         # And we haven't created the next process yet, then we start it now.
         if not process_next:
+          logging.info("Failed to find downloader, starting new one")
           file_name, process_next = download_start(file_name)
 
       
