@@ -171,7 +171,7 @@ def stream_manager():
   cycle_count = 0
 
   cascade_time = misc.config['cascade_time']
-  cascade_buffer = misc.config['cascadebuffer']
+  cascade_buffer = misc.config['cascade_buffer']
   cascade_margin = cascade_time - cascade_buffer
 
   last_prune = 0
@@ -185,7 +185,7 @@ def stream_manager():
   misc.download_ipc = Queue()
 
   # Number of seconds to be cycling
-  cycle_time = misc.config['cycletime']
+  cycle_time = misc.config['cycle_time']
 
   process = None
   process_next = None
@@ -455,9 +455,6 @@ def read_config(config):
     #
     'storage': "%s/radio" % os.path.expanduser('~'),
 
-    # The (day) time to expire an intent to record
-    'expireafter': 45,
-
     # The time to prolong a download to make sure that 
     # a restart or upgrade is seamless, in seconds.
     'restart_overlap': 15,
@@ -466,10 +463,10 @@ def read_config(config):
     'port': 5000,
 
     # The time in looking to see if our stream is running
-    'cycletime': 7,
+    'cycle_time': 7,
 
     # The time to start a stream BEFORE the lapse of the cascade-time
-    'cascadebuffer': 15,
+    'cascade_buffer': 15,
 
     # The time between cascaded streams
     'cascade_time': '15m',
