@@ -2,3 +2,6 @@
 *.aac
 *.stats
 __pycache__
+*.list
+alllist
+allfiles
