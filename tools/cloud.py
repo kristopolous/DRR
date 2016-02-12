@@ -90,9 +90,11 @@ elif args.query == 'unlink':
   print("Reading files to unlink from stdin")
 
   for line in sys.stdin:
+    full_line = line.strip()
     line = line.strip().split(' ')
-    print("Removing %s" % line[0])
-    cloud.unlink(line, config=config)
+    filename = line[0]
+    print(" - %s" % full_line)
+    cloud.unlink(filename, config=config)
 
 elif args.query:
   print("Query '%s' not recognized. Possibilities are unlink, size, and list" % args.query)
