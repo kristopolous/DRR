@@ -36,6 +36,10 @@
   </div>
 
   <div id="flash-widget"></div>
+  <div id='short-controls'>
+    <div id='download'></div>
+    <div id='share'></div>
+  </div>
 
   <div id="controls">
     <div id="rewind"></div>
