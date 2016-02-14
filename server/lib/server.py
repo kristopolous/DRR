@@ -195,12 +195,6 @@ def manager(config):
     return response
 
 
-  def send_file_http(path, requested_path=''):
-    if not os.path.exists(path):
-      return '<h1>File %s not found</h1><script>alert("%s not found")</script>' % (requested_path, requested_path), 404
-
-    return send_file(path)
-
   def send_file_partial(path, requested_path='', file_name=None):
     # Wrapper around send_file which handles HTTP 206 Partial Content
     # (byte ranges)
