@@ -4,6 +4,5 @@ setproctitle
 azure
 requests
 psutil
-jinja2
 markupsafe
 pycurl
