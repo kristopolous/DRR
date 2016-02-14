@@ -335,25 +335,6 @@ def manager(config):
     cloud.prune(force=True)
     return success('Pruning...')
 
-  def send_html(path, params):
-    pass
-
-  @app.route('/js/<name>')
-  def send_js(name):
-    """
-    Serves JS for audio requests that are made through the browser.
-    """
-    path = 'assets/js/%s' % name
-    return send_file_http("%s/%s" % (misc.source_dir, path), requested_path=path)
-
-  @app.route('/css/<name>')
-  def send_css(name):
-    """
-    Serves CSS for audio requests that are made through the browser.
-    """
-    path = 'assets/css/%s' % name
-    return send_file_http("%s/%s" % (misc.source_dir, path), requested_path=path)
-
   @app.route('/slices/<time>/<name>')
   def send_named_stream(time, name):
     """
