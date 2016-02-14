@@ -1,6 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
+  <link rel="stylesheet" href="/assets/css/main.css" />
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="icon" href="favicon.ico" >
@@ -37,8 +38,8 @@
 
   <div id="flash-widget"></div>
   <div id='short-controls'>
-    <div id='download'></div>
-    <div id='share'></div>
+     <a href="<%= live_url %>" title="Download this to your device" class='btn btn-lg btn-link'><i class="fa fa-download"></i> Download </a>
+     <a target=_blank class="btn btn-md btn-default" href="https://twitter.com/intent/tweet?text=<%=tweet_text%>" title="Share this on twitter">
   </div>
 
   <div id="controls">
