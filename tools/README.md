@@ -32,5 +32,12 @@ The public key file is something you can add if you want to just give us access 
 This tool, given a populated database, will query all the servers or just one based,
 on a callsign.  To get the current end points for a particular server query for the help endpoint like so:
 
-    tools/server_query -q help -s kpcc
+    tools/server_query.py -q help -s kpcc
 
+You can take all the stats by doing something like this:
+
+    #!/bin/sh
+    mkdir /tmp/stats
+    for station in `tools/server_query.py -l`; do
+      tools/server_query.py -q stats -s $station > /tmp/stats/$station.json
+    done
