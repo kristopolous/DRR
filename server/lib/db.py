@@ -284,10 +284,11 @@ def run(query, args=None, with_last=False):
 
     db['conn'].commit()
     last = db['c'].lastrowid
-    #print " %f exec" % (time.time() - start)
+
+    if db['c'].rowcount == 0:
+      raise Exception("0 rows")
 
   except Exception as exc:
-    #print " %f !! exception: %s" % (time.time() - start, exc)
     raise exc
 
   finally:
