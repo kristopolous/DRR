@@ -28,6 +28,7 @@ _SCHEMA = {
      ('id', 'INTEGER PRIMARY KEY'),
      ('key', 'TEXT UNIQUE'),
      ('value', 'TEXT'),
+     ('namespace', 'TEXT'),
      ('created_at', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'),
    ],
   'streams': [
