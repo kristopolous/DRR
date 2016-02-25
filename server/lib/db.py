@@ -195,6 +195,7 @@ def incr(key, value=1):
     try:
       run('insert into kv(value, key) values(?, ?)', args=(value, key, ))
     except sqlite3.OperationalError as exc:
+      logging.warn("Unable to increment key: %s", exc)
       pass
 
 
