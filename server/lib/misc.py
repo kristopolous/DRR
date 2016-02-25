@@ -123,6 +123,7 @@ def base_stats():
     'last_recorded': float(DB.get('last_recorded', use_cache=False) or 0),
     'now': time.time(),
     'now-human': TS.ts_to_name(),
+    'hits': DB.run('select sum(value) from kv where key like "%hit%"').fetchone()[0],
     'version': __version__,
     'next-prune': last_prune - (TS.unixtime('prune') - prune_duration), 
     'load': load,

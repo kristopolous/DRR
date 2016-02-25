@@ -482,7 +482,6 @@ def manager(config):
 
     stats.update({
       'intents': DB.all('intents'),
-      'hits': DB.run('select sum(read_count) from intents').fetchone()[0],
       'kv': DB.all('kv'),
       'locks': lockMap,
       'pwd': os.getcwd(),
