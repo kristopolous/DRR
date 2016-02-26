@@ -128,6 +128,7 @@ def base_stats():
     'next-prune': last_prune - (TS.unixtime('prune') - prune_duration), 
     'load': load,
     'files': [m.path for m in psutil.Process().open_files()],
+    'connections': [m for m in psutil.Process().connections()],
     'mem': [
       # Current memory footprint in MB
       psutil.Process(os.getpid()).memory_info().rss / (1024.0 * 1024), 
