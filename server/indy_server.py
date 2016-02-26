@@ -29,7 +29,14 @@ def stream_download(callsign, url, my_pid, file_name):
   # Follows redirects and parses out basic m3u.
   #pid = misc.change_proc_name("%s-download" % callsign)
 
-  nl = {'stream': None, 'curl_handle': None, 'pid': my_pid, 'ix': 0}
+  nl = {'stream': None, 'curl_handle': None, 'pid': my_pid, 'ix': 0, 'ct': 0, 'start': 0}
+
+  def progress(download_t, download_d, upload_t, upload_d):
+    if nl['start'] == 0:
+      nl['start'] = time.time()
+    nl['ct'] += 1
+
+    logging.info("progress: %f %d %d" % ((time.time() - nl['start']) / nl['ct'], nl['pid'], download_d ));
 
   def catchall(which, what):
     logging.info("%d: %s %s" % (nl['pid'], which, str(what)))
@@ -114,6 +121,8 @@ def stream_download(callsign, url, my_pid, file_name):
   curl_handle.setopt(curl_handle.URL, url)
   curl_handle.setopt(pycurl.WRITEFUNCTION, cback)
   curl_handle.setopt(pycurl.FOLLOWLOCATION, True)
+  curl_handle.setopt(pycurl.NOPROGRESS, False)
+  curl_handle.setopt(pycurl.XFERINFOFUNCTION, progress)
 
   curl_handle.setopt(pycurl.VERBOSE, 1)
   #curl_handle.setopt(pycurl.READFUNCTION, catch_read)
