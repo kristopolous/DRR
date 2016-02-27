@@ -110,6 +110,8 @@ for station_config in glob('../server/configs/*txt'):
   Config = configparser.ConfigParser()
   Config.read(station_config)
   config = misc.config_section_map('Main', Config)
+  if config['callsign'] == 'test':
+    continue
   config_list.append(config)
 
 # retrieve a list of the active stations
