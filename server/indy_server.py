@@ -41,7 +41,7 @@ def stream_download(callsign, url, my_pid, file_name):
       raise TypeError("Download Stop")
       return False
 
-    logging.info("progress: %f %d %d" % ((time.time() - nl['start']) / nl['ct'], nl['pid'], download_d ));
+    #logging.info("progress: %f %d %d" % ((time.time() - nl['start']) / nl['ct'], nl['pid'], download_d ));
 
   def catchall(which, what):
     logging.info("%d: %s %s" % (nl['pid'], which, str(what)))
