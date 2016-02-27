@@ -36,6 +36,11 @@ def stream_download(callsign, url, my_pid, file_name):
       nl['start'] = time.time()
     nl['ct'] += 1
 
+    if nl['pid'] <= g_download_kill_pid - 2:
+      logging.info("Stopping download #%d through progress" % nl['pid'])
+      raise TypeError("Download Stop")
+      return False
+
     logging.info("progress: %f %d %d" % ((time.time() - nl['start']) / nl['ct'], nl['pid'], download_d ));
 
   def catchall(which, what):
