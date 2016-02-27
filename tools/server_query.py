@@ -269,9 +269,7 @@ for station in all_stations:
 if args.query == 'heartbeat' and db:
   db['conn'].commit()
 
-  if specific_station:
-    print("\nSpecific station query ... not looking for issues.")
-  else:
+  if not specific_station:
     find_misbehaving_servers(db, fail_list)
 
 if args.key and station_count > 1:
