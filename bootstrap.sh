@@ -2,7 +2,6 @@
 #
 # Intended for Jessie (Debian 8)
 #
-cd server
 
 aptinstall() {
   sudo apt-get update
@@ -26,7 +25,12 @@ hardupgrade() {
   yes | sudo pip3 uninstall azure 
 }
 
+dopip() {
+  cd server
+  pip3 install --user -r requirements.txt
+}
+
 aptinstall
 pipinstall
 # hardupgrade
-pip-3.2 install --user -r requirements.txt
+dopip
