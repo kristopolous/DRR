@@ -17,8 +17,10 @@ aptinstall() {
       libcurl4-gnutls-dev       \
       libgnutls28-dev         
 
-  sudo apt-get -y -f install python3-pip
+}
 
+pipinstall()  {
+  sudo apt-get -y -f install python3-pip
   # see http://askubuntu.com/questions/412178/how-to-install-pip-for-python-3-in-ubuntu-12-04-lts
   if [ $? -ne 0 ]; then
     sudo apt-get -y -f install python3-setuptools
@@ -31,6 +33,7 @@ hardupgrade() {
   yes | sudo pip3 uninstall azure 
 }
 
-aptinstall
+#aptinstall
+pipinstall
 # hardupgrade
-/usr/bin/pip3 install --user -r requirements.txt
+pip3 install --user -r requirements.txt
