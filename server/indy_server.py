@@ -130,7 +130,7 @@ def stream_download(callsign, url, my_pid, file_name):
 
   try:
     curl_handle.setopt(pycurl.XFERINFOFUNCTION, progress)
-  except NameError:
+  except (NameError, AttributeError):
     curl_handle.setopt(pycurl.PROGRESSFUNCTION, progress)
 
   curl_handle.setopt(pycurl.VERBOSE, 1)
