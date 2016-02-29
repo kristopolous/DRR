@@ -3,3 +3,4 @@
 */*.pyo
 db
 patch
+server/build
