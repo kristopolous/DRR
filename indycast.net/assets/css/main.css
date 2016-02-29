@@ -894,7 +894,7 @@ input[type="submit"].fit,
     padding-right: 1em;
   }
   #footer {
-    margin-top: -80px;
+    margin-top: 0px;
     padding-left: 1em;
     padding-right: 1em;
   }
@@ -971,7 +971,7 @@ form#donate {
 }
 .big-button h3 {
   font-weight: normal;
-  font-size: 1.6em;
+  font-size: 1.5em;
   letter-spacing: normal;
   color: white;
   margin: 0;
