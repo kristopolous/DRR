@@ -993,16 +993,21 @@ def stitch(file_list, force_stitch=False):
       else: 
         logging.warn("%s is only %d frames" % (second['name'], len(second['offset'])))
 
-      args.append({
-        'name': second['name'], 
-        'start_byte': second['offset'][pos], 
-        'end_byte': end_byte,
-        'start_offset': pos,
-        'start_minute': (pos * _FRAME_LENGTH) / 60.0,
-        'duration_sec': (len(second['offset']) - pos - 1) * _FRAME_LENGTH
-      })
+      if len(second['offset']) < pos:
+        logging.warn("Unable to find %d blocks in the file %s. Probably the wrong type inferenced." % (pos, second['name']))
 
-      duration += (len(second['offset']) - pos - 1) * _FRAME_LENGTH
+      else:
+        args.append({
+          'name': second['name'], 
+          'start_byte': second['offset'][pos], 
+          'end_byte': end_byte,
+          'start_offset': pos,
+          'start_minute': (pos * _FRAME_LENGTH) / 60.0,
+          'duration_sec': (len(second['offset']) - pos - 1) * _FRAME_LENGTH
+        })
+
+        duration += (len(second['offset']) - pos - 1) * _FRAME_LENGTH
+
       first = second
       continue
 
