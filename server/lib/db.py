@@ -133,7 +133,7 @@ def all(table, field_list='*', sort_by='id'):
 
 
 def schema(table, db=None):
-  existing_schema = run('pragma table_info(%s)' % table).fetchall()
+  existing_schema = run('pragma table_info(%s)' % table, db=db).fetchall()
   if existing_schema:
     return [str(row[1]) for row in existing_schema]
 
@@ -262,7 +262,7 @@ def get(key, expiry=0, use_cache=True, default=None):
   return default
 
 
-def run(query, args=None, with_last=False):
+def run(query, args=None, with_last=False, db=None):
   start = time.time()
   """
   if args is None:
@@ -272,7 +272,9 @@ def run(query, args=None, with_last=False):
   """
 
   g_lock.acquire()
-  db = connect()
+  if db is None:
+    db = connect()
+
   res = None
 
   try:

@@ -42,12 +42,17 @@ if (!empty($_SESSION['admin']) && $_SESSION['admin'] == 1) {
 echo '<table>';
 $res = $db->query('select * from stations');
 $isFirst = true;
+$ping_total = 0;
+$drop_total = 0;
 
 while($row = prune($res)) {
   // omit this from displaying.
   foreach(['lat','long'] as $key) {
     unset($row[$key]);
   } 
+
+  $ping_total += $row['pings'];
+  $drop_total += $row['drops'];
 
   foreach(['last_seen', 'first_seen'] as $key) {
     $row[$key] = array_shift(explode(' ', $row[$key]));
@@ -87,7 +92,8 @@ while($row = prune($res)) {
 }
 $now = time();
 
-echo '<p>Now: ' . $now . '</p>';
+$uptime = round(100 - (100 * $drop_total / $ping_total), 5);
+echo "<p>System-wide uptime: $uptime% | Now: $now</p>";
 
 echo '<table>';
 $res = $db->query('select * from reminders');
