@@ -316,7 +316,11 @@ def signature(fname, blockcount=-1, depth=1):
   if audio_format == _FORMAT_AAC:
     sig, block = aac_signature(fname, blockcount)
 
-  if audio_format == _FORMAT_MP3 or not block: 
+  # We permit the idea that a file can be a false positive. But we do not
+  # permit the idea that a file can be a false positive and correctly register
+  # over some number of sequential blocks (currently set at whatever the
+  # constant is below).
+  if audio_format == _FORMAT_MP3 or not block or len(block) < 5: 
     sig, block = mp3_signature(fname, blockcount)
 
     if len(block) > 0 and audio_format == _FORMAT_AAC:
@@ -324,7 +328,7 @@ def signature(fname, blockcount=-1, depth=1):
       DB.clear_cache()
 
   # Stream formats can change actually.
-  if len(block) == 0:
+  if len(block) < 5:
     tryformat = _FORMAT_AAC
     if audio_format == _FORMAT_AAC: tryformat = _FORMAT_MP3
     DB.set('format', tryformat)
