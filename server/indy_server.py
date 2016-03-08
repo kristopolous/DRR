@@ -136,6 +136,7 @@ def stream_download(callsign, url, my_pid, file_name):
   curl_handle.setopt(pycurl.VERBOSE, 1)
   #curl_handle.setopt(pycurl.READFUNCTION, catch_read)
   curl_handle.setopt(pycurl.DEBUGFUNCTION, catch_debug)
+  curl_handle.setopt(pycurl.USERAGENT, "indycast %s. See http://indycast.net/ for more info." % misc.__version__)
 
   nl['curl_handle'] = curl_handle
 
