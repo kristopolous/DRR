@@ -82,25 +82,12 @@ IS_TEST = True
 
 manager_pid = 0
 queue = Queue()
-queue_debug = [None] * 5000
-queue_debug_ix = 0
 
 params = {'shutdown_time': None}
 start_time = None
 config = {}
 lockMap = {'prune': Lock(), 'main': Lock()}
 last_official_query = None
-
-def queue_dbg(what=False, value=False):
-  global queue_debug_ix, queue_debug
-  if what == False:
-    return list(filter(None, list(reversed(queue_debug[queue_debug_ix:] + queue_debug[:queue_debug_ix]))))
-
-  if type(value) is not bool:
-    value = list(value)
-    value.append(what)
-    queue_debug[queue_debug_ix] = value
-    queue_debug_ix = (queue_debug_ix + 1) % 5000
 
 def do_nothing(signal, frame=None):
   # Catches signals that we would rather just ignore 
