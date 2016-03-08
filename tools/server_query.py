@@ -43,6 +43,11 @@ def stderr(switch):
     globals()['old'] = sys.stderr
     sys.stderr = open('/dev/null', "w")
     
+def stats_log(obj):
+  # The object that comes in has all the necessary info already associated
+  # with it ... all we have to do is test what is there and what is not.
+  pass
+
 def find_misbehaving_servers(db, fail_list):
   max_values = {
     'disk': '5.0',
@@ -173,6 +178,7 @@ for station in all_stations:
     if args.query == 'heartbeat':
       document = json.loads(data)
       document['delta'] = document['now'] - float(document['last_recorded'])
+      stats_log(document)
       data = json.dumps(document, indent=2)
 
     if args.key:
