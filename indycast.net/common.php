@@ -40,6 +40,27 @@ $schema = [
     'load'        => 'DOUBLE default 0'
   ],
 
+  //
+  // The stats table tries to track the long-term
+  // run-time, memory, and disk usage of various stations.
+  //
+  // Especially with respect to their particular versions.
+  // Every time a server is started it generates itself a 
+  // new UUID which permits for the tracking.
+  //
+  'stats' => [
+    'id'          => 'INTEGER PRIMARY KEY', 
+    'callsign'    => 'TEXT',
+    'uuid'        => 'TEXT',
+    'version'     => 'TEXT',
+    'memory'      => 'DOUBLE default 0',
+    'disk'        => 'DOUBLE default 0',
+    'threadcount' => 'INTEGER default 0',
+    'uptime'      => 'INTEGER default 0',
+    'latency'     => 'DOUBLE default 0',
+    'now'         => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'
+  ],
+
   'schedule' => [
     'id'          => 'INTEGER PRIMARY KEY', 
     'callsign'    => 'TEXT',
