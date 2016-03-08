@@ -119,18 +119,18 @@ def base_stats():
 
   uptime = TS.uptime()
   return {
-    'uptime-human': "%dd %02d:%02d:%02d" % ( uptime / TS.ONE_DAY_SECOND, (uptime / TS.ONE_HOUR_SECOND) % 24, (uptime / 60) % 60, uptime % 60 ),
-    'uptime-computer': uptime,
+    'human-uptime': "%dd %02d:%02d:%02d" % ( uptime / TS.ONE_DAY_SECOND, (uptime / TS.ONE_HOUR_SECOND) % 24, (uptime / 60) % 60, uptime % 60 ),
+    'human-now': TS.ts_to_name(),
+    'computer-uptime': uptime,
+    'computer-now': time.time(),
     'last-recorded': float(DB.get('last_recorded', use_cache=False) or 0),
-    'now': time.time(),
-    'now-human': TS.ts_to_name(),
     'hits': DB.run('select sum(value) from kv where key like "%hit%"').fetchone()[0],
     'version': __version__,
     'uuid': config['uuid'],
-    'next-prune': last_prune - (TS.unixtime('prune') - prune_duration), 
+    'next-prune': int(last_prune - (TS.unixtime('prune') - prune_duration)), 
     'load': load,
     'files': [m.path for m in psutil.Process().open_files()],
-    'connections': [m for m in psutil.Process().connections()],
+    'connections': len(psutil.Process().connections()),
     'memory': [
       # Current memory footprint in MB
       psutil.Process(os.getpid()).memory_info().rss / (1024.0 * 1024), 
@@ -138,7 +138,7 @@ def base_stats():
       # Maximum lifetime memory footpring in MB
       resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024.0
     ],
-    'tlist': [ thread.name for thread in threading.enumerate() ],
+    'threads': [ thread.name for thread in threading.enumerate() ],
     'disk': cloud.size('.') / (1024.0 ** 3)
   }
 
