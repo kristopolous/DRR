@@ -119,7 +119,8 @@ def base_stats():
 
   uptime = TS.uptime()
   return {
-    'uptime': "%dd %02d:%02d:%02d" % ( uptime / TS.ONE_DAY_SECOND, (uptime / TS.ONE_HOUR_SECOND) % 24, (uptime / 60) % 60, uptime % 60 ),
+    'uptime-human': "%dd %02d:%02d:%02d" % ( uptime / TS.ONE_DAY_SECOND, (uptime / TS.ONE_HOUR_SECOND) % 24, (uptime / 60) % 60, uptime % 60 ),
+    'uptime-computer': uptime,
     'last_recorded': float(DB.get('last_recorded', use_cache=False) or 0),
     'now': time.time(),
     'now-human': TS.ts_to_name(),
@@ -130,7 +131,7 @@ def base_stats():
     'load': load,
     'files': [m.path for m in psutil.Process().open_files()],
     'connections': [m for m in psutil.Process().connections()],
-    'mem': [
+    'memory': [
       # Current memory footprint in MB
       psutil.Process(os.getpid()).memory_info().rss / (1024.0 * 1024), 
       
