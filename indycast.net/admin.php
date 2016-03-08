@@ -32,7 +32,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 if (!empty($_SESSION['admin']) && $_SESSION['admin'] == 1) {
 ?>
 <b>Mode: Admin</b><form method=post><input type=hidden name=password value=bogusbogusbogus><button>Logout</button></form>
-<?
+<?php
 } else {
 ?>
 <b>Mode: Read-Only</b> <form method=post>Password: <input type=password name=password></form>

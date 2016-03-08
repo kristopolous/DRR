@@ -1,4 +1,4 @@
-<?  
+<?php
 $ua = strtolower($_SERVER['HTTP_USER_AGENT']);
 $device = 'device';
 

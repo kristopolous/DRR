@@ -1,4 +1,4 @@
-<?
+<?php
 require 'vendor/autoload.php';
 
 use Rhumsaa\Uuid\Uuid;

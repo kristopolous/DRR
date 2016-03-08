@@ -1,4 +1,4 @@
-<?
+<?php
 include_once('common.php');
 $page = $_GET['page'];
 $ua = strtolower($_SERVER['HTTP_USER_AGENT']);
