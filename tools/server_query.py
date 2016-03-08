@@ -43,10 +43,19 @@ def stderr(switch):
     globals()['old'] = sys.stderr
     sys.stderr = open('/dev/null', "w")
     
-def stats_log(obj):
+def stats_log(station, obj):
   # The object that comes in has all the necessary info already associated
   # with it ... all we have to do is test what is there and what is not.
-  pass
+  tlist_key = 'tlist' if 'tlist' in obj else 'threadlist'
+  mem_key = 'mem' if 'mem' in obj else 'memory'
+  callsign = station
+  uuid = obj['uuid'] if 'uuid' in obj else '0'
+  version = obj['version']
+  mem = obj[mem_key][0] 
+  disk = obj['disk']
+  tlist = len(obj[tlist_key])
+  uptime = obj['computer-uptime'] if 'computer-uptime' in obj else 0
+  load = obj['load'][1]
 
 def find_misbehaving_servers(db, fail_list):
   max_values = {
@@ -178,7 +187,8 @@ for station in all_stations:
     if args.query == 'heartbeat':
       document = json.loads(data)
       document['delta'] = document['now'] - float(document['last_recorded'])
-      stats_log(document)
+      document['latency'] = stop - start
+      stats_log(station, document)
       data = json.dumps(document, indent=2)
 
     if args.key:
