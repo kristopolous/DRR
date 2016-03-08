@@ -58,6 +58,7 @@ $schema = [
     'threadcount' => 'INTEGER default 0',
     'uptime'      => 'INTEGER default 0',
     'latency'     => 'DOUBLE default 0',
+    'load'        => 'DOUBLE default 0',
     'now'         => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'
   ],
 
