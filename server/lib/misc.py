@@ -121,7 +121,7 @@ def base_stats():
   return {
     'uptime-human': "%dd %02d:%02d:%02d" % ( uptime / TS.ONE_DAY_SECOND, (uptime / TS.ONE_HOUR_SECOND) % 24, (uptime / 60) % 60, uptime % 60 ),
     'uptime-computer': uptime,
-    'last_recorded': float(DB.get('last_recorded', use_cache=False) or 0),
+    'last-recorded': float(DB.get('last_recorded', use_cache=False) or 0),
     'now': time.time(),
     'now-human': TS.ts_to_name(),
     'hits': DB.run('select sum(value) from kv where key like "%hit%"').fetchone()[0],
