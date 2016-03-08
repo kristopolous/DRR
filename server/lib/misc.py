@@ -125,6 +125,7 @@ def base_stats():
     'now-human': TS.ts_to_name(),
     'hits': DB.run('select sum(value) from kv where key like "%hit%"').fetchone()[0],
     'version': __version__,
+    'uuid': config['uuid'],
     'next-prune': last_prune - (TS.unixtime('prune') - prune_duration), 
     'load': load,
     'files': [m.path for m in psutil.Process().open_files()],
