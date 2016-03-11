@@ -46,7 +46,7 @@ def stderr(switch):
 def stats_log(db, station, obj):
   # The object that comes in has all the necessary info already associated
   # with it ... all we have to do is test what is there and what is not.
-  tlist_key = 'tlist' if 'tlist' in obj else 'threadlist'
+  tlist_key = 'tlist' if 'tlist' in obj else 'threads'
   mem_key = 'mem' if 'mem' in obj else 'memory'
   callsign = station[CALLSIGN]
   uuid = obj['uuid'] if 'uuid' in obj else '0'
@@ -193,7 +193,10 @@ for station in all_stations:
     data = data_raw.decode('utf8')
     if args.query == 'heartbeat':
       document = json.loads(data)
-      document['delta'] = document['now'] - float(document['last_recorded'])
+      now = document['now'] if 'now' in document else document['computer-now']
+      last = document['last-recorded'] if 'last-recorded' in document else document['last_recorded']
+
+      document['delta'] = now - float(last)
       document['latency'] = stop - start
 
       if db:
