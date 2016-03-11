@@ -29,8 +29,8 @@
   <![endif]-->
 </head>
 <body>
-  <h1>{{ station }}</h1>
-  <h2>{{ timestamp }}</h2>
+  <h1><?= station ?></h1>
+  <h2><?= timestamp ?></h2>
 
   <div id='html5-widget'>
     <audio id="radio-control" controls type='audio/mpeg'>
