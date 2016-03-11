@@ -93,7 +93,7 @@ while($row = prune($res)) {
 $now = time();
 
 $uptime = round(100 - (100 * $drop_total / $ping_total), 5);
-echo "<p>System-wide uptime: $uptime% | Now: $now</p>";
+echo "<p>System-wide uptime: ($drop_total/$ping_total) $uptime% | Now: $now</p>";
 
 echo '<table>';
 $res = $db->query('select * from reminders');
