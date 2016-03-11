@@ -74,6 +74,10 @@ def find_misbehaving_servers(db, fail_list):
   report = []
 
   if len(fail_list):
+    # We log the failure in the stats log
+    for station in fail_list:
+      db['c'].execute('insert into stats (callsign) values(?)', (str(station), ))
+
     report.append("Failure: %s" % ' '.join(fail_list))
 
   misbehaving = db['c'].execute('select callsign, disk, load, last_record from stations where active = 1 and (disk > ? or last_record > ?)', (max_values['disk'], max_values['delta'])).fetchall()
