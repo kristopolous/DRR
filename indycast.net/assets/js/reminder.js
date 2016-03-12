@@ -11,6 +11,7 @@
 var
   isiDevice = navigator.userAgent.match(/ip(hone|od|ad)/i),
   listenEvent = isiDevice ? 'touchend' : 'click',
+
   ev = EvDa({
     // find out the local tz offset
     offset: (new Date()).getTimezoneOffset(), 
@@ -21,11 +22,7 @@ var
     notes: ''
   }),
 
-  markers = time_markers(),
-
-  current_hour = markers.current_hour,
-  last_half_hour = markers.last_half_hour,
-  current_half_hour = markers.current_half_hour;
+  markers = time_markers();
 
 ev.after('', function(map) {
   if(map.email && map.station && map.start_time && map.end_time) {
@@ -38,13 +35,7 @@ ev.after('', function(map) {
 $(function(){
 
   ev('duration', function(what) {
-    if(what == '30') {
-      ev(current_half_hour);
-    } else if (what == '60') {
-      ev(current_hour);
-    } else if (what == '-30') {
-      ev(last_half_hour);
-    }
+    ev(markers[what]);
   });
 
   easy_bind(['email', 'notes', 'station', 'duration', 'start_time', 'end_time']);

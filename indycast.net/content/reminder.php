@@ -13,9 +13,10 @@
         <label for="duration">What period?</label>
 
         <ul class="week-group group" id="duration">
-          <li><a data="-30" class="button">Last<br/>half hour</a></li>
-          <li><a data="30" class="button">Current<br/>half hour</a></li>
-          <li><a data="60" class="button">Current<br/>hour</a></li>
+          <li><a data="last_half_hour" class="button">Last<br/>half hour</a></li>
+          <li><a data="current_half_hour" class="button">Current<br/>half hour</a></li>
+          <li><a data="current_hour" class="button">Current<br/>hour</a></li>
+          <li><a data="plus_minus_twenty" class="button">-20min &mdash; 20min</a></li>
         </ul>
 
         <div id="custom-time">
