@@ -186,6 +186,12 @@ function time_markers() {
       human_time: 'the current half hour',
       start_time: +date_diff(right_now, {minutes: " - (ts.getMinutes() % 30)"}) / 1000,
       end_time: +date_diff(right_now, {minutes: " + 30 - (ts.getMinutes() % 30)"}) / 1000
+    },
+
+    plus_minus_twenty: {
+      human_time: '-20min - +20min',
+      start_time: +date_diff(right_now, {minutes: " - 20"}) / 1000,
+      end_time: +date_diff(right_now, {minutes: " + 20"}) / 1000
     }
   };
 }
