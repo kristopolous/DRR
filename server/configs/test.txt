@@ -5,8 +5,8 @@ lat=33.955766
 stream=http://208.70.75.109:9500/stream
 port=8890
 cloud=~/cloudcreds.cfg
-cascade_time=3m
+cascade_time=10m
 cloud_archive=4d
-prune_every=10m
-disk_archive=0.01d
+prune_every=60m
+disk_archive=0.1d
 
