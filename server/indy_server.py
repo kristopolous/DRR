@@ -626,8 +626,9 @@ misc.start_time = TS.unixtime()
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-c", "--config", default="./indy_config.txt", help="Configuration file (default ./indy_config.txt)")
+parser.add_argument('--debug', action='debug', help="Load PDB for debugging")
 parser.add_argument('--version', action='version', version='indycast %s :: Aug 2015' % misc.__version__)
-parser.add_argument("--daemon", action='store_true',  help="run as daemon")
+parser.add_argument("--daemon", action='store_true',  help="Run as daemon")
 args = parser.parse_args()
 if args.daemon:
   Popen( [x for x in sys.argv if x != '--daemon'] )
