@@ -634,6 +634,10 @@ if args.daemon:
   Popen( [x for x in sys.argv if x != '--daemon'] )
   sys.exit(0)
 
+if args.debug:
+  import pdb
+  pdb.set_trace()
+
 read_config(args.config)      
 del(read_config)
 
