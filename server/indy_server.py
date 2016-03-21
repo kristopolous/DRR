@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 #import objgraph
-#import pdb;pdb.set_trace()
+import traceback
 import argparse, logging, os, pycurl, re
 import re, signal, sys, time, json
 import setproctitle as SP
@@ -626,7 +626,7 @@ misc.start_time = TS.unixtime()
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-c", "--config", default="./indy_config.txt", help="Configuration file (default ./indy_config.txt)")
-parser.add_argument('--debug', action='debug', help="Load PDB for debugging")
+parser.add_argument('--debug', action='store_true', help="Load PDB for debugging")
 parser.add_argument('--version', action='version', version='indycast %s :: Aug 2015' % misc.__version__)
 parser.add_argument("--daemon", action='store_true',  help="Run as daemon")
 args = parser.parse_args()
@@ -634,9 +634,16 @@ if args.daemon:
   Popen( [x for x in sys.argv if x != '--daemon'] )
   sys.exit(0)
 
+def new_sys_exit(value): 
+  pdb.set_trace()
+  old_sys_exit(value)
+  sys.exit = new_sys_exit
+
+old_sys_exit = sys.exit
+
 if args.debug:
   import pdb
-  pdb.set_trace()
+  sys.exit = new_sys_exit
 
 read_config(args.config)      
 del(read_config)
