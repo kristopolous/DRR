@@ -257,7 +257,11 @@ def get(key, expiry=0, use_cache=True, default=None):
     return res[0]
 
   else:
-    run("delete from kv where key = '%s' and created_at < date(current_timestamp, '-%d second')" % (key, expiry))
+    # It's ok if this doesn't exist. SQLite likes to throw an error here
+    try:
+      run("delete from kv where key = '%s' and created_at < date(current_timestamp, '-%d second')" % (key, expiry))
+    except Exception as inst:
+      pass
 
   return default
 
