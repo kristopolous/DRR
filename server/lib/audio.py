@@ -96,6 +96,14 @@ def stream_info(file_name, skip_size=False):
       raise Exception
 
     file_size = os.path.getsize(file_name)
+
+    # If our file size is zero that means that we hit a bug
+    # trying to stitch this, so we raise and exception and 
+    # try to reconstitute the file.
+    if file_size == 0:
+      logging.warn("File %s exists and is 0 bytes. Ignoring it for computation." % file_name)
+      raise Exception
+
     duration_sec = file_size / (bitrate * (1000.0 / 8.0))
 
   except:
