@@ -18,6 +18,7 @@ _TS_RE = re.compile('(\w*)-(\d*)[.|_]')
 
 _FORMAT_MP3 = 'mp3'
 _FORMAT_AAC = 'aac'
+_LASTFORMAT = None
 
 #
 # Some stations don't start you off with a valid mp3 header
@@ -307,6 +308,7 @@ def get_audio_format(file_name):
 
 
 def signature(fname, blockcount=-1, depth=1):
+  global _LASTFORMAT
   audio_format = DB.get('format') 
 
   if not audio_format:
@@ -346,12 +348,14 @@ def signature(fname, blockcount=-1, depth=1):
     if depth == 1:
       return signature(fname, blockcount, depth + 1)
 
+  _LASTFORMAT = audio_format
+
   return sig, block
 
 
 def aac_find_frame(file_handle, file_name):
   # This tries to find the first readable SOF bytes
-  start=file_handle.tell()
+  start = file_handle.tell()
   while True:
     try:
       b0 = file_handle.read(1)
@@ -360,7 +364,6 @@ def aac_find_frame(file_handle, file_name):
       if b0 == 'F' and file_handle.read(2) == 'LV':
         if flv_skip(f): break
       """
-
 
       if b0[0] == 0xff:
         if ord(file_handle.read(1)) & 0xf6 == 0xf0:
