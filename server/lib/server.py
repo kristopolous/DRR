@@ -367,7 +367,7 @@ def manager(config):
       # This tells us that if it were to exist, it would be something
       # like this.
       request_info = audio.stream_info(file_name)
-      logging.info(request_info)
+      logging.info(("expected value", request_info))
 
       # we can do something rather specific here ... 
       #
