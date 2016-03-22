@@ -84,11 +84,11 @@ def stream_info(file_name, skip_size=False):
     logging.warn("Failure to find info for '%s'" % file_name)
     return None
 
-  # If we don't have a bitrate yet we assume 128
   try:
     # Just skip over this if the skip_size is set
     if skip_size: raise Exception
 
+    # If we don't have a bitrate yet we assume 128
     bitrate = int(DB.get('bitrate') or 128)
 
     if bitrate == 0:
@@ -106,7 +106,7 @@ def stream_info(file_name, skip_size=False):
 
     duration_sec = file_size / (bitrate * (1000.0 / 8.0))
 
-  except:
+  except Exception as inst:
     file_size = None
     # If we can't find a duration then we try to see if it's in the file name
     ts_re_duration = re.compile('_(\d*).{4}')
