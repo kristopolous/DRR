@@ -864,8 +864,14 @@ def list_slice(list_in, name_out, duration_sec, start_sec=0, do_confirm=False):
           logging.warn("Slicing error at %d of %s" % (fin.tell(), item['name']))
 
       # print 'off---',frame_end, frame_start, len(offset)
-      buf = fin.read(offset[frame_end] - offset[frame_start])
-      out.write(buf)
+      try:
+        buf = fin.read(offset[frame_end] - offset[frame_start])
+      
+        out.write(buf)
+
+      except:
+        logging.warn("Trying to read frames in %s that don't exist. Total frame count is %d while I'm trying to get %d and %d" % (item['name'], len(offset), frame_end, frame_start))
+
 
       if do_confirm:
         buf_confirm = buf[-16]
