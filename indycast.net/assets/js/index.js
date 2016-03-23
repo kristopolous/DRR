@@ -146,7 +146,7 @@ ev('', function(map) {
   $("#podcast-container").css({width: $("#podcast-url").width() + 30});
 
   setTimeout(function(){
-    set_player(live_url);
+    set_player(live_url, $("#radio-control").get(0));
   }, 100);
 });
 

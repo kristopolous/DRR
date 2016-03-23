@@ -299,7 +299,10 @@ function set_fallback(url, count) {
   });
 }
 
-function set_player(url) {
+function set_player(url, control) {
+  if(control) {
+    html5_audio = control;
+  }
   if(!html5_audio) {
     html5_audio = document.getElementById('radio-control');
   }
