@@ -19,9 +19,14 @@ if(count($where) > 0) {
 }
 
 $ret = [];
+$isFirst = true;
 $qres = $db->query($qstr);
 while($row = prune($qres)) {
-  $ret[] = $row;
+  if($isFirst) {
+    $ret[] = array_keys($row);
+    $isFirst = false;
+  }
+  $ret[] = array_values($row);
 }
 
 if($var = @$_GET['var']) {
