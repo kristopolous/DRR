@@ -110,7 +110,6 @@ ev('', function(map) {
       map.duration
     ].join('/');
 
-    set_player(live_url);
   } 
 
   if(todo.length) {
@@ -145,6 +144,10 @@ ev('', function(map) {
   $("#dialog-title").html('latest episode of ' + showname);
 
   $("#podcast-container").css({width: $("#podcast-url").width() + 30});
+
+  setTimeout(function(){
+    set_player(live_url);
+  }, 100);
 });
 
 ev.test('start', function(v, cb, meta) {
