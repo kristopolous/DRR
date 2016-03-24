@@ -721,7 +721,7 @@ def manager(config):
           pid = os.popen("netstat -anlp | grep :%s | awk ' { print $NF }' | sed 's/\/.*//'" % config['port']).read().strip().split('\n')[0]
 
           try:
-            logging.info("Fuck it, I'm killing %s." % pid)
+            logging.info("Fuck it, I'm killing pid %s." % pid)
             os.kill(int(pid), 15)
 
           except:

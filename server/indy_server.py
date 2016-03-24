@@ -517,6 +517,8 @@ def read_config(config):
 
     misc.config[k] = unit_convert_to_sec(misc.config[k])
 
+  misc.config['port'] = int(misc.config['port'])
+
   # In case someone is specifying ~/radio 
   misc.config['storage'] = os.path.expanduser(misc.config['storage'])
   misc.config['_private'] = {}
