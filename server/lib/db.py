@@ -240,6 +240,9 @@ def get(key, expiry=0, use_cache=True, default=None):
 
   # only use the cache if the expiry is not set.
   if use_cache and key in g_params and expiry == 0:
+    if default and type(default) is int: 
+      g_params[key] = int(g_params[key])
+
     return g_params[key]
 
   if expiry > 0:
