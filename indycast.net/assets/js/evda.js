@@ -281,6 +281,10 @@ var
     function pub ( scope, value, meta, opts ) {
       var args = slice.call(arguments);
 
+      if ( scope === undefined ) {
+        throw "Undefined passed in as first argument.";
+      }
+
       // If there are no arguments, and this is useful in the browser
       // debug console, return all the internal data structures.
       if ( args.length === 0 ) {
@@ -1371,4 +1375,4 @@ var
 
   return e;
 })();
-EvDa.__version__='0.1-versioning-added-113-gc8337c5';
+EvDa.__version__='0.1-versioning-added-115-gb3ccaf3';
