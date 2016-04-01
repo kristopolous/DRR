@@ -17,7 +17,7 @@ var
     offset: (new Date()).getTimezoneOffset(), 
     start_time: '', 
     end_time: '', 
-    duration: '30', 
+    duration: 'last_half_hour', 
     email: '', 
     notes: ''
   }),
@@ -40,9 +40,7 @@ $(function(){
 
   easy_bind(['email', 'notes', 'station', 'duration', 'start_time', 'end_time']);
 
-  ev({
-    duration: '30',
-  });
+  ev({ duration: 'last_half_hour' });
 
   var what = easy_sync(['email', 'station', 'duration']);
 
