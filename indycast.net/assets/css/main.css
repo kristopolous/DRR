@@ -770,7 +770,7 @@ input[type="submit"].fit,
   #footer {
     background-image: url("images/bottom-1600.svg");
     background-size: 1600px 230px;
-    margin-top: -80px;
+    margin-top: 0px;
     padding: calc(230px + 4em) 0 6em 0;
   }
 
