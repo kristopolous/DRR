@@ -1,7 +1,7 @@
 h1 { background: white } 
 a { cursor: pointer }
 #duration { width: 100%; text-align: center }
-#duration li { width: 32% }
+#duration li { width: 49%;font-size: 16px;margin-bottom:2px}
 #podcast-done { display: block }
 #podcast-url { line-height: 0 }
 #podcast-url-container { text-align: center;background: white }
@@ -38,6 +38,10 @@ a { cursor: pointer }
 
 label { font-size: 0.8em; line-height: 1.3em }
 
+#duration > :last-child a,
+#duration > :first-child a {
+  border-radius: 0;
+}
 @media screen and (max-width: 736px) {
   .feature .content {
     padding: 2em 0.5em !important;

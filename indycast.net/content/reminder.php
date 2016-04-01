@@ -16,7 +16,7 @@
           <li><a data="last_half_hour" class="button">Last<br/>half hour</a></li>
           <li><a data="current_half_hour" class="button">Current<br/>half hour</a></li>
           <li><a data="current_hour" class="button">Current<br/>hour</a></li>
-          <li><a data="plus_minus_twenty" class="button">-20min &mdash; 20min</a></li>
+          <li><a data="plus_minus_twenty" class="button">-20min<br/>&mdash; 20min</a></li>
         </ul>
 
         <div id="custom-time">
