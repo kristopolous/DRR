@@ -89,7 +89,7 @@ if(isset($_GET['callsign'])) {
     <div class="container-fluid page-content">
 <? 
 $emit_script = "
-  <script src='/assets/js/evda.min.js'></script>
+  <script src='/assets/js/evda.js'></script>
   <script src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js'></script>
   <script src='//code.jquery.com/jquery-1.11.3.min.js'></script>
   <script src='//releases.flowplayer.org/js/flowplayer-3.2.13.min.js'></script>
