@@ -262,10 +262,10 @@ def manager(config):
      
       options = {}
       for arg in rule.arguments:
-        options[arg] = "[{0}]".format(arg)
+        options[arg] = "{0}".format(arg)
 
       url = url_for(rule.endpoint, **options)
-      line = "{:15s} {}".format(url, app.view_functions[rule.endpoint].__doc__)
+      line = "{} {}".format(url, app.view_functions[rule.endpoint].__doc__)
       output.append(line)
       output.append("")
 
@@ -296,7 +296,6 @@ def manager(config):
     os.popen('sqlite3 config.db .dump | gzip -9 > %s' % filename)
     time.sleep(1)
     return send_file(filename)
-
 
   @app.route('/rename')
   def rename():
