@@ -93,6 +93,7 @@ def generate_xml(showname, feed_list, duration_min, weekday_list, start, duratio
     'dc': 'http://purl.org/dc/elements/1.1/',
     'media': 'http://search.yahoo.com/mrss/', 
     'itunes': 'http://www.itunes.com/dtds/podcast-1.0.dtd',
+    'atom': 'http://www.w3.org/2005/Atom',
     'feedburner': 'http://rssnamespace.org/feedburner/ext/1.0'
   }
 
