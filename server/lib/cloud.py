@@ -530,7 +530,7 @@ def get_size(fname):
     #
     # They consider a k to be 10^3, not 2^10
     #
-    return (bitrate / 8) * (duration_min * 60) * (10 ** 3)
+    return int((bitrate / 8) * (duration_min * 60) * (10 ** 3))
 
   # If we can't find it based on the name, then we are kinda 
   # SOL and just return 0
