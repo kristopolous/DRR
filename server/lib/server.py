@@ -102,7 +102,7 @@ def generate_xml(showname, feed_list, duration_min, weekday_list, start, duratio
 
   channel = ET.SubElement(root, "channel")
 
-  if duration_min < 60:
+  if duration_string.find('hr') == -1:
     duration_string += " minute"
 
   for k,v in list({
