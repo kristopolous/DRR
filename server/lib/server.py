@@ -120,6 +120,11 @@ def generate_xml(showname, feed_list, duration_min, weekday_list, start, duratio
   media_image = ET.SubElement(channel, '{%s}thumbnail' % nsmap['media'])
   media_image.attrib['url'] = 'http://indycast.net/icon/%s_1400.png' % quote(showname)
 
+  atom_link = ET.SubElement(channel, '{%s}link' % nsmap['atom'])
+  atom_link.attrib['href'] = link
+  atom_link.attrib['type'] = 'application/rss+xml'
+  atom_link.attrib['rel'] = 'self'
+
   image = ET.SubElement(channel, 'image')
   for k,v in list({
     'url': 'http://indycast.net/icon/%s_200.png' % quote(showname),
