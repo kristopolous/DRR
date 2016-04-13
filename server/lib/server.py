@@ -121,7 +121,7 @@ def generate_xml(showname, feed_list, duration_min, weekday_list, start, duratio
   media_image.attrib['url'] = 'http://indycast.net/icon/%s_1400.png' % quote(showname)
 
   atom_link = ET.SubElement(channel, '{%s}link' % nsmap['atom'])
-  atom_link.attrib['href'] = link
+  atom_link.attrib['href'] = base_url
   atom_link.attrib['type'] = 'application/rss+xml'
   atom_link.attrib['rel'] = 'self'
 
@@ -149,6 +149,7 @@ def generate_xml(showname, feed_list, duration_min, weekday_list, start, duratio
       '{%s}explicit' % nsmap['itunes']: 'no', 
       '{%s}author' % nsmap['itunes']: callsign,
       '{%s}duration' % nsmap['itunes']: itunes_duration,
+      '{%s}subtitle' % nsmap['itunes']: '',
       '{%s}summary' % nsmap['itunes']: showname,
       '{%s}creator' % nsmap['dc']: callsign.upper(),
       '{%s}origEnclosureLink' % nsmap['feedburner']: link,
