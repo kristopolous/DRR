@@ -160,7 +160,7 @@ def generate_xml(showname, feed_list, duration_min, weekday_list, start, duratio
     }.items()):
       ET.SubElement(item, k).text = v
 
-    ET.SubElement(item, 'guid', isPermaLink="false").text = file_name
+    ET.SubElement(item, 'guid', isPermaLink="true").text = file_name
 
     # fileSize and length will be guessed based on 209 bytes covering
     # frame_length seconds of audio (128k/44.1k no id3)
