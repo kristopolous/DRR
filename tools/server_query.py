@@ -44,7 +44,7 @@ def stderr(switch):
     sys.stderr = open('/dev/null', "w")
     
 def prec(num):
-  return float("{:.3f}".format(latency))
+  return float("{:.3f}".format(num))
 
 def stats_log(db, station, obj):
   # The object that comes in has all the necessary info already associated
