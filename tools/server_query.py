@@ -43,6 +43,9 @@ def stderr(switch):
     globals()['old'] = sys.stderr
     sys.stderr = open('/dev/null', "w")
     
+def prec(num):
+  return float("{:.3f}".format(latency))
+
 def stats_log(db, station, obj):
   # The object that comes in has all the necessary info already associated
   # with it ... all we have to do is test what is there and what is not.
@@ -61,7 +64,7 @@ def stats_log(db, station, obj):
   db['c'].execute('''insert into 
     stats (callsign, uuid, version, memory, disk, threadcount, uptime, latency, load) 
     values(?,        ?,    ?,       ?,      ?,    ?,           ?,      ?,       ?)''', 
-    (str(callsign), uuid, version, memory, disk, threadcount, uptime, float("{:.4f}".format(latency)), load)
+    (str(callsign), uuid, version, prec(memory), prec(disk), threadcount, uptime, prec(latency), load)
   )
 
 def find_misbehaving_servers(db, fail_list):
