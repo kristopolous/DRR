@@ -61,7 +61,7 @@ def stats_log(db, station, obj):
   db['c'].execute('''insert into 
     stats (callsign, uuid, version, memory, disk, threadcount, uptime, latency, load) 
     values(?,        ?,    ?,       ?,      ?,    ?,           ?,      ?,       ?)''', 
-          (str(callsign), uuid, version, memory, disk, threadcount, uptime, latency, load)
+    (str(callsign), uuid, version, memory, disk, threadcount, uptime, float("{:.4f}".format(latency)), load)
   )
 
 def find_misbehaving_servers(db, fail_list):
