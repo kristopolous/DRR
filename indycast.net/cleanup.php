@@ -23,10 +23,6 @@ while($row = prune($qres)) {
     $final[] = $row;
     continue;
   }
-  foreach(['disk', 'memory', 'latency'] as $key) {
-    $row[$key] = round($row[$key], 3);
-    $where[] = "$key = {$row[$key]}";
-  }
   if(strlen($row['uuid']) > 15) {
     $parts = explode('-', $row['uuid']);
     $row['uuid'] = array_pop($parts);
@@ -34,11 +30,17 @@ while($row = prune($qres)) {
   } else if($row['uuid'] === '0' ) {
     $where[] = "uuid = ''";
   }
+  foreach(['disk', 'memory', 'latency'] as $key) {
+    if(strlen($row[$key]) > 8) {
+      $row[$key] = round($row[$key], 3);
+      $where[] = "$key = {$row[$key]}";
+    }
+  }
   $sql = "update stats set " . implode(',', $where) . 
     " where id = {$row['id']}";
   $db->query($sql);
   echo ".";
 }
-echo json_encode($final);
+//echo json_encode($final);
 ?>
 
