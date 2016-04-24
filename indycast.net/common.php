@@ -143,6 +143,15 @@ function sanitize_single($val, $type) {
   } 
 }
 
+function get_column_list($table_name) {
+  $db = db_connect();
+  $res = $db->query("pragma table_info( $table_name )");
+
+  return array_map(function($row) { 
+    return $row['name'];
+  }, sql_all($res));
+}
+
 function sanitize($list) {
   $ret = [];
 

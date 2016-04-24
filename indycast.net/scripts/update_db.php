@@ -3,15 +3,6 @@
 
 include_once(__DIR__ . '/../common.php');
 
-function get_column_list($table_name) {
-  global $db;
-  $res = $db->query("pragma table_info( $table_name )");
-
-  return array_map(function($row) { 
-    return $row['name'];
-  }, sql_all($res));
-}
-
 foreach($schema as $table_name => $table_schema) {
   $existing_column_name_list = get_column_list($table_name);
 
