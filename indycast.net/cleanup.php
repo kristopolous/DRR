@@ -19,10 +19,7 @@ while($row = prune($qres)) {
     }
     $row['version'] = trim("$number.$build", 'v');
     $where[] = "version = '{$row['version']}'";
-  } else {
-    $final[] = $row;
-    continue;
-  }
+  } 
   if(strlen($row['uuid']) > 15) {
     $parts = explode('-', $row['uuid']);
     $row['uuid'] = array_pop($parts);
@@ -36,10 +33,14 @@ while($row = prune($qres)) {
       $where[] = "$key = {$row[$key]}";
     }
   }
-  $sql = "update stats set " . implode(',', $where) . 
-    " where id = {$row['id']}";
-  $db->query($sql);
-  echo ".";
+  if(count($where) > 0) {
+    $sql = "update stats set " . implode(',', $where) . 
+     " where id = {$row['id']}";
+    $db->query($sql);
+    echo ".";
+  } else {
+    echo '@';
+  }
 }
 //echo json_encode($final);
 ?>
