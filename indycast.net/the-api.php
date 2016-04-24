@@ -11,6 +11,41 @@ function fails($message) {
   return ['result' => false, 'message' => $message];
 }
 
+function pl_graph() {
+  $vars = sanitize($_REQUEST);
+  $where = [];
+  if($station = @$vars['station']) {
+    $where[] = "callsign = '$station'";
+  }
+  if($start = @$vars['start']) {
+    $where[] = "now > $start";
+  }
+  if($end = @$vars['end']) {
+    $where[] = "now < $end";
+  }
+
+  $qstr = 'select * from stats';
+  if(count($where) > 0) {
+    $qstr .= " where " . implode(' and ', $where);
+  }
+
+  $ret = [];
+  $isFirst = true;
+
+  $db = db_connect();
+  $qres = $db->query($qstr);
+
+  while($row = prune($qres)) {
+    if($isFirst) {
+      $ret[] = array_keys($row);
+      $isFirst = false;
+    }
+    $ret[] = array_values($row);
+  }
+
+  return passes($ret);
+}
+
 function pl_subscribe() {
   $p = sanitize([
     'start' => STR,
