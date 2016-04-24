@@ -12,7 +12,7 @@ db=$base/db/main.db
 backup=/tmp/backup.lzma
 
 if [ ! -e $base/misc/backup-secrets.ini ]; then
-  echo "Erorr, $base/misc/backup-secrets.ini needs to exist."
+  echo "Error, $base/misc/backup-secrets.ini needs to exist."
   exit -1
 fi
 
