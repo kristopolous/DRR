@@ -31,6 +31,8 @@ while($row = prune($qres)) {
     $parts = explode('-', $row['uuid']);
     $row['uuid'] = array_pop($parts);
     $where[] = "uuid = '{$row['uuid']}'";
+  } else if($row['uuid'] === '0' ) {
+    $where[] = "uuid = ''";
   }
   $sql = "update stats set " . implode(',', $where) . 
     " where id = {$row['id']}";
