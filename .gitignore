@@ -4,3 +4,4 @@
 db
 patch
 server/build
+backup-secrets.ini
