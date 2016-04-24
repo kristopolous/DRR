@@ -1,1 +1,40 @@
-<script src='graph.php?var=db_raw'></script>
+ <html>
+  <head>
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+
+      function get_data() {
+        var params =  {station: 'kxlu', select: 'memory'};
+        $(function(){
+          $.getJSON('api/graph', params, function(res) {
+            if(res.result) { 
+              drawChart(res.message, params);
+            }
+          });
+        });
+      }
+
+
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(get_data);
+
+      function drawChart(data_in, params) {
+        var data = google.visualization.arrayToDataTable(data_in);
+
+        var options = {
+          title: params.select + " on " + params.station,
+          curveType: 'function',
+          legend: { position: 'bottom' }
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="curve_chart" style="width: 900px; height: 500px"></div>
+  </body>
+</html>
