@@ -52,14 +52,34 @@ def stats_log(db, station, obj):
   tlist_key = 'tlist' if 'tlist' in obj else 'threads'
   mem_key = 'mem' if 'mem' in obj else 'memory'
   callsign = station[CALLSIGN]
-  uuid = obj['uuid'] if 'uuid' in obj else '0'
-  version = obj['version']
+
+  if 'uuid' in obj:
+    uuid = obj['uuid'].split('-')[:-1][0]
+  else:
+    uuid = '' 
+
+  version_parts = obj['version'][1:].split('-')
+  if len(version_parts) > 2:
+    build = version_parts[2]
+  else:
+    build = "0"
+
+  version = "%s.%s" % (version_parts[0], build)
+
   memory = obj[mem_key][0] 
   disk = obj['disk']
   threadcount = len(obj[tlist_key])
   uptime = obj['computer-uptime'] if 'computer-uptime' in obj else 0
   load = obj['load'][1]
   latency = obj['latency']
+
+  """
+  print('''insert into 
+    stats (callsign, uuid, version, memory, disk, threadcount, uptime, latency, load) 
+    values(%s, %s, %s, %s, %s, %s, %s, %s, %s)''' %
+    (str(callsign), uuid, version, prec(memory), prec(disk), threadcount, uptime, prec(latency), load)
+  )
+  """
 
   db['c'].execute('''insert into 
     stats (callsign, uuid, version, memory, disk, threadcount, uptime, latency, load) 
