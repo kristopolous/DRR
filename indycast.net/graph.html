@@ -1,40 +1,85 @@
  <html>
   <head>
+    <style>
+    body{margin:0;padding:0;background:silver}
+    #container > div { width: 100%; height: 1000px;background:white; } 
+    </style>
+    
+    <script src="assets/js/db.min.js"></script>
+    <script src="assets/js/db-helper.js"></script>
+
     <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
+      var _db = DB(), ix = 0, start = new Date();
 
-      function get_data() {
-        var params =  {station: 'kxlu', select: 'memory'};
-        $(function(){
-          $.getJSON('api/graph', params, function(res) {
-            if(res.result) { 
-              drawChart(res.message, params);
-            }
-          });
-        });
+      function log(what) {
+        console.log((new Date()) - start, what);
       }
 
+      function subtable(what) {
+        what.update('now', function(row) { return row.now.split(':')[0] });
 
-      google.charts.load('current', {'packages':['corechart']});
-      google.charts.setOnLoadCallback(get_data);
+        var m = {}, res = what.find(function(row) {
+          if(m[row.callsign + row.now]) {
+            return false;
+          }
+          m[row.callsign + row.now] = 1;
+          return true;
+        });
+        return res;
+      }
 
-      function drawChart(data_in, params) {
-        var data = google.visualization.arrayToDataTable(data_in);
+      function drawChart(data_in, params, chartnum) {
+        _db.insert(DB.objectify(data_in[0], data_in.slice(1)));
+        log('database constructed');
+        self.sub = subtable(_db);
+
+        log('submatch found');
+        self.m = DB.tabular(
+            sub,
+            {col_key: 'callsign', 'cell_key': 'memory', 'row_key': 'now'});
+
+        m = m.filter(function(m) {return m.indexOf(0) === -1});
+
+        log('tabular done');
+        var data = google.visualization.arrayToDataTable(m);
 
         var options = {
           title: params.select + " on " + params.station,
           curveType: 'function',
+          width: 1500,
           legend: { position: 'bottom' }
         };
 
-        var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+        var chart = new google.charts.Line(document.getElementById('chart' + chartnum));
 
         chart.draw(data, options);
+        log('graph drawn');
       }
+
+      function get_data(params, num) {
+        log('getting data');
+        $.getJSON('api/graph', params, function(res) {
+          if(res.result) { 
+            log('got data');
+            drawChart(res.message, params, num);
+          }
+        });
+      }
+
+      function do_graph() {
+        get_data({select: 'memory'}, 0);
+      }
+
+      google.charts.load('current', {'packages':['line']});
+      google.charts.setOnLoadCallback(do_graph);
+
     </script>
   </head>
   <body>
-    <div id="curve_chart" style="width: 900px; height: 500px"></div>
+    <div id='container'>
+      <div id="chart0"></div>
+    </div>
   </body>
 </html>
