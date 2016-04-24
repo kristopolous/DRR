@@ -15,12 +15,6 @@ function pl_graph() {
   $vars = sanitize($_REQUEST);
   $all_columns = get_column_list('stats');
 
-  if($select = @$vars['select']) {
-    $columns = "callsign,now,$select";
-  } else {
-    $columns = implode(',', array_slice($all_columns, 1));
-  }
-
   $where = [];
   if($station = @$vars['station']) {
     $where[] = "callsign = '$station'";
@@ -30,6 +24,16 @@ function pl_graph() {
   }
   if($end = @$vars['end']) {
     $where[] = "now < $end";
+  }
+
+  if($select = @$vars['select']) {
+    if($station) {
+      $columns = "now,$select";
+    } else {
+      $columns = "callsign,now,$select";
+    }
+  } else {
+    $columns = implode(',', array_slice($all_columns, 1));
   }
 
   $qstr = "select $columns from stats";
