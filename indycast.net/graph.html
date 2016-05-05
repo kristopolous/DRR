@@ -11,7 +11,7 @@
     <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
-      var _db = DB(), ix = 0, start = new Date();
+      var _db = DB(), ix = 0, start = new Date(), field='version';//callsign';
 
       function log(what) {
         console.log((new Date()) - start, what);
@@ -19,18 +19,26 @@
 
       function subtable(what) {
         what.update('now', function(row) { return row.now.split(':')[0] });
+        
+        what.update('version', function(row) {
+          var parts = row.version.split('.');
+          parts[2] = (parseInt(parts[2], 10) + 1000).toString().slice(1);
+          return parts.slice(0,3).join('.');
+        });
+
+//        what.update('version', function(row) { return row.version.split('.')[1] });
 
         var m = {}, res = what.find(function(row) {
-          if(m[row.callsign + row.now]) {
+          if(m[row[field] + row.now]) {
             return false;
           }
-          m[row.callsign + row.now] = 1;
+          m[row[field] + row.now] = 1;
           return true;
         });
         return res;
       }
 
-      function drawChart(data_in, params, chartnum) {
+      function drawChart(data_in, params, chartnum, _db) {
         _db.insert(DB.objectify(data_in[0], data_in.slice(1)));
         log('database constructed');
         self.sub = subtable(_db);
@@ -38,9 +46,9 @@
         log('submatch found');
         self.m = DB.tabular(
             sub,
-            {col_key: 'callsign', 'cell_key': 'memory', 'row_key': 'now'});
+            {col_key: field, 'cell_key': 'disk', 'row_key': 'now'});
 
-        m = m.filter(function(m) {return m.indexOf(0) === -1});
+//        m = m.filter(function(m) {return m.indexOf(0) === -1});
 
         log('tabular done');
         var data = google.visualization.arrayToDataTable(m);
@@ -63,13 +71,14 @@
         $.getJSON('api/graph', params, function(res) {
           if(res.result) { 
             log('got data');
-            drawChart(res.message, params, num);
+            var db = DB();
+            drawChart(res.message, params, num, db);
           }
         });
       }
 
       function do_graph() {
-        get_data({select: 'memory'}, 0);
+        get_data({station: 'kpfk', select: 'disk,version'}, 0);
       }
 
       google.charts.load('current', {'packages':['line']});
@@ -80,6 +89,8 @@
   <body>
     <div id='container'>
       <div id="chart0"></div>
+      <div id="chart1"></div>
+      <div id="chart2"></div>
     </div>
   </body>
 </html>
