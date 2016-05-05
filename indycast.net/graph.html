@@ -34,7 +34,7 @@
       }
 
       function subtable(what) {
-        what.update('now', function(row) { return row.now.split(':')[0] });
+        what.update('now', function(row) { return row.now.split(' ')[0] });
         
         what.update('version', function(row) {
           var parts = row.version.split('.');
@@ -96,8 +96,7 @@
 
       function do_graph() {
         get_data({
-          station: 'kpfk,kcrw',
-          select: 'memory,callsign||"-"||version as version'}, 0);
+          select: 'memory,callsign as version'}, 0);
       }
 
       google.charts.load('current', {'packages':['line']});

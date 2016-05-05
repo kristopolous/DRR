@@ -3,12 +3,12 @@
 // poor-mans router and controller that doesn't distinguish between HTTP verbs.
 include_once('common.php');
 
-function passes($message) {
-  return ['result' => true, 'message' => $message];
+function passes($message, $extra = []) {
+  return array_merge($extra, ['result' => true, 'message' => $message]);
 }
 
-function fails($message) {
-  return ['result' => false, 'message' => $message];
+function fails($message, $extra = []) {
+  return array_merge($extra, ['result' => false, 'message' => $message]);
 }
 
 function pl_graph() {
@@ -17,7 +17,12 @@ function pl_graph() {
 
   $where = [];
   if($station = @$vars['station']) {
-    $where[] = "callsign = '$station'";
+    $list = explode(',', $station);
+    if(count($list) > 1) {
+      $where[] = "callsign in ('" . implode("','", $list ) . "')";
+    } else {
+      $where[] = "callsign = '$station'";
+    }
   }
   if($start = @$vars['start']) {
     $where[] = "now > $start";
@@ -56,7 +61,7 @@ function pl_graph() {
     $ret[] = array_values($row);
   }
 
-  return passes($ret);
+  return passes($ret, ['query' => $qstr]);
 }
 
 function pl_subscribe() {
