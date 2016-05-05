@@ -40,6 +40,7 @@ function pl_graph() {
   if(count($where) > 0) {
     $qstr .= " where " . implode(' and ', $where);
   }
+  $qstr .= ' order by id asc';
 
   $ret = [];
   $isFirst = true;
