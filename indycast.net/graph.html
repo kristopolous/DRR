@@ -85,17 +85,19 @@
 
       function get_data(params, num) {
         log('getting data');
-        $.getJSON('api/graph', params, function(res) {
+        $.post('api/graph', params, function(res) {
           if(res.result) { 
             log('got data');
             var db = DB();
             drawChart(res.message, params, num, db);
           }
-        });
+        }, 'json');
       }
 
       function do_graph() {
-        get_data({select: 'memory,version'}, 0);
+        get_data({
+          station: 'kpfk,kcrw',
+          select: 'memory,callsign||"-"||version as version'}, 0);
       }
 
       google.charts.load('current', {'packages':['line']});
