@@ -1,0 +1,12 @@
+update stats set version='0.14.1' where version='0.1';
+update stats set version='0.14.2' where version='0.2';
+update stats set version='0.14.4' where version='0.4';
+update stats set version='0.14.136' where version='0.136';
+update stats set version='0.14.139' where version='0.139';
+update stats set version='0.14.144' where version='0.144';
+update stats set version='0.14.146' where version='0.146';
+update stats set version='0.15.10' where version='0.10';
+update stats set version='0.15.26' where version='0.26';
+update stats set version='0.15.30' where version='0.30';
+update stats set version='0.15.39' where version='0.39';
+update stats set version='0.15.50' where version='0.50';
