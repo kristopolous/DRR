@@ -4,7 +4,19 @@
     body{margin:0;padding:0;background:silver}
     #container > div { width: 100%; height: 1000px;background:white; } 
     </style>
-    
+
+  </head>
+  <body>
+    Value field
+    <input id='value'>
+    Station(s)
+    <input id='station'>
+    What dimension
+    <input id='dimension'>
+
+    <div id='container'>
+      <div id="chart0"></div>
+    </div>
     <script src="assets/js/db.min.js"></script>
     <script src="assets/js/db-helper.js"></script>
 
@@ -39,6 +51,7 @@
       }
 
       function drawChart(data_in, params, chartnum, _db) {
+        self.lastdb = _db;
         _db.insert(DB.objectify(data_in[0], data_in.slice(1)));
         log('database constructed');
         self.sub = subtable(_db);
@@ -46,7 +59,7 @@
         log('submatch found');
         self.m = DB.tabular(
             sub,
-            {col_key: field, 'cell_key': 'disk', 'row_key': 'now'});
+            {col_key: field, 'cell_key': 'memory', 'row_key': 'now'});
 
 //        m = m.filter(function(m) {return m.indexOf(0) === -1});
 
@@ -78,19 +91,12 @@
       }
 
       function do_graph() {
-        get_data({station: 'kpfk', select: 'disk,version'}, 0);
+        get_data({select: 'memory,version'}, 0);
       }
 
       google.charts.load('current', {'packages':['line']});
       google.charts.setOnLoadCallback(do_graph);
 
     </script>
-  </head>
-  <body>
-    <div id='container'>
-      <div id="chart0"></div>
-      <div id="chart1"></div>
-      <div id="chart2"></div>
-    </div>
   </body>
 </html>
