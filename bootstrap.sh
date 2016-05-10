@@ -1,6 +1,7 @@
 #!/bin/sh
 #
 # Intended for Jessie (Debian 8)
+# Should also work in Ubuntu 14.04 and 16.04
 #
 
 aptinstall() {
