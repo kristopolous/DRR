@@ -28,7 +28,7 @@ hardupgrade() {
 
 dopip() {
   cd server
-  pip3 install --user -r requirements.txt
+  pip3 install --upgrade --user -r requirements.txt
 }
 
 aptinstall
