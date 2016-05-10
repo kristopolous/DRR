@@ -50,8 +50,8 @@ def stream_download(callsign, url, my_pid, file_name):
     return catchall('read', what)
 
   def catch_debug(what, origin):
-    if what != 3 and what != 0:
-      return catchall('debug', json.dumps([what, origin.decode('utf-8')], ensure_ascii=False))
+    if what == pycurl.INFOTYPE_TEXT:
+      return catchall('debug', json.dumps([what, str(origin)], ensure_ascii=False))
 
   def cback(data): 
     global g_download_kill_pid
