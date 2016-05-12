@@ -65,6 +65,7 @@ parser.add_argument("-c", "--config", default=cfg, help="cloud credential file t
 parser.add_argument("-q", "--query", default='size', help="query to send to the cloud (list, size, unlink)")
 parser.add_argument("-g", "--get", help="get a file from the cloud")
 parser.add_argument("-p", "--put", help="put a file into the cloud")
+parser.add_argument("-d", "--rm", help="remove a file from the cloud")
 args = parser.parse_args()
 
 if args.config is None:
@@ -87,6 +88,9 @@ if args.get:
 
 elif args.put:
   cloud.put(args.put, args.put, config=config)
+
+elif args.rm:
+  cloud.unlink(args.rm, config=config)
 
 elif args.query == 'size':
   get_size(station_list, blob_service)
