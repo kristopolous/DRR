@@ -84,12 +84,15 @@ config = {'azure': misc.config_section_map('Azure', cloud_config)}
 blob_service, container = cloud.connect(config)
 
 if args.get:
+  print("Getting %s" % args.get)
   cloud.download(args.get, args.get, config=config)
 
 elif args.put:
+  print("Putting %s" % args.put)
   cloud.put(args.put, args.put, config=config)
 
 elif args.rm:
+  print("Removing %s" % args.rm)
   cloud.unlink(args.rm, config=config)
 
 elif args.query == 'size':
