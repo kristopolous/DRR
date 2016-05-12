@@ -35,9 +35,36 @@ def to_minute(unix_time):
 
   return unix_time.weekday() * (24.0 * 60) + unix_time.hour * 60 + unix_time.minute + (unix_time.second / 60.0)
 
+def frac_date(what):
+  second = 0
+  suffix = ''
+
+  if what.lower().endswith('m'):
+    suffix = what[-2:]
+    what = what[:-2]
+
+  parts = what.split(':')
+  for piece in parts:
+    second = (second * 60) + float(piece)
+ 
+  # If we get something like 7pm, then
+  # we need to scale this up.  By counting
+  # the number of pieces, we can scale up
+  # appropriately.
+  second *= (60 ** (3 - len(parts)))
+
+  hour = int(second / 3600)
+  second -= hour * 3600
+
+  minute = int(second / 60)
+  second -= minute * 60
+
+  return "{0:d}:{1:02d}:{2:03.2f}{3:s}".format(hour,minute,second,suffix)
+
 def str_to_time(in_str):
   start = re.sub('[+_-]', ' ', in_str)
   try:
+    start = frac_date(what)
     dt = dt_parser.parse(start)
     
     # This silly library will take "monday" to mean NEXT monday, not the
@@ -130,6 +157,7 @@ def to_utc(day_str, hour):
 
   try:
     day_number = WEEKDAY_LIST.index(day_str[0:3].lower())
+    hour = frac_date(hour)
     dt_struct = dt_parser.parse(hour)
 
   except:
