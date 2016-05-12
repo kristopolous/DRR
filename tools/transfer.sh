@@ -16,13 +16,27 @@ remaining() {
 
 remaining
 
+n=0
+list=""
 while IFS='' read -r file || [[ -n "$file" ]]; do
-  date
+  (( n++ ))
 
-  ./cloud.py -c $oldcfg -g $file || fail
-  ./cloud.py -c $newcfg -p $file || fail
+  if [ $n = 8 ]; then
+    date
 
-  echo "Removing $file"
-  rm $file
-  echo $file >> $done
+    ./cloud.py -c $oldcfg -g $list || fail
+    ./cloud.py -c $newcfg -p $list || fail
+
+    echo $list | tr ',' ' ' | xargs rm
+    echo $list | tr ',' '\n' >> $done
+
+    n=0
+    list=""
+  else
+    if [ -z "$list" ]; then
+      list=$file
+    else
+      list="$list,$file"
+    fi
+  fi
 done < $remaining

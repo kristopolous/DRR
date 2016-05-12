@@ -85,11 +85,13 @@ blob_service, container = cloud.connect(config)
 
 if args.get:
   print("Getting %s" % args.get)
-  cloud.download(args.get, args.get, config=config)
+  for name in args.get.split(','):
+    cloud.download(name, name, config=config)
 
 elif args.put:
   print("Putting %s" % args.put)
-  cloud.put(args.put, args.put, config=config)
+  for name in args.put.split(','):
+    cloud.put(name, name, config=config)
 
 elif args.rm:
   print("Removing %s" % args.rm)
