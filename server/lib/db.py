@@ -15,15 +15,6 @@ g_lock = Lock();
 # This is a way to get the column names after grabbing everything
 # I guess it's also good practice
 _SCHEMA = {
-  'intents': [
-     ('id', 'INTEGER PRIMARY KEY'),
-     ('key', 'TEXT UNIQUE'),
-     ('start', 'INTEGER'),
-     ('end', 'INTEGER'), 
-     ('read_count', 'INTEGER DEFAULT 0'),
-     ('created_at', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'),
-     ('accessed_at', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'),
-   ],
   'kv': [
      ('id', 'INTEGER PRIMARY KEY'),
      ('key', 'TEXT UNIQUE'),
@@ -352,23 +343,4 @@ def register_stream(info):
     logging.warn("Unable to insert a record with a name %s" % name)
 
   return last
-
-
-def register_intent(minute_list, duration):
-  # Tells the server to record on a specific minute for a specific duration when
-  # not in full mode.  Otherwise, this is just here for statistical purposes.
-
-  for minute in minute_list:
-    key = str(minute) + ':' + str(duration)
-    res = run('select id from intents where key = ?', (key, )).fetchone()
-
-    if res == None:
-      res, last = run('insert into intents(key, start, end) values(?, ?, ?)', (key, minute, minute + duration, ), with_last=True)
-
-    else:
-      res, last = run('update intents set read_count = read_count + 1, accessed_at = (current_timestamp) where id = ?', (res[0], ), with_last=True) 
-
-    return last
-
-  return None
 

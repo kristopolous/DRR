@@ -486,7 +486,6 @@ def manager(config):
         v.release()
 
     stats.update({
-      'intents': DB.all('intents'),
       'kv': DB.all('kv'),
       'locks': lockMap,
       'pwd': os.getcwd(),
@@ -672,10 +671,6 @@ def manager(config):
 
     # We come in with spaces as underscores so here we translate that back
     showname = re.sub('_', ' ', showname)
-
-    # This will register the intent if needed for future recordings
-    # (that is if we are in ondemand mode)
-    DB.register_intent(start_time_list, duration_min)
 
     # Make sure that we have all of our streams registered before trying
     # to infer what we can send to the user.
