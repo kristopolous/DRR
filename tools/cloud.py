@@ -84,13 +84,15 @@ config = {'azure': misc.config_section_map('Azure', cloud_config)}
 blob_service, container = cloud.connect(config)
 
 if args.get:
-  print("Getting %s" % args.get)
+  print("Getting")
   for name in args.get.split(','):
+    print(" - %s" % name)
     cloud.download(name, name, config=config)
 
 elif args.put:
-  print("Putting %s" % args.put)
+  print("Putting")
   for name in args.put.split(','):
+    print(" - %s" % name)
     cloud.put(name, name, config=config)
 
 elif args.rm:
