@@ -50,9 +50,9 @@ def get_size(station_list, blob_service):
   gb = sum(disk_space) / (1024.0 ** 3)
   print("-----------------------------")
   print(" %-8s %5d %9.3f GB" % ("Total", len(all_files), gb))
-  print(" %-7s  $%.02f/month" % ("Cost", gb * 0.024))
+  print(" %-7s  $%.02f/month" % ("Cost", gb * 0.01))
   print()
-  print(" *using $0.024/GB azure pricing")
+  print(" *using $0.01/GB azure pricing")
 
 
 cfg = os.environ.get('CLOUD_CFG')
@@ -62,7 +62,9 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--station", default="all", help="station to query (default all)")
 parser.add_argument("-c", "--config", default=cfg, help="cloud credential file to use")
-parser.add_argument("-q", "--query", default="size", help="query to send to the cloud (list, size, unlink)")
+parser.add_argument("-q", "--query", default='size', help="query to send to the cloud (list, size, unlink)")
+parser.add_argument("-g", "--get", help="get a file from the cloud")
+parser.add_argument("-p", "--put", help="put a file into the cloud")
 args = parser.parse_args()
 
 if args.config is None:
@@ -80,7 +82,13 @@ config = {'azure': misc.config_section_map('Azure', cloud_config)}
 
 blob_service, container = cloud.connect(config)
 
-if args.query == 'size':
+if args.get:
+  cloud.download(args.get, args.get, config=config)
+
+elif args.put:
+  cloud.put(args.put, args.put, config=config)
+
+elif args.query == 'size':
   get_size(station_list, blob_service)
 
 elif args.query == 'list':
