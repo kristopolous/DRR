@@ -27,6 +27,10 @@ while IFS='' read -r file || [[ -n "$file" ]]; do
     ./cloud.py -c $oldcfg -g $list || fail
     ./cloud.py -c $newcfg -p $list || fail
 
+    # Note that this is removing the old file only
+    # after the new one has been placd in the cloud
+    ./cloud.py -c $oldcfg -d $list || fail
+
     echo $list | tr ',' ' ' | xargs rm
     echo $list | tr ',' '\n' >> $done
 

@@ -86,18 +86,20 @@ blob_service, container = cloud.connect(config)
 if args.get:
   print("Getting")
   for name in args.get.split(','):
-    print(" - %s" % name)
+    print(" ↓ %s" % name)
     cloud.download(name, name, config=config)
 
 elif args.put:
   print("Putting")
   for name in args.put.split(','):
-    print(" - %s" % name)
+    print(" ↑ %s" % name)
     cloud.put(name, name, config=config)
 
 elif args.rm:
-  print("Removing %s" % args.rm)
-  cloud.unlink(args.rm, config=config)
+  print("Removing")
+  for name in args.rm.split(','):
+    print(" - %s" % name)
+    cloud.unlink(name, config=config)
 
 elif args.query == 'size':
   get_size(station_list, blob_service)
