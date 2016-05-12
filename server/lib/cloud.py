@@ -83,7 +83,7 @@ def unlink(path, config=False):
   return None
 
 
-def put(path):
+def put(path, dest=None, config=False):
   import lib.misc as misc 
 
   # Place a file, given a path, in the cloud. 
@@ -92,7 +92,7 @@ def put(path):
     return False
 
   try:
-    blob_service, container = connect()
+    blob_service, container = connect(config)
 
   except:
     logging.warn('Unable to connect to the cloud.')
@@ -537,13 +537,15 @@ def get_size(fname):
   return 0
 
  
-def download(path, dest=None, service=None):
+def download(path, dest=None, config=False):
   import lib.misc as misc 
   # Download a file from the cloud and put it in a serviceable place. 
-  if service:
-    blob_service, container = service
-  else:
-    blob_service, container = connect()
+  try:
+    blob_service, container = connect(config)
+
+  except:
+    logging.warn('Unable to connect to the cloud.')
+    blob_service = False
 
   if blob_service:
     import azure
