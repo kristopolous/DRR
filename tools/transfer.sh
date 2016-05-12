@@ -11,7 +11,8 @@ fail() {
 
 remaining() {
   touch $done
-  cat list-all_old $done | sort | uniq -u > $remaining
+  cat list-all_old $done | sort | uniq -u > $remaining-unsorted
+  cat $remaining-unsorted | awk -F \- ' { print $2" "$0 } ' | sort -n | awk ' { print $2 } ' > $remaining
 }
 
 remaining
