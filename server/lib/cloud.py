@@ -537,20 +537,26 @@ def get_size(fname):
   return 0
 
  
-def download(path):
+def download(path, dest=None, service=None):
   import lib.misc as misc 
   # Download a file from the cloud and put it in a serviceable place. 
-  blob_service, container = connect()
+  if service:
+    blob_service, container = service
+  else:
+    blob_service, container = connect()
 
   if blob_service:
     import azure
+
+    if not dest:
+      dest = '%s/%s' % (misc.DIR_STREAMS, fname)
 
     fname = os.path.basename(path)
     try:
       blob_service.get_blob_to_path(
         container,
         fname,
-        '%s/%s' % (misc.DIR_STREAMS, fname),
+        dest,
         max_connections=8,
       )
       return True
