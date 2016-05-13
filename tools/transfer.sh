@@ -37,11 +37,11 @@ while IFS='' read -r file || [[ -n "$file" ]]; do
 
     n=0
     list=""
+  end
+
+  if [ -z "$list" ]; then
+    list=$file
   else
-    if [ -z "$list" ]; then
-      list=$file
-    else
-      list="$list,$file"
-    fi
+    list="$list,$file"
   fi
 done < $remaining
