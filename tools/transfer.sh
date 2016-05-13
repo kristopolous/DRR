@@ -47,7 +47,7 @@ while IFS='' read -r file || [[ -n "$file" ]]; do
       echo -e "\n\n ... skipping ... \n\n"
     fi
     # We remove the local copies regardless
-    echo $list | tr ',' ' ' | xargs rm
+    echo $list | tr ',' ' ' | xargs rm -f
 
     n=0
     list=""
