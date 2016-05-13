@@ -37,7 +37,7 @@ while IFS='' read -r file || [[ -n "$file" ]]; do
 
     n=0
     list=""
-  end
+  fi
 
   if [ -z "$list" ]; then
     list=$file
