@@ -12,7 +12,8 @@ fail() {
 remaining() {
   touch $done
   touch fail-list
-  cat fail-list list-all_old $done | sort | uniq -u > $remaining-unsorted
+  grep mp3 fail-list > fail-list.files
+  cat fail-list.files list-all_old $done | sort | uniq -u > $remaining-unsorted
   cat $remaining-unsorted | awk -F \- ' { print $2" "$0 } ' | sort -n | awk ' { print $2 } ' > $remaining
 }
 
@@ -41,10 +42,10 @@ while IFS='' read -r file || [[ -n "$file" ]]; do
 
         echo $list | tr ',' '\n' >> $done
       else
-        echo -e "\n\n ... skipping ... \n\n"
+        echo -e "\n\n ... skipping ... \n"
       fi
     else
-      echo -e "\n\n ... skipping ... \n\n"
+      echo -e "\n\n ... skipping ... \n"
     fi
     # We remove the local copies regardless
     echo $list | tr ',' ' ' | xargs rm -f
