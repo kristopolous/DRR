@@ -568,7 +568,8 @@ def download(path, dest=None, config=False):
       logging.debug('Unable to retreive %s from the cloud. It is not there' % fname)
 
       # TODO: This is a pretty deep (and probably wrong) place to do this.
-      DB.unregister_stream(path)
+      if not config:
+        DB.unregister_stream(path)
 
     except Exception as e:
       logging.debug('Unable to retreive %s from the cloud.' % path)
