@@ -21,7 +21,6 @@ remaining
 
 n=0
 list=""
-let "limit = $RANDOM % 3 + 2"
 while IFS='' read -r file || [[ -n "$file" ]]; do
   (( n++ ))
 
@@ -52,7 +51,6 @@ while IFS='' read -r file || [[ -n "$file" ]]; do
 
     n=0
     list=""
-    let "limit = $RANDOM % 3 + 2"
   fi
 
   if [ -z "$list" ]; then
