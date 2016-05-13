@@ -564,7 +564,7 @@ def download(path, dest=None, config=False):
       )
       return True
 
-    except azure.WindowsAzureMissingResourceError as e:
+    except azure.common.AzureMissingResourceHttpError as e:
       logging.debug('Unable to retreive %s from the cloud. It is not there' % fname)
 
       # TODO: This is a pretty deep (and probably wrong) place to do this.
