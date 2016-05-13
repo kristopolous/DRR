@@ -94,6 +94,7 @@ if args.get:
     print(" ↓ %s" % name)
     res = cloud.download(name, name, config=config)
     if not res:
+      sys.stderr.write("%s\n" % name)
       fail("Couldn't download %s" % name)
 
 elif args.put:
@@ -102,6 +103,7 @@ elif args.put:
     print(" ↑ %s" % name)
     res = cloud.put(name, name, config=config)
     if not res:
+      sys.stderr.write("%s\n" % name)
       fail("Couldn't upload %s" % name)
 
 elif args.rm:
@@ -110,6 +112,7 @@ elif args.rm:
     print(" - %s" % name)
     res = cloud.unlink(name, config=config)
     if not res:
+      sys.stderr.write("%s\n" % name)
       fail("Couldn't delete %s" % name)
 
 elif args.query == 'size':
