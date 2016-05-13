@@ -71,16 +71,17 @@ def connect(config=False):
 def unlink(path, config=False):
   # Remove a file from the cloud service. 
   fname = os.path.basename(path)
-  blob_service, container = connect(config)
 
   try:
+    blob_service, container = connect(config)
     blob_service.delete_blob(container, fname)
     logging.debug("Prune[cloud]: Deleted %s" % fname)
+    return True
 
   except:
     logging.warn("Prune[cloud]: Failed to delete %s" % fname)
 
-  return None
+  return False
 
 
 def put(path, dest=None, config=False):
