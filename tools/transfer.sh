@@ -11,7 +11,8 @@ fail() {
 
 remaining() {
   touch $done
-  cat list-all_old $done | sort | uniq -u > $remaining-unsorted
+  touch fail-list
+  cat fail-list list-all_old $done | sort | uniq -u > $remaining-unsorted
   cat $remaining-unsorted | awk -F \- ' { print $2" "$0 } ' | sort -n | awk ' { print $2 } ' > $remaining
 }
 
@@ -19,24 +20,38 @@ remaining
 
 n=0
 list=""
+let "limit = $RANDOM % 3 + 2"
 while IFS='' read -r file || [[ -n "$file" ]]; do
   (( n++ ))
 
   if [ $n = 8 ]; then
-    date
+    echo -e "\n-- "`date`" --"
 
-    ./cloud.py -c $oldcfg -g $list || fail
-    ./cloud.py -c $newcfg -p $list || fail
+    ./cloud.py -c $oldcfg -g $list 2>> fail-list
+    get=$?
 
-    # Note that this is removing the old file only
-    # after the new one has been placd in the cloud
-    ./cloud.py -c $oldcfg -d $list || fail
+    if [ "$get" -eq "0" ]; then
+      ./cloud.py -c $newcfg -p $list 2>> fail-list
+      put=$?
 
+      if [ "$put" -eq "0" ]; then
+        # Note that this is removing the old file only
+        # after the new one has been (succesfully) placd in the cloud
+        ./cloud.py -c $oldcfg -d $list || fail
+
+        echo $list | tr ',' '\n' >> $done
+      else
+        echo -e "\n\n ... skipping ... \n\n"
+      fi
+    else
+      echo -e "\n\n ... skipping ... \n\n"
+    fi
+    # We remove the local copies regardless
     echo $list | tr ',' ' ' | xargs rm
-    echo $list | tr ',' '\n' >> $done
 
     n=0
     list=""
+    let "limit = $RANDOM % 3 + 2"
   fi
 
   if [ -z "$list" ]; then
