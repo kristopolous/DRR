@@ -28,6 +28,11 @@ def get_files(station_list, blob_service):
       dt_str = dt.strftime('%Y%m%d%H%M%S')
       print('%s size: %10s date: %s' %(f.name, f.properties.content_length, dt_str))
 
+def fail(why):
+  import sys
+  print("Failue: %s" % why)
+  sys.exit(-1)
+
 def get_size(station_list, blob_service):
   all_files = []
   by_station = {}
@@ -87,19 +92,28 @@ if args.get:
   print("Getting")
   for name in args.get.split(','):
     print(" ↓ %s" % name)
-    cloud.download(name, name, config=config)
+    res = cloud.download(name, name, config=config)
+    if not res:
+      sys.stderr.write("%s\n" % name)
+      fail("Couldn't download %s" % name)
 
 elif args.put:
   print("Putting")
   for name in args.put.split(','):
     print(" ↑ %s" % name)
-    cloud.put(name, name, config=config)
+    res = cloud.put(name, name, config=config)
+    if not res:
+      sys.stderr.write("%s\n" % name)
+      fail("Couldn't upload %s" % name)
 
 elif args.rm:
   print("Removing")
   for name in args.rm.split(','):
     print(" - %s" % name)
-    cloud.unlink(name, config=config)
+    res = cloud.unlink(name, config=config)
+    if not res:
+      sys.stderr.write("%s\n" % name)
+      fail("Couldn't delete %s" % name)
 
 elif args.query == 'size':
   get_size(station_list, blob_service)

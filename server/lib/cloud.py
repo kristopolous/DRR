@@ -71,16 +71,17 @@ def connect(config=False):
 def unlink(path, config=False):
   # Remove a file from the cloud service. 
   fname = os.path.basename(path)
-  blob_service, container = connect(config)
 
   try:
+    blob_service, container = connect(config)
     blob_service.delete_blob(container, fname)
     logging.debug("Prune[cloud]: Deleted %s" % fname)
+    return True
 
   except:
     logging.warn("Prune[cloud]: Failed to delete %s" % fname)
 
-  return None
+  return False
 
 
 def put(path, dest=None, config=False):
@@ -563,11 +564,12 @@ def download(path, dest=None, config=False):
       )
       return True
 
-    except azure.WindowsAzureMissingResourceError as e:
+    except azure.common.AzureMissingResourceHttpError as e:
       logging.debug('Unable to retreive %s from the cloud. It is not there' % fname)
 
       # TODO: This is a pretty deep (and probably wrong) place to do this.
-      DB.unregister_stream(path)
+      if not config:
+        DB.unregister_stream(path)
 
     except Exception as e:
       logging.debug('Unable to retreive %s from the cloud.' % path)
