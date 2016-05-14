@@ -573,6 +573,11 @@ def read_config(config):
     if not os.path.isfile(misc.config['storage'] + __file__):
       os.symlink(os.path.abspath(__file__), misc.config['storage'] + __file__)
 
+    conf_path = misc.config['storage'] + "config"
+    if os.path.exists(conf_path):
+      os.path.unlink(conf_path)
+
+    os.symlink(os.path.abspath(config), conf_path)
     os.chdir(misc.config['storage'])
 
   else:
