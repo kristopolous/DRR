@@ -451,6 +451,9 @@ def prune_process(reindex=False, force=False):
       misc.lockMap['prune'].release()
       return None
 
+    if not os.path.exists(file_name):
+      continue 
+
     ctime = os.path.getctime(file_name)
 
     # print "Looking at ", file_name, ctime, cutoff, archive_duration,  misc.config['archive'], misc.am_i_official()
