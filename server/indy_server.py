@@ -575,7 +575,7 @@ def read_config(config):
 
     conf_path = misc.config['storage'] + "config"
     if os.path.exists(conf_path):
-      os.path.unlink(conf_path)
+      os.unlink(conf_path)
 
     os.symlink(os.path.abspath(config), conf_path)
     os.chdir(misc.config['storage'])
