@@ -14,7 +14,7 @@ remaining() {
   touch fail-list
   grep mp3 fail-list > fail-list.files
   cat fail-list.files list-all_old $done | sort | uniq -u > $remaining-unsorted
-  cat $remaining-unsorted | awk -F \- ' { print $2" "$0 } ' | sort -n | awk ' { print $2 } ' > $remaining
+  cat $remaining-unsorted | awk -F \- ' { print $2" "$0 } ' | sort -rn | awk ' { print $2 } ' > $remaining
 }
 
 remaining
