@@ -49,8 +49,9 @@ def prec(num):
 def stats_log(db, station, obj):
   # The object that comes in has all the necessary info already associated
   # with it ... all we have to do is test what is there and what is not.
-  tlist_key = 'tlist' if 'tlist' in obj else 'threads'
-  mem_key = 'mem' if 'mem' in obj else 'memory'
+  tlist_key = 'threads'
+  mem_key = 'memory'
+
   callsign = station[CALLSIGN]
 
   if 'uuid' in obj:
