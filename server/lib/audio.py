@@ -623,6 +623,11 @@ def mp3_signature(file_name, blockcount=-1):
       elif header_attempts > _MAX_HEADER_ATTEMPTS:
         if not is_stream:
           import binascii
+          samp = DB.get('samp', default=44100)
+          if type(samp) is str:
+            logging.debug("OMG WHAT THE FUCK")
+            samp = int(samp)
+
           logging.debug('[mp3-sig] %d[%d/%d]%s:%s:%s %s %d' % (len(frame_sig), header_attempts, _MAX_HEADER_ATTEMPTS, binascii.b2a_hex(header), binascii.b2a_hex(file_handle.read(5)), file_name, hex(file_handle.tell()), len(start_byte) * (1152.0 / DB.get('samp', default=44100)) / 60))
 
         # This means that perhaps we didn't guess the start correct so we try this again
