@@ -553,11 +553,11 @@ def download(path, dest=None, config=False):
 
   if blob_service:
     import azure
+    fname = os.path.basename(path)
 
     if not dest:
       dest = '%s/%s' % (misc.DIR_STREAMS, fname)
 
-    fname = os.path.basename(path)
     try:
       blob_service.get_blob_to_path(
         container,

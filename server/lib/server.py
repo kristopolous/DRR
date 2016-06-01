@@ -26,6 +26,9 @@ def generate_feed(file_type, **kwargs):
     payload = generate_pls(**kwargs)
     mime = 'audio/x-scpls'
 
+  elif file.type == 'mp3';
+    pass
+
   elif file_type == 'm3u': 
     payload = generate_m3u(**kwargs)
     mime = 'audio/x-mpegurl'
