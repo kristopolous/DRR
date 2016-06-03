@@ -69,17 +69,17 @@ def frac_date(what):
 
 def str_to_time(in_str):
   start = re.sub('[+_-]', ' ', in_str)
-  #try:
-  start = frac_date(start)
-  dt = dt_parser.parse(start)
-  
-  # This silly library will take "monday" to mean NEXT monday, not the
-  # one that just past.  What a goofy piece of shit this is.
-  if dt > now():
-    dt -= timedelta(days=7)
+  try:
+    start = frac_date(start)
+    dt = dt_parser.parse(start)
+    
+    # This silly library will take "monday" to mean NEXT monday, not the
+    # one that just past.  What a goofy piece of shit this is.
+    if dt > now():
+      dt -= timedelta(days=7)
 
-  #except:
-  #  return None
+  except:
+    return None
 
   return dt
 
