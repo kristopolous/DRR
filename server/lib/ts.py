@@ -39,6 +39,10 @@ def frac_date(what):
   second = 0
   suffix = ''
 
+  # accomodate for things preceding the time
+  all_parts = what.split(' ')
+  what = all_parts.pop()
+
   if what.lower().endswith('m'):
     suffix = what[-2:]
     what = what[:-2]
@@ -59,21 +63,23 @@ def frac_date(what):
   minute = int(second / 60)
   second -= minute * 60
 
-  return "{0:d}:{1:02d}:{2:03.2f}{3:s}".format(hour,minute,second,suffix)
+  all_parts.append("{0:d}:{1:02d}:{2:03.2f}{3:s}".format(hour,minute,second,suffix))
+
+  return ' '.join(all_parts)
 
 def str_to_time(in_str):
   start = re.sub('[+_-]', ' ', in_str)
-  try:
-    start = frac_date(what)
-    dt = dt_parser.parse(start)
-    
-    # This silly library will take "monday" to mean NEXT monday, not the
-    # one that just past.  What a goofy piece of shit this is.
-    if dt > now():
-      dt -= timedelta(days=7)
+  #try:
+  start = frac_date(start)
+  dt = dt_parser.parse(start)
+  
+  # This silly library will take "monday" to mean NEXT monday, not the
+  # one that just past.  What a goofy piece of shit this is.
+  if dt > now():
+    dt -= timedelta(days=7)
 
-  except:
-    return None
+  #except:
+  #  return None
 
   return dt
 
