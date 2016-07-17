@@ -2,7 +2,7 @@
 callsign=kcrw
 long=-118.397920
 lat=33.955766
-stream=http://kcrw.ic.llnwd.net/stream/kcrw_live
+stream=http://kcrw.streamguys1.com/kcrw_192k_mp3_on_air
 port=8990
 cloud=~/cloudcreds.cfg
 cloud_archive=28d
