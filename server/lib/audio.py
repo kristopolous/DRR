@@ -58,7 +58,9 @@ def stream_info(file_name, skip_size=False):
 
   info = _TS_RE.findall(file_name)
 
-  duration_sec = None
+  # 0 byte files can throw this thing off
+  # if it's set to None
+  duration_sec = 0
   start_minute = None
   start_date = None
   end_minute = None
