@@ -579,6 +579,8 @@ def manager(config):
 
     Will work fine
     """
+    # If it's say 1am, and I request 11pm without a day specification, it will go 
+    # to 11pm LAST week and not the 11pm from 2 hours ago.
     dt = TS.str_to_time(start)
     duration_min = TS.duration_parse(duration_string)
     endpoint = '%s-%s_%d.mp3' % (misc.config['callsign'], TS.ts_to_name(dt), duration_min)

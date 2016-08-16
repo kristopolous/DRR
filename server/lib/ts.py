@@ -76,7 +76,14 @@ def str_to_time(in_str):
     # This silly library will take "monday" to mean NEXT monday, not the
     # one that just past.  What a goofy piece of shit this is.
     if dt > now():
-      dt -= timedelta(days=7)
+      # Furthermore if we started with a number, say 11pm and its now 1am,
+      # and this library is trying to get 11pm a week from now, we actually
+      # want 11pm as in 2 hours ago, not as in 6 days and 2 hours ago.
+      # So I guess we check the first letter for being a number.
+      if start[0] >= "0" and start[0] <= "9":
+        dt -= timedelta(days=1)
+      else:
+        dt -= timedelta(days=7)
 
   except:
     return None
