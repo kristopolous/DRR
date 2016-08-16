@@ -322,7 +322,7 @@ def get_file_for_ts(target_time, bias=None, exclude_path=None):
     if candidate_path == exclude_path: continue
 
     info_candidate = stream_info(candidate_path)
-    if not info_candidate or info_candidate['duration_sec'] < 10.0:
+    if not info_candidate or info_candidate['duration_sec'] is None or info_candidate['duration_sec'] < 10.0:
       next
 
     difference = info_candidate['start_date'] - target_time
