@@ -19,6 +19,7 @@ The current files:
  * [p] indycast.pub - The public key you should add to your server in the authorized_keys files if you want to be part of the federation.
  * [p] request_job.py - This perennial script is the back-end technology that checks the reminder table and sends off emails.
  * [pdt] restart_through_ssh.sh - Restarts a server through ssh if the `/restart` directive fails.
+ * [pdt] runloop.sh - Restarts a server if it crashes ... not the best solution to a crash but seems to work.
  * [pdt] server_query.py - Queries the server(s) for information (see below)
  * [pdt] time_convert.py - A sweet and simple time conversion for things like php.
  * [p] schedule_scraper.py - Queries the websites of stations for updates on their schedules, storing it for searching.
