@@ -27,6 +27,11 @@ def generate_feed(file_type, **kwargs):
     mime = 'audio/x-scpls'
 
   elif file_type == 'mp3':
+    feed_list = kwargs['feed_list']
+
+    if len(feed_list) > 0:
+      return reddirect('http://indycast.net/%s/%s' % (misc.config['callsign'], feed_list[0]['name']), code=302)
+
     pass
 
   elif file_type == 'm3u': 
@@ -38,7 +43,7 @@ def generate_feed(file_type, **kwargs):
     payload = generate_xml(**kwargs)
     mime = 'text/xml'
 
-  return Response(payload, mimetype=mime )
+  return Response(payload, mimetype=mime)
 
 
 def generate_m3u(showname, feed_list, duration_min, weekday_list, start, duration_string):
