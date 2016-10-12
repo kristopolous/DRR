@@ -629,7 +629,7 @@ def manager(config):
   @app.route('/<weekday>/<start>/<duration_string>/<showname>')
   def stream(weekday, start, duration_string, showname):
     """
-    Returns a podcast, m3u, or pls file based on the weekday, start and duration.
+    Returns a podcast, m3u, pls or mp3 file based on the weekday, start and duration.
     This is designed to be read by podcasting software such as podkicker, 
     itunes, and feedburner.
 
@@ -640,7 +640,9 @@ def manager(config):
 
     /mon,tue,fri/4pm/1hr
     
-    The showname should be followed by an xml, pls, or m3u extension.
+    The showname should be followed by an xml, pls, m3u, or mp3 extension.
+    In the case of using the .mp3 extension, it only returns the most recent 
+    episode.
 
     It should also be viewable in a modern web browser.
 
