@@ -614,9 +614,10 @@ def manager(config):
     # /tuesday_8pm/1hr/showname.xml
     if duration_string.count('.') > 0:
       dt = TS.str_to_time(weekday)
+      start_time = TS.extract_time(weekday)
 
       # order is a little incompatible.
-      return stream(weekday=TS.to_minute(dt), start=None, duration_string=start, showname=duration_string)
+      return stream(weekday=TS.to_minute(dt), start=start_time, duration_string=start, showname=duration_string)
 
 
     if weekday not in weekday_map:

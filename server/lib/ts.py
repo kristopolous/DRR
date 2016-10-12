@@ -63,9 +63,14 @@ def frac_date(what):
   minute = int(second / 60)
   second -= minute * 60
 
-  all_parts.append("{0:d}:{1:02d}:{2:03.2f}{3:s}".format(hour,minute,second,suffix))
+  all_parts.append("{0:d}:{1:02d}:{2:03.2f}{3:s}".format(hour, minute, second,suffix))
 
   return ' '.join(all_parts)
+
+# probably not right but we'll see
+def extract_time(in_str):
+  start = re.sub('[+_-]', ' ', in_str)
+  return start.split(' ').pop()
 
 def str_to_time(in_str):
   start = re.sub('[+_-]', ' ', in_str)
