@@ -115,9 +115,12 @@ def find_misbehaving_servers(db, fail_list):
   if len(misbehaving):
     report.append("Thresholds: %s" % json.dumps(max_values, indent=2))
 
-  if len(report) and mail_config:
+  if len(report):
     if not isRoot:
       print ("You aren't root. This is probably a test machine. I'm not mailing")
+    elif not mail_config:
+      print ("I'd like to email but I don't know how.")
+
     else:
       # Don't want any scripts to read this and harvest my email.
       email_to_use = 'kri%s@%soo.com' % ("stopolous", "yah")
