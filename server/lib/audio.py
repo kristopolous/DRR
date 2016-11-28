@@ -807,8 +807,7 @@ def list_slice_stream(start_info, start_sec):
 
       # If there is we find the stitching point
       args = stitch([current_info, next_info], force_stitch=True)
-      logging.debug(args)
-      logging.debug(pos)
+      logging.debug('next file', args, pos)
 
       # We make it our current file
       current_info = next_info
@@ -840,7 +839,7 @@ def list_slice(list_in, name_out, duration_sec, start_sec=0, do_confirm=False):
   out = open(name_out, 'wb+')
   buf_confirm = None
   
-  # print 'slice', duration_sec, start_sec
+  print('slice', duration_sec, start_sec)
   for ix in range(0, len(list_in)):
     item = list_in[ix]
 
