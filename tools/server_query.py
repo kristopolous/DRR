@@ -8,6 +8,7 @@ import socket
 import lib.misc as misc
 import json
 import pwd
+from pprint import pprint
 
 isRoot = (pwd.getpwuid( os.getuid() ).pw_uid == 0)
 
@@ -96,6 +97,7 @@ def find_misbehaving_servers(db, fail_list):
   }
 
   report = []
+  subject = ''
 
   if len(fail_list):
     # We log the failure in the stats log
@@ -103,6 +105,7 @@ def find_misbehaving_servers(db, fail_list):
       db['c'].execute('insert into stats (callsign) values(?)', (str(station), ))
 
     report.append("Failure: %s" % ' '.join(fail_list))
+    subject += 'F: %s' % ' '.join(fail_list)
 
   misbehaving = db['c'].execute('select callsign, disk, load, last_record from stations where active = 1 and (disk > ? or last_record > ?)', (max_values['disk'], max_values['delta'])).fetchall()
 
@@ -119,9 +122,10 @@ def find_misbehaving_servers(db, fail_list):
       # Don't want any scripts to read this and harvest my email.
       email_to_use = 'kri%s@%soo.com' % ("stopolous", "yah")
 
-      misc.send_email(config=mail_config, who=email_to_use, subject="server issue", body='<br>'.join(report), sender='Indycast Admin <info@indycast.net>')
+      res = misc.send_email(config=mail_config, who=email_to_use, subject=subject, body='<br>'.join(report), sender='Indycast Admin <info@indycast.net>')
+      pprint(res)
       print("Issues found. Sending email to %s." % email_to_use)
-    print('\n'.join(report))
+      #print('\n'.join(report))
 
 
 CALLSIGN = 'callsign'
