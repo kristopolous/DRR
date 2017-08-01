@@ -322,7 +322,7 @@ def signature(fname, blockcount=-1, depth=1):
 
     else:
       logging.warn("Can't determine type of file for %s." % fname)
-      return False
+      return None, None
   
   block = None
   if audio_format == _FORMAT_AAC:
@@ -349,6 +349,11 @@ def signature(fname, blockcount=-1, depth=1):
     # Make sure we don't foolishly recurse
     if depth == 1:
       return signature(fname, blockcount, depth + 1)
+
+    else:
+      # Otherwise if we fail to find anything upon our change-format desperation
+      # move, we should return this as the none type to be handled appropriately.
+      return None, None
 
   _LASTFORMAT = audio_format
 
@@ -839,7 +844,6 @@ def list_slice(list_in, name_out, duration_sec, start_sec=0, do_confirm=False):
   out = open(name_out, 'wb+')
   buf_confirm = None
   
-  print('slice', duration_sec, start_sec)
   for ix in range(0, len(list_in)):
     item = list_in[ix]
 
@@ -912,6 +916,8 @@ def stitch(file_list, force_stitch=False):
 
   start_index = 0
 
+  # This makes sure we have all the files on disk that we are looking
+  # for by getting them from the cloud if necessary.
   while start_index < len(file_list):
     first = file_list[start_index]
     res = cloud.get(first['name'], do_open=False)
@@ -961,6 +967,12 @@ def stitch(file_list, force_stitch=False):
 
     second['siglist'] = siglist
     second['offset'] = offset
+    
+    # This happens if the file is corrupt or we otherwise
+    # can't find the signature.  That means we can't stitch
+    # these two files and should skip it.
+    if siglist is None and offset is None: 
+      continue
 
     is_found = True
 
