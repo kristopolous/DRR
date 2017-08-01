@@ -8,7 +8,6 @@ import socket
 import lib.misc as misc
 import json
 import pwd
-from pprint import pprint
 
 isRoot = (pwd.getpwuid( os.getuid() ).pw_uid == 0)
 
@@ -126,7 +125,6 @@ def find_misbehaving_servers(db, fail_list):
       email_to_use = 'kri%s@%soo.com' % ("stopolous", "yah")
 
       res = misc.send_email(config=mail_config, who=email_to_use, subject=subject, body='<br>'.join(report), sender='Indycast Admin <info@indycast.net>')
-      pprint(res)
       print("Issues found. Sending email to %s." % email_to_use)
       #print('\n'.join(report))
 
