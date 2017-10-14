@@ -345,6 +345,9 @@ def get_file_for_ts(target_time, bias=None, exclude_path=None):
       best_after_time = difference
       best_after_info = info_candidate
 
+  if not best_before_info and not best_after_info:
+    return None, None
+
   # print target_time, "\n", best_before_time, best_before_info, "\n", best_after_time, best_after_info
   if bias == -1:
     # Make sure that our candidate has our time within it
