@@ -345,14 +345,20 @@ def get_file_for_ts(target_time, bias=None, exclude_path=None):
       best_after_time = difference
       best_after_info = info_candidate
 
+  # print(target_time, "\n", best_before_time, best_before_info, "\n", best_after_time, best_after_info, bias)
   if not best_before_info:
-    return None, None
+    if best_after_info:
+      best_before_time = -best_after_time
+      best_before_info = best_after_info
 
-  # print target_time, "\n", best_before_time, best_before_info, "\n", best_after_time, best_after_info
+    else:
+      # if we couldn't find anything
+      return None, None
+
   if bias == -1:
     # Make sure that our candidate has our time within it
     # print best_before_info['start_date'], timedelta(seconds=best_before_info['duration_sec']) , target_time
-    if best_before_info['start_date'] + timedelta(seconds=best_before_info['duration_sec']) > target_time:
+    if best_before_info and best_before_info['start_date'] + timedelta(seconds=best_before_info['duration_sec']) > target_time:
       # This means that we have found a valid file and we can return the successful target_time 
       # and our info
       return best_before_info, target_time
@@ -366,7 +372,7 @@ def get_file_for_ts(target_time, bias=None, exclude_path=None):
       return None, None
 
   if bias == None:
-    if not best_after_info or (abs(best_before_time) < abs(best_after_time)):
+    if not best_after_info or best_before_info and (abs(best_before_time) < abs(best_after_time)):
       return best_before_info, max(target_time, best_before_info['start_date'])
 
     return best_after_info, min(target_time, best_after_info['start_date'])

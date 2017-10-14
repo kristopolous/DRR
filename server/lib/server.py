@@ -562,6 +562,10 @@ def manager(config):
 
     # Get the info for the file that contains this timestamp
     start_info, requested_time_available = cloud.get_file_for_ts(target_time=requested_time, bias=-1)
+
+    if start_info is None or requested_time_available is None:
+      return do_error("Can't find any matching files")
+
     requested_time = max(requested_time, requested_time_available)
     start_second = (requested_time - start_info['start_date']).total_seconds()
 
