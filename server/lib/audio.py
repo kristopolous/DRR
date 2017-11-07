@@ -8,6 +8,7 @@ from time import sleep
 import lib.db as DB
 import lib.ts as TS
 from datetime import datetime, timedelta
+import traceback
 
 # Most common frame-length ... in practice, I haven't 
 # seen other values in the real world.
@@ -380,7 +381,8 @@ def aac_find_frame(file_handle, file_name):
           file_handle.seek(-1, 1)
 
     except:
-      logging.warn("[aac-sig] Could not find header. searched %d bytes in %s" % (file_handle.tell() - start, file_name))
+      logging.warn("[aac-sig] Could not find header. searched %d bytes in %s starting at %d" % (file_handle.tell() - start, file_name, start))
+      traceback.print_stack()
       return False
 
 # using http://wiki.multimedia.cx/index.php?title=ADTS
@@ -761,7 +763,11 @@ def list_slice_stream(start_info, start_sec):
     stream_handle = cloud.get(current_info['name'])
     stream_handle.seek(start_byte)
     sig, offset = signature(stream_handle)
-    logging.debug("-- opening %s %d %d %d" % (current_info['name'], current_info['size'], stream_handle.tell(), start_byte) )
+    logging.debug("opening %s %d %d" % (current_info['name'], current_info['size'], stream_handle.tell()) )
+
+    # After the initial start offset we should start looking at all
+    # fugure files from the first byte.
+    start_byte = 0
 
     # This helps us determine when we are at EOF ... which
     # we basically define as a number of seconds without any
@@ -774,7 +780,7 @@ def list_slice_stream(start_info, start_sec):
       # So we want to make sure that we only send out valid, 
       # non-corrupt mp3 blocks that start and end
       # at reasonable intervals.
-      if len(offset) > 1:
+      if offset and len(offset) > 1:
         read_size = offset[1] - offset[0]
         offset.pop(0)
 
@@ -788,11 +794,12 @@ def list_slice_stream(start_info, start_sec):
         if times_none > 20:
           break
     
-        elif times_none > 1:
+        elif times_none > 0:
           #print stream_handle.tell(), current_info['size'], times_none, len(block)
           # See if there's a next file that we can immediately go to
           next_info, offset = cloud.get_next(current_info)
-          if next_info: break
+          if next_info: 
+            break
 
         # We wait 1/2 second and then try this process again, hopefully
         # the disk has sync'd and we have more data
@@ -800,7 +807,7 @@ def list_slice_stream(start_info, start_sec):
         sig, offset = signature(stream_handle)
 
       
-    logging.debug("-- closing %s %d %d %d %d" % (current_info['name'], current_info['size'], stream_handle.tell(), block_count, (stream_handle.tell() - start_byte) / (128000 / 8) / 60.0))
+    logging.debug("closing %s %d %d %d %d" % (current_info['name'], current_info['size'], stream_handle.tell(), block_count, (stream_handle.tell() - start_byte) / (128000 / 8) / 60.0))
     pos = stream_handle.tell() 
     stream_handle.close()
 
@@ -812,7 +819,7 @@ def list_slice_stream(start_info, start_sec):
 
       # If there is we find the stitching point
       args = stitch([current_info, next_info], force_stitch=True)
-      logging.debug('next file', args, pos)
+      logging.debug('next file {} -> {}:{}'.format(current_info['name'], next_info['name'], offset))
 
       # We make it our current file
       current_info = next_info
