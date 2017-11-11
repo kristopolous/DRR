@@ -30,6 +30,7 @@ dopip() {
   cd server
   pip3=`which pip3`
   [ -e /usr/bin/pip-3.2 ] && pip3=/usr/bin/pip-3.2
+  [ -e /usr/bin/pip-3.4 ] && pip3=/usr/bin/pip-3.4
   $pip3 install --upgrade --user -r requirements.txt
 }
 
