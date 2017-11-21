@@ -89,7 +89,7 @@ def put(path, dest=None, config=False):
 
   # Place a file, given a path, in the cloud. 
   if not config and not misc.am_i_official():
-    logging.info ("I would have uploaded %s but I'm not the official %s server" % (path, misc.config['callsign']) )
+    logging.info("I would have uploaded %s but I'm not the official %s server" % (path, misc.config['callsign']) )
     return False
 
   try:
@@ -107,10 +107,14 @@ def put(path, dest=None, config=False):
         path,
         max_connections=5,
       )
+      logging.debug(res, container, path)
       return True
 
     except:
       logging.debug('Unable to put %s in the cloud.' % path)
+
+  else:
+    logging.debug('No cloud configured.')
 
   return False
 
@@ -474,7 +478,7 @@ def prune_process(reindex=False, force=False):
       count_delete += 1 
 
     # We want to make sure we aren't archiving the slices
-    elif cloud_cutoff and ctime < cloud_cutoff and not file_name.startswith('slice') and misc.am_i_official():
+    elif cloud_cutoff and ctime < cloud_cutoff and not file_name.startswith('slice'):
       logging.debug("Prune[cloud]: %s" % file_name)
 
       # Only unlink the file if I can successfully put it into the cloud.
@@ -484,7 +488,7 @@ def prune_process(reindex=False, force=False):
           count_cloud += 1 
 
         except:
-          logging.debug("Prune[cloud]: Couldn't remove %s" % file_name)
+          logging.debug("Prune[cloud]: Couldn't remove {}".format(file_name))
 
   for file_name in glob('%s/*.gz' % misc.DIR_BACKUPS):
     ctime = os.path.getctime(file_name)

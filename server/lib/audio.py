@@ -476,7 +476,7 @@ def aac_signature(file_name, blockcount=-1):
     #
     # freq = b2 >> 2 & 0xf
     # channels = (b2 & 1) << 2 | b3 >> 6
-    protect_absent = b1 & 1
+    # protect_absent = b1 & 1
     frame_length = (b3 & 3) << 11 | b4 << 3 | b5 >> 5
     # frame_count = (b6 & 3) + 1
 
@@ -714,7 +714,6 @@ def stitch_and_slice_process(file_list, relative_start_minute, duration_minute):
     logging.warn("Unable to stitch file list")
     return None
 
-  # print info, start_minute
   # After we've stitched together the audio then we start our slice
   # by figuring our the relative_start_minute of the slice, versus ours
   start_slice = relative_start_minute #max(start_minute - info['start_minute'], 0)
