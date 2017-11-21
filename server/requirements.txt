@@ -3,6 +3,7 @@ lxml
 click
 setproctitle
 azure
+azure-storage-blob
 requests
 psutil
 markupsafe

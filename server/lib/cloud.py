@@ -51,7 +51,7 @@ def get(path, do_open=True):
 
 def connect(config=False):
   import lib.misc as misc 
-  from azure.storage.blob import BlobService
+  from azure.storage.blob import BlockBlobService as BlobService
   global blob_service, container
   # Connect to the cloud service. 
   if not config: config = misc.config['_private']
