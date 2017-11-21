@@ -481,14 +481,28 @@ def prune_process(reindex=False, force=False):
     elif cloud_cutoff and ctime < cloud_cutoff and not file_name.startswith('slice'):
       logging.debug("Prune[cloud]: %s" % file_name)
 
-      # Only unlink the file if I can successfully put it into the cloud.
-      if put(file_name):
+      # <s>Only unlink the file if I can successfully put it into the cloud.</s>
+      #
+      # Actually, policy change: 
+      #   We should dump the file regardless because otherwise we would smash the disk
+      #   AS HAS HAPPENED MULTIPLE TIMES
+      #
+      # Then you have an irrelevant past build up a forced discarding of the desired 
+      # future ... just like with life itself.
+      #
+      res = put(file_name)
+
+      if misc.am_i_official():
         try:
           os.unlink(file_name)
-          count_cloud += 1 
 
-        except:
-          logging.debug("Prune[cloud]: Couldn't remove {}".format(file_name))
+          # This is only a self-reporting system... we can use our success code for
+          # our honesty here.
+          if res:
+            count_cloud += 1 
+
+        except Exception as e:
+          logging.debug("Prune[cloud]: Couldn't remove {}: {}".format(file_name, e))
 
   for file_name in glob('%s/*.gz' % misc.DIR_BACKUPS):
     ctime = os.path.getctime(file_name)
