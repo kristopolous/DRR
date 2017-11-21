@@ -108,7 +108,6 @@ def put(path, dest=None, config=False):
         , path
         , max_connections=5
       )
-      logging.debug(res, container, path)
       return True
 
     except Exception as e:
