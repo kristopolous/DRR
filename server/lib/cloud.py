@@ -64,7 +64,7 @@ def connect(config=False):
 
   if not blob_service:
     blob_service = BlobService(config['azure']['storage_account_name'], config['azure']['primary_access_key'])
-    blob_service.create_container(container)#, x_ms_blob_public_access='container')
+    blob_service.create_container(container)
 
   return blob_service, container
 
@@ -102,11 +102,11 @@ def put(path, dest=None, config=False):
 
   if blob_service:
     try:
-      res = blob_service.put_block_blob_from_path(
-        container,
-        os.path.basename(path),
-        path,
-        max_connections=5,
+      res = blob_service.create_blob_from_path(
+        container
+        , os.path.basename(path)
+        , path
+        , max_connections=5
       )
       logging.debug(res, container, path)
       return True
