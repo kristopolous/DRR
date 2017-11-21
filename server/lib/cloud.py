@@ -64,7 +64,7 @@ def connect(config=False):
 
   if not blob_service:
     blob_service = BlobService(config['azure']['storage_account_name'], config['azure']['primary_access_key'])
-    blob_service.create_container(container, x_ms_blob_public_access='container')
+    blob_service.create_container(container)#, x_ms_blob_public_access='container')
 
   return blob_service, container
 
@@ -111,8 +111,8 @@ def put(path, dest=None, config=False):
       logging.debug(res, container, path)
       return True
 
-    except:
-      logging.debug('Unable to put %s in the cloud.' % path)
+    except Exception as e:
+      logging.debug('Unable to put {} in the cloud: {}'.format(path, e))
 
   else:
     logging.debug('No cloud configured.')
