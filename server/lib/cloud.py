@@ -59,6 +59,7 @@ def connect(config=False):
   container = 'streams'
 
   if not 'azure' in config:
+    logging.debug("no azure config")
     return None, None
 
   if not blob_service:
@@ -95,8 +96,8 @@ def put(path, dest=None, config=False):
   try:
     blob_service, container = connect(config)
 
-  except:
-    logging.warn('Unable to connect to the cloud.')
+  except Exception as e:
+    logging.warn('Unable to connect to the cloud: {}'.format(e))
     blob_service = False
 
   if blob_service:
