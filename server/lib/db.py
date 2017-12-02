@@ -339,6 +339,7 @@ def register_stream(info):
   if res:
     unregister_stream(name, do_all=True)
 
+  last = False
   try:
     res, last = run("""insert into streams 
     (name, start_unix, end_unix, start_minute, end_minute, week_number, size) values
