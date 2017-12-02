@@ -709,7 +709,7 @@ def stitch_and_slice_process(file_list, relative_start_minute, duration_minute):
     logging.info("%d %d" % (len(file_list), len(stitched_list)))
 
   # We see if it was correct, on the condition that it had to be made
-  if stitched_list and (len(stitched_list) == len(file_list) == 1) or (len(stitched_list) > 1 and len(file_list) > 1):
+  if stitched_list and file_list and (len(stitched_list) == len(file_list) == 1) or (len(stitched_list) > 1 and len(file_list) > 1):
     info = stream_info(stitched_list)
 
   else:
