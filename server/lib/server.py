@@ -672,13 +672,14 @@ def manager(config):
     if not isinstance(start_time_list[0], (int, float)):
       return do_error('weekday and start times are not set correctly')
 
+    buffer_show = 2
     # In #22 We're going to add 2 minutes to the duration to make sure that we get
     # the entire episode.
-    duration_min += 2
+    duration_min += (buffer_show * 2)
 
     # And according to #149 we also go a minute back for the start time ... 
     # we need to do a little math to make sure we don't get a -1 edge case
-    start_time_list = [(TS.MINUTES_PER_WEEK + offset - 1) % TS.MINUTES_PER_WEEK for offset in start_time_list]
+    start_time_list = [(TS.MINUTES_PER_WEEK + offset - buffer_show) % TS.MINUTES_PER_WEEK for offset in start_time_list]
 
     # If we are here then it looks like our input is probably good.
     
