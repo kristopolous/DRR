@@ -5,7 +5,7 @@ import re
 import sys
 from glob import glob
 import configparser
-from azure.storage.blob import BlobService
+from azure.storage.blob import BlockBlobService as BlobService
 import lib.cloud as cloud
 import lib.misc as misc
 
@@ -24,7 +24,7 @@ def get_files(station_list, blob_service):
   from dateutil import parser
   for station in station_list:
     for f in get_all(station):
-      dt = parser.parse(f.properties.last_modified)
+      dt = f.properties.last_modified #parser.parse(f.properties.last_modified)
       dt_str = dt.strftime('%Y%m%d%H%M%S')
       print('%s size: %10s date: %s' %(f.name, f.properties.content_length, dt_str))
 
