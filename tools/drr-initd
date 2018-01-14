@@ -1,6 +1,7 @@
 #!/bin/bash
 PATH="$(dirname $(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}"))"
+cd $PATH
 for i in kxlu kpfk kpcc kusf wfmu; do
-  $PATH/runloop.sh $i &
+  ./runloop.sh $i &
 done
   
