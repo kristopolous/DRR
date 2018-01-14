@@ -11,7 +11,7 @@ import socket
 import signal
 import threading
 import resource, psutil
-__version__ = os.popen("git describe").read().strip()
+__version__ = os.popen("/usr/bin/git describe").read().strip()
 source_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 #
@@ -99,7 +99,7 @@ def base_stats():
   # This is used for the /stats and /heartbeat call.
   try:
     # for some reason this can lead to a memory error
-    load = [float(unit) for unit in os.popen("uptime | awk -F : ' { print $NF } '").read().split(', ')]
+    load = [float(unit) for unit in os.popen("/usr/bin/uptime | awk -F : ' { print $NF } '").read().split(', ')]
 
   except:
     load = 0

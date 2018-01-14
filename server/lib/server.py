@@ -311,7 +311,7 @@ def manager(config):
     Backs up the current sqlite3 db and sends a gzipped version of it as the response.
     """
     filename = '%s/%s/%s-%s.gz' % (misc.config['storage'], misc.DIR_BACKUPS, misc.config['callsign'], time.strftime('%Y%m%d-%H%M', time.localtime()))
-    os.popen('sqlite3 config.db .dump | gzip -9 > %s' % filename)
+    os.popen('/usr/bin/sqlite3 config.db .dump | /bin/gzip -9 > %s' % filename)
     time.sleep(1)
     return send_file(filename)
 
@@ -445,13 +445,13 @@ def manager(config):
     cwd = os.getcwd()
     os.chdir(misc.source_dir)
 
-    os.system('git pull') 
+    os.system('/usr/bin/git pull') 
 
     # See what the version is after the pull
-    newversion = os.popen("git describe").read().strip()
+    newversion = os.popen("/usr/bin/git describe").read().strip()
 
     if newversion != misc.__version__:
-      os.system('pip install --user -r requirements.txt') 
+      os.system('/usr/local/bin/pip install --user -r requirements.txt') 
 
       # from http://blog.petrzemek.net/2014/03/23/restarting-a-python-script-within-itself/
       misc.shutdown(do_restart=True)
@@ -497,7 +497,7 @@ def manager(config):
       'kv': DB.all('kv'),
       'locks': lockMap,
       'pwd': os.getcwd(),
-      'free': os.popen("df -h / | tail -1").read().strip(),
+      'free': os.popen("/bin/df -h / | /usr/bin/tail -1").read().strip(),
       # Reporting the list as fractional GB is more useful.
       'streams': DB.all('streams', sort_by='start_unix'),
       'config': misc.public_config()

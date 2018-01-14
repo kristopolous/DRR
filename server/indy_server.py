@@ -312,7 +312,7 @@ def stream_manager():
             #print manager_pid, os.getpid(), manager_pid == os.getpid()
             #logging.info(DB.get('runcount', use_cache=False))
             #logging.info(('ps axf | grep [%c]%s | grep python | wc -l' % (misc.config['callsign'][0], misc.config['callsign'][1:]) ).read().strip())
-            ps_out = int(os.popen('ps axf | grep [%c]%s | grep python | wc -l' % (misc.config['callsign'][0], misc.config['callsign'][1:]) ).read().strip())
+            ps_out = int(os.popen('/bin/ps axf | /bin/grep [%c]%s | /bin/grep python | /usr/bin/wc -l' % (misc.config['callsign'][0], misc.config['callsign'][1:]) ).read().strip())
 
             if ps_out > 1: 
               logging.info("Found %d potential candidates (need at least 2)" % ps_out)
@@ -621,7 +621,7 @@ def read_config(config):
 
   # This is how we discover if we are the official server or not.
   # Look at the /uuid endpoint to see how this magic works.
-  misc.config['uuid'] = os.popen('uuidgen').read().strip()
+  misc.config['uuid'] = os.popen('/usr/bin/uuidgen').read().strip()
 
   signal.signal(signal.SIGINT, misc.shutdown_handler)
   signal.signal(signal.SIGUSR1, misc.shutdown_handler)
