@@ -757,6 +757,9 @@ def list_slice_stream(start_info, start_sec):
 
   # get the regular map so we know where to start from
   siglist, offset = signature(current_info['name'])
+  if not offset:
+    offset = []
+
   start_frame = min(max(int(start_sec / _FRAME_LENGTH), 0), max(len(offset) - 1, 0))
   start_byte = offset[start_frame]
 
