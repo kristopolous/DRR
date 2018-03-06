@@ -5,7 +5,6 @@ if(strpos($show, '.png') === False) {
   echo 'Icons must end in png';
   exit(-1);
 }
-
 header('Content-type: image/png');
 
 // strip the extension.
@@ -71,11 +70,19 @@ function tint_bg(&$image, $phrase) {
   $parts = strtolower(substr($phrase, 0, 2));
 
   $offset = strpos($map, $parts[0]) * $len + strpos($map, $parts[1]);
-  $hue = floor($offset / ($len * $len) * 360);
+  $col = abs(crc32($phrase));
+  $hue = $col % 360;
+  $col >>= 8;
+  $sat = 32 - ($col % 64);
+  $col >>= 6;
+  $lum = 16 - ($col % 32);
+  //$hue = floor($offsetimplode (',', [
+  $hsl = implode(',', [$hue, ( 110 + $sat ), ( 105 + $lum ) ]);
+  #echo $hsl;exit(0);
 
-  $strcolor = "hsl($hue, 110, 105)";
+  $strcolor = "hsl($hsl)";
   $color = new ImagickPixel($strcolor);
-  $image->colorizeImage($color, 1);
+  $image->colorizeImage($color, 1, true);
   return $hue;
 }
 
