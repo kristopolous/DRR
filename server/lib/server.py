@@ -405,6 +405,8 @@ def manager(config):
 
           # And break out of our loop ... now everything should exist.
           break
+    else:
+      logging.info(("Sending existing file", file_name))
 
     return send_file_partial("%s/%s" % (base_dir, path), requested_path=path, file_name=download_name)
 
