@@ -244,7 +244,7 @@ def get(key, expiry=0, use_cache=True, default=None):
 
   if expiry > 0:
     # If we let things expire, we first sweep for it
-    res = run("select value, created_at from kv where key = '%s' and created_at >= date(current_timestamp, '-%d second')" % (key, expiry)).fetchone()
+    res = run("select value, created_at from kv where key = '%s' and created_at >= datetime(current_timestamp, '-%d second')" % (key, expiry)).fetchone()
   else:
     res = run('select value, created_at from kv where key = ?', (key, )).fetchone()
 
@@ -259,7 +259,7 @@ def get(key, expiry=0, use_cache=True, default=None):
   else:
     # It's ok if this doesn't exist. SQLite likes to throw an error here
     try:
-      run("delete from kv where key = '%s' and created_at < date(current_timestamp, '-%d second')" % (key, expiry))
+      run("delete from kv where key = '%s' and created_at < datetime(current_timestamp, '-%d second')" % (key, expiry))
     except Exception as inst:
       pass
 
