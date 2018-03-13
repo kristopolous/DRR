@@ -685,9 +685,13 @@ def our_mime():
   return 'audio/mpeg'
 
 
-def stitch_and_slice_process(file_list, relative_start_minute, duration_minute):
+def stitch_and_slice_process(file_list, relative_start_minute, duration_minute, destination_path=None):
   # The process wrapper around stitch_and_slice to do it asynchronously. 
-  name_out = stream_name(file_list, relative_start_minute=relative_start_minute, duration_minute=duration_minute, absolute_start_minute=None) 
+  if destination_path:
+    import lib.misc as misc
+    name_out = "%s/%s" % (misc.DIR_SLICES, destination_path)
+  else:
+    name_out = stream_name(file_list, relative_start_minute=relative_start_minute, duration_minute=duration_minute, absolute_start_minute=None) 
 
   if os.path.isfile(name_out):
     file_size = os.path.getsize(name_out)
