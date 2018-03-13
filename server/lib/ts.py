@@ -214,7 +214,7 @@ def get_offset(force=False):
       opts = {'status': None}
 
     if opts['status'] == 'OK': 
-      logging.info("Location: %s | offset: %s" % (opts['timeZoneId'], opts['rawOffset']))
+      logging.info("Location: %s | offset: %s | dst: %s " % (opts['timeZoneId'], opts['rawOffset'], opts['dstOffset']))
       offset = (int(opts['rawOffset']) + int(opts['dstOffset'])) / 60
       DB.set('offset', offset)
 
