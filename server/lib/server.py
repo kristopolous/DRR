@@ -125,17 +125,17 @@ def generate_xml(showname, feed_list, duration_min, weekday_list, start, duratio
   }.items()):
     ET.SubElement(channel, k).text = v
 
-  image = {}
+  imageMap = {}
   # Some podcasters don't try to update the image if they have it cached due to some bugs ... so we work
   # around the bugs by appending a month on to things
   for size in ['1400', '200']:
-    image[size] = 'http://indycast.net/icon/{}_{}.png?{}'.format(quote(showname), size, time.strftime('%Y%m'))
+    imageMap[size] = 'http://indycast.net/icon/{}_{}.png?{}'.format(quote(showname), size, time.strftime('%Y%m'))
 
   itunes_image = ET.SubElement(channel, '{%s}image' % nsmap['itunes'])
-  itunes_image.attrib['href'] = image['1400']
+  itunes_image.attrib['href'] = imageMap['1400']
 
   media_image = ET.SubElement(channel, '{%s}thumbnail' % nsmap['media'])
-  media_image.attrib['url'] = image['1400']
+  media_image.attrib['url'] = imageMap['1400']
 
   atom_link = ET.SubElement(channel, '{%s}link' % nsmap['atom'])
   atom_link.attrib['href'] = base_url
@@ -144,7 +144,7 @@ def generate_xml(showname, feed_list, duration_min, weekday_list, start, duratio
 
   image = ET.SubElement(channel, 'image')
   for k,v in list({
-    'url': image['200'],
+    'url': imageMap['200'],
     'title': showname,
     'link': 'http://indycast.net'
   }.items()):
