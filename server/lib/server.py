@@ -407,12 +407,10 @@ def manager(config):
           relative_start_minute = request_info['start_minute'] - first_slice['start_minute']
 
           logging.info(episode)
-          audio.stitch_and_slice_process(file_list=episode, relative_start_minute=relative_start_minute, duration_minute=request_info['duration_sec'] / 60.0)
+          audio.stitch_and_slice_process(file_list=episode, relative_start_minute=relative_start_minute, duration_minute=request_info['duration_sec'] / 60.0, destination_path=path)
 
           # And break out of our loop ... now everything should exist.
           break
-    else:
-      logging.info(("Sending existing file", file_name))
 
     return send_file_partial("%s/%s" % (base_dir, path), requested_path=path, file_name=download_name)
 
