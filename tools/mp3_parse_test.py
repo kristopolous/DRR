@@ -113,8 +113,7 @@ def mp3_sig(file_name, blockcount = -1):
   frame_size = None
   assumed_set = None
   attempt_set = None
-  last_tell = None
-  byte_offset = 0
+  next_read = False
 
   file_handle = open(file_name, 'rb')
 
@@ -129,8 +128,11 @@ def mp3_sig(file_name, blockcount = -1):
     else:
       header_attempts += 1 
 
-    file_handle.seek(byte_offset, 0)
-    frame_start = file_handle.tell()
+    if next_read:
+      file_handle.seek(next_read, 0)
+      next_read = False
+
+    frame_start = last_read = file_handle.tell()
 
     header = file_handle.read(2)
     if not first_header_seen:
@@ -156,10 +158,8 @@ def mp3_sig(file_name, blockcount = -1):
         if not first_header_seen:
           print(file_name, file_handle.tell(), frame_size, samp_rate, bit_rate, mode, assumed_set)
 
-        last_tell = file_handle.tell()
-
         if not frame_size:
-          byte_offset += 1
+          next_read = last_read + 1
           #sys.stdout.write('#')
           continue
 
@@ -172,7 +172,7 @@ def mp3_sig(file_name, blockcount = -1):
         # This is another indicator that we could be screwing up ... 
         elif assumed_set and samp_rate != assumed_set[0] and bit_rate != assumed_set[1]:
           print("rates are off assumed set, going back")
-          byte_offset += 1
+          next_read = last_read + 1
           continue
 
 
@@ -196,7 +196,6 @@ def mp3_sig(file_name, blockcount = -1):
 
         # Move forward the frame file_handle.read size + 4 byte header
         throw_away = file_handle.read(frame_size - (rsize + 4))
-        byte_offset = file_handle.tell()
         #sys.stdout.write('.')
 
       #ID3 tag for some reason
@@ -216,14 +215,12 @@ def mp3_sig(file_name, blockcount = -1):
         size = ((candidate & 0x007f0000) >> 2 ) | ((candidate & 0x00007f00) >> 1 ) | (candidate & 0x0000007f)
         
         file_handle.read(size)
-        byte_offset = file_handle.tell()
 
       # ID3 TAG -- 128 bytes long
       elif header == '\x54\x41':
         sys.stdout.write('T')
         # We've already read 2 so we can go 126 forward
         file_handle.read(126)
-        byte_offset = file_handle.tell()
 
       elif header_attempts > MAX_HEADER_ATTEMPTS:
 
@@ -247,10 +244,10 @@ def mp3_sig(file_name, blockcount = -1):
           break
 
       elif first_header_seen:
+        next_read = last_read + 1
         header_attempts += 1 
         if len(frame_sig) == 1:
           print("Resetting")
-          byte_offset += 1
 
           # discard what we thought was the first start byte and
           # frame signature
@@ -265,9 +262,8 @@ def mp3_sig(file_name, blockcount = -1):
           sys.stdout.write('%s !' % file_name)
           print(binascii.b2a_hex(header), "%x %d" % (file_handle.tell(), len(frame_sig)))
           
-          byte_offset += 1
       else:
-          byte_offset += 1
+        next_read = last_read + 1
 
     else:
       break
