@@ -14,8 +14,8 @@ from glob import glob
 
 MAX_HEADER_ATTEMPTS = 102400
 
-def mp3_info(byte, b1):
-  failCase = [ False, False, False, False ]
+def mp3_info(b1, b2, b3):
+  failCase = [ False, False, False, False, False ]
 
   mpegTable = [ 2, 1 ]
   layerTable = [ None, 3, 2, 1 ]
@@ -26,6 +26,7 @@ def mp3_info(byte, b1):
     [ 22050, 24000, 16000, 0 ]
   ]
 
+  modeTable = [ 'stereo' , 'joint' , 'dual' , 'mono' ]
   brTable = [
     None, # MPEG-0 (doesn't exist)
 
@@ -80,20 +81,27 @@ def mp3_info(byte, b1):
   mpeg = mpegTable[b >> 3]
   layer = layerTable[(b >> 1) & 0x3]
   protection_bit = b & 1
-
+  
   if mpeg is None or layer != 3: return failCase
 
-  samp_rate = freqTable[mpeg][(byte & 0x0f) >> 2]
-  bit_rate = brTable[mpeg][layer][byte >> 4]
-  pad_bit = (byte & 0x3) >> 1
+  samp_rate = freqTable[mpeg][(b2 & 0x0f) >> 2]
+  bit_rate = brTable[mpeg][layer][b2 >> 4]
+  pad_bit = (b2 & 0x3) >> 1
+  mode = modeTable[(b3 >> 6)]
 
   if not bit_rate or not samp_rate: return failCase
   #print "%x" % byte, samp_rate, bit_rate, pad_bit, protection_bit, (144.0 * (bit_rate * 1000) / samp_rate) + pad_bit
 
   # from http://id3.org/mp3Frame
-  frame_size = int((144000 * bit_rate / samp_rate) + pad_bit)
+  # It's a wiki I can't register on for some reason. It's slightly incorrect
+  if mode == 'joint':
+    multiplier = 72000
+  else:
+    multiplier = 144000
 
-  return frame_size, samp_rate, bit_rate, pad_bit
+  frame_size = int((multiplier * bit_rate / samp_rate) + pad_bit)
+
+  return frame_size, samp_rate, bit_rate, pad_bit, mode
 
 def mp3_sig(file_name, blockcount = -1):
   #pdb.set_trace()
@@ -106,7 +114,7 @@ def mp3_sig(file_name, blockcount = -1):
   assumed_set = None
   attempt_set = None
   last_tell = None
-  go_back = -1
+  byte_offset = 0
 
   file_handle = open(file_name, 'rb')
 
@@ -120,24 +128,22 @@ def mp3_sig(file_name, blockcount = -1):
 
     else:
       header_attempts += 1 
-      if header_attempts > 2:
-        sys.stdout.write('!')
-        print(binascii.b2a_hex(header), "%x" % file_handle.tell())
-        file_handle.seek(go_back, 1)
 
+    file_handle.seek(byte_offset, 0)
     frame_start = file_handle.tell()
-    if frame_start == last_tell:
-      file_handle.seek(last_tell + 1, 1)
 
     header = file_handle.read(2)
-    if header:
+    if not first_header_seen:
+      print(binascii.b2a_hex(header), "%x" % file_handle.tell())
 
+    if header:
       b1 = header[1]
 
       if header[0] == 0xff and (b1 >> 4) == 0xf:
 
         try:
-          b = ord(file_handle.read(1))
+          b2 = ord(file_handle.read(1))
+          b3 = ord(file_handle.read(1))
           # If we are at the EOF
         except:
           break
@@ -145,16 +151,16 @@ def mp3_sig(file_name, blockcount = -1):
         if frame_size and not assumed_set:
           attempt_set = [samp_rate, bit_rate, pad_bit]
 
-        frame_size, samp_rate, bit_rate, pad_bit = mp3_info(b, b1)
-        print(file_name, file_handle.tell(), frame_size, samp_rate, bit_rate, assumed_set)
+        frame_size, samp_rate, bit_rate, pad_bit, mode = mp3_info(b1, b2, b3)
+
+        if not first_header_seen:
+          print(file_name, file_handle.tell(), frame_size, samp_rate, bit_rate, mode, assumed_set)
 
         last_tell = file_handle.tell()
 
         if not frame_size:
-          file_handle.seek(go_back, 1)
-          go_back = -1
-
-          sys.stdout.write('#')
+          byte_offset += 1
+          #sys.stdout.write('#')
           continue
 
         # We make sure that we get the same set of samp_rate, bit_rate, pad_bit twice
@@ -166,16 +172,15 @@ def mp3_sig(file_name, blockcount = -1):
         # This is another indicator that we could be screwing up ... 
         elif assumed_set and samp_rate != assumed_set[0] and bit_rate != assumed_set[1]:
           print("rates are off assumed set, going back")
-          file_handle.seek(go_back, 1)
+          byte_offset += 1
           continue
 
 
         if not first_header_seen:
+          print(file_name, file_handle.tell(), frame_size, samp_rate, bit_rate, assumed_set)
           first_header_seen = True
 
-        # Rest of the header
-        throw_away = file_handle.read(1)
-        print(samp_rate, bit_rate, hex(ord(throw_away)))
+        #print(samp_rate, bit_rate, hex(ord(throw_away)))
 
         # Get the signature
         #print "%s %d" % (hex(frame_start), rsize)
@@ -187,17 +192,16 @@ def mp3_sig(file_name, blockcount = -1):
         sig = file_handle.read(rsize)
         frame_sig.append(sig)
         start_byte.append(frame_start)
-        print('start %x' % frame_start)
+        #print('start %x' % frame_start)
 
         # Move forward the frame file_handle.read size + 4 byte header
         throw_away = file_handle.read(frame_size - (rsize + 4))
-        sys.stdout.write('.')
-
-        if file_handle.tell() > 3:
-          go_back = -3
+        byte_offset = file_handle.tell()
+        #sys.stdout.write('.')
 
       #ID3 tag for some reason
       elif header == '\x49\x44':
+        sys.stdout.write('H')
         # Rest of the header
         throw_away = file_handle.read(4)
 
@@ -212,11 +216,14 @@ def mp3_sig(file_name, blockcount = -1):
         size = ((candidate & 0x007f0000) >> 2 ) | ((candidate & 0x00007f00) >> 1 ) | (candidate & 0x0000007f)
         
         file_handle.read(size)
+        byte_offset = file_handle.tell()
 
       # ID3 TAG -- 128 bytes long
       elif header == '\x54\x41':
+        sys.stdout.write('T')
         # We've already read 2 so we can go 126 forward
         file_handle.read(126)
+        byte_offset = file_handle.tell()
 
       elif header_attempts > MAX_HEADER_ATTEMPTS:
 
@@ -228,6 +235,7 @@ def mp3_sig(file_name, blockcount = -1):
 
           # seek to the first start byte + 1
           file_handle.seek(start_byte[0] + 2)
+          byte_offset = file_handle.tell()
 
           # discard what we thought was the first start byte and
           # frame signature
@@ -242,7 +250,7 @@ def mp3_sig(file_name, blockcount = -1):
         header_attempts += 1 
         if len(frame_sig) == 1:
           print("Resetting")
-          file_handle.seek(start_byte[0] + 2)
+          byte_offset += 1
 
           # discard what we thought was the first start byte and
           # frame signature
@@ -257,8 +265,9 @@ def mp3_sig(file_name, blockcount = -1):
           sys.stdout.write('%s !' % file_name)
           print(binascii.b2a_hex(header), "%x %d" % (file_handle.tell(), len(frame_sig)))
           
-          file_handle.seek(go_back, 1)
-          go_back = -1
+          byte_offset += 1
+      else:
+          byte_offset += 1
 
     else:
       break
@@ -378,23 +387,47 @@ def audio_stitch(file_list, cb_sig=mp3_sig):
     second['crc32'] = crc32
     second['offset'] = offset
 
-    isFound = True
+    print(len(first['crc32']), offset[0], first['offset'][0], len(second['crc32']))
 
-    try:
-      pos = second['crc32'].index(first['crc32'][-2])
+    isFound = False
+    passed = False
+    firstOffset = 0
 
+    print(binascii.b2a_hex(first['crc32'][-40]), "%x" % first['offset'][-40])
+    
+    """ 
+    for x in range(len(second['crc32'])):
+        print(binascii.b2a_hex(second['crc32'][x]), "%x" % (second['offset'][x]))
+    """ 
+    print(second['crc32'][:10])
+    print(first['crc32'][-10:])
+    for j in range(-27, -2): 
+      if first['crc32'][j] not in second['crc32']:
+        print("No for {}".format(j))
+        continue
+
+      print("Yes for {}".format(j))
+      pos = second['crc32'].index(first['crc32'][j])
+
+      passed = True
       for i in range(5, 1, -1):
-        if second['crc32'][pos - i + 2] != first['crc32'][-i]:
-          isFound = False
+        if second['crc32'][pos - i + -j] != first['crc32'][-i]:
+          passed = False
           print("Indices do not match between %s and %s" % (first['name'], second['name']))
           break
 
-    except: 
+      if passed:
+        isFound = True
+        firstOffset = j
+        break
+      break
+
+    if not isFound:
       raise Exception("Cannot find indices between %s and %s" % (first['name'], second['name']))
       break
 
     if isFound:
-      args.append((second['name'], second['offset'][pos], second['offset'][-2]))
+      args.append((second['name'], second['offset'][pos], second['offset'][firstOffset]))
       first = second
       continue
 
@@ -423,6 +456,8 @@ def audio_tag(source, length_sec, out):
       out.write(infile.read())
 
 if __name__ == "__main__":
+  print(audio_stitch(sys.argv[1:]))
+  """
   for file_name in sys.argv[1:]:
     sig, block = mp3_sig(file_name)
     print(len(block))
@@ -450,4 +485,5 @@ if __name__ == "__main__":
   # failure case
   #stitch_attempt('/var/radio/kpcc-1435670339.mp3', '/var/radio/kpcc-1435669435.mp3')
 
- # audio_slice('/tmp/serialize.mp3', 14 * 60, 16 * 60)
+  # audio_slice('/tmp/serialize.mp3', 14 * 60, 16 * 60)
+  """
