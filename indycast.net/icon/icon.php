@@ -56,7 +56,7 @@ function get_font_size($phrase) {
     $maxLength = max(strlen($word), $maxLength);
   }
 
-  $fontsize = 607;
+  $fontsize = 557;
   if($maxLength > 6) {
     $fontsize = (6 / $maxLength) * $fontsize;
   }
