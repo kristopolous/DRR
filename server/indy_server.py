@@ -21,6 +21,7 @@ from subprocess import Popen
 from threading import Thread
 from queue import Queue
 
+from pprint import pprint
 g_download_pid = 0
 g_download_kill_pid = 0
 
@@ -536,6 +537,7 @@ def read_config(config):
       #
       # see https://github.com/kristopolous/DRR/issues/73 for what this is about.
       misc.config['_private']['azure'] = misc.config_section_map('Azure', cloud_config)
+      misc.config['_private']['misc'] = misc.config_section_map('Misc', cloud_config)
 
   if not os.path.isdir(misc.config['storage']):
     try:
