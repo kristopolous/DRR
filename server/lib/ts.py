@@ -218,7 +218,7 @@ def get_offset(force=False):
       opts = {'status': None}
 
     if opts['status'] == 'OK': 
-      offset=opts['offset']
+      offset = opts['offset'] / 60
       logging.info("Found Offset: {}".format(offset))
       DB.set('offset', offset)
 
