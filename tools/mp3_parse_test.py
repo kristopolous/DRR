@@ -14,6 +14,11 @@ from glob import glob
 
 MAX_HEADER_ATTEMPTS = 102400
 
+
+
+
+
+
 def mp3_info(b1, b2, b3):
   failCase = [ False, False, False, False, False ]
 
@@ -90,7 +95,6 @@ def mp3_info(b1, b2, b3):
   mode = modeTable[(b3 >> 6)]
 
   if not bit_rate or not samp_rate: return failCase
-  #print "%x" % byte, samp_rate, bit_rate, pad_bit, protection_bit, (144.0 * (bit_rate * 1000) / samp_rate) + pad_bit
 
   # from http://id3.org/mp3Frame
   # It's a wiki I can't register on for some reason. It's slightly incorrect
@@ -98,7 +102,6 @@ def mp3_info(b1, b2, b3):
     multiplier = 72000
   else:
     multiplier = 144000
-
   frame_size = int((multiplier * bit_rate / samp_rate) + pad_bit)
 
   return frame_size, samp_rate, bit_rate, pad_bit, mode
@@ -135,10 +138,8 @@ def mp3_sig(file_name, blockcount = -1):
     frame_start = last_read = file_handle.tell()
 
     header = file_handle.read(2)
-    if not first_header_seen:
-      print(binascii.b2a_hex(header), "%x" % file_handle.tell())
-
     if header:
+
       b1 = header[1]
 
       if header[0] == 0xff and (b1 >> 4) == 0xf:
@@ -155,18 +156,14 @@ def mp3_sig(file_name, blockcount = -1):
 
         frame_size, samp_rate, bit_rate, pad_bit, mode = mp3_info(b1, b2, b3)
 
-        if not first_header_seen:
-          print(file_name, file_handle.tell(), frame_size, samp_rate, bit_rate, mode, assumed_set)
 
         if not frame_size:
           next_read = last_read + 1
-          #sys.stdout.write('#')
           continue
 
         # We make sure that we get the same set of samp_rate, bit_rate, pad_bit twice
         if not assumed_set and attempt_set == [samp_rate, bit_rate, pad_bit]:
           assumed_set = attempt_set
-          print('assumed_set', assumed_set)
           attempt_set = False
 
         # This is another indicator that we could be screwing up ... 
@@ -180,14 +177,7 @@ def mp3_sig(file_name, blockcount = -1):
           print(file_name, file_handle.tell(), frame_size, samp_rate, bit_rate, assumed_set)
           first_header_seen = True
 
-        #print(samp_rate, bit_rate, hex(ord(throw_away)))
 
-        # Get the signature
-        #print "%s %d" % (hex(frame_start), rsize)
-        #if len(chain) > 4:
-        #  print "%s" % (' '.join([binascii.b2a_hex(block) for block in chain]))
-        #  chain.pop(0)
-          
         # Get the signature
         sig = file_handle.read(rsize)
         frame_sig.append(sig)
@@ -196,11 +186,10 @@ def mp3_sig(file_name, blockcount = -1):
 
         # Move forward the frame file_handle.read size + 4 byte header
         throw_away = file_handle.read(frame_size - (rsize + 4))
-        #sys.stdout.write('.')
 
-      #ID3 tag for some reason
+
+      # ID3 tag for some reason
       elif header == '\x49\x44':
-        sys.stdout.write('H')
         # Rest of the header
         throw_away = file_handle.read(4)
 
@@ -218,7 +207,6 @@ def mp3_sig(file_name, blockcount = -1):
 
       # ID3 TAG -- 128 bytes long
       elif header == '\x54\x41':
-        sys.stdout.write('T')
         # We've already read 2 so we can go 126 forward
         file_handle.read(126)
 
@@ -232,7 +220,6 @@ def mp3_sig(file_name, blockcount = -1):
 
           # seek to the first start byte + 1
           file_handle.seek(start_byte[0] + 2)
-          byte_offset = file_handle.tell()
 
           # discard what we thought was the first start byte and
           # frame signature
