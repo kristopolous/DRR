@@ -56,13 +56,6 @@ def stream_download(callsign, url, my_pid, file_name):
 
   def cback(data): 
     global g_download_kill_pid
-
-    """
-      if len(data):
-        catchall('download', json.dumps([g_download_kill_pid, nl['pid'], len(data)]))
-      else:
-        catchall('download', json.dumps([g_download_kill_pid, 'no data']))
-    """
     # print nl['pid'], g_download_kill_pid
     if nl['pid'] <= g_download_kill_pid or not data:
       logging.info("Stopping download #%d" % nl['pid'])
@@ -636,7 +629,7 @@ misc.start_time = TS.unixtime()
 parser = argparse.ArgumentParser()
 parser.add_argument("-c", "--config", default="./indy_config.txt", help="Configuration file (default ./indy_config.txt)")
 parser.add_argument('--debug', action='store_true', help="Load PDB for debugging")
-parser.add_argument('--version', action='version', version='indycast %s :: Aug 2015' % misc.__version__)
+parser.add_argument('--version', action='version', version='indycast %s :: Nov 2018' % misc.__version__)
 parser.add_argument("--daemon", action='store_true',  help="Run as daemon")
 args = parser.parse_args()
 if args.daemon:
