@@ -30,7 +30,7 @@ def generate_feed(file_type, **kwargs):
     feed_list = kwargs['feed_list']
 
     if len(feed_list) > 0:
-      return redirect('http://indycast.net/%s/%s' % (misc.config['callsign'], feed_list[0]['name']), code=302)
+      return redirect('http://indycast.net/%s/%s' % (misc.config['callsign'], feed_list[-1]['name']), code=302)
 
     pass
 
