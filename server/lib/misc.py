@@ -213,7 +213,11 @@ def shutdown_real(do_restart=False):
   logging.info('total: %d' % (threading.activeCount(), ))
   # we release our main lock which signifies that the 
   # threads should die off.
-  lockMap['main'].release() 
+  try:
+    lockMap['main'].release() 
+  except:
+    pass
+
   logging.info("Releasing main lock")
 
   """
@@ -253,7 +257,10 @@ def manager_is_running(pid=None):
     lockMap['main'].acquire(False)
 
   if lockMap['main'].acquire(False):
-    lockMap['main'].release()
+    try:
+      lockMap['main'].release()
+    except:
+      pass
     return False
 
   return True
