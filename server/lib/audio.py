@@ -171,8 +171,8 @@ def samp_guess(samp):
     globals()['_FRAME_LENGTH'] = (1152.0 / samp)
 
 
-def mp3_info(byte, b1):
-  failCase = [ False, False, False, False ]
+def mp3_info(b1, b2, b3):
+  failCase = [ False, False, False, False, False ]
 
   mpegTable = [ 2, 1 ]
   layerTable = [ None, 3, 2, 1 ]
@@ -183,6 +183,7 @@ def mp3_info(byte, b1):
     [ 22050, 24000, 16000, 0 ]
   ]
 
+  modeTable = [ 'stereo' , 'joint' , 'dual' , 'mono' ]
   brTable = [
     None, # MPEG-0 (doesn't exist)
 
@@ -239,16 +240,22 @@ def mp3_info(byte, b1):
 
   if mpeg is None or layer != 3: return failCase
 
-  samp_rate = sampTable[mpeg][(byte & 0x0f) >> 2]
-  bit_rate = brTable[mpeg][layer][byte >> 4]
-  pad_bit = (byte & 0x3) >> 1
+  samp_rate = sampTable[mpeg][(b2 & 0x0f) >> 2]
+  bit_rate = brTable[mpeg][layer][b2 >> 4]
+  pad_bit = (b2 & 0x3) >> 1
+  mode = modeTable[(b3 >> 6)]
 
   if not bit_rate or not samp_rate: return failCase
 
   # from http://id3.org/mp3Frame
-  frame_size = int((144000 * bit_rate / samp_rate) + pad_bit)
+  # It's a wiki I can't register on for some reason. It's slightly incorrect
+  if mode == 'joint':
+    multiplier = 72000
+  else:
+    multiplier = 144000
+  frame_size = int((multiplier * bit_rate / samp_rate) + pad_bit)
 
-  return frame_size, samp_rate, bit_rate, pad_bit
+  return frame_size, samp_rate, bit_rate, pad_bit, mode
 
 
 def get_audio_format(file_name):
@@ -521,8 +528,7 @@ def mp3_signature(file_name, blockcount=-1):
   frame_size = None
   assumed_set = None
   attempt_set = None
-  last_tell = None
-  go_back = -1
+  next_read = False
 
   if isinstance(file_name, str):
     file_handle = open(file_name, 'rb')
@@ -540,12 +546,12 @@ def mp3_signature(file_name, blockcount=-1):
 
     else:
       header_attempts += 1 
-      if header_attempts > 2:
-        file_handle.seek(go_back, 1)
 
-    frame_start = file_handle.tell()
-    if frame_start == last_tell:
-      file_handle.seek(last_tell + 1, 1)
+    if next_read:
+      file_handle.seek(next_read, 0)
+      next_read = False
+
+    frame_start = last_read = file_handle.tell()
 
     header = file_handle.read(2)
     if header and len(header) == 2:
@@ -555,7 +561,8 @@ def mp3_signature(file_name, blockcount=-1):
       if header[0] == 0xff and (b1 >> 4) == 0xf:
 
         try:
-          b = ord(file_handle.read(1))
+          b2 = ord(file_handle.read(1))
+          b3 = ord(file_handle.read(1))
           # If we are at the EOF
         except:
           break
@@ -563,14 +570,11 @@ def mp3_signature(file_name, blockcount=-1):
         if frame_size and not assumed_set:
           attempt_set = [samp_rate, bit_rate, pad_bit]
 
-        frame_size, samp_rate, bit_rate, pad_bit = mp3_info(b, b1)
+        frame_size, samp_rate, bit_rate, pad_bit, mode = mp3_info(b1, b2, b3)
 
-        last_tell = file_handle.tell()
 
         if not frame_size:
-          file_handle.seek(go_back, 1)
-          go_back = -1
-
+          next_read = last_read + 1
           continue
 
         samp_guess(samp_rate)
@@ -582,15 +586,13 @@ def mp3_signature(file_name, blockcount=-1):
 
         # This is another indicator that we could be screwing up ... 
         elif assumed_set and samp_rate != assumed_set[0] and bit_rate != assumed_set[1]:
-          file_handle.seek(go_back, 1)
+          next_read = last_read + 1
           continue
 
 
         if not first_header_seen:
           first_header_seen = True
 
-        # Rest of the header
-        throw_away = file_handle.read(1)
 
         # Get the signature
         sig = file_handle.read(read_size)
@@ -600,8 +602,6 @@ def mp3_signature(file_name, blockcount=-1):
         # Move forward the frame file_handle.read size + 4 byte header
         throw_away = file_handle.read(frame_size - (read_size + 4))
 
-        if file_handle.tell() > 3:
-          go_back = -3
 
       # ID3 tag for some reason
       elif header == '\x49\x44':
@@ -659,10 +659,8 @@ def mp3_signature(file_name, blockcount=-1):
           break
 
       elif first_header_seen:
+        next_read = last_read + 1
         header_attempts += 1 
-        if header_attempts > 2:
-          file_handle.seek(go_back, 1)
-          go_back = -1
 
     else:
       break
@@ -685,9 +683,13 @@ def our_mime():
   return 'audio/mpeg'
 
 
-def stitch_and_slice_process(file_list, relative_start_minute, duration_minute):
+def stitch_and_slice_process(file_list, relative_start_minute, duration_minute, destination_path=None):
   # The process wrapper around stitch_and_slice to do it asynchronously. 
-  name_out = stream_name(file_list, relative_start_minute=relative_start_minute, duration_minute=duration_minute, absolute_start_minute=None) 
+  if destination_path:
+    import lib.misc as misc
+    name_out = "%s/%s" % (misc.DIR_SLICES, destination_path)
+  else:
+    name_out = stream_name(file_list, relative_start_minute=relative_start_minute, duration_minute=duration_minute, absolute_start_minute=None) 
 
   if os.path.isfile(name_out):
     file_size = os.path.getsize(name_out)

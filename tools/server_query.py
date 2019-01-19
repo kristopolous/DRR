@@ -114,6 +114,7 @@ def find_misbehaving_servers(db, fail_list):
   if len(misbehaving):
     report.append("Thresholds: %s" % json.dumps(max_values, indent=2))
 
+  """
   if len(report):
     if not isRoot:
       print ("You aren't root. This is probably a test machine. I'm not mailing")
@@ -127,7 +128,7 @@ def find_misbehaving_servers(db, fail_list):
       res = misc.send_email(config=mail_config, who=email_to_use, subject=subject, body='<br>'.join(report), sender='Indycast Admin <info@indycast.net>')
       print("Issues found. Sending email to %s." % email_to_use)
       #print('\n'.join(report))
-
+  """
 
 CALLSIGN = 'callsign'
 os.chdir(os.path.dirname(os.path.realpath(__file__)))

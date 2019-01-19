@@ -1,0 +1,7 @@
+[Main]
+callsign=kcsn
+long=-118.117447
+lat=34.143368
+stream=http://130.166.82.184:8000/;stream.mp3
+port=8850
+

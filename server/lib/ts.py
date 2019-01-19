@@ -6,6 +6,7 @@ import time
 import json
 from datetime import datetime, timedelta
 from dateutil import parser as dt_parser
+from lxml import etree
 
 # Everything is presumed to be weekly and on the minute
 # scale. We use this to do wrap around when necessary
@@ -202,20 +203,23 @@ def get_offset(force=False):
 
     when = int(unixtime())
 
-    api_key = 'AIzaSyBkyEMoXrSYTtIi8bevEIrSxh1Iig5V_to'
-    url = "https://maps.googleapis.com/maps/api/timezone/json?location=%s,%s&timestamp=%d&key=%s" % (misc.config['lat'], misc.config['long'], when, api_key)
-   
+    api_key = misc.config['_private']['misc']['timezonedb_key']
+    url = "http://api.timezonedb.com/v2.1/get-time-zone?key={}&by=position&lat={}&lng={}".format(api_key, misc.config['lat'], misc.config['long'])
+
     try:
       stream = urlopen(url)
-      data = stream.read().decode('utf8')
-      opts = json.loads(data)
+      data = stream.read().decode('utf8').split("\n")[1]
+      xml = etree.fromstring(data)
+      offset = xml.xpath('gmtOffset')
+      opts = {'status': 'OK', 'offset': int(offset[0].text) }
 
-    except:
+    except Exception as exc:
+      print(exc)
       opts = {'status': None}
 
     if opts['status'] == 'OK': 
-      logging.info("Location: %s | offset: %s" % (opts['timeZoneId'], opts['rawOffset']))
-      offset = (int(opts['rawOffset']) + int(opts['dstOffset'])) / 60
+      offset = opts['offset'] / 60
+      logging.info("Found Offset: {}".format(offset))
       DB.set('offset', offset)
 
     else:

@@ -224,7 +224,7 @@ def find_streams(start_list, duration_min):
     end_search = (start + duration_min) % TS.MINUTES_PER_WEEK
     # print start, duration_min, end_search
     condition_list.append('start_minute < %d and end_minute >= %d' % (start, start))
-    condition_list.append('start_minute > %d and end_minute >= %d and end_minute <= %d' % (start, start, end_search))
+    condition_list.append('start_minute >= %d and end_minute >= %d and end_minute <= %d' % (start, start, end_search))
     condition_list.append('start_minute < %d and end_minute >= %d' % (end_search, end_search))
 
   condition_query = "((%s))" % ') or ('.join(condition_list)

@@ -30,7 +30,7 @@ def generate_feed(file_type, **kwargs):
     feed_list = kwargs['feed_list']
 
     if len(feed_list) > 0:
-      return redirect('http://indycast.net/%s/%s' % (misc.config['callsign'], feed_list[0]['name']), code=302)
+      return redirect('http://indycast.net/%s/%s' % (misc.config['callsign'], feed_list[-1]['name']), code=302)
 
     pass
 
@@ -125,11 +125,17 @@ def generate_xml(showname, feed_list, duration_min, weekday_list, start, duratio
   }.items()):
     ET.SubElement(channel, k).text = v
 
+  imageMap = {}
+  # Some podcasters don't try to update the image if they have it cached due to some bugs ... so we work
+  # around the bugs by appending a month on to things
+  for size in ['1400', '200']:
+    imageMap[size] = 'http://indycast.net/icon/{}_{}.png?{}'.format(quote(showname), size, time.strftime('%Y%m'))
+
   itunes_image = ET.SubElement(channel, '{%s}image' % nsmap['itunes'])
-  itunes_image.attrib['href'] = 'http://indycast.net/icon/%s_1400.png' % quote(showname)
+  itunes_image.attrib['href'] = imageMap['1400']
 
   media_image = ET.SubElement(channel, '{%s}thumbnail' % nsmap['media'])
-  media_image.attrib['url'] = 'http://indycast.net/icon/%s_1400.png' % quote(showname)
+  media_image.attrib['url'] = imageMap['1400']
 
   atom_link = ET.SubElement(channel, '{%s}link' % nsmap['atom'])
   atom_link.attrib['href'] = base_url
@@ -138,7 +144,7 @@ def generate_xml(showname, feed_list, duration_min, weekday_list, start, duratio
 
   image = ET.SubElement(channel, 'image')
   for k,v in list({
-    'url': 'http://indycast.net/icon/%s_200.png' % quote(showname),
+    'url': imageMap['200'],
     'title': showname,
     'link': 'http://indycast.net'
   }.items()):
@@ -401,7 +407,7 @@ def manager(config):
           relative_start_minute = request_info['start_minute'] - first_slice['start_minute']
 
           logging.info(episode)
-          audio.stitch_and_slice_process(file_list=episode, relative_start_minute=relative_start_minute, duration_minute=request_info['duration_sec'] / 60.0)
+          audio.stitch_and_slice_process(file_list=episode, relative_start_minute=relative_start_minute, duration_minute=request_info['duration_sec'] / 60.0, destination_path=path)
 
           # And break out of our loop ... now everything should exist.
           break

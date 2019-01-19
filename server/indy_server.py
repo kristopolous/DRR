@@ -21,6 +21,7 @@ from subprocess import Popen
 from threading import Thread
 from queue import Queue
 
+from pprint import pprint
 g_download_pid = 0
 g_download_kill_pid = 0
 
@@ -55,13 +56,6 @@ def stream_download(callsign, url, my_pid, file_name):
 
   def cback(data): 
     global g_download_kill_pid
-
-    """
-      if len(data):
-        catchall('download', json.dumps([g_download_kill_pid, nl['pid'], len(data)]))
-      else:
-        catchall('download', json.dumps([g_download_kill_pid, 'no data']))
-    """
     # print nl['pid'], g_download_kill_pid
     if nl['pid'] <= g_download_kill_pid or not data:
       logging.info("Stopping download #%d" % nl['pid'])
@@ -536,6 +530,7 @@ def read_config(config):
       #
       # see https://github.com/kristopolous/DRR/issues/73 for what this is about.
       misc.config['_private']['azure'] = misc.config_section_map('Azure', cloud_config)
+      misc.config['_private']['misc'] = misc.config_section_map('Misc', cloud_config)
 
   if not os.path.isdir(misc.config['storage']):
     try:
@@ -634,7 +629,7 @@ misc.start_time = TS.unixtime()
 parser = argparse.ArgumentParser()
 parser.add_argument("-c", "--config", default="./indy_config.txt", help="Configuration file (default ./indy_config.txt)")
 parser.add_argument('--debug', action='store_true', help="Load PDB for debugging")
-parser.add_argument('--version', action='version', version='indycast %s :: Aug 2015' % misc.__version__)
+parser.add_argument('--version', action='version', version='indycast %s :: Nov 2018' % misc.__version__)
 parser.add_argument("--daemon", action='store_true',  help="Run as daemon")
 args = parser.parse_args()
 if args.daemon:
