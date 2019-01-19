@@ -25,6 +25,136 @@ from pprint import pprint
 g_download_pid = 0
 g_download_kill_pid = 0
 
+def camera_capture(callsign, url, my_pid, file_name):
+  # Curl interfacing which downloads the stream to disk. 
+  # Follows redirects and parses out basic m3u.
+  #pid = misc.change_proc_name("%s-download" % callsign)
+
+  nl = {'stream': None, 'curl_handle': None, 'pid': my_pid, 'ix': 0, 'ct': 0, 'start': 0}
+
+  def progress(download_t, download_d, upload_t, upload_d):
+    if nl['start'] == 0:
+      nl['start'] = time.time()
+    nl['ct'] += 1
+
+    if nl['pid'] <= g_download_kill_pid - 2:
+      logging.info("Stopping download #%d through progress" % nl['pid'])
+      raise TypeError("Download Stop")
+      return False
+
+    #logging.info("progress: %f %d %d" % ((time.time() - nl['start']) / nl['ct'], nl['pid'], download_d ));
+
+  def catchall(which, what):
+    logging.info("%d: %s %s" % (nl['pid'], which, str(what)))
+
+  def catch_read(what):
+    return catchall('read', what)
+
+  def catch_debug(what, origin):
+    if what == pycurl.INFOTYPE_TEXT:
+      return catchall('debug', json.dumps([what, str(origin)], ensure_ascii=False))
+
+  def cback(data): 
+    global g_download_kill_pid
+    # print nl['pid'], g_download_kill_pid
+    if nl['pid'] <= g_download_kill_pid or not data:
+      logging.info("Stopping download #%d" % nl['pid'])
+      return False
+
+    # misc.params can fail based on a shutdown sequence.
+    if misc is None or misc.params is None or not misc.manager_is_running():
+      # if misc is not None:
+      #  misc.shutdown()
+      return False
+
+    elif not misc.params['shutdown_time']:
+      if not misc.download_ipc.empty():
+        what, value = misc.download_ipc.get(False)
+        if what == 'shutdown_time':
+          misc.params['shutdown_time'] = value
+
+    elif TS.unixtime('dl') > misc.params['shutdown_time']:
+      raise TypeError("Download Stop")
+
+    if misc.params['isFirst'] == True:
+      misc.params['isFirst'] = False
+
+      if len(data) < 800:
+        try:
+          data_string = data.decode('utf-8')
+        
+          if re.match('https?://', data_string):
+            # If we are getting a redirect then we don't mind, we
+            # just put it in the stream and then we leave
+            misc.queue.put(('stream', data_string.strip()))
+            return False
+
+          # A pls style playlist
+          elif re.findall('File\d', data_string, re.M):
+            logging.info('%d: Found a pls, using the File1 parameter' % (nl['pid'], ))
+            matches = re.findall('File1=(.*)\n', data_string, re.M)
+            misc.queue.put(('stream', matches[0].strip()))
+            return False
+
+        # If it gets here it's binary ... I guess that's fine.
+        except:
+          pass
+
+    # This provides a reliable way to determine bitrate.  We look at how much 
+    # data we've received between two time periods
+    misc.queue.put(('heartbeat', (TS.unixtime('hb'), nl['pid'], len(data))))
+
+    if not nl['stream']:
+      try:
+        nl['stream'] = open(file_name, 'wb')
+
+      except Exception as exc:
+        logging.critical("%d: Unable to open %s. Can't record. Must exit." % (nl['pid'], file_name))
+        return False
+
+    nl['stream'].write(data)
+
+
+  misc.params['isFirst'] = True
+  curl_handle = pycurl.Curl()
+  curl_handle.setopt(curl_handle.URL, url)
+  curl_handle.setopt(pycurl.WRITEFUNCTION, cback)
+  curl_handle.setopt(pycurl.FOLLOWLOCATION, True)
+  curl_handle.setopt(pycurl.NOPROGRESS, False)
+
+  try:
+    curl_handle.setopt(pycurl.XFERINFOFUNCTION, progress)
+  except (NameError, AttributeError):
+    curl_handle.setopt(pycurl.PROGRESSFUNCTION, progress)
+
+  curl_handle.setopt(pycurl.VERBOSE, 1)
+  #curl_handle.setopt(pycurl.READFUNCTION, catch_read)
+  curl_handle.setopt(pycurl.DEBUGFUNCTION, catch_debug)
+  curl_handle.setopt(pycurl.USERAGENT, "indycast %s. See http://indycast.net/ for more info." % misc.__version__)
+
+  nl['curl_handle'] = curl_handle
+
+  try:
+    curl_handle.perform()
+
+  except pycurl.error as exc:
+    if exc.args[0] != 23:
+      logging.warning("%d: Couldn't resolve or connect to %s." % (nl['pid'], url))
+
+  except:
+    logging.warning("%d: Unhandled exception" % (nl['pid'], ))
+    pass
+
+  curl_handle.close()
+
+  if nl['stream'] and type(nl['stream']) != bool:
+    nl['stream'].close()
+    # This is where we are sure of the stats on this file, because
+    # we just closed it ... so we can register it here.
+    info = audio.stream_info(file_name)
+
+    DB.register_stream(info)
+
 def stream_download(callsign, url, my_pid, file_name):
   # Curl interfacing which downloads the stream to disk. 
   # Follows redirects and parses out basic m3u.
