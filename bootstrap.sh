@@ -34,7 +34,7 @@ dopip() {
   $pip3 install --upgrade --user -r requirements.txt
 }
 
-#aptinstall
+aptinstall
 pipinstall
 # hardupgrade
 dopip
