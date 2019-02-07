@@ -75,7 +75,7 @@ def generate_html(showname, feed_list, duration_min, weekday_list, start, durati
   payload.append('<blockquote>%s is a %s show recorded every %s on %s at %s.</blockquote>' % (showname, duration_string, week_string, callsign.upper(), start))
 
   payload.append('<ul>')
-  for feed in feed_list:
+  for feed in reversed(feed_list):
     link = "%s%s" % (base_url, feed['name'])
     payload.append('<li><a href="{}">{}</a></li>'.format(link, feed['start_date'].strftime("%Y-%m-%d")))
 
