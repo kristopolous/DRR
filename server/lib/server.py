@@ -71,7 +71,7 @@ def generate_html(showname, feed_list, duration_min, weekday_list, start, durati
   callsign = misc.config['callsign']
   base_url = 'http://indycast.net/{}/'.format(callsign) 
   image = '<img src="http://indycast.net/icon/{}_{}.png?{}">'.format(quote(showname), '60', time.strftime('%Y%m'))
-  payload = [ '<!doctype html5><html><head><title>{}</title><link rel=stylesheet href=//indycast.net/html.css></head><body><h1>{}{}</h1>'.format(showname, image, showname)] 
+  payload = [ '<!doctype html><html><head><title>{}</title><meta name=viewport content="width=device-width,initial-scale=1.0"><link rel=stylesheet href=//indycast.net/html.css></head><body><h1>{}{}</h1>'.format(showname, image, showname)] 
   payload.append('<blockquote>%s is a %s show recorded every %s on %s at %s.</blockquote>' % (showname, duration_string, week_string, callsign.upper(), start))
 
   payload.append('<ul>')
