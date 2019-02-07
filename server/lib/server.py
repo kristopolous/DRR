@@ -79,7 +79,9 @@ def generate_html(showname, feed_list, duration_min, weekday_list, start, durati
     link = "%s%s" % (base_url, feed['name'])
     payload.append('<li><a href="{}">{}</a></li>'.format(link, feed['start_date'].strftime("%Y-%m-%d")))
 
-  payload.append("</ul></body></html>")
+  payload.append("</ul>")
+  payload.append("<div>Brought to you by <a href=http://indycast.net>indycast</a>.</div>")
+  payload.append("</body></html>")
   return "\n".join(payload)
 
 def generate_m3u(showname, feed_list, duration_min, weekday_list, start, duration_string):
