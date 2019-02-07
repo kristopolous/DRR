@@ -34,6 +34,10 @@ def generate_feed(file_type, **kwargs):
 
     pass
 
+  elif file_type == 'html': 
+    payload = generate_html(**kwargs)
+    mime = 'text/html'
+
   elif file_type == 'm3u': 
     payload = generate_m3u(**kwargs)
     mime = 'audio/x-mpegurl'
@@ -45,6 +49,38 @@ def generate_feed(file_type, **kwargs):
 
   return Response(payload, mimetype=mime)
 
+
+def generate_html(showname, feed_list, duration_min, weekday_list, start, duration_string):
+  day_map = {
+    'sun': 'Sunday',
+    'mon': 'Monday',
+    'tue': 'Tuesday',
+    'wed': 'Wednesday',
+    'thu': 'Thursday',
+    'fri': 'Friday',
+    'sat': 'Saturday'
+  }
+  
+  day_list = [ day_map[weekday] for weekday in weekday_list ]
+  if len(day_list) == 1:
+    week_string = day_list[0]
+
+  if duration_string.find('hr') == -1:
+    duration_string += " minute"
+
+  callsign = misc.config['callsign']
+  base_url = 'http://indycast.net/{}/'.format(callsign) 
+  image = '<img src="http://indycast.net/icon/{}_{}.png?{}">'.format(quote(showname), '60', time.strftime('%Y%m'))
+  payload = [ '<!doctype html5><html><head><title>{}</title><link rel=stylesheet href=//indycast.net/html.css></head><body><h1>{}{}</h1>'.format(showname, image, showname)] 
+  payload.append('<blockquote>%s is a %s show recorded every %s on %s at %s.</blockquote>' % (showname, duration_string, week_string, callsign.upper(), start))
+
+  payload.append('<ul>')
+  for feed in reversed(feed_list):
+    link = "%s%s" % (base_url, feed['name'])
+    payload.append('<li><a href="{}">{}</a></li>'.format(link, feed['start_date'].strftime("%Y.%m.%d")))
+
+  payload.append("</ul></body></html>")
+  return "\n".join(payload)
 
 def generate_m3u(showname, feed_list, duration_min, weekday_list, start, duration_string):
   payload = ['#EXTM3U']
@@ -690,8 +726,9 @@ def manager(config):
     # If we are here then it looks like our input is probably good.
     
     # Strip the .xml from the showname ... this will be used in our xml.
-    file_type = showname[-3:]
-    showname = showname[:-4]
+    parts = showname.split('.')
+    file_type = parts.pop()
+    showname = '.'.join(parts)
 
     # We come in with spaces as underscores so here we translate that back
     showname = re.sub('_', ' ', showname)
