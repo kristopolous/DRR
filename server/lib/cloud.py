@@ -232,7 +232,7 @@ def find_streams(start_list, duration_min):
   # see https://github.com/kristopolous/DRR/issues/50 - nah this shit is buggy
   condition_query += " and start_unix < datetime(%d, 'unixepoch', 'localtime')" % (TS.sec_now() - misc.config['cascade_time'] + 3)
 
-  full_query = "select * from streams where %s order by week_number * 10080 + start_minute asc" % condition_query
+  full_query = "select * from streams where {} order by strftime('%Y', start_unix) * 524160 + week_number * 10080 + start_minute asc".format(condition_query)
 
   entry_list = DB.map(DB.run(full_query).fetchall(), 'streams')
 
