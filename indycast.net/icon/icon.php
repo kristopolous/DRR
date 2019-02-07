@@ -82,7 +82,7 @@ function tint_bg(&$image, $phrase) {
 
   $strcolor = "hsl($hsl)";
   $color = new ImagickPixel($strcolor);
-  $image->colorizeImage($color, 1, true);
+  $image->colorizeImage($color, 1);//, true);
   return $hue;
 }
 
