@@ -15,5 +15,7 @@ You can help by
 
 You can also [see the current network](https://github.com/kristopolous/DRR/wiki/Current-Architecture) and costs.
 
+Mailing list is [on google groups](https://groups.google.com/forum/#!forum/indycast)
+
 Thank you.
 
