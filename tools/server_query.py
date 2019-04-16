@@ -88,6 +88,7 @@ def stats_log(db, station, obj):
     values(?,        ?,    ?,       ?,      ?,    ?,           ?,      ?,       ?,    ?)''', 
     (str(callsign), uuid, version, prec(memory), prec(disk), threadcount, uptime, prec(latency), load, hits)
   )
+  db['c'].execute("update stations set hits=? where callsign=?", ( hits, str(callsign) ) )
 
 def find_misbehaving_servers(db, fail_list):
   max_values = {
