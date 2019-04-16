@@ -37,7 +37,8 @@ $schema = [
     'notes'       => 'TEXT',
     'disk'        => 'DOUBLE default 0',
     'last_record' => 'DOUBLE default 0',
-    'load'        => 'DOUBLE default 0'
+    'load'        => 'DOUBLE default 0',
+    'hits'        => 'INTEGER default 0'
   ],
 
   //
@@ -59,7 +60,7 @@ $schema = [
     'uptime'      => 'INTEGER default 0',
     'latency'     => 'DOUBLE default 0',
     'load'        => 'DOUBLE default 0',
-    'now'         => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'
+    'now'         => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
     'hits'        => 'INTEGER default 0'
   ],
 
