@@ -60,6 +60,7 @@ $schema = [
     'latency'     => 'DOUBLE default 0',
     'load'        => 'DOUBLE default 0',
     'now'         => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'
+    'hits'        => 'INTEGER default 0'
   ],
 
   'schedule' => [
