@@ -677,9 +677,11 @@ def manager(config):
   @app.route('/<weekday>/<start>/<duration_string>/<showname>')
   def stream(weekday, start, duration_string, showname):
     """
-    Returns a podcast, m3u, pls or mp3 file based on the weekday, start and duration.
-    This is designed to be read by podcasting software such as podkicker, 
-    itunes, and feedburner.
+    Returns a podcast, m3u, pls, html or mp3 file based on the weekday, 
+    start and duration.  This is designed to be read by podcasting 
+    software such as podkicker, itunes, and feedburner.
+
+    The default format if nothing is specified is XML.
 
     weekdays are defined as mon, tue, wed, thu, fri, sat, sun.
 
