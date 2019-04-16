@@ -2,7 +2,7 @@
 callsign=kxlu
 long=-118.397920
 lat=33.955766
-stream=http://www.ednixon.com:8120/stream
+stream=http://kxlu.streamguys1.com/kxlu-hi
 port=8890
 cloud=~/cloudcreds.cfg
 cloud_archive=140d

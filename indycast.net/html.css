@@ -1,0 +1,42 @@
+body {
+  font-family: sans-serif;
+}
+img {
+  vertical-align: middle;
+  margin-right: 0.85rem;
+}
+blockquote {
+  background: #f4f4f4;
+  margin: 0.75rem;
+  margin-left: 0.2rem;
+  padding: 0.5rem;
+  font-size: 1.25rem;
+  display: inline-block;
+}
+ul { 
+  padding-left: 2rem;
+  margin-top: 0rem;
+}
+li {
+  margin: 0.5rem 0;
+}
+h1 {
+  color: #333;
+  text-transform: capitalize;
+  font-weight: 400;
+  margin-top: 0.5rem;
+  margin-left: 0.2rem;
+  margin-bottom: 0;
+}
+small {
+  display: block;
+  margin-top: 0.25rem;
+  color: #333;
+  font-size: 0.75rem;
+}
+div {
+  margin-top: 1.5rem;
+  margin-left: 0.2rem;
+  color: #555;
+  font-size: 0.7rem;
+}
