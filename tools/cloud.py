@@ -5,6 +5,7 @@ import re
 import sys
 from glob import glob
 import configparser
+import textwrap
 from azure.storage.blob import BlockBlobService as BlobService
 import lib.cloud as cloud
 import lib.misc as misc
@@ -64,7 +65,16 @@ cfg = os.environ.get('CLOUD_CFG')
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, epilog=textwrap.dedent('''\
+
+    With no arguments, it tries to do some kind of accounting on how expensive a station is each month
+    to keep it going.
+
+    Examples:
+      Removing files in batch:
+      
+      $ tools/cloud.py -q list -s KXXX | (whatever you want) | tools/cloud.py -q unlink
+    '''))
 parser.add_argument("-s", "--station", default="all", help="station to query (default all)")
 parser.add_argument("-c", "--config", default=cfg, help="cloud credential file to use")
 parser.add_argument("-q", "--query", default='size', help="query to send to the cloud (list, size, unlink)")
