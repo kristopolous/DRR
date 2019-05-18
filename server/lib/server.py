@@ -22,6 +22,7 @@ def do_error(errstr):
 def generate_feed(file_type, **kwargs):
   # Take the file extension that the user supplied and then try to return
   # a feed based on it
+  DB.incr('hits-feed')
   if file_type == 'pls': 
     payload = generate_pls(**kwargs)
     mime = 'audio/x-scpls'
