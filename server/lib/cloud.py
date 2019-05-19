@@ -36,13 +36,14 @@ def get(path, do_open=True):
   # we go out to the network store and retrieve it.
   # Let's make sure it exists and isn't some nonsense size
   # Which I've arbitrary set as a few thousand bytes
-  if os.path.exists(path) and os.path.getsize(path) > 3000:
+  min_const = 3000
+  if os.path.exists(path) and os.path.getsize(path) > min_const:
     if do_open: return open(path, 'rb')
     return True
 
   else:
     res = download(path)
-    if res:
+    if res and os.path.getsize(path) > min_const:
       if do_open: return open(path, 'rb')
       return True
 
