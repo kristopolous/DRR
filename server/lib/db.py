@@ -208,6 +208,8 @@ def set(key, value):
       
     else:
       # From http://stackoverflow.com/questions/418898/sqlite-upsert-not-insert-or-replace
+      # Todo this is kinda buggy because it increments the id counter each time. 
+      # Instead what we should do is register g_params at load and then test from there.
       res = run('''
         INSERT OR REPLACE INTO kv (key, value, created_at) 
           VALUES ( 
