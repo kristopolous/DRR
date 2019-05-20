@@ -230,7 +230,7 @@ def find_streams(start_list, duration_min):
   condition_query = "((%s))" % ') or ('.join(condition_list)
 
   # see https://github.com/kristopolous/DRR/issues/50 - nah this shit is buggy
-  condition_query += " and size is not null and start_unix < datetime(%d, 'unixepoch', 'localtime')" % (TS.sec_now() - misc.config['cascade_time'] + 3)
+  condition_query += " and hidden is null and size is not null and start_unix < datetime(%d, 'unixepoch', 'localtime')" % (TS.sec_now() - misc.config['cascade_time'] + 3)
 
   full_query = "select * from streams where {} order by strftime('%Y', start_unix) * 524160 + week_number * 10080 + start_minute asc".format(condition_query)
 

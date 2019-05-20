@@ -36,7 +36,8 @@ _SCHEMA = {
      # (Presuming that there's only one of course)
      ('current_block', 'INTEGER DEFAULT 0'),
      ('next_file_name', 'TEXT'),
-     ('next_file_block', 'INTEGER DEFAULT 0')
+     ('next_file_block', 'INTEGER DEFAULT 0'),
+     ('hidden', 'INTEGER default null')
    ]
 }
 
