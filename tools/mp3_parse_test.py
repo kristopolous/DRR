@@ -99,7 +99,8 @@ def mp3_info(b1, b2, b3):
   # from http://id3.org/mp3Frame
   # It's a wiki I can't register on for some reason. It's slightly incorrect
   if mode == 'joint':
-    multiplier = 72000
+    multiplier = 144000
+    #multiplier = 72000
   else:
     multiplier = 144000
   frame_size = int((multiplier * bit_rate / samp_rate) + pad_bit)
@@ -138,6 +139,7 @@ def mp3_sig(file_name, blockcount = -1):
     frame_start = last_read = file_handle.tell()
 
     header = file_handle.read(2)
+    #print(binascii.b2a_hex(header))
     if header:
 
       b1 = header[1]
@@ -155,6 +157,7 @@ def mp3_sig(file_name, blockcount = -1):
           attempt_set = [samp_rate, bit_rate, pad_bit]
 
         frame_size, samp_rate, bit_rate, pad_bit, mode = mp3_info(b1, b2, b3)
+        print(hex(file_handle.tell()), hex(frame_size), samp_rate, bit_rate, pad_bit, mode)
 
 
         if not frame_size:
@@ -174,7 +177,7 @@ def mp3_sig(file_name, blockcount = -1):
 
 
         if not first_header_seen:
-          print(file_name, file_handle.tell(), frame_size, samp_rate, bit_rate, assumed_set)
+          print(hex(file_handle.tell()), "First header", frame_size, samp_rate, bit_rate, assumed_set)
           first_header_seen = True
 
 
@@ -189,7 +192,7 @@ def mp3_sig(file_name, blockcount = -1):
 
 
       # ID3 tag for some reason
-      elif header == '\x49\x44':
+      elif header == b'\x49\x44':
         # Rest of the header
         throw_away = file_handle.read(4)
 
@@ -202,11 +205,12 @@ def mp3_sig(file_name, blockcount = -1):
         #
         candidate = struct.unpack('>I', file_handle.read(4))[0]
         size = ((candidate & 0x007f0000) >> 2 ) | ((candidate & 0x00007f00) >> 1 ) | (candidate & 0x0000007f)
+        print("ID3 Tag length {} ".format(size))
         
         file_handle.read(size)
 
       # ID3 TAG -- 128 bytes long
-      elif header == '\x54\x41':
+      elif header == b'\x54\x41':
         # We've already read 2 so we can go 126 forward
         file_handle.read(126)
 
@@ -233,8 +237,8 @@ def mp3_sig(file_name, blockcount = -1):
       elif first_header_seen:
         next_read = last_read + 1
         header_attempts += 1 
+        print(hex(file_handle.tell()), "Looking for header", binascii.b2a_hex(header), "%x %d" % (file_handle.tell(), len(frame_sig)))
         if len(frame_sig) == 1:
-          print("Resetting")
 
           # discard what we thought was the first start byte and
           # frame signature
@@ -245,9 +249,6 @@ def mp3_sig(file_name, blockcount = -1):
           # Also our assumed set was probably wrong
           assumed_set = None
 
-        elif header_attempts > 2:
-          sys.stdout.write('%s !' % file_name)
-          print(binascii.b2a_hex(header), "%x %d" % (file_handle.tell(), len(frame_sig)))
           
       else:
         next_read = last_read + 1
@@ -366,6 +367,7 @@ def audio_stitch(file_list, cb_sig=mp3_sig):
     second = {'name': name}
 
     crc32, offset = cb_sig(name)
+    #print(crc32)
 
     second['crc32'] = crc32
     second['offset'] = offset
