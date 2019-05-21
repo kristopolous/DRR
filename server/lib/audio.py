@@ -250,7 +250,8 @@ def mp3_info(b1, b2, b3):
   # from http://id3.org/mp3Frame
   # It's a wiki I can't register on for some reason. It's slightly incorrect
   if mode == 'joint':
-    multiplier = 72000
+    #multiplier = 72000
+    multiplier = 144000
   else:
     multiplier = 144000
   frame_size = int((multiplier * bit_rate / samp_rate) + pad_bit)
@@ -604,7 +605,7 @@ def mp3_signature(file_name, blockcount=-1):
 
 
       # ID3 tag for some reason
-      elif header == '\x49\x44':
+      elif header == b'\x49\x44':
         # Rest of the header
         throw_away = file_handle.read(4)
 
@@ -621,7 +622,7 @@ def mp3_signature(file_name, blockcount=-1):
         file_handle.read(size)
 
       # ID3 TAG -- 128 bytes long
-      elif header == '\x54\x41':
+      elif header == b'\x54\x41':
         # We've already read 2 so we can go 126 forward
         file_handle.read(126)
 
