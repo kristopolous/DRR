@@ -208,19 +208,17 @@ def set(key, value):
       res = run('delete from kv where key = ?', (key, ))
       
     else:
-      # From http://stackoverflow.com/questions/418898/sqlite-upsert-not-insert-or-replace
-      # Todo this is kinda buggy because it increments the id counter each time. 
-      # Instead what we should do is register g_params at load and then test from there.
-      res = run('''
-        INSERT OR REPLACE INTO kv (key, value, created_at) 
-          VALUES ( 
-            COALESCE((SELECT key FROM kv WHERE key = ?), ?),
-            ?,
-            current_timestamp 
-        )''', (key, key, value, ))
+      # Let's just do two calls. Nobody else is accessing it right here I think
+      # this is atomic enough.
+      res = run('select id from kv where key = ?', (key, )).fetchone()
+      if not res:
+        run('insert into kv (key, value) values(?, ?)', (key, value))
+        
+      else:
+        run('update kv set value = ? where key = ?', (value, key))
 
   except:
-    logging.warn("Couldn't set %s to %s" % (key, value))
+    logging.warn("[DB error] Couldn't set {} to {}".format(key, value))
 
   g_params[key] = value
 
