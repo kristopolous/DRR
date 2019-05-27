@@ -82,7 +82,11 @@ ev('', function(map) {
 
   // #27: dump the spaces, make it lower case and avoid a double am/pm
   if(map.start) {
-    start_time = map.start.replace(/\s+/,'').toLowerCase().replace(/[ap]m/, '') + map.ampm;
+    if(map.ampm) {
+      start_time = map.start.replace(/\s+/,'').toLowerCase().replace(/[ap]m/, '') + map.ampm;
+    } else {
+      todo.push('am/pm after the time");
+    }
   } else {
     todo.push('start time');
   }
