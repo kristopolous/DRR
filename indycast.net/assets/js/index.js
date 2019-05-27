@@ -21,6 +21,7 @@ ev('', function(map) {
     tpl_params = {},
     phrase = "Choose the ",
     podcast_url = '',
+    podcast_html_url = '',
     live_url = '',
     showname = '',
     single = '',
@@ -100,7 +101,10 @@ ev('', function(map) {
       start_time,
       map.duration,
       encodeURI(map.name).replace(/%20/g,'_')
-    ].join('/') + ".xml";
+    ].join('/');
+
+    podcast_html_url = podcast_url + '.html';
+    podcast_url += '.xml';
 
     live_url = 'http://' + [
       'indycast.net',
@@ -132,6 +136,7 @@ ev('', function(map) {
     showname: showname,
     station: station,
     podcast_url: podcast_url,
+    podcast_html_url: podcast_html_url,
     phrase: phrase,
     tweet_text: encodeURI("Listening to a recording of " + station.toUpperCase() + "'s " + showname + " at indycast.net. It's free. You can too: " + live_url),
     live_url: live_url
