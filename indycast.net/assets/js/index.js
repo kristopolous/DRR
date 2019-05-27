@@ -85,7 +85,7 @@ ev('', function(map) {
     if(map.ampm) {
       start_time = map.start.replace(/\s+/,'').toLowerCase().replace(/[ap]m/, '') + map.ampm;
     } else {
-      todo.push('am/pm after the time");
+      todo.push('am/pm after the time');
     }
   } else {
     todo.push('start time');
