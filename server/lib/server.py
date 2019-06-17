@@ -565,8 +565,15 @@ def manager(config):
     DB.incr('hits-live')
     if start[0] == '-' or start.endswith('min'):
       # dump things like min or m
-      start = re.sub('[a-z]', '', start)
-      return redirect('/live/m%f' % (float(TS.minute_now() - abs(float(start)))), code=302)
+      start = float(re.sub('[a-z]', '', start))
+
+      if start.endswidth('s'):
+        start /= 60
+
+      if start.endswidth('h'):
+        start *= 60
+
+      return redirect('/live/m%f' % (float(TS.minute_now() - abs(start))), code=302)
 
     # The start is expressed in times like "11:59am ..." We utilize the
     # library we wrote for streaming to get the minute of day this is.
