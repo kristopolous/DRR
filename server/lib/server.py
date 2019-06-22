@@ -568,10 +568,10 @@ def manager(config):
       # dump things like min or m
       start = float(re.sub('[a-z]', '', start))
 
-      if raw.endswidth('s'):
+      if raw.endswith('s'):
         start /= 60
 
-      if raw.endswidth('h'):
+      if raw.endswith('h'):
         start *= 60
 
       return redirect('/live/m%f' % (float(TS.minute_now() - abs(start))), code=302)
