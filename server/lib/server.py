@@ -564,13 +564,14 @@ def manager(config):
     """
     DB.incr('hits-live')
     if start[0] == '-' or start.endswith('min'):
+      raw=start
       # dump things like min or m
       start = float(re.sub('[a-z]', '', start))
 
-      if start.endswidth('s'):
+      if raw.endswidth('s'):
         start /= 60
 
-      if start.endswidth('h'):
+      if raw.endswidth('h'):
         start *= 60
 
       return redirect('/live/m%f' % (float(TS.minute_now() - abs(start))), code=302)
