@@ -430,7 +430,7 @@ def prune_process(reindex=False, force=False):
 
   #pid = misc.change_proc_name("%s-cleanup" % misc.config['callsign'])
   # We want to run the am_i_official here since it could block on a DNS lookup
-  misc.am_i_official()
+  #misc.am_i_official()
 
   try:
     register_stream_list(reindex)
