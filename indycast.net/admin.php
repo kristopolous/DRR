@@ -40,7 +40,7 @@ if (!empty($_SESSION['admin']) && $_SESSION['admin'] == 1) {
 }
 
 echo '<table>';
-$res = $db->query('select * from stations');
+$res = $db->query('select * from stations order by active desc, hits desc');
 $isFirst = true;
 $ping_total = 0;
 $drop_total = 0;

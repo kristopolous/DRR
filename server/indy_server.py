@@ -102,7 +102,7 @@ def stream_download(callsign, url, my_pid, file_name):
 
     # This provides a reliable way to determine bitrate.  We look at how much 
     # data we've received between two time periods
-    misc.queue.put(('heartbeat', (TS.unixtime('hb'), nl['pid'], len(data))))
+    misc.queue.put(('heartbeat', (TS.unixtime('hb'), nl['pid'], len(data), file_name)))
 
     if not nl['stream']:
       try:
@@ -180,7 +180,7 @@ def stream_manager():
 
   first_time = 0
   total_bytes = 0
-  normalize_delay = 6
+  normalize_delay_const = 6
   cycle_count = 0
 
   cascade_time = misc.config['cascade_time']
@@ -320,18 +320,28 @@ def stream_manager():
               logging.warn("Couldn't find a replacement process ... not going anywhere.");
 
       elif what == 'heartbeat':
+        last_heartbeat_tid = value[1]
+        fname = value[3]
         if not lr_set:
           lr_set = True
           last_heartbeat = time.time()
-          last_heartbeat_tid = value[1]
 
           if last_heartbeat_tid < g_download_kill_pid:
             logging.warn("hb: Got a heartbeat for #%d but everything below #%d should be gone!" % (last_heartbeat_tid, g_download_kill_pid))
 
           DB.set('last_recorded', time.time())
 
-        if not has_bitrate: 
-          margin = 60
+        #
+        # We're going to try to do this for the first frame at 
+        # every start or TODO: every 1000th frame (about 10 days)
+        #
+        if last_heartbeat_tid == 1:
+          # if not has_bitrate: 
+          #
+          # This is a margin of time to compute the bitrate
+          # as in this length of time needs to be captured
+          #
+          margin_const = 10
 
           # Keep track of the first time this stream started (this is where our total
           # byte count is derived from)
@@ -345,14 +355,14 @@ def stream_manager():
           # unlikely this will come out erroneous, but I really can't do the math, it's probably
           # a T value, but I don't know. Anyway, whatevs.
           #
-          # The normalize_delay here is for both he-aac+ streams which need to put in some frames
+          # The normalize_delay_const here is for both he-aac+ streams which need to put in some frames
           # before the quantizing pushes itself up and for other stations which sometimes put a canned
           # message at the beginning of the stream, like "Live streaming supported by ..."
           #
-          # Whe we discount the first half-dozen seconds as not being part of the total, we get a 
+          # When we discount the first half-dozen seconds as not being part of the total, we get a 
           # stabilizing convergence far quicker.
           #
-          elif (value[0] - first_time > normalize_delay):
+          elif (value[0] - first_time > normalize_delay_const):
             # If we haven't determined this stream's bitrate (which we use to estimate 
             # the amount of content is in a given archived stream), then we compute it 
             # here instead of asking the parameters of a given block and then presuming.
@@ -360,17 +370,21 @@ def stream_manager():
 
             # We still give it a time period after the normalizing delay in order to build enough
             # samples to make a solid guess at what this number should be.
-            if (value[0] - first_time > (normalize_delay + margin)):
+            if (value[0] - first_time > (normalize_delay_const + margin_const)):
               # We take the total bytes, calculate it over our time, in this case, 25 seconds.
-              est = total_bytes / (value[0] - first_time - normalize_delay)
+              est = total_bytes / (value[0] - first_time - normalize_delay_const)
 
               # We find the nearest 8Kb increment this matches and then scale out.
               # Then we multiply out by 8 (for _K_ B) and 8 again for K _b_.
               bitrate = int( round (est / 1000) * 8 )
-              #print("Estimated bitrate:%d total:%d est:%d denom:%d" % (bitrate, total_bytes, est, value[0] - first_time - normalize_delay) )
-              if bitrate > 0:
+
+              # print("Estimated bitrate:%d total:%d est:%d tid:%d denom:%d fname:%s" % (bitrate, total_bytes, est, last_heartbeat_tid, value[0] - first_time - normalize_delay_const, fname) )
+
+              # Only set a new one if it disagrees.
+              if bitrate > 0 and bitrate != has_bitrate:
                 DB.set('bitrate', bitrate)
-                has_bitrate = DB.get('bitrate')
+
+              has_bitrate = DB.get('bitrate')
 
     #if last_heartbeat:
     #  logging.info("%d heartbeat %d" % (last_heartbeat, last_heartbeat_tid))

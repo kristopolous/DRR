@@ -22,6 +22,7 @@ def do_error(errstr):
 def generate_feed(file_type, **kwargs):
   # Take the file extension that the user supplied and then try to return
   # a feed based on it
+  DB.incr('hits-feed')
   if file_type == 'pls': 
     payload = generate_pls(**kwargs)
     mime = 'audio/x-scpls'
@@ -563,9 +564,17 @@ def manager(config):
     """
     DB.incr('hits-live')
     if start[0] == '-' or start.endswith('min'):
+      raw=start
       # dump things like min or m
-      start = re.sub('[a-z]', '', start)
-      return redirect('/live/m%f' % (float(TS.minute_now() - abs(float(start)))), code=302)
+      start = float(re.sub('[a-z]', '', start))
+
+      if raw.endswith('s'):
+        start /= 60
+
+      if raw.endswith('h'):
+        start *= 60
+
+      return redirect('/live/m%f' % (float(TS.minute_now() - abs(start))), code=302)
 
     # The start is expressed in times like "11:59am ..." We utilize the
     # library we wrote for streaming to get the minute of day this is.
@@ -677,9 +686,11 @@ def manager(config):
   @app.route('/<weekday>/<start>/<duration_string>/<showname>')
   def stream(weekday, start, duration_string, showname):
     """
-    Returns a podcast, m3u, pls or mp3 file based on the weekday, start and duration.
-    This is designed to be read by podcasting software such as podkicker, 
-    itunes, and feedburner.
+    Returns a podcast, m3u, pls, html or mp3 file based on the weekday, 
+    start and duration.  This is designed to be read by podcasting 
+    software such as podkicker, itunes, and feedburner.
+
+    The default format if nothing is specified is XML.
 
     weekdays are defined as mon, tue, wed, thu, fri, sat, sun.
 
