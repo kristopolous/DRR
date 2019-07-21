@@ -89,9 +89,9 @@ def put(path, dest=None, config=False):
   import lib.misc as misc 
 
   # Place a file, given a path, in the cloud. 
-  if not config and not misc.am_i_official():
-    logging.info("I would have uploaded %s but I'm not the official %s server" % (path, misc.config['callsign']) )
-    return False
+  #if not config and not misc.am_i_official():
+  #  logging.info("I would have uploaded %s but I'm not the official %s server" % (path, misc.config['callsign']) )
+  #  return False
 
   try:
     blob_service, container = connect(config)
