@@ -12,8 +12,10 @@ from glob import glob
 from datetime import datetime, timedelta
 from threading import Thread
 
-blob_service = False
-container = False
+_azure_blobservice = False
+_azure_container = False
+_s3_connection = False
+_s3_storage = False
 
 def size(basedir):
   total = 0
@@ -53,21 +55,21 @@ def get(path, do_open=True):
 def connect(config=False):
   import lib.misc as misc 
   from azure.storage.blob import BlockBlobService as BlobService
-  global blob_service, container
+  global _azure_blobservice, _azure_container
   # Connect to the cloud service. 
   if not config: config = misc.config['_private']
 
-  container = 'streams'
+  _azure_container = 'streams'
 
   if not 'azure' in config:
     logging.debug("no azure config")
     return None, None
 
-  if not blob_service:
-    blob_service = BlobService(config['azure']['storage_account_name'], config['azure']['primary_access_key'])
-    blob_service.create_container(container)
+  if not _azure_blobservice:
+    _azure_blobservice = BlobService(config['azure']['storage_account_name'], config['azure']['primary_access_key'])
+    _azure_blobservice.create__azure_container(_azure_container)
 
-  return blob_service, container
+  return _azure_blobservice, _azure_container
 
 
 def unlink(path, config=False):
@@ -75,8 +77,8 @@ def unlink(path, config=False):
   fname = os.path.basename(path)
 
   try:
-    blob_service, container = connect(config)
-    blob_service.delete_blob(container, fname)
+    _azure_blobservice, _azure_container = connect(config)
+    _azure_blobservice.delete_blob(_azure_container, fname)
     logging.debug("Prune[cloud]: Deleted %s" % fname)
     return True
 
@@ -95,16 +97,16 @@ def put(path, dest=None, config=False):
   #  return False
 
   try:
-    blob_service, container = connect(config)
+    _azure_blobservice, _azure_container = connect(config)
 
   except Exception as e:
     logging.warn('Unable to connect to the cloud: {}'.format(e))
-    blob_service = False
+    _azure_blobservice = False
 
-  if blob_service:
+  if _azure_blobservice:
     try:
-      res = blob_service.create_blob_from_path(
-        container
+      res = _azure_blobservice.create_blob_from_path(
+        _azure_container
         , os.path.basename(path)
         , path
         , max_connections=5
@@ -573,13 +575,13 @@ def download(path, dest=None, config=False):
   import lib.misc as misc 
   # Download a file from the cloud and put it in a serviceable place. 
   try:
-    blob_service, container = connect(config)
+    _azure_blobservice, _azure_container = connect(config)
 
   except:
     logging.warn('Unable to connect to the cloud.')
-    blob_service = False
+    _azure_blobservice = False
 
-  if blob_service:
+  if _azure_blobservice:
     import azure
     fname = os.path.basename(path)
 
@@ -587,8 +589,8 @@ def download(path, dest=None, config=False):
       dest = '%s/%s' % (misc.DIR_STREAMS, fname)
 
     try:
-      blob_service.get_blob_to_path(
-        container,
+      _azure_blobservice.get_blob_to_path(
+        _azure_container,
         fname,
         dest,
         max_connections=8,
