@@ -320,6 +320,40 @@ def unregister_stream(name, do_all=False):
 
   return True
 
+def _checkForTable(what):
+  global _SCHEMA
+  if what not in _SCHEMA:
+    raise Exception("Table {} not found".format(what))
+
+def _parse(table, data):
+  _checkForTable(table)
+
+  data = process(data, table, 'pre')
+  known_keys = [x[0] for x in _SCHEMA[table]]
+  shared_keys = list(data.keys() & known_keys)
+
+  # Make sure that the ordinal is maintained.
+  value_list = [data[key] for key in shared_keys]
+
+  return (shared_keys, value_list)
+
+
+def update(table, where_dict, set_dict):
+  shared_keys, where_values = _parse(table, where_dict)
+  where_string = ' and '.join(["{}=?".format(key) for key in shared_keys])
+
+  shared_keys, set_values = _parse(table, set_dict)
+  set_string = ','.join(["{}=?".format(key) for key in shared_keys])
+
+  qstr = 'update {} set {} where {}'.format(table, set_string, where_string)
+
+  try:
+    res, last = run(qstr, set_values + where_values, with_last = True)
+    return last
+
+  except:
+    logging.warning("Unable to update a record {}|{}|{}".format(qstr, ', '.join([str(x) for x in set_values]), ', '.join([str(x) for x in where_values])))
+
 
 def register_stream(info):
   # Registers a stream as existing to be found later when trying to stitch and slice files together.
