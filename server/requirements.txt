@@ -4,6 +4,7 @@ click
 setproctitle
 azure
 azure-storage-blob
+s3
 requests
 psutil
 markupsafe
