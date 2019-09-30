@@ -90,9 +90,9 @@ def put(path, dest=None, config=False):
   import lib.misc as misc 
 
   # Place a file, given a path, in the cloud. 
-  if not config and not misc.am_i_official():
-    logging.info("I would have uploaded %s but I'm not the official %s server" % (path, misc.config['callsign']) )
-    return False
+  #if not config and not misc.am_i_official():
+  #  logging.info("I would have uploaded %s but I'm not the official %s server" % (path, misc.config['callsign']) )
+  #  return False
 
   try:
     blob_service, container = connect(config)
@@ -430,7 +430,7 @@ def prune_process(reindex=False, force=False):
 
   #pid = misc.change_proc_name("%s-cleanup" % misc.config['callsign'])
   # We want to run the am_i_official here since it could block on a DNS lookup
-  misc.am_i_official()
+  #misc.am_i_official()
 
   try:
     register_stream_list(reindex)

@@ -7,6 +7,6 @@ lat=33.955766
 stream=http://www.ednixon.com:8120/stream
 port=8890
 cloud=~/cloudcreds.cfg
-cloud_archive=140d
+cloud_archive=43d
 disk_archive=0.4d
 prune_every=0.2d

@@ -18,6 +18,6 @@ while [ 0 ]; do
   cd $DIR/../server
   $prog -c $config
   # we need to make sure that there isn't some crazy loop
-  sleep 1
+  sleep 10
 done
 
