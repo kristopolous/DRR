@@ -31,6 +31,7 @@ _SCHEMA = {
      ('end_minute', 'REAL DEFAULT 0'),
      ('week_number', 'INTEGER DEFAULT 0'),
      ('size', 'INTEGER DEFAULT 0'),
+     ('storage', 'TEXT'),
      # This is the meta-information that links
      # this file to the next one in the stream
      # (Presuming that there's only one of course)
