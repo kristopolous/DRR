@@ -17,6 +17,14 @@ class Service:
     self.connection = ''
     self.folder = ''
 
+  def upload(path): pass
+  def download(path): pass
+  def unlink(path): pass
+  def connect(config): pass
+
+
+class Azure(Service):
+  
 class Connect:
   azure = Service()
   s3 = Service()
