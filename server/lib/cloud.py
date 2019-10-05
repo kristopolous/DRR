@@ -12,11 +12,14 @@ from glob import glob
 from datetime import datetime, timedelta
 from threading import Thread
 
-_azure_blobservice = False
-_azure_container = False
-_s3_connection = False
-_s3_storage = False
+class Service:
+  def __init__(self):
+    self.connection = ''
+    self.folder = ''
 
+class Connect:
+  azure = Service()
+  s3 = Service()
 
 def get(path, do_open=True):
   # If the file exists locally then we return it, otherwise
@@ -37,24 +40,23 @@ def get(path, do_open=True):
   return None
 
 
-def connect(config=False):
+def connect(config=False, service=''):
   import lib.misc as misc 
-  from azure.storage.blob import BlockBlobService as BlobService
-  global _azure_blobservice, _azure_container
+
   # Connect to the cloud service. 
-  if not config: config = misc.config['_private']
+  if not config: 
+    config = misc.config['_private']
 
-  _azure_container = 'streams'
+  if not Connection.s3.service and 's3' in config::
+    import s3
+    pass
 
-  if not 'azure' in config:
-    logging.debug("no azure config")
-    return None, None
+  if not Connection.azure.service and 'azure' in config:
+    from azure.storage.blob import BlockBlobService as BlobService
+    Connection.azure.service = BlobService(config['azure']['storage_account_name'], config['azure']['primary_access_key'])
+    Connection.azure.service.create__azure_container(_azure_container)
 
-  if not _azure_blobservice:
-    _azure_blobservice = BlobService(config['azure']['storage_account_name'], config['azure']['primary_access_key'])
-    _azure_blobservice.create__azure_container(_azure_container)
-
-  return _azure_blobservice, _azure_container
+  return Connection
 
 
 def unlink(path, config=False):
@@ -574,8 +576,14 @@ def get_size(fname):
 def download(path, dest=None, config=False):
   import lib.misc as misc 
   # Download a file from the cloud and put it in a serviceable place. 
+  info = db.file_info(path)
+  if info and info.service == 's3':
+    service = 's3'
+  else:
+    service = 'azure'
+
   try:
-    _azure_blobservice, _azure_container = connect(config)
+    _azure_blobservice, _azure_container = connect(config, service)
 
   except:
     logging.warn('Unable to connect to the cloud.')

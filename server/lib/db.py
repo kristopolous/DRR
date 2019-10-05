@@ -31,7 +31,7 @@ _SCHEMA = {
      ('end_minute', 'REAL DEFAULT 0'),
      ('week_number', 'INTEGER DEFAULT 0'),
      ('size', 'INTEGER DEFAULT 0'),
-     ('storage', 'TEXT'),
+     ('service', 'TEXT'),
      # This is the meta-information that links
      # this file to the next one in the stream
      # (Presuming that there's only one of course)
@@ -355,6 +355,9 @@ def update(table, where_dict, set_dict):
     logging.warning("Unable to update a record {}|{}|{}".format(qstr, ', '.join([str(x) for x in set_values]), ', '.join([str(x) for x in where_values])))
 
 
+def file_info(path):
+  return run('select * from streams where name = ?', (path, )).fetchone()
+  
 def register_stream(info):
   # Registers a stream as existing to be found later when trying to stitch and slice files together.
   # This is all that ought to be needed to know if the streams should attempt to be stitched. The input
