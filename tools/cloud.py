@@ -111,7 +111,7 @@ elif args.put:
   print("Putting")
   for name in args.put.split(','):
     print(" ↑ %s" % name)
-    res = cloud.put(name, name, config=config)
+    res = cloud.upload(name, name, config=config)
     if not res:
       sys.stderr.write("%s\n" % name)
       fail("Couldn't upload %s" % name)

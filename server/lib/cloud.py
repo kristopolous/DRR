@@ -17,21 +17,6 @@ _azure_container = False
 _s3_connection = False
 _s3_storage = False
 
-def size(basedir):
-  total = 0
-
-  for basename in os.listdir(basedir):
-    
-    path = "%s/%s" % (basedir, basename)
-
-    if os.path.isdir(path):
-      total += size(path)
-
-    elif os.path.isfile(path):
-      total += os.path.getsize(path)
-
-  return total
-
 
 def get(path, do_open=True):
   # If the file exists locally then we return it, otherwise
@@ -88,7 +73,7 @@ def unlink(path, config=False):
   return False
 
 
-def put(path, dest=None, config=False):
+def upload(path, dest=None, config=False):
   import lib.misc as misc 
 
   # Place a file, given a path, in the cloud. 
@@ -114,12 +99,27 @@ def put(path, dest=None, config=False):
       return True
 
     except Exception as e:
-      logging.debug('Unable to put {} in the cloud: {}'.format(path, e))
+      logging.debug('Unable to upload {} in the cloud: {}'.format(path, e))
 
   else:
     logging.debug('No cloud configured.')
 
   return False
+
+def size(basedir):
+  total = 0
+
+  for basename in os.listdir(basedir):
+    
+    path = "%s/%s" % (basedir, basename)
+
+    if os.path.isdir(path):
+      total += size(path)
+
+    elif os.path.isfile(path):
+      total += os.path.getsize(path)
+
+  return total
 
 
 def rename():
@@ -484,7 +484,7 @@ def prune_process(reindex=False, force=False):
     elif cloud_cutoff and ctime < cloud_cutoff and not file_name.startswith('slice'):
       logging.debug("Prune[cloud]: %s" % file_name)
 
-      # <s>Only unlink the file if I can successfully put it into the cloud.</s>
+      # <s>Only unlink the file if I can successfully upload it into the cloud.</s>
       #
       # Actually, policy change: 
       #   We should dump the file regardless because otherwise we would smash the disk
@@ -493,7 +493,7 @@ def prune_process(reindex=False, force=False):
       # Then you have an irrelevant past build up a forced discarding of the desired 
       # future ... just like with life itself.
       #
-      res = put(file_name)
+      res = upload(file_name)
 
       if misc.am_i_official():
         try:
@@ -540,7 +540,7 @@ def prune_process(reindex=False, force=False):
       count_delete += 1
 
 
-  logging.info("Deleted %d files and put %d on the cloud." % (count_delete, count_cloud))
+  logging.info("Deleted %d files and uploaded %d on the cloud." % (count_delete, count_cloud))
   misc.lockMap['prune'].release()
 
 
