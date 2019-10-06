@@ -21,32 +21,49 @@ class Connect:
   azure = Service()
   s3 = Service()
 
-def file_service(path):
+def file_service(path, config):
   info = db.file_info(path)
   if info and info.service == 's3':
-    service = 's3'
+    which = 's3'
   else:
-    service = 'azure'
-  return service
+    which = 'azure'
+
+  try:
+    return which, connect(config, which)
+  except Exception as e:
+    logging.warn('Unable to connect to the cloud: {}'.format(e))
+
+  return None, None
+
+
+def connect(config=False, service=''):
+  import lib.misc as misc 
+
+  if not config: 
+    config = misc.config['_private']
+
+  if not Connection.s3.service and 's3' in config:
+    import s3
+    pass
+
+  if not Connection.azure.service and 'azure' in config:
+    from azure.storage.blob import BlockBlobService as BlobService
+    Connection.azure.service = BlobService(config['azure']['storage_account_name'], config['azure']['primary_access_key'])
+    Connection.azure.service.create__azure_container(_azure_container)
+
+  return Connection
 
 def download(path, dest=None, config=False):
   import lib.misc as misc 
   # Download a file from the cloud and put it in a serviceable place. 
-  which_service = file_service(path)
-
-  try:
-    service = connect(config, which_service)
-
-  except:
-    logging.warn('Unable to connect to the cloud.')
-    return False
-
   fname = os.path.basename(path)
+
+  which, service = file_service(fname, config)
 
   if not dest:
     dest = '{}/{}'.format(misc.DIR_STREAMS, fname)
 
-  if which_service == 'azure':
+  if which == 'azure':
     try:
       import azure
 
@@ -68,10 +85,45 @@ def download(path, dest=None, config=False):
     except Exception as e:
       logging.debug('Unable to retreive {} from the cloud.'.format(path))
 
-  elif which_service == 's3':
+  elif which == 's3':
     # TODO
     pass
 
+
+
+def unlink(path, config=False):
+  fname = os.path.basename(path)
+
+  which, service = file_service(fname, config)
+
+  if which == 'azure':
+    service.azure.connection.delete_blob(_azure_container, fname)
+    logging.debug("Prune[cloud]: Deleted {}".format(fname))
+    return True
+
+  elif which == 's3':
+    # TODO 
+    pass
+
+
+def upload(path, dest=None, config=False):
+  fname = os.path.basename(path)
+
+  which, service = file_service(fname, config)
+
+  if which == 'azure':
+    try:
+      service.azure.connection.create_blob_from_path(
+        service.azure.folder, fname, path, max_connections=5
+      )
+      return True
+
+    except Exception as e:
+      logging.debug('Unable to upload {} in the cloud: {}'.format(path, e))
+
+  elif which == 's3':
+    # TODO 
+    pass
 
 def get(path, do_open=True):
   # If the file exists locally then we return it, otherwise
@@ -91,79 +143,6 @@ def get(path, do_open=True):
 
   return None
 
-
-def connect(config=False, service=''):
-  import lib.misc as misc 
-
-  # Connect to the cloud service. 
-  if not config: 
-    config = misc.config['_private']
-
-  if not Connection.s3.service and 's3' in config::
-    import s3
-    pass
-
-  if not Connection.azure.service and 'azure' in config:
-    from azure.storage.blob import BlockBlobService as BlobService
-    Connection.azure.service = BlobService(config['azure']['storage_account_name'], config['azure']['primary_access_key'])
-    Connection.azure.service.create__azure_container(_azure_container)
-
-  return Connection
-
-
-def unlink(path, config=False):
-  # Remove a file from the cloud service. 
-  fname = os.path.basename(path)
-  which_service = file_service(path)
-
-  service = connect(config)
-  try:
-    service = connect(config, which_service)
-  except:
-    logging.warn("Prune[cloud]: Failed to delete {}".format(fname))
-
-  try:
-    _azure_blobservice, _azure_container = connect(config)
-    _azure_blobservice.delete_blob(_azure_container, fname)
-    logging.debug("Prune[cloud]: Deleted %s" % fname)
-    return True
-
-
-  return False
-
-
-def upload(path, dest=None, config=False):
-  import lib.misc as misc 
-
-  # Place a file, given a path, in the cloud. 
-  #if not config and not misc.am_i_official():
-  #  logging.info("I would have uploaded %s but I'm not the official %s server" % (path, misc.config['callsign']) )
-  #  return False
-
-  try:
-    _azure_blobservice, _azure_container = connect(config)
-
-  except Exception as e:
-    logging.warn('Unable to connect to the cloud: {}'.format(e))
-    _azure_blobservice = False
-
-  if _azure_blobservice:
-    try:
-      res = _azure_blobservice.create_blob_from_path(
-        _azure_container
-        , os.path.basename(path)
-        , path
-        , max_connections=5
-      )
-      return True
-
-    except Exception as e:
-      logging.debug('Unable to upload {} in the cloud: {}'.format(path, e))
-
-  else:
-    logging.debug('No cloud configured.')
-
-  return False
 
 def size(basedir):
   total = 0
