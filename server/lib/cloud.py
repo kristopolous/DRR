@@ -39,17 +39,19 @@ def download(path, dest=None, config=False):
 
   except:
     logging.warn('Unable to connect to the cloud.')
+    return False
 
-  if _azure_blobservice:
-    import azure
-    fname = os.path.basename(path)
+  fname = os.path.basename(path)
 
-    if not dest:
-      dest = '%s/%s' % (misc.DIR_STREAMS, fname)
+  if not dest:
+    dest = '{}/{}'.format(misc.DIR_STREAMS, fname)
 
+  if which_service == 'azure':
     try:
-      _azure_blobservice.get_blob_to_path(
-        _azure_container,
+      import azure
+
+      service.azure.connection.get_blob_to_path(
+        service.azure.folder,
         fname,
         dest,
         max_connections=8,
@@ -57,16 +59,15 @@ def download(path, dest=None, config=False):
       return True
 
     except azure.common.AzureMissingResourceHttpError as e:
-      logging.debug('Unable to retreive %s from the cloud. It is not there' % fname)
+      logging.debug('Unable to retreive {} from azure. It is not there'.format(fname))
 
       # TODO: This is a pretty deep (and probably wrong) place to do this.
       if not config:
         DB.unregister_stream(path)
 
     except Exception as e:
-      logging.debug('Unable to retreive %s from the cloud.' % path)
+      logging.debug('Unable to retreive {} from the cloud.'.format(path))
 
-  return False
 
 def get(path, do_open=True):
   # If the file exists locally then we return it, otherwise
