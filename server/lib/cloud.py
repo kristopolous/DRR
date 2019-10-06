@@ -29,6 +29,45 @@ def file_service(path):
     service = 'azure'
   return service
 
+def download(path, dest=None, config=False):
+  import lib.misc as misc 
+  # Download a file from the cloud and put it in a serviceable place. 
+  which_service = file_service(path)
+
+  try:
+    service = connect(config, which_service)
+
+  except:
+    logging.warn('Unable to connect to the cloud.')
+
+  if _azure_blobservice:
+    import azure
+    fname = os.path.basename(path)
+
+    if not dest:
+      dest = '%s/%s' % (misc.DIR_STREAMS, fname)
+
+    try:
+      _azure_blobservice.get_blob_to_path(
+        _azure_container,
+        fname,
+        dest,
+        max_connections=8,
+      )
+      return True
+
+    except azure.common.AzureMissingResourceHttpError as e:
+      logging.debug('Unable to retreive %s from the cloud. It is not there' % fname)
+
+      # TODO: This is a pretty deep (and probably wrong) place to do this.
+      if not config:
+        DB.unregister_stream(path)
+
+    except Exception as e:
+      logging.debug('Unable to retreive %s from the cloud.' % path)
+
+  return False
+
 def get(path, do_open=True):
   # If the file exists locally then we return it, otherwise
   # we go out to the network store and retrieve it.
@@ -585,43 +624,3 @@ def get_size(fname):
   return 0
 
  
-def download(path, dest=None, config=False):
-  import lib.misc as misc 
-  # Download a file from the cloud and put it in a serviceable place. 
-  service = file_service(path)
-
-  try:
-    _azure_blobservice, _azure_container = connect(config, service)
-
-  except:
-    logging.warn('Unable to connect to the cloud.')
-    _azure_blobservice = False
-
-  if _azure_blobservice:
-    import azure
-    fname = os.path.basename(path)
-
-    if not dest:
-      dest = '%s/%s' % (misc.DIR_STREAMS, fname)
-
-    try:
-      _azure_blobservice.get_blob_to_path(
-        _azure_container,
-        fname,
-        dest,
-        max_connections=8,
-      )
-      return True
-
-    except azure.common.AzureMissingResourceHttpError as e:
-      logging.debug('Unable to retreive %s from the cloud. It is not there' % fname)
-
-      # TODO: This is a pretty deep (and probably wrong) place to do this.
-      if not config:
-        DB.unregister_stream(path)
-
-    except Exception as e:
-      logging.debug('Unable to retreive %s from the cloud.' % path)
-
-  return False
-
