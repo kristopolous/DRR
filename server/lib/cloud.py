@@ -24,6 +24,7 @@ def file_service(path, config):
 
   try:
     return which, connect(config, which)
+
   except Exception as e:
     logging.warn('Unable to connect to the cloud: {}'.format(e))
 
@@ -57,7 +58,7 @@ def connect(config=False, service=''):
 
 def download(path, dest=None, config=False):
   import lib.misc as misc 
-  # Download a file from the cloud and put it in a serviceable place. 
+
   fname = os.path.basename(path)
 
   which, service = file_service(fname, config)
@@ -65,32 +66,30 @@ def download(path, dest=None, config=False):
   if not dest:
     dest = '/'.join([misc.DIR_STREAMS, fname])
 
-  if which == 'azure':
-    try:
+  try:
+    if which == 'azure':
       import azure
+      try:
+        service.azure.get_blob_to_path( 'streams', fname, dest, max_connections=8 )
 
-      service.azure.get_blob_to_path(
-        'streams',
-        fname,
-        dest,
-        max_connections=8,
-      )
-      return True
+      except azure.common.AzureMissingResourceHttpError as e:
+        logging.debug('Unable to retreive {} from azure. It is not there'.format(fname))
 
-    except azure.common.AzureMissingResourceHttpError as e:
-      logging.debug('Unable to retreive {} from azure. It is not there'.format(fname))
+        # TODO: This is a pretty deep (and probably wrong) place to do this.
+        if not config:
+          DB.unregister_stream(path)
 
-      # TODO: This is a pretty deep (and probably wrong) place to do this.
-      if not config:
-        DB.unregister_stream(path)
+    elif which == 's3':
+      service.s3.read(fname, dest)
 
-    except Exception as e:
-      logging.debug('Unable to retreive {} from the cloud.'.format(path))
+    else:
+      return False
 
-  elif which == 's3':
-    # TODO
-    pass
+    logging.debug("Prune[cloud]: Deleted {}".format(fname))
+    return True
 
+  except Exception as e:
+    logging.debug('Unable to retreive {}: {}'.format(path, e))
 
 
 def unlink(path, config=False):
@@ -98,14 +97,21 @@ def unlink(path, config=False):
 
   which, service = file_service(fname, config)
 
-  if which == 'azure':
-    service.azure.delete_blob(_azure_container, fname)
+  try:
+    if which == 'azure':
+      service.azure.delete_blob(_azure_container, fname)
+
+    elif which == 's3':
+      service.s3.delete(fname)
+
+    else:
+      return False
+
     logging.debug("Prune[cloud]: Deleted {}".format(fname))
     return True
 
-  elif which == 's3':
-    # TODO 
-    pass
+  except Exception as e:
+    logging.debug('Unable to delete {}: {}'.format(path, e))
 
 
 def upload(path, dest=None, config=False):
@@ -113,19 +119,22 @@ def upload(path, dest=None, config=False):
 
   which, service = file_service(fname, config)
 
-  if which == 'azure':
-    try:
-      service.azure.create_blob_from_path(
-        'streams', fname, path, max_connections=5
-      )
-      return True
+  try:
+    if which == 'azure':
+      service.azure.create_blob_from_path('streams', fname, path, max_connections=5)
 
-    except Exception as e:
-      logging.debug('Unable to upload {} in the cloud: {}'.format(path, e))
+    elif which == 's3':
+      service.s3.write(fname, fname)
 
-  elif which == 's3':
-    # TODO 
-    pass
+    else:
+      return False
+    
+    logging.debug("Uploaded {}".format(fname))
+    return True
+
+  except Exception as e:
+    logging.debug('Unable to upload {}: {}'.format(path, e))
+
 
 def get(path, do_open=True):
   # If the file exists locally then we return it, otherwise
