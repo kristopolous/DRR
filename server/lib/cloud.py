@@ -14,20 +14,20 @@ from threading import Thread
 
 class Service:
   def __init__(self):
-    self.connection = ''
-    self.folder = ''
+    self.connection = None
+    self.folder = None
 
-  def upload(path): pass
-  def download(path): pass
-  def unlink(path): pass
-  def connect(config): pass
-
-
-class Azure(Service):
-  
 class Connect:
   azure = Service()
   s3 = Service()
+
+def file_service(path):
+  info = db.file_info(path)
+  if info and info.service == 's3':
+    service = 's3'
+  else:
+    service = 'azure'
+  return service
 
 def get(path, do_open=True):
   # If the file exists locally then we return it, otherwise
@@ -70,6 +70,10 @@ def connect(config=False, service=''):
 def unlink(path, config=False):
   # Remove a file from the cloud service. 
   fname = os.path.basename(path)
+  info = db.file_info(path)
+
+  service = connect(config)
+  if info['service'] == 's3'
 
   try:
     _azure_blobservice, _azure_container = connect(config)
@@ -584,11 +588,7 @@ def get_size(fname):
 def download(path, dest=None, config=False):
   import lib.misc as misc 
   # Download a file from the cloud and put it in a serviceable place. 
-  info = db.file_info(path)
-  if info and info.service == 's3':
-    service = 's3'
-  else:
-    service = 'azure'
+  service = file_service(path)
 
   try:
     _azure_blobservice, _azure_container = connect(config, service)
