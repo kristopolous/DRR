@@ -7,7 +7,6 @@ import lib.db as DB
 import lib.ts as TS
 from lib.audio import stream_info
 import lib.audio as audio
-#from sets import Set
 from glob import glob
 from datetime import datetime, timedelta
 from threading import Thread
@@ -61,7 +60,7 @@ def download(path, dest=None, config=False):
   which, service = file_service(fname, config)
 
   if not dest:
-    dest = '{}/{}'.format(misc.DIR_STREAMS, fname)
+    dest = '/'.join([misc.DIR_STREAMS, fname])
 
   if which == 'azure':
     try:
@@ -149,7 +148,7 @@ def size(basedir):
 
   for basename in os.listdir(basedir):
     
-    path = "%s/%s" % (basedir, basename)
+    path = '/'.join([basedir, basename])
 
     if os.path.isdir(path):
       total += size(path)
