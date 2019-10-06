@@ -11,13 +11,9 @@ from glob import glob
 from datetime import datetime, timedelta
 from threading import Thread
 
-class Service:
-  def __init__(self):
-    self.connection = None
-
 class Connect:
-  azure = Service()
-  s3 = Service()
+  azure = None
+  s3 = None
 
 def file_service(path, config):
   info = db.file_info(path)
@@ -55,8 +51,8 @@ def connect(config=False, service=''):
 
   if not Connection.azure.service and 'azure' in config:
     from azure.storage.blob import BlockBlobService as BlobService
-    Connection.azure.service = BlobService(config['azure']['storage_account_name'], config['azure']['primary_access_key'])
-    Connection.azure.service.create__azure_container(_azure_container)
+    Connection.azure = BlobService(config['azure']['storage_account_name'], config['azure']['primary_access_key'])
+    Connection.azure.create__azure_container(_azure_container)
 
   return Connection
 
@@ -74,7 +70,7 @@ def download(path, dest=None, config=False):
     try:
       import azure
 
-      service.azure.connection.get_blob_to_path(
+      service.azure.get_blob_to_path(
         'streams',
         fname,
         dest,
@@ -104,7 +100,7 @@ def unlink(path, config=False):
   which, service = file_service(fname, config)
 
   if which == 'azure':
-    service.azure.connection.delete_blob(_azure_container, fname)
+    service.azure.delete_blob(_azure_container, fname)
     logging.debug("Prune[cloud]: Deleted {}".format(fname))
     return True
 
@@ -120,7 +116,7 @@ def upload(path, dest=None, config=False):
 
   if which == 'azure':
     try:
-      service.azure.connection.create_blob_from_path(
+      service.azure.create_blob_from_path(
         'streams', fname, path, max_connections=5
       )
       return True
