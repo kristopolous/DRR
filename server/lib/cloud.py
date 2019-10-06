@@ -43,13 +43,12 @@ def connect(config=False, service=''):
     endpoint: "s3-us-west-2.amazonaws.com"
     region: "us-west-2"
   """
-  if not Connection.s3.service and 's3' in config:
+  if not Connection.s3 and 's3' in config:
     import s3
-    connection = s3.S3Connection(**config['S3'])
-    storage = s3.Storage(connection)
-    pass
+    connection = s3.S3Connection(**config['s3'])
+    Connection.s3 = s3.Storage(connection)
 
-  if not Connection.azure.service and 'azure' in config:
+  if not Connection.azure and 'azure' in config:
     from azure.storage.blob import BlockBlobService as BlobService
     Connection.azure = BlobService(config['azure']['storage_account_name'], config['azure']['primary_access_key'])
     Connection.azure.create__azure_container(_azure_container)
