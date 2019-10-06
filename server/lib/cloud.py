@@ -68,6 +68,10 @@ def download(path, dest=None, config=False):
     except Exception as e:
       logging.debug('Unable to retreive {} from the cloud.'.format(path))
 
+  elif which_service == 's3':
+    # TODO
+    pass
+
 
 def get(path, do_open=True):
   # If the file exists locally then we return it, otherwise
@@ -110,10 +114,13 @@ def connect(config=False, service=''):
 def unlink(path, config=False):
   # Remove a file from the cloud service. 
   fname = os.path.basename(path)
-  info = db.file_info(path)
+  which_service = file_service(path)
 
   service = connect(config)
-  if info['service'] == 's3'
+  try:
+    service = connect(config, which_service)
+  except:
+    logging.warn("Prune[cloud]: Failed to delete {}".format(fname))
 
   try:
     _azure_blobservice, _azure_container = connect(config)
@@ -121,8 +128,6 @@ def unlink(path, config=False):
     logging.debug("Prune[cloud]: Deleted %s" % fname)
     return True
 
-  except:
-    logging.warn("Prune[cloud]: Failed to delete %s" % fname)
 
   return False
 
