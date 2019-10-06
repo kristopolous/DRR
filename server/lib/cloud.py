@@ -14,7 +14,6 @@ from threading import Thread
 class Service:
   def __init__(self):
     self.connection = None
-    self.folder = None
 
 class Connect:
   azure = Service()
@@ -41,8 +40,17 @@ def connect(config=False, service=''):
   if not config: 
     config = misc.config['_private']
 
+  """
+    access_key_id: "XXXXX"
+    secret_access_key: "YYYYYYY"
+    default_bucket: "ZZZZZZZ"
+    endpoint: "s3-us-west-2.amazonaws.com"
+    region: "us-west-2"
+  """
   if not Connection.s3.service and 's3' in config:
     import s3
+    connection = s3.S3Connection(**config['S3'])
+    storage = s3.Storage(connection)
     pass
 
   if not Connection.azure.service and 'azure' in config:
@@ -67,7 +75,7 @@ def download(path, dest=None, config=False):
       import azure
 
       service.azure.connection.get_blob_to_path(
-        service.azure.folder,
+        'streams',
         fname,
         dest,
         max_connections=8,
@@ -113,7 +121,7 @@ def upload(path, dest=None, config=False):
   if which == 'azure':
     try:
       service.azure.connection.create_blob_from_path(
-        service.azure.folder, fname, path, max_connections=5
+        'streams', fname, path, max_connections=5
       )
       return True
 
@@ -449,7 +457,7 @@ def prune(reindex=False, force=False):
   # Gets rid of files older than archive - cloud stores things if relevant. 
 
   # Now when the child calls it it won't hit the network for every prune.
-  process = Thread(name='Prune:%s' % (TS.ts_to_name(), ), target=prune_process, args=(reindex, force))
+  process = Thread(name='Prune:{}'.format(TS.ts_to_name()), target=prune_process, args=(reindex, force))
   process.start()
   return process
 
