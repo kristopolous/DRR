@@ -94,7 +94,11 @@ station_list = args.station.split(',')
 
 cloud_config = configparser.ConfigParser()
 cloud_config.read(args.config)
-config = {'azure': misc.config_section_map('Azure', cloud_config)}
+config = {
+ 'azure': misc.config_section_map('Azure', cloud_config),
+ 'misc': misc.config_section_map('Misc', cloud_config),
+ 's3': misc.config_section_map('S3', cloud_config)
+}
 
 service = cloud.connect(config)
 

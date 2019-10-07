@@ -11,7 +11,7 @@ from glob import glob
 from datetime import datetime, timedelta
 from threading import Thread
 
-class Connect:
+class Connection:
   azure = None
   s3 = None
   prefer = None
@@ -53,8 +53,9 @@ def connect(config=False, service=''):
   if not Connection.azure and 'azure' in config:
     from azure.storage.blob import BlockBlobService as BlobService
     Connection.azure = BlobService(config['azure']['storage_account_name'], config['azure']['primary_access_key'])
-    Connection.azure.create__azure_container(_azure_container)
+    Connection.azure.create_container("streams")
 
+  print(config)
   if 'prefer' in config['misc']:
     Connection.prefer = config['misc']['prefer']
 
@@ -593,7 +594,7 @@ def prune_process(reindex=False, force=False):
       count_delete += 1
 
 
-  logging.info("Deleted {} files and uploaded {} on the cloud.".format(count_delete, count_cloud)))
+  logging.info("Deleted {} files and uploaded {} on the cloud.".format(count_delete, count_cloud))
   misc.lockMap['prune'].release()
 
 
