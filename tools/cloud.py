@@ -146,4 +146,4 @@ elif args.query == 'unlink':
     cloud.unlink(filename, config=config)
 
 elif args.query:
-  print("Query '%s' not recognized. Possibilities are unlink, size, and list" % args.query)
+  print("Query '{}' not recognized. Possibilities are unlink, size, and list".format(args.query))

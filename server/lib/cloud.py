@@ -14,6 +14,7 @@ from threading import Thread
 class Connection:
   azure = None
   s3 = None
+  folder = None
   prefer = None
 
 def file_service(path, config):
@@ -46,9 +47,13 @@ def connect(config=False, service=''):
     region = us-east-1
   """
   if not Connection.s3 and 's3' in config:
-    import s3
-    connection = s3.S3Connection(**config['s3'])
-    Connection.s3 = s3.Storage(connection)
+    import boto3
+    Connection.s3 = boto3.client(
+      's3',
+      aws_access_key_id=config['s3']['access_key_id'],
+      aws_secret_access_key=config['s3']['secret_access_key']
+    )
+    Connection.folder = config['s3']['default_bucket']
 
   if not Connection.azure and 'azure' in config:
     from azure.storage.blob import BlockBlobService as BlobService
@@ -85,7 +90,7 @@ def download(path, dest=None, config=False):
           DB.unregister_stream(path)
 
     elif which == 's3':
-      service.s3.read(fname, dest)
+      service.s3.download_file(service.folder, fname, dest)
 
     else:
       return False
@@ -131,7 +136,7 @@ def upload(path, dest=None, config=False):
 
     else:
       which = 's3'
-      service.s3.write(fname, fname)
+      service.s3.upload_file(fname, fname)
 
     update('streams', {'name': fname}, {'service': which})
     
