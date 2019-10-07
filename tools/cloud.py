@@ -14,14 +14,14 @@ def get_all(station):
   blobs = []
   marker = None
   while True:
-    batch = blob_service.list_blobs('streams', prefix=station, marker=marker)
+    batch = service.azure.list_blobs('streams', prefix=station, marker=marker)
     blobs.extend(batch)
     if not batch.next_marker:
       break
     marker = batch.next_marker
   return blobs
 
-def get_files(station_list, blob_service):
+def get_files(station_list):
   from dateutil import parser
   for station in station_list:
     for f in get_all(station):
@@ -34,7 +34,7 @@ def fail(why):
   print("Failue: %s" % why)
   sys.exit(-1)
 
-def get_size(station_list, blob_service):
+def get_size(station_list):
   all_files = []
   by_station = {}
   ix = 1
@@ -96,7 +96,7 @@ cloud_config = configparser.ConfigParser()
 cloud_config.read(args.config)
 config = {'azure': misc.config_section_map('Azure', cloud_config)}
 
-blob_service, container = cloud.connect(config)
+service = cloud.connect(config)
 
 if args.get:
   print("Getting")
@@ -126,10 +126,10 @@ elif args.rm:
       fail("Couldn't delete %s" % name)
 
 elif args.query == 'size':
-  get_size(station_list, blob_service)
+  get_size(station_list)
 
 elif args.query == 'list':
-  get_files(station_list, blob_service)
+  get_files(station_list)
 
 elif args.query == 'unlink':
   print("Reading files to unlink from stdin")
