@@ -14,6 +14,7 @@ from threading import Thread
 class Connect:
   azure = None
   s3 = None
+  prefer = None
 
 def file_service(path, config):
   info = db.file_info(path)
@@ -53,6 +54,9 @@ def connect(config=False, service=''):
     from azure.storage.blob import BlockBlobService as BlobService
     Connection.azure = BlobService(config['azure']['storage_account_name'], config['azure']['primary_access_key'])
     Connection.azure.create__azure_container(_azure_container)
+
+  if 'prefer' in config['misc']:
+    Connection.prefer = config['misc']['prefer']
 
   return Connection
 
