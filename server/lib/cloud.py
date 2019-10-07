@@ -124,20 +124,19 @@ def upload(path, dest=None, config=False):
   which, service = file_service(fname, config)
 
   try:
-    if which == 'azure':
+    if service.prefer == 'azure':
+      which = 'azure'
       service.azure.create_blob_from_path('streams', fname, path, max_connections=5)
 
-    elif which == 's3':
-      service.s3.write(fname, fname)
-
     else:
-      return False
+      which = 's3'
+      service.s3.write(fname, fname)
     
-    logging.debug("Uploaded {}".format(fname))
+    logging.debug("Upload [{}] {}".format(which, fname))
     return True
 
   except Exception as e:
-    logging.debug('Unable to upload {}: {}'.format(path, e))
+    logging.debug('! Upload {}: {}'.format(path, e))
 
 
 def get(path, do_open=True):
