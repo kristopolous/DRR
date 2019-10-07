@@ -178,7 +178,7 @@ def size(basedir):
 
 def rename():
   import lib.misc as misc 
-  all_files = glob('%s/*.mp3' % misc.DIR_STREAMS)
+  all_files = glob('{}/*.mp3'.format(misc.DIR_STREAMS))
   count = 0
   total = 0
   for fname in all_files:
@@ -213,7 +213,7 @@ def register_stream_list(reindex=False):
 
   # There should be a smarter way to do this ... you'd think. We should also
   # be more faithfully giving things extensions since it's not 100% mp3
-  all_files = set(glob('%s/*.mp3' % misc.DIR_STREAMS))
+  all_files = set(glob('{}/*.mp3'.format(misc.DIR_STREAMS)))
  
   diff = all_files.difference(all_registered)
 
@@ -579,11 +579,10 @@ def prune_process(reindex=False, force=False):
     file_name = str(file_name_tuple[0])
     id = file_name_tuple[1]
 
-    #logging.debug("Prune[remove]: %s (unlink list)" % file_name)
     # If there's a cloud account at all then we need to unlink the 
     # equivalent mp3 file
     if cloud_cutoff and misc.am_i_official():
-      "cloud.";unlink(file_name)
+      cloud.unlink(file_name)
 
       # After we remove these streams then we delete them from the db.
       DB.run('delete from streams where id = %d' % id)
@@ -594,7 +593,7 @@ def prune_process(reindex=False, force=False):
       count_delete += 1
 
 
-  logging.info("Deleted %d files and uploaded %d on the cloud." % (count_delete, count_cloud))
+  logging.info("Deleted {} files and uploaded {} on the cloud.".format(count_delete, count_cloud)))
   misc.lockMap['prune'].release()
 
 
