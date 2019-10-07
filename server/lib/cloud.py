@@ -41,8 +41,8 @@ def connect(config=False, service=''):
     access_key_id: "XXXXX"
     secret_access_key: "YYYYYYY"
     default_bucket: "ZZZZZZZ"
-    endpoint: "s3-us-west-2.amazonaws.com"
-    region: "us-west-2"
+    endpoint = s3.amazonaws.com
+    region = us-east-1
   """
   if not Connection.s3 and 's3' in config:
     import s3
