@@ -131,6 +131,8 @@ def upload(path, dest=None, config=False):
     else:
       which = 's3'
       service.s3.write(fname, fname)
+
+    update('streams', {'name': fname}, {'service': which})
     
     logging.debug("Upload [{}] {}".format(which, fname))
     return True
@@ -559,7 +561,7 @@ def prune_process(reindex=False, force=False):
         except Exception as e:
           logging.debug("Prune[cloud]: Couldn't remove {}: {}".format(file_name, e))
 
-  for file_name in glob('%s/*.gz' % misc.DIR_BACKUPS):
+  for file_name in glob('{}/*.gz'.format(misc.DIR_BACKUPS)):
     ctime = os.path.getctime(file_name)
 
     # We observe the rules set up in the config.
