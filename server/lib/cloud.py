@@ -13,8 +13,11 @@ from threading import Thread
 
 class Connection:
   azure = None
+  container = None
+
   s3 = None
-  folder = None
+  bucket = None
+
   prefer = None
 
 def file_service(path, config):
@@ -53,14 +56,14 @@ def connect(config=False, service=''):
       aws_access_key_id=config['s3']['access_key_id'],
       aws_secret_access_key=config['s3']['secret_access_key']
     )
-    Connection.folder = config['s3']['default_bucket']
+    Connection.bucket = config['s3']['default_bucket']
 
   if not Connection.azure and 'azure' in config:
     from azure.storage.blob import BlockBlobService as BlobService
     Connection.azure = BlobService(config['azure']['storage_account_name'], config['azure']['primary_access_key'])
-    Connection.azure.create_container("streams")
+    Connection.container = "streams"
+    Connection.azure.create_container(Connection.container)
 
-  print(config)
   if 'prefer' in config['misc']:
     Connection.prefer = config['misc']['prefer']
 
@@ -80,7 +83,7 @@ def download(path, dest=None, config=False):
     if which == 'azure':
       import azure
       try:
-        service.azure.get_blob_to_path( 'streams', fname, dest, max_connections=8 )
+        service.azure.get_blob_to_path(service.container, fname, dest, max_connections=8 )
 
       except azure.common.AzureMissingResourceHttpError as e:
         logging.debug('Unable to retreive {} from azure. It is not there'.format(fname))
@@ -90,7 +93,7 @@ def download(path, dest=None, config=False):
           DB.unregister_stream(path)
 
     elif which == 's3':
-      service.s3.download_file(service.folder, fname, dest)
+      service.s3.download_file(service.bucket, fname, dest)
 
     else:
       return False
@@ -109,10 +112,10 @@ def unlink(path, config=False):
 
   try:
     if which == 'azure':
-      service.azure.delete_blob(_azure_container, fname)
+      service.azure.delete_blob(service.container, fname)
 
     elif which == 's3':
-      service.s3.delete(fname)
+      service.s3.delete_object(service.bucket, fname)
 
     else:
       return False
@@ -132,11 +135,11 @@ def upload(path, dest=None, config=False):
   try:
     if service.prefer == 'azure':
       which = 'azure'
-      service.azure.create_blob_from_path('streams', fname, path, max_connections=5)
+      service.azure.create_blob_from_path(service.container, fname, path, max_connections=5)
 
     else:
       which = 's3'
-      service.s3.upload_file(fname, fname)
+      service.s3.upload_file(fname, service.bucket)
 
     update('streams', {'name': fname}, {'service': which})
     
