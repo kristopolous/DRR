@@ -7,7 +7,7 @@
 aptinstall() {
   sudo apt-get update
 
-  for package in python-dev libxslt1-dev libxml2-dev python-pycurl sqlite3 zlib1g-dev uuid-runtime build-essential python3 libcurl4-gnutls-dev libgnutls28-dev ; do
+  for package in python3-dev libxslt1-dev libxml2-dev python3-pycurl sqlite3 zlib1g-dev uuid-runtime build-essential python3 libcurl4-gnutls-dev libgnutls28-dev ; do
     sudo apt-get -y -f install $package
   done
 }
