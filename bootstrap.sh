@@ -7,18 +7,13 @@
 aptinstall() {
   sudo apt-get update
 
-  for package in python3-dev libxslt1-dev libxml2-dev python3-pycurl sqlite3 zlib1g-dev uuid-runtime build-essential python3 libcurl4-gnutls-dev libgnutls28-dev ; do
+  for package in python3-dev python3-pip libxslt1-dev libxml2-dev python3-pycurl sqlite3 zlib1g-dev uuid-runtime build-essential python3 libcurl4-gnutls-dev libgnutls28-dev ; do
     sudo apt-get -y -f install $package
   done
 }
 
 pipinstall()  {
   sudo apt-get -y -f install python3-pip
-  # see http://askubuntu.com/questions/412178/how-to-install-pip-for-python-3-in-ubuntu-12-04-lts
-  if [ $? -ne 0 ]; then
-    sudo apt-get -y -f install python3-setuptools
-    sudo easy_install3 pip
-  fi
 }
 
 hardupgrade() {
