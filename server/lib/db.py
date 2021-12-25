@@ -124,7 +124,7 @@ def all(table, field_list='*', sort_by='id'):
     field_list = ','.join(field_list)
 
   query = run('select %s from %s order by %s asc' % (field_list, table, sort_by))
-  if column_count is 1 and field_list != '*':
+  if column_count == 1 and field_list != '*':
     return [record[0] for record in query.fetchall()]
 
   else:
