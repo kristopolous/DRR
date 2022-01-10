@@ -580,8 +580,14 @@ def read_config(config):
     # invocation as the initial argv[0] ... so we need to make sure that if a user did 
     # ./blah this will be maintained.
     #
-    if not os.path.isfile(misc.config['storage'] + __file__):
-      os.symlink(os.path.abspath(__file__), misc.config['storage'] + __file__)
+    fname = os.path.basename(__file__)
+    symlink_path = misc.config.get('storage') + fname
+    if not os.path.isfile(symlink_path):
+      try:
+        os.symlink(os.path.abspath(__file__), symlink_path)
+      except Exception as exc:
+        logging.critical("Unable to symlink {} to path {}: {}".format(symlink_path, os.path.abspath(__file__), exc))
+        raise exc
 
     conf_path = misc.config['storage'] + "config"
     if os.path.exists(conf_path):

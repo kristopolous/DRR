@@ -218,8 +218,8 @@ def set(key, value):
       else:
         run('update kv set value = ? where key = ?', (value, key))
 
-  except:
-    logging.warn("[DB error] Couldn't set {} to {}".format(key, value))
+  except Exception as exc:
+    logging.warn("[DB error] Couldn't set {} to {}: {}".format(key, value, exc))
 
   g_params[key] = value
 

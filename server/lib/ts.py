@@ -205,16 +205,18 @@ def get_offset(force=False):
 
     api_key = misc.config['_private']['misc']['timezonedb_key']
     url = "http://api.timezonedb.com/v2.1/get-time-zone?key={}&by=position&lat={}&lng={}".format(api_key, misc.config['lat'], misc.config['long'])
+    data = ''
 
     try:
       stream = urlopen(url)
-      data = stream.read().decode('utf8').split("\n")[1]
+      data = stream.read()
+
       xml = etree.fromstring(data)
       offset = xml.xpath('gmtOffset')
       opts = {'status': 'OK', 'offset': int(offset[0].text) }
 
     except Exception as exc:
-      print(exc)
+      logging.warning("Unable to parse! {} {}".format(data, exc))
       opts = {'status': None}
 
     if opts['status'] == 'OK': 
@@ -227,5 +229,8 @@ def get_offset(force=False):
       DB.set('offset', offset_backup)
       offset = offset_backup
 
-  return int(float(offset))
+    if not offset:
+      offset = "0"
+
+  return int(float(offset)) or 0
 
