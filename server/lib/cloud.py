@@ -15,15 +15,18 @@ class Connection:
   azure = None
   container = None
 
+  sftp = None
   s3 = None
   bucket = None
 
   prefer = None
 
+
 def file_service(path, config):
   info = db.file_info(path)
-  if info and info.service == 's3':
-    which = 's3'
+
+  if info:
+    which = info.get('service') or 'azure'
   else:
     which = 'azure'
 
@@ -49,6 +52,11 @@ def connect(config=False, service=''):
     endpoint = s3.amazonaws.com
     region = us-east-1
   """
+  if not Connection.sftp and 'sftp' in config:
+    import pysftp
+    sftp = config.get('sftp')
+    Connections.sftp = pysftp.Connection(sftp.host, username=sftp.username, port=sftp.port)
+
   if not Connection.s3 and 's3' in config:
     import boto3
     Connection.s3 = boto3.client(
@@ -95,6 +103,9 @@ def download(path, dest=None, config=False):
     elif which == 's3':
       service.s3.download_file(service.bucket, fname, dest)
 
+    elif which == 'sftp':
+      service.sftp.get(fname, dest)
+
     else:
       return False
 
@@ -117,6 +128,9 @@ def unlink(path, config=False):
     elif which == 's3':
       service.s3.delete_object(service.bucket, fname)
 
+    elif which == 'sftp':
+      service.sftp.remove(fname)
+
     else:
       return False
 
@@ -133,6 +147,10 @@ def upload(path, dest=None, config=False):
   which, service = file_service(fname, config)
 
   try:
+    if service.prefer == 'sftp':
+      which = 'sftp'
+      service.sftp.put(path, remotepath='/'.join(service.remotepath, fname))
+
     if service.prefer == 'azure':
       which = 'azure'
       service.azure.create_blob_from_path(service.container, fname, path, max_connections=5)
