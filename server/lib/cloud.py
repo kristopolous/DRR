@@ -23,7 +23,8 @@ class Connection:
 
 
 def file_service(path, config):
-  info = db.file_info(path)
+  info = DB.file_info(path)
+
 
   if info:
     which = info.get('service') or 'azure'
@@ -35,6 +36,7 @@ def file_service(path, config):
 
   except Exception as e:
     logging.warn('Unable to connect to the cloud: {}'.format(e))
+    raise e
 
   return None, None
 
@@ -52,12 +54,16 @@ def connect(config=False, service=''):
     endpoint = s3.amazonaws.com
     region = us-east-1
   """
-  if not Connection.sftp and 'sftp' in config:
+  if config.get('sftp') and not Connection.sftp:
     import pysftp
     sftp = config.get('sftp')
-    Connections.sftp = pysftp.Connection(sftp.host, username=sftp.username, port=sftp.port)
 
-  if not Connection.s3 and 's3' in config:
+    Connection.sftp = pysftp.Connection(
+        sftp.get('hostname'), 
+        username=sftp.get('username'), 
+        port=int(sftp.get('port') or 22))
+
+  if config.get('s3') and not Connection.s3:
     import boto3
     Connection.s3 = boto3.client(
       's3',
@@ -66,7 +72,7 @@ def connect(config=False, service=''):
     )
     Connection.bucket = config['s3']['default_bucket']
 
-  if not Connection.azure and 'azure' in config:
+  if config.get('azure') and not Connection.azure:
     from azure.storage.blob import BlockBlobService as BlobService
     Connection.azure = BlobService(config['azure']['storage_account_name'], config['azure']['primary_access_key'])
     Connection.container = "streams"

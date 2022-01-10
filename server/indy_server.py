@@ -543,9 +543,8 @@ def read_config(config):
       # query.
       #
       # see https://github.com/kristopolous/DRR/issues/73 for what this is about.
-      misc.config['_private']['azure'] = misc.config_section_map('Azure', cloud_config)
-      misc.config['_private']['s3'] = misc.config_section_map('S3', cloud_config)
-      misc.config['_private']['misc'] = misc.config_section_map('Misc', cloud_config)
+      for k,v in [('azure', 'Azure'), ('S3', 'S3'), ('sftp', 'sftp')]:
+        misc.config['_private'][k] = misc.config_section_map(v, cloud_config)
 
   if not os.path.isdir(misc.config['storage']):
     try:
