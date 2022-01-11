@@ -169,8 +169,12 @@ def am_i_official():
   global config, last_official_query
 
   # Don't cache a true value ... see https://github.com/kristopolous/DRR/issues/84 for details
-  # Actually we'll cache it for a few seconds.
-  if 'official' not in config or (not last_official_query or last_official_query + 10 < time.time()):
+
+  # It can be "always" official for testing
+  official = config.get('official')
+
+  # we'll cache it for a few seconds.
+  if official != 'always' and (not last_official_query or last_official_query + 10 < time.time()):
     endpoint = "http://%s.indycast.net:%d/uuid" % (config['callsign'], config['port'])
 
     try: 
@@ -184,7 +188,7 @@ def am_i_official():
       # and set nothing
       return False
 
-  return config['official']
+  return config.get('official')
 
 def webserver_shutdown():
   endpoint = "http://127.0.0.1:%d/halt" % (config['port'],)

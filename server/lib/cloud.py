@@ -563,13 +563,13 @@ def prune_process(reindex=False, force=False):
     # We observe the rules set up in the config.
     logging.debug("%s cloud:%d ctime:%d slice:%d cutoff:%d ctime-cloud:%d ctime-slice:%d" %(file_name, cloud_cutoff, ctime, slice_cutoff, cutoff, ctime-cloud_cutoff, ctime-slice_cutoff ))
     if file_name.startswith('slices') and ctime < slice_cutoff or ctime < cutoff:
-      logging.debug("Prune[remove]: %s (ctime)" % file_name)
+      logging.debug("Prune[remove]: {} (ctime)".format(file_name))
       os.unlink(file_name)
       count_delete += 1 
 
     # We want to make sure we aren't archiving the slices
     elif cloud_cutoff and ctime < cloud_cutoff and not file_name.startswith('slice'):
-      logging.debug("Prune[cloud]: %s" % file_name)
+      logging.debug("Prune[cloud]: {} ".format(file_name))
 
       # <s>Only unlink the file if I can successfully upload it into the cloud.</s>
       #
