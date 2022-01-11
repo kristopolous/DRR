@@ -19,16 +19,12 @@ class Connection:
   s3 = None
   bucket = None
 
-  prefer = None
+  prefer = 'sftp'
 
 
 def file_service(path, config):
   info = DB.file_info(path)
-
-  if info:
-    which = info.get('service') or 'azure'
-  else:
-    which = 'azure'
+  which = (info and info.get('service')) or Connection.prefer
 
   try:
     return which, connect(config, which)
@@ -162,7 +158,7 @@ def upload(path, dest=None, config=False):
       which = 'azure'
       service.azure.create_blob_from_path(service.container, fname, path, max_connections=5)
 
-    else:
+    elif service.s3:
       which = 's3'
       service.s3.upload_file(fname, service.bucket)
 
