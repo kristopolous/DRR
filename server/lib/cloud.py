@@ -25,7 +25,6 @@ class Connection:
 def file_service(path, config):
   info = DB.file_info(path)
 
-
   if info:
     which = info.get('service') or 'azure'
   else:
@@ -62,6 +61,8 @@ def connect(config=False, service=''):
         sftp.get('hostname'), 
         username=sftp.get('username'), 
         port=int(sftp.get('port') or 22))
+
+    Connection.path = sftp.get('path')
 
   if config.get('s3') and not Connection.s3:
     import boto3
@@ -155,7 +156,7 @@ def upload(path, dest=None, config=False):
   try:
     if service.prefer == 'sftp':
       which = 'sftp'
-      service.sftp.put(path, remotepath='/'.join(service.remotepath, fname))
+      service.sftp.put(path, remotepath='/'.join([service.path, fname]))
 
     if service.prefer == 'azure':
       which = 'azure'

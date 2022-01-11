@@ -9,4 +9,4 @@ requests
 psutil
 markupsafe
 pycurl
-pysftp
+git+https://github.com/kristopolous/pysftp.git
