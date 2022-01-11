@@ -162,13 +162,16 @@ def upload(path, dest=None, config=False):
       which = 's3'
       service.s3.upload_file(fname, service.bucket)
 
-    update('streams', {'name': fname}, {'service': which})
+    # The path isn't super clean here for some reason
+    # (2022-01-10)
+    DB.run('update streams set service = ? where name like ?', args=(which, '%' + fname))
     
     logging.debug("Upload [{}] {}".format(which, fname))
     return True
 
   except Exception as e:
     logging.debug('! Upload {}: {}'.format(path, e))
+    raise e
 
 
 def get(path, do_open=True):

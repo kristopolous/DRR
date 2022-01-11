@@ -293,7 +293,7 @@ def run(query, args=None, with_last=False, db=None):
     last = db['c'].lastrowid
 
     if db['c'].rowcount == 0:
-      raise Exception("0 rows")
+      raise Exception("0 rows: {} {}".format(query, args))
 
   except Exception as exc:
     raise exc
@@ -328,7 +328,7 @@ def _checkForTable(what):
 def _parse(table, data):
   _checkForTable(table)
 
-  data = process(data, table, 'pre')
+  #data = process(data, table, 'pre')
   known_keys = [x[0] for x in _SCHEMA[table]]
   shared_keys = list(data.keys() & known_keys)
 
@@ -352,7 +352,7 @@ def update(table, where_dict, set_dict):
     return last
 
   except:
-    logging.warning("Unable to update a record {}|{}|{}".format(qstr, ', '.join([str(x) for x in set_values]), ', '.join([str(x) for x in where_values])))
+    logging.warning("Unable to update a record: {}|{}|{}".format(qstr, ', '.join([str(x) for x in set_values]), ', '.join([str(x) for x in where_values])))
 
 
 def file_info(path):
