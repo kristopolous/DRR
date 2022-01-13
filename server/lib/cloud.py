@@ -68,7 +68,7 @@ def connect(config=False, service=None):
         username=sftp.get('username'), 
         port=int(sftp.get('port') or 22))
 
-    Connection.path = sftp.get('path')
+    Connection.sftp_path = sftp.get('path')
 
   if config.get('s3') and (not Connection.s3 or service == 's3'):
     import boto3
@@ -89,6 +89,42 @@ def connect(config=False, service=None):
     Connection.prefer = config['misc']['prefer']
 
   return Connection
+
+def list(service, glob=None):
+  from operator import itemgetter, attrgetter
+  if service == 'azure' and Connection.azure:
+    from azure.storage.blob import BlockBlobService as BlobService
+    blobs = []
+    marker = None
+    while True:
+      batch = Connection.azure.list_blobs('streams', prefix=glob, marker=marker)
+      blobs.extend(batch)
+      if not batch.next_marker:
+        break
+      marker = batch.next_marker
+
+    def props(x):
+      return {
+        'name': x.name,
+        'size': x.properties.content_length,
+        'date': x.properties.last_modified.strftime('%Y-%m-%d %H:%M:%S')
+      }
+    fileList = map(props, blobs)
+    return fileList
+
+  if service == 'sftp' and Connection.sftp:
+    def props(x):
+      return {
+        'name': x.filename,
+        'size': x.st_size,
+        'date': datetime.fromtimestamp(x.st_mtime)
+      }
+
+    fileList = map(props, sftp('listdir_attr', ([Connection.sftp_path])))
+    if glob:
+      fileList = filter(lambda x: glob in x['name'], fileList)
+
+    return sorted(fileList, key=itemgetter('name'))
 
 def download(path, dest=None, config=False):
   import lib.misc as misc 
@@ -162,7 +198,7 @@ def upload(path, dest=None, config=False):
   try:
     if service.prefer == 'sftp':
       which = 'sftp'
-      sftp('put', [path, '/'.join([service.path, fname])])
+      sftp('put', [path, '/'.join([service.sftp_path, fname])])
 
     if service.prefer == 'azure':
       which = 'azure'

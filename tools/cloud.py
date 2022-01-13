@@ -9,25 +9,16 @@ import textwrap
 from azure.storage.blob import BlockBlobService as BlobService
 import lib.cloud as cloud
 import lib.misc as misc
+from pprint import pprint
 
-def get_all(station):
-  blobs = []
-  marker = None
-  while True:
-    batch = service.azure.list_blobs('streams', prefix=station, marker=marker)
-    blobs.extend(batch)
-    if not batch.next_marker:
-      break
-    marker = batch.next_marker
-  return blobs
+def get_all(station=None):
+  return cloud.list(args.network, station)
 
 def get_files(station_list):
   from dateutil import parser
   for station in station_list:
     for f in get_all(station):
-      dt = f.properties.last_modified #parser.parse(f.properties.last_modified)
-      dt_str = dt.strftime('%Y%m%d%H%M%S')
-      print('%s size: %10s date: %s' %(f.name, f.properties.content_length, dt_str))
+      print("{} size: {:10d} date: {}".format(f['name'], f['size'], f['date']))
 
 def fail(why):
   import sys
@@ -76,6 +67,7 @@ parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpForm
       $ tools/cloud.py -q list -s KXXX | (whatever you want) | tools/cloud.py -q unlink
     '''))
 parser.add_argument("-s", "--station", default="all", help="station to query (default all)")
+parser.add_argument("-n", "--network", default="azure", help="network to query (default all)")
 parser.add_argument("-c", "--config", default=cfg, help="cloud credential file to use")
 parser.add_argument("-q", "--query", default='size', help="query to send to the cloud (list, size, unlink)")
 parser.add_argument("-g", "--get", help="get a file from the cloud")
@@ -96,6 +88,7 @@ cloud_config = configparser.ConfigParser()
 cloud_config.read(args.config)
 config = {
  'azure': misc.config_section_map('Azure', cloud_config),
+ 'sftp': misc.config_section_map('sftp', cloud_config),
  'misc': misc.config_section_map('Misc', cloud_config),
  's3': misc.config_section_map('S3', cloud_config)
 }
