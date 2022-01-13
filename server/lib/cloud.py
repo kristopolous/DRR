@@ -153,7 +153,8 @@ def download(path, dest=None, config=False):
       service.s3.download_file(service.bucket, fname, dest)
 
     elif which == 'sftp':
-      sftp('get', [fname, dest])
+      toget = '/'.join([Connection.sftp_path, fname])
+      sftp('get', [toget, dest])
 
     else:
       return False
@@ -457,7 +458,6 @@ def get_file_for_ts(target_time, bias=None, exclude_path=None):
   time_to_beat = None
   current_winner = None
 
-  #print "-----------------------"
   for candidate_path in glob('%s/*.mp3' % misc.DIR_STREAMS):
     if candidate_path == exclude_path: continue
 
