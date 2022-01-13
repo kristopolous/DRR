@@ -117,7 +117,7 @@ def download(path, dest=None, config=False):
       service.s3.download_file(service.bucket, fname, dest)
 
     elif which == 'sftp':
-      service.sftp.get(fname, dest)
+      sftp('get', [fname, dest])
 
     else:
       return False
@@ -142,7 +142,7 @@ def unlink(path, config=False):
       service.s3.delete_object(service.bucket, fname)
 
     elif which == 'sftp':
-      service.sftp.remove(fname)
+      sftp('remove', [fname])
 
     else:
       return False
@@ -162,7 +162,7 @@ def upload(path, dest=None, config=False):
   try:
     if service.prefer == 'sftp':
       which = 'sftp'
-      service.sftp.put(path, remotepath='/'.join([service.path, fname]))
+      sftp('put', [path, '/'.join([service.path, fname])])
 
     if service.prefer == 'azure':
       which = 'azure'
