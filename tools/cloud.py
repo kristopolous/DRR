@@ -67,8 +67,8 @@ parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpForm
       $ tools/cloud.py -q list -s KXXX | (whatever you want) | tools/cloud.py -q unlink
     '''))
 parser.add_argument("-s", "--station", default="all", help="station to query (default all)")
-parser.add_argument("-n", "--network", default="azure", help="network to query (default all)")
-parser.add_argument("-c", "--config", default=cfg, help="cloud credential file to use")
+parser.add_argument("-n", "--network", choices=('azure','sftp','s3'), default="azure", help="network to query (default all)")
+parser.add_argument("-c", "--config", required=True, default=cfg, help="cloud credential file to use")
 parser.add_argument("-q", "--query", default='size', help="query to send to the cloud (list, size, unlink)")
 parser.add_argument("-g", "--get", help="get a file from the cloud")
 parser.add_argument("-p", "--put", help="put a file into the cloud")
