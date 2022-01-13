@@ -27,7 +27,7 @@ def file_service(path, config):
   which = (info and info.get('service')) or Connection.prefer
 
   try:
-    return which, connect(config, which)
+    return which, connect(config)
 
   except Exception as e:
     logging.warn('Unable to connect to the cloud: {}'.format(e))
@@ -36,20 +36,30 @@ def file_service(path, config):
   return None, None
 
 
-def connect(config=False, service=''):
+def sftp(method, args, attempt=0):
+  try:
+    return getattr(Connection.sftp, method)(*args)
+
+  except Exception as e:
+    if attempt > 1:
+      raise e
+
+    logging.warn("Got an error, trying connect again: {}".format(e))
+    connect(config=False, service='sftp')
+    sftp(method, args, attempt + 1)
+
+
+def connect(config=False, service=None):
+  """
+  service if set will force a reconnect
+  """
+
   import lib.misc as misc 
 
   if not config: 
     config = misc.config['_private']
 
-  """
-    access_key_id: "XXXXX"
-    secret_access_key: "YYYYYYY"
-    default_bucket: "ZZZZZZZ"
-    endpoint = s3.amazonaws.com
-    region = us-east-1
-  """
-  if config.get('sftp') and not Connection.sftp:
+  if config.get('sftp') and (not Connection.sftp or service == 'sftp'):
     import pysftp
     sftp = config.get('sftp')
 
@@ -60,7 +70,7 @@ def connect(config=False, service=''):
 
     Connection.path = sftp.get('path')
 
-  if config.get('s3') and not Connection.s3:
+  if config.get('s3') and (not Connection.s3 or service == 's3'):
     import boto3
     Connection.s3 = boto3.client(
       's3',
@@ -69,7 +79,7 @@ def connect(config=False, service=''):
     )
     Connection.bucket = config['s3']['default_bucket']
 
-  if config.get('azure') and not Connection.azure:
+  if config.get('azure') and (not Connection.azure or service == 'azure'):
     from azure.storage.blob import BlockBlobService as BlobService
     Connection.azure = BlobService(config['azure']['storage_account_name'], config['azure']['primary_access_key'])
     Connection.container = "streams"
