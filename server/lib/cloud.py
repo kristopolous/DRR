@@ -187,6 +187,12 @@ def unlink(path, config=False):
     logging.debug("Prune[cloud]: Deleted {}".format(fname))
     return True
 
+  except FileNotFoundError as e:
+    # This means we could connect but for some reason the file wasn't there.
+    logging.debug('Unable to delete {}: {}. Removing from database anyway'.format(path, e))
+    # This suggests that it was successful
+    return True
+
   except Exception as e:
     logging.debug('Unable to delete {}: {}'.format(path, e))
 
