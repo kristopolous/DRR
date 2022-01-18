@@ -661,7 +661,7 @@ def prune_process(reindex=False, force=False):
     # If there's a cloud account at all then we need to unlink the 
     # equivalent mp3 file
     if cloud_cutoff and misc.am_i_official():
-      cloud.unlink(file_name)
+      unlink(file_name)
 
       # After we remove these streams then we delete them from the db.
       DB.run('delete from streams where id = %d' % id)
