@@ -179,7 +179,7 @@ def unlink(path, config=False):
       service.s3.delete_object(service.bucket, fname)
 
     elif which == 'sftp':
-      sftp('remove', [fname])
+      sftp('remove', ['/'.join([service.sftp_path,fname])])
 
     else:
       return False
@@ -661,10 +661,9 @@ def prune_process(reindex=False, force=False):
     # If there's a cloud account at all then we need to unlink the 
     # equivalent mp3 file
     if cloud_cutoff and misc.am_i_official():
-      unlink(file_name)
-
-      # After we remove these streams then we delete them from the db.
-      DB.run('delete from streams where id = %d' % id)
+      if unlink(file_name):
+        # After we remove these streams then we delete them from the db.
+        DB.run('delete from streams where id = %d' % id)
 
     # now only after we've deleted from the cloud can we delete the local file
     if os.path.exists(file_name):
