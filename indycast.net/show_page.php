@@ -87,7 +87,7 @@ if(isset($_GET['callsign'])) {
     </nav>
 
     <div class="container-fluid page-content">
-<? 
+<?php
 $emit_script = "
   <script src='/assets/js/evda.min.js'></script>
   <script src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js'></script>

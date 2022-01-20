@@ -36,7 +36,7 @@ if (!empty($_SESSION['admin']) && $_SESSION['admin'] == 1) {
 } else {
 ?>
 <b>Mode: Read-Only</b> <form method=post>Password: <input type=password name=password></form>
-<?
+<?php
 }
 
 echo '<table>';
