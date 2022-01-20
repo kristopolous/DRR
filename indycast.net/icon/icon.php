@@ -82,7 +82,8 @@ function tint_bg(&$image, $phrase) {
 
   $strcolor = "hsl($hsl)";
   $color = new ImagickPixel($strcolor);
-  $image->colorizeImage($color, 1);//, true);
+  $opacityColor = new \ImagickPixel("rgba(128, 128, 128, 1)");
+  $image->colorizeImage($color, $opacityColor);//, true);
   return $hue;
 }
 
