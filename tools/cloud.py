@@ -3,13 +3,13 @@ import argparse
 import os
 import re
 import sys
+import logging
 from glob import glob
+from azure.storage.blob import BlockBlobService as BlobService
 import configparser
 import textwrap
-from azure.storage.blob import BlockBlobService as BlobService
 import lib.cloud as cloud
 import lib.misc as misc
-from pprint import pprint
 
 def get_all(station=None):
   return cloud.list(args.network, station)
@@ -36,21 +36,21 @@ def get_size(station_list):
     sys.stdout.write( "%2d: %s " % (len(station_list) - ix + 1, station) )
     sys.stdout.flush()
     by_station[station] = [ f for f in get_all(station) ]
-    total_space = sum([ f.properties.content_length for f in by_station[station] ])
+    total_space = sum([ f.get('size') for f in by_station[station] ])
     sys.stdout.write( " %5d %9.3f\n" % (len(by_station[station]),  total_space / (1024.0 ** 3)) )
     all_files += by_station[station]
     ix += 1
 
-  all_props = [ f.properties for f in all_files ]
-  disk_space = [ f.content_length for f in all_props ]
+  disk_space = [ f.get('size') for f in all_files ]
 
   gb = sum(disk_space) / (1024.0 ** 3)
   print("-----------------------------")
   print(" %-8s %5d %9.3f GB" % ("Total", len(all_files), gb))
-  print(" %-7s  $%.02f/month" % ("Cost", gb * 0.01))
-  print()
-  print(" *using $0.01/GB azure pricing")
 
+
+if os.environ.get('LOG_LEVEL'):
+  log = logging.getLogger()
+  log.setLevel(os.environ.get('LOG_LEVEL'))
 
 cfg = os.environ.get('CLOUD_CFG')
 
@@ -93,6 +93,7 @@ config = {
  's3': misc.config_section_map('S3', cloud_config)
 }
 
+
 service = cloud.connect(config)
 
 if args.get:
@@ -117,7 +118,7 @@ elif args.rm:
   print("Removing")
   for name in args.rm.split(','):
     print(" - %s" % name)
-    res = cloud.unlink(name, config=config)
+    res = cloud.unlink(name, config=config, forceNetwork=args.network)
     if not res:
       sys.stderr.write("%s\n" % name)
       fail("Couldn't delete %s" % name)
@@ -136,7 +137,7 @@ elif args.query == 'unlink':
     line = line.strip().split(' ')
     filename = line[0]
     print(" - %s" % full_line)
-    cloud.unlink(filename, config=config)
+    cloud.unlink(filename, config=config, forceNetwork=args.network)
 
 elif args.query:
   print("Query '{}' not recognized. Possibilities are unlink, size, and list".format(args.query))

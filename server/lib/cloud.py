@@ -166,13 +166,19 @@ def download(path, dest=None, config=False):
     logging.debug('Unable to retreive {}: {}'.format(path, e))
 
 
-def unlink(path, config=False):
+def unlink(path, config=False, forceNetwork=False):
   fname = os.path.basename(path)
 
   which, service = file_service(fname, config)
 
+  logging.debug("Service for {} is {}".format(fname, which))
+  if forceNetwork:
+    logging.debug("Ignore that, I've been told to use: {}".format(forceNetwork))
+    which = forceNetwork
+
   try:
     if which == 'azure':
+      logging.debug('Deleting: {} {}'.format(service.container, fname))
       service.azure.delete_blob(service.container, fname)
 
     elif which == 's3':
