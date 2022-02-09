@@ -319,6 +319,10 @@ def get_audio_format(file_name):
 
 
 def signature(fname, blockcount=-1, depth=1):
+  # This is not thread-safe. The file that we are looking at
+  # can be pulled up from under us while we are going through here.
+  # Probably the best way to figure this out would be through flocks 
+  # and blocking things.
   global _LASTFORMAT
   audio_format = DB.get('format') 
 
