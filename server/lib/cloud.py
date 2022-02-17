@@ -20,6 +20,7 @@ class Connection:
   bucket = None
 
   prefer = 'sftp'
+  counters = { "sftp": 0 }
 
 
 def file_service(path, config):
@@ -60,13 +61,16 @@ def connect(config=False, service=None):
     config = misc.config['_private']
 
   if config.get('sftp') and (not Connection.sftp or service == 'sftp'):
+    Connection.counters['sftp'] += 1
+    logging.info("<< Reconnecting sftp ({}) >>".format(Connection.counters['sftp']))
+
     import pysftp
     sftp = config.get('sftp')
 
     Connection.sftp = pysftp.Connection(
-        sftp.get('hostname'), 
-        username=sftp.get('username'), 
-        port=int(sftp.get('port') or 22))
+      sftp.get('hostname'), 
+      username=sftp.get('username'), 
+      port=int(sftp.get('port') or 22))
 
     Connection.sftp_path = sftp.get('path')
 
