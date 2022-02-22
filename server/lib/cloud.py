@@ -26,7 +26,8 @@ class Connection:
 
 def file_service(path, config):
   info = DB.file_info(path)
-  which = (info and info.get('service')) or Connection.prefer
+  # We're trying to find the history so this is why we do this
+  which = (info and info.get('service')) or 'azure' #Connection.prefer
 
   try:
     return which, connect(config)
