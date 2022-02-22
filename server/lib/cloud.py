@@ -10,6 +10,7 @@ import lib.audio as audio
 from glob import glob
 from datetime import datetime, timedelta
 from threading import Thread
+import random
 
 class Connection:
   azure = None
@@ -60,7 +61,7 @@ def connect(config=False, service=None):
   if not config: 
     config = misc.config['_private']
 
-  if config.get('sftp') and (not Connection.sftp or service == 'sftp'):
+  if config.get('sftp') and ((random.random() < 0.20) or (not Connection.sftp or service == 'sftp')):
     Connection.counters['sftp'] += 1
     logging.info("<< Reconnecting sftp ({}) >>".format(Connection.counters['sftp']))
 
