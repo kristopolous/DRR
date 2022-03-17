@@ -1,0 +1,8 @@
+[Main]
+callsign=kusf
+long=-122.166076
+lat=37.424106
+stream=http://104.236.145.45:8000/stream
+port=9030
+disk_archive=1d
+cloud=~/cloudcreds.cfg
