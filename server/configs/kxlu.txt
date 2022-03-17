@@ -8,5 +8,5 @@ stream=http://kxlu.streamguys1.com/kxlu-hi
 port=8890
 cloud=~/cloudcreds.cfg
 cloud_archive=182d
-disk_archive=0.4d
-prune_every=0.2d
+disk_archive=1d
+prune_every=1h
