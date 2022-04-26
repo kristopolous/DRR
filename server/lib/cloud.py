@@ -126,12 +126,14 @@ def list(service, glob=None):
 
     return sorted(fileList, key=itemgetter('name'))
 
-def download(path, dest=None, config=False):
+def download(path, dest=None, config=False, forceNetwork=False):
   import lib.misc as misc 
 
   fname = os.path.basename(path)
 
   which, service = file_service(fname, config)
+  if forceNetwork:
+    which = forceNetwork
 
   if not dest:
     dest = '/'.join([misc.DIR_STREAMS, fname])

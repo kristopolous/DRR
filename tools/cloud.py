@@ -100,7 +100,7 @@ if args.get:
   print("Getting")
   for name in args.get.split(','):
     print(" ↓ %s" % name)
-    res = cloud.download(name, name, config=config)
+    res = cloud.download(name, name, config=config, forceNetwork=args.network)
     if not res:
       sys.stderr.write("%s\n" % name)
       fail("Couldn't download %s" % name)
