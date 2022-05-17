@@ -25,7 +25,9 @@ class Connection:
 
 
 def file_service(path, config):
-  info = DB.file_info(path)
+  # BUGBUG: why is there this inconsistency?
+  info = DB.file_info(path) or DB.file_info('streams/{}'.format(path))
+
   # We're trying to find the history so this is why we do this
   which = (info and info.get('service')) or 'azure' #Connection.prefer
 
