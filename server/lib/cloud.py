@@ -91,7 +91,7 @@ def connect(config=False, service=None):
     Connection.container = "streams"
     Connection.azure.create_container(Connection.container)
 
-  if 'prefer' in config['misc']:
+  if config.get('misc') and 'prefer' in config['misc']:
     Connection.prefer = config['misc']['prefer']
 
   return Connection
@@ -184,8 +184,11 @@ def unlink(path, config=False, forceNetwork=False):
 
   try:
     if which == 'azure':
-      logging.debug('Deleting: {} {}'.format(service.container, fname))
-      service.azure.delete_blob(service.container, fname)
+      if service.container:
+        logging.debug('Deleting: {} {}'.format(service.container, fname))
+        service.azure.delete_blob(service.container, fname)
+      else:
+        logging.debug("Cannot delete: No container")
 
     elif which == 's3':
       service.s3.delete_object(service.bucket, fname)

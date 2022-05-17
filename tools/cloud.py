@@ -79,6 +79,10 @@ if args.config is None:
   print("Define the cloud configuration location with the CLOUD_CFG environment variable or using the -c option")
   sys.exit(-1)
 
+if not os.path.exists(args.config):
+  print("I was unable to find a file at ({}/){} for the config. Try using the full path?".format(os.getcwd(), args.config))
+  sys.exit(-1)
+
 if args.station == 'all':
   args.station = re.sub('.txt', '', ','.join([ os.path.basename(path) for path in glob('../server/configs/*txt')]))
 
