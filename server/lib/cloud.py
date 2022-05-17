@@ -62,7 +62,7 @@ def connect(config=False, service=None):
   if not config: 
     config = misc.config['_private']
 
-  if config.get('sftp') and ((random.random() < 0.20) or (not Connection.sftp or service == 'sftp')):
+  if service == 'sftp' and config.get('sftp') and ((random.random() < 0.20) or not Connection.sftp):
     Connection.counters['sftp'] += 1
     logging.info("<< Reconnecting sftp ({}) >>".format(Connection.counters['sftp']))
 
