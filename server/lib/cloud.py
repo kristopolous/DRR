@@ -184,7 +184,7 @@ def unlink(path, config=False, forceNetwork=False):
 
   try:
     if which == 'azure':
-      if service.container:
+      if service.container and service.azure:
         logging.debug('Deleting: {} {}'.format(service.container, fname))
         service.azure.delete_blob(service.container, fname)
       else:
