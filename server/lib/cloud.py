@@ -191,6 +191,7 @@ def unlink(path, config=False, forceNetwork=False):
         service.azure.delete_blob(service.container, fname)
       else:
         logging.debug("Cannot delete: No container")
+        raise FileNotFoundError
 
     elif which == 's3':
       service.s3.delete_object(service.bucket, fname)
