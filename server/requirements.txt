@@ -2,8 +2,8 @@ flask
 lxml
 click
 setproctitle
-azure
-azure-storage-blob
+#azure
+#azure-storage-blob
 boto3
 requests
 psutil
