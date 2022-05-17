@@ -5,3 +5,5 @@ lat=37.871593
 stream=http://stations.pacifica.org:8000/kpfa_64
 port=9410
 cloud=~/cloudcreds.cfg
+disk_archive=8h
+cloud_archive=70d
