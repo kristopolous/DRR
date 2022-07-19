@@ -32,7 +32,7 @@ def file_service(path, config):
     logging.warn("Cannot find record for {}".format(path))
 
   # We're trying to find the history so this is why we do this
-  which = (info and info.get('service')) or 'azure' #Connection.prefer
+  which = (info and info.get('service')) or 'sftp' #Connection.prefer
 
   try:
     return which, connect(config)

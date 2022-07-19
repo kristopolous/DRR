@@ -31,14 +31,14 @@ _SCHEMA = {
      ('end_minute', 'REAL DEFAULT 0'),
      ('week_number', 'INTEGER DEFAULT 0'),
      ('size', 'INTEGER DEFAULT 0'),
-     ('service', 'TEXT'),
+     ('hidden', 'INTEGER default null'),
      # This is the meta-information that links
      # this file to the next one in the stream
      # (Presuming that there's only one of course)
      ('current_block', 'INTEGER DEFAULT 0'),
      ('next_file_name', 'TEXT'),
      ('next_file_block', 'INTEGER DEFAULT 0'),
-     ('hidden', 'INTEGER default null')
+     ('service', 'TEXT')
    ]
 }
 
