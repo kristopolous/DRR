@@ -172,7 +172,6 @@ def download(path, dest=None, config=False, forceNetwork=False):
     else:
       return False
 
-    logging.debug("Prune[cloud]: Deleted {}".format(fname))
     return True
 
   except Exception as e:
@@ -401,7 +400,7 @@ def find_streams(start_list, duration_min):
 
   entry_list = DB.map(DB.run(full_query).fetchall(), 'streams')
 
-  #logging.info(full_query)
+  logging.info(full_query)
   #logging.info(entry_list)
   # print full_query, len(entry_list)
   # We want to make sure that we break down the stream_list into days.  We can't JUST look at the week
