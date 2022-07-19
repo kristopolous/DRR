@@ -356,7 +356,10 @@ def update(table, where_dict, set_dict):
 
 
 def file_info(path):
-  return run('select * from streams where name = ?', (path, )).fetchone()
+  f_info = run('select * from streams where name = ?', (path, )).fetchone()
+  if f_info is not None:
+      return dict(zip([n[0] for n in _SCHEMA['streams']], f_info))
+  return f_info
   
 def register_stream(info):
   # Registers a stream as existing to be found later when trying to stitch and slice files together.
