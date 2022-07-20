@@ -5,7 +5,6 @@ import re
 import sys
 import logging
 from glob import glob
-from azure.storage.blob import BlockBlobService as BlobService
 import configparser
 import textwrap
 import lib.cloud as cloud
