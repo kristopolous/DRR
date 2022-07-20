@@ -91,10 +91,13 @@ def connect(config=False, service=None):
     Connection.bucket = config['s3']['default_bucket']
 
   if config.get('azure') and (not Connection.azure or service == 'azure'):
-    from azure.storage.blob import BlockBlobService as BlobService
-    Connection.azure = BlobService(config['azure']['storage_account_name'], config['azure']['primary_access_key'])
-    Connection.container = "streams"
-    Connection.azure.create_container(Connection.container)
+    try:
+      from azure.storage.blob import BlockBlobService as BlobService
+      Connection.azure = BlobService(config['azure']['storage_account_name'], config['azure']['primary_access_key'])
+      Connection.container = "streams"
+      Connection.azure.create_container(Connection.container)
+    except:
+      pass
 
   if config.get('misc') and 'prefer' in config['misc']:
     Connection.prefer = config['misc']['prefer']
